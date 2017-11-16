@@ -1,0 +1,26 @@
+.eflogo {
+    width: 100%;
+    max-height: 150px;
+    font-size: 150%;
+    color: white;
+}
+
+h1, h2, h3, h4, h5, h6, legend {
+    color: #863347;
+}
+
+.wy-side-nav-search {
+    background: #863347;
+}
+
+.wy-side-nav-search a:hover {
+    background: #863347;
+}
+
+a:visited {
+    color: #2980B9;
+}
+
+.wy-menu-vertical a {
+    color: #b3b3b3;
+}

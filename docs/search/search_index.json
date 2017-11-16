@@ -1,0 +1,29 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Welcome to EnergyFlow\n\n\nFormula\n\n\nComing Soon!\n\n\nReferences\n\n\n[1] P.T. Komiske, E.M. Metodiev, J. Thaler, \"Energy Flow Polynomials: A complete linear basis for jet substructure\"",
+            "title": "Home"
+        },
+        {
+            "location": "/#welcome-to-energyflow",
+            "text": "",
+            "title": "Welcome to EnergyFlow"
+        },
+        {
+            "location": "/#formula",
+            "text": "Coming Soon!",
+            "title": "Formula"
+        },
+        {
+            "location": "/#references",
+            "text": "[1] P.T. Komiske, E.M. Metodiev, J. Thaler, \"Energy Flow Polynomials: A complete linear basis for jet substructure\"",
+            "title": "References"
+        },
+        {
+            "location": "/installation/",
+            "text": "The EnergyFlow Python package will be released publically soon on GitHub and published on PyPi!",
+            "title": "Installation"
+        }
+    ]
+}
