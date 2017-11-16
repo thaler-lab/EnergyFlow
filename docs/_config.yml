@@ -1,5 +1,5 @@
 site_name: Energy Flow Documentation
-theme: jekyll-theme-minimal
+theme: readthedocs
 
 pages:
 - Home: index.md
