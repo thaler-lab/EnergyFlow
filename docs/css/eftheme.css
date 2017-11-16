@@ -24,12 +24,16 @@ h1, h2, h3, h4, h5, h6, legend {
     background: #863347;
 }
 
+a:visited {
+    color: #2980B9;
+}
+
 .wy-nav-top {
     background: #863347;
 }
 
-a:visited {
-    color: #2980B9;
+.wy-nav-top a {
+    color: white;
 }
 
 .wy-menu-vertical a {
