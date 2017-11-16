@@ -1,1 +1,5 @@
+site_name: Energy Flow Documentation
 theme: jekyll-theme-minimal
+
+pages:
+- Home: index.md
