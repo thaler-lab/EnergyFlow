@@ -1,6 +1,6 @@
 # EnergyFlow
 
-EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs), defined in [1].
+EnergyFlow is a Python package that computes Energy Flow objects such as the Energy Flow Polynomials (EFPs) defined in Ref. [1].
 
 The general formula for an EFP is given in terms of its graph:
 
