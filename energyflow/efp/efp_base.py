@@ -1,9 +1,10 @@
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
-import pandas
 
 __all__ = ['EFPSet', 'calc_disc']
+
+einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 def calc_disc(X, disc_formulae, concat=False):
 
@@ -18,6 +19,45 @@ def calc_disc(X, disc_formulae, concat=False):
         return np.concatenate([XX, results], axis=1)
     else: 
         return results
+
+class EFP:
+
+    def __init__(self, edges, np_optimize='greedy'):
+
+        # store the initial graph information
+        self.initial_edges = edges
+
+        # deal with arbitrary vertex labels
+        vertex_set = set(v for edge in self.initial_edges for v in edge)
+        self.vertices = {v: i for i,v in enumerate(sorted(list(vertex_set)))}
+        self.N = len(vertex_set)
+
+        # construct new edges
+        self.edges = [tuple(self.vertices[v] for v in edge) for edge in self.initial_edges]
+        self.d = len(self.edges)
+
+        self._ve_init(np_optimize)
+        self.c, self, self.einstr, self.einpath, _ = self._chi_ein_numpy(self.edges, self.N)
+
+    def _ve_init(self, np_optimize):
+        self.np_optimize = np_optimize
+        self.dummy_dim = 10
+        self.X = np.random.rand(self.dummy_dim, self.dummy_dim)
+        self.y = np.random.rand(self.dummy_dim)
+
+    def _chi_ein_numpy(self, edges, n):
+        einstr, nv, ne = _self.einstr_from_graph(edges, n)
+        einpath = np.einsum_path(einstr, *[self.X]*ne, *[self.y]*nv, optimize=self.np_optimize)
+        return int(einpath[1].split('\n')[2].split(':')[1]), einstr, einpath[0], None
+
+    def _einstr_from_edges(self, edges, n):
+        einstr  = ','.join([einsum_symbols[j] + einsum_symbols[k] for (j, k) in edges]) + ','
+        einstr += ','.join([einsum_symbols[v] for v in range(n)])
+        return einstr, n, len(edges)
+
+    # compute the energy flow polynomial corresponding to the graph with certain edge weights
+    def compute(self, zs, thetas, weights):
+        return np.einsum(self.einstr, *[thetas[w] for w in weights], *[zs]*self.N, optimize=self.einpath)
 
 class EFPSet:
 
@@ -80,7 +120,7 @@ class EFPSet:
         gs.remove(-1)
         ws.remove(-1)
         self.edges = [edges for g,edges in enumerate(fdict['edges']) if g in gs]
-        self.einstrings = [estr for g,estr in enumerate(fdict['einstrings']) if g in gs]
+        self.einstrs = [estr for g,estr in enumerate(fdict['einstrs']) if g in gs]
         self.einpaths = [epath for g,epath in enumerate(fdict['einpaths']) if g in gs]
         self.weights = [weights for w,weights in enumerate(fdict['weights']) if w in ws]
 
@@ -108,7 +148,7 @@ class EFPSet:
     def make_connected_iterable(self):
         self.connected_iterable = [(spec[self.n_ind],
                                     self.weights[spec[self.w_ind]],
-                                    self.einstrings[spec[self.g_ind]],
+                                    self.einstrs[spec[self.g_ind]],
                                     self.einpaths[spec[self.g_ind]]) \
                                    for spec in self.connected_specs]
 

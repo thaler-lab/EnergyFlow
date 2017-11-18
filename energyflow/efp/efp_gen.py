@@ -4,15 +4,13 @@ import itertools
 import numpy as np
 import igraph
 
-from energyflow.efp.efp_base import EFPSet
+from energyflow.efp.efp_base import EFP, EFPSet
 from energyflow.efp.integer_partitions import int_partition_ordered, int_partition_unordered
 from energyflow.efp.ve import ve_elim_order, ve_einsum_path
 
 __all__ = ['EFPGenerator']
 
-einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
-class EFPGenerator(EFPSet):
+class EFPGenerator(EFPSet, EFP):
 
     """
     A class that can generate EFPs and save them to file.
@@ -24,11 +22,13 @@ class EFPGenerator(EFPSet):
         self.doing_gen = True
 
         # store parameters in base class
-        super().__init__(dmax=dmax, Nmax=Nmax, emax=emax, cmax=cmax, verbose=verbose)
+        EFPSet.__init__(dmax=dmax, Nmax=Nmax, emax=emax, cmax=cmax, verbose=verbose)
 
-        assert ve_alg in ['ef', 'numpy'], 've_alg must be `ef` or `numpy`'
+        assert ve_alg in ['ef', 'numpy'], 've_alg must be either ef or numpy'
         self.ve_alg = ve_alg
-        self.np_optimize = np_optimize
+        if self.ve_alg == 'numpy':
+            EFP._ve_init(np_optimize)
+        self.chi_ein_func = {'ef': self._chi_ein_ve, 'numpy': self._chi_ein_numpy}[self.ve_alg]
 
         # setup N and e values to be used
         self.Ns = list(range(2, self.Nmax+1))
@@ -40,39 +40,27 @@ class EFPGenerator(EFPSet):
         self.simple_graphs_d = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
         self.edges_d         = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
         self.chis_d          = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.elim_orders_d   = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
         self.einpaths_d      = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.einstrings_d    = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
+        self.einstrs_d       = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
         self.weights_d       = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
 
-        # select chi function
-        self.chi_ein_func = {'ef': self.chi_ein_ve, 'numpy': self.chi_ein_numpy}[self.ve_alg]
-        if self.ve_alg == 'numpy':
-            self.dummy_dim = 10
-            self.X = np.random.rand(self.dummy_dim, self.dummy_dim)
-            self.y = np.random.rand(self.dummy_dim)
-
         # get simple graphs
-        self.generate_simple()
-
-        # get einpaths if we don't already have them
-        if self.ve_alg != 'numpy': 
-            self.get_ve_einpaths()
+        self._generate_simple()
 
         # get weighted graphs
         if do_weights: 
-            self.generate_weights()
+            self._generate_weights()
 
             # get disconnected graphs
-            self.init_disconnected()
-            self.generate_disconnected()
+            self._init_disconnected()
+            self._generate_disconnected()
 
     # generates simple graphs subject to constraints
-    def generate_simple(self):
+    def _generate_simple(self):
 
         self.base_edges = {n: list(itertools.combinations(range(n), 2)) for n in self.Ns}
 
-        self.add_if_new(igraph.Graph.Full(2, directed=False), (2,1))
+        self._add_if_new(igraph.Graph.Full(2, directed=False), (2,1))
 
         # iterate over all combinations of n>2 and d
         for n in self.Ns[1:]:
@@ -89,7 +77,7 @@ class EFPGenerator(EFPSet):
                             new_graph = seed_graph.copy()
                             new_graph.add_vertices(1)
                             new_graph.add_edges([(v,n-1)])
-                            self.add_if_new(new_graph, (n,e))
+                            self._add_if_new(new_graph, (n,e))
 
                 # consider adding new edge to existing set of vertices
                 if e-1 in self.esbyn[n]:
@@ -99,63 +87,51 @@ class EFPGenerator(EFPSet):
                                                       self.edges_d[(n,e-1)]):
 
                         # iterate over edges that don't exist in graph
-                        for new_edge in self.edge_filter(n, seed_edges):
+                        for new_edge in self._edge_filter(n, seed_edges):
                             new_graph = seed_graph.copy()
                             new_graph.add_edges([new_edge])
-                            self.add_if_new(new_graph, (n,e))
+                            self._add_if_new(new_graph, (n,e))
 
         if self.verbose: 
-            print('# of simple graphs by n:', self.count_simple_by_n())
-            print('# of simple graphs by e:', self.count_simple_by_e())
+            print('# of simple graphs by n:', self._count_simple_by_n())
+            print('# of simple graphs by e:', self._count_simple_by_e())
 
     # adds simple graph if it is non-isomorphic to existing graphs and has a valid metric
-    def add_if_new(self, new_graph, ne):
+    def _add_if_new(self, new_graph, ne):
 
         # check for isomorphism with existing graphs
         for graph in self.simple_graphs_d[ne]:
             if new_graph.isomorphic(graph): return
 
         # check that ve complexity for this graph is valid
-        new_chi, new_einstring, new_einpath, new_ve_elim_order = self.chi_ein_func(new_graph)
+        chiein = self.chi_ein_func(new_graph.get_edgelist(), new_graph.vcount())
+        new_chi, new_einstr, new_einpath, new_elim_order = chiein
         if new_chi > self.cmax: return
         
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
         self.edges_d[ne].append(new_graph.get_edgelist())
         self.chis_d[ne].append(new_chi)
-        self.einstrings_d[ne].append(new_einstring)
+        self.einstrs_d[ne].append(new_einstr)
 
-        if self.ve_alg=='numpy': 
+        if self.ve_alg == 'numpy': 
             self.einpaths_d[ne].append(new_einpath)
         else: 
-            self.ve_elim_orders_d[ne].append(new_ve_elim_order)
+            self.einpaths_d[ne].append(ve_einsum_path(graph, new_elim_order))
+
+    def _chi_ein_ve(self, edges, n):
+        einstr = _self.einstr_from_graph(edges, n)[0]
+        ve_elim_order, max_min_degree = ve_elim_order(graph)
+        return max_min_degree, einstr, None, ve_elim_order
 
     # generator for edges not already in list
-    def edge_filter(self, n, edges):
+    def _edge_filter(self, n, edges):
         for edge in self.base_edges[n]:
             if edge not in edges:
                 yield edge
-    
-    def einstr_from_graph(self, graph):
-        n = graph.vcount()
-        edges = graph.get_edgelist()
-        einstring  = ','.join([einsum_symbols[j] + einsum_symbols[k] for (j, k) in edges]) + ','
-        einstring += ','.join([einsum_symbols[v] for v in range(n)])
-        return einstring, n, len(edges)
-
-    def chi_ein_numpy(self, graph):
-        einstring, nv, ne = self.einstr_from_graph(graph)
-        einpath = np.einsum_path(einstring, *[self.X]*ne, *[self.y]*nv, 
-                                 optimize=[self.np_optimize, self.dummy_dim**(self.cmax-1)])
-        return int(einpath[1].split('\n')[2].split(':')[1]), einstring, einpath[0], None
-
-    def chi_ein_ve(self, graph):
-        einstring = self.einstr_from_graph(graph)[0]
-        ve_elim_order, max_min_degree = ve_elim_order(graph)
-        return max_min_degree, einstring, None, ve_elim_order
 
     # generates non-isomorphic graph weights subject to constraints
-    def generate_weights(self):
+    def _generate_weights(self):
 
         # take care of the n=2 case:
         self.weights_d[(2,1)].append([(d,) for d in range(1, self.dmaxs[(2,1)]+1)])
@@ -196,10 +172,10 @@ class EFPGenerator(EFPSet):
                     self.weights_d[(n,e)].append(weightings)
 
         if self.verbose: 
-            print('# of weightings by n:', self.count_weighted_by_n())
-            print('# of weightings by d:', self.count_weighted_by_d())
+            print('# of weightings by n:', self._count_weighted_by_n())
+            print('# of weightings by d:', self._count_weighted_by_d())
 
-    def init_disconnected(self):
+    def _init_disconnected(self):
 
         """ 
         Column descriptions:
@@ -216,13 +192,13 @@ class EFPGenerator(EFPSet):
         self.cols = ['n','e','d','k','g','w','c','p']
         self.get_col_inds()
         self.connected_specs = []
-        self.edges, self.weights, self.einstrings, self.einpaths = [], [], [], []
+        self.edges, self.weights, self.einstrs, self.einpaths = [], [], [], []
         self.ks, self.ndk2i = {}, {}
         g = w = i = 0
         for ne in sorted(self.chis_d.keys()):
             n, e = ne
             z = zip(self.edges_d[ne], self.weights_d[ne], self.chis_d[ne], 
-                    self.einstrings_d[ne], self.einpaths_d[ne])
+                    self.einstrs_d[ne], self.einpaths_d[ne])
             for edges, weights, chi, es, ep in z:
                 for weighting in weights:
                     d = sum(weighting)
@@ -234,15 +210,14 @@ class EFPGenerator(EFPSet):
                     w += 1
                     i += 1
                 self.edges.append(edges)
-                self.einstrings.append(es)
+                self.einstrs.append(es)
                 self.einpaths.append(ep)
                 g += 1
         self.connected_specs = np.asarray(self.connected_specs)
 
-    def generate_disconnected(self):
+    def _generate_disconnected(self):
         
-        disc_formulae = []
-        disc_specs = []
+        disc_formulae, disc_specs = [], []
 
         # disconnected start at N>=4
         for n in range(4,2*self.dmax+1):
@@ -330,23 +305,18 @@ class EFPGenerator(EFPSet):
         else:
             self.specs = self.connected_specs
 
-    def get_ve_einpaths(self):
-        for ne, graphs in self.simple_graphs_d.items():
-            for i, graph in enumerate(graphs):
-                self.einpaths_d[ne].append(ve_einsum_path(graph, self.ve_elim_orders_d[ne][i]))
-
-    def count_simple_by_n(self):
+    def _count_simple_by_n(self):
         return {n: np.sum([len(self.edges_d[(n,e)]) for e in self.esbyn[n]]) for n in self.Ns}
 
-    def count_simple_by_e(self):
+    def _count_simple_by_e(self):
         return {e: np.sum([len(self.edges_d[(n,e)]) for n in self.Ns if (n,e) in self.edges_d]) \
                            for e in range(1,self.emax+1)}
 
-    def count_weighted_by_n(self):
+    def _count_weighted_by_n(self):
         return {n: np.sum([len(weights) for e in self.esbyn[n] \
                            for weights in self.weights_d[(n,e)]]) for n in self.Ns}
 
-    def count_weighted_by_d(self):
+    def _count_weighted_by_d(self):
         counts = {d: 0 for d in range(1,self.dmax+1)}
         for n in self.Ns:
             for e in self.esbyn[n]:
@@ -360,6 +330,6 @@ class EFPGenerator(EFPSet):
                               'specs':         self.specs,
                               'disc_formulae': self.disc_formulae,
                               'edges':         self.edges,
-                              'einstrings':    self.einstrings,
+                              'einstrs':    self.einstrs,
                               'einpaths':      self.einpaths,
                               'weights':       self.weights})

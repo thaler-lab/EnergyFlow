@@ -99,4 +99,4 @@ def ve_einsum_path(graph, elim_order):
         einsum_path.append(formula)
         #ops.append(op)
         
-    return einsum_path#, ops
+    return einsum_path
