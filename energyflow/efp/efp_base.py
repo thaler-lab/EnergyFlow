@@ -2,9 +2,9 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
-__all__ = ['EFPSet', 'calc_disc']
+from energyflow.algorithms.ve import VariableElimination
 
-einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+__all__ = ['EFP', 'EFPSet', 'calc_disc']
 
 def calc_disc(X, disc_formulae, concat=False):
 
@@ -22,7 +22,7 @@ def calc_disc(X, disc_formulae, concat=False):
 
 class EFP:
 
-    def __init__(self, edges, np_optimize='greedy'):
+    def __init__(self, edges, ve_alg='numpy', np_optimize='greedy'):
 
         # store the initial graph information
         self.initial_edges = edges
@@ -36,56 +36,30 @@ class EFP:
         self.edges = [tuple(self.vertices[v] for v in edge) for edge in self.initial_edges]
         self.d = len(self.edges)
 
-        self._ve_init(np_optimize)
-        self.c, self, self.einstr, self.einpath, _ = self._chi_ein_numpy(self.edges, self.N)
-
-    def _ve_init(self, np_optimize):
-        self.np_optimize = np_optimize
-        self.dummy_dim = 10
-        self.X = np.random.rand(self.dummy_dim, self.dummy_dim)
-        self.y = np.random.rand(self.dummy_dim)
-
-    def _chi_ein_numpy(self, edges, n):
-        einstr, nv, ne = _self.einstr_from_graph(edges, n)
-        einpath = np.einsum_path(einstr, *[self.X]*ne, *[self.y]*nv, optimize=self.np_optimize)
-        return int(einpath[1].split('\n')[2].split(':')[1]), einstr, einpath[0], None
-
-    def _einstr_from_edges(self, edges, n):
-        einstr  = ','.join([einsum_symbols[j] + einsum_symbols[k] for (j, k) in edges]) + ','
-        einstr += ','.join([einsum_symbols[v] for v in range(n)])
-        return einstr, n, len(edges)
+        self.ve = VariableElimination(ve_alg=ve_alg, np_optimize=np_optimize)
+        self.c = self.ve.set(self.edges, self.N)
+        self.einstr, self.einpath = self.ve.einspecs()
 
     # compute the energy flow polynomial corresponding to the graph with certain edge weights
     def compute(self, zs, thetas, weights):
         return np.einsum(self.einstr, *[thetas[w] for w in weights], *[zs]*self.N, optimize=self.einpath)
 
 class EFPSet:
-
-    doing_gen = False
     
-    def __init__(self, filename=None, dmax=None, Nmax=None, emax=None, cmax=None, verbose=True):
+    def __init__(self, filename, dmax=None, Nmax=None, emax=None, cmax=None, verbose=True):
 
-        assert filename is not None or dmax is not None, 'filename and dmax cannot both be None'
         self.verbose = verbose
 
-        if filename is not None:
-            self.filename = filename if '.npz' in filename else filename+'.npz'
-            self.load_file(dmax, Nmax, emax, cmax)
-            self.make_connected_iterable()
-        elif dmax is not None:
-            if not self.doing_gen:
-                print('WARNING: Empty EFPSet being created')
-            self.dmax = dmax
-            self.Nmax = Nmax if Nmax is not None else dmax+1
-            self.emax = emax if emax is not None else dmax
-            self.cmax = cmax if cmax is not None else self.Nmax
+        self.filename = filename if '.npz' in filename else filename+'.npz'
+        self._load_file(dmax, Nmax, emax, cmax)
+        self._make_connected_iterable()
 
-    def load_file(self, dmax, Nmax, emax, cmax):
+    def _load_file(self, dmax, Nmax, emax, cmax):
 
         fdict = np.load(self.filename)
         specs = fdict['specs']
         self.cols = fdict['cols']
-        self.get_col_inds()
+        self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
 
         f_dmax, f_Nmax = np.max(specs[:,self.d_ind]), np.max(specs[:,self.n_ind])
         f_emax, f_cmax = np.max(specs[:,self.e_ind]), np.max(specs[:,self.c_ind])
@@ -142,10 +116,7 @@ class EFPSet:
                 print('    Total EFPs:', len(self.specs))
                 print('    Total Prime EFPs:', np.count_nonzero(self.specs[:,self.p_ind] == 1))
 
-    def get_col_inds(self):
-        self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
-
-    def make_connected_iterable(self):
+    def _make_connected_iterable(self):
         self.connected_iterable = [(spec[self.n_ind],
                                     self.weights[spec[self.w_ind]],
                                     self.einstrs[spec[self.g_ind]],

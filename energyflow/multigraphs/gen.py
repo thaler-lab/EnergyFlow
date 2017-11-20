@@ -4,31 +4,29 @@ import itertools
 import numpy as np
 import igraph
 
-from energyflow.efp.efp_base import EFP, EFPSet
-from energyflow.efp.integer_partitions import int_partition_ordered, int_partition_unordered
-from energyflow.efp.ve import ve_elim_order, ve_einsum_path
+from energyflow.algorithms.integer_partitions import *
+from energyflow.algorithms.ve import VariableElimination
 
-__all__ = ['EFPGenerator']
+__all__ = ['Generator']
 
-class EFPGenerator(EFPSet, EFP):
+class Generator:
 
     """
     A class that can generate EFPs and save them to file.
     """
 
     def __init__(self, dmax, Nmax=None, emax=None, cmax=None, verbose=True,
-                       ve_alg='numpy', np_optimize='greedy', do_weights=True):
+                       ve_alg='numpy', np_optimize='greedy'):
 
-        self.doing_gen = True
+        # store parameters
+        self.dmax = dmax
+        self.Nmax = Nmax
+        self.emax = emax
+        self.cmax = cmax
 
-        # store parameters in base class
-        EFPSet.__init__(dmax=dmax, Nmax=Nmax, emax=emax, cmax=cmax, verbose=verbose)
+        self.verbose = verbose
 
-        assert ve_alg in ['ef', 'numpy'], 've_alg must be either ef or numpy'
-        self.ve_alg = ve_alg
-        if self.ve_alg == 'numpy':
-            EFP._ve_init(np_optimize)
-        self.chi_ein_func = {'ef': self._chi_ein_ve, 'numpy': self._chi_ein_numpy}[self.ve_alg]
+        self.ve = VariableElimination(ve_alg=ve_alg, np_optimize=np_optimize)
 
         # setup N and e values to be used
         self.Ns = list(range(2, self.Nmax+1))
@@ -48,12 +46,10 @@ class EFPGenerator(EFPSet, EFP):
         self._generate_simple()
 
         # get weighted graphs
-        if do_weights: 
-            self._generate_weights()
+        self._generate_weights()
 
-            # get disconnected graphs
-            self._init_disconnected()
-            self._generate_disconnected()
+        # get disconnected graphs
+        self._generate_disconnected()
 
     # generates simple graphs subject to constraints
     def _generate_simple(self):
@@ -104,25 +100,18 @@ class EFPGenerator(EFPSet, EFP):
             if new_graph.isomorphic(graph): return
 
         # check that ve complexity for this graph is valid
-        chiein = self.chi_ein_func(new_graph.get_edgelist(), new_graph.vcount())
-        new_chi, new_einstr, new_einpath, new_elim_order = chiein
-        if new_chi > self.cmax: return
+        new_edges = new_graph.get_edgelist()
+        chi = self.ve.set(new_edges, ne[0])
+        if chi > self.cmax: return
         
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
-        self.edges_d[ne].append(new_graph.get_edgelist())
-        self.chis_d[ne].append(new_chi)
-        self.einstrs_d[ne].append(new_einstr)
+        self.edges_d[ne].append(new_edges)
+        self.chis_d[ne].append(chi)
 
-        if self.ve_alg == 'numpy': 
-            self.einpaths_d[ne].append(new_einpath)
-        else: 
-            self.einpaths_d[ne].append(ve_einsum_path(graph, new_elim_order))
-
-    def _chi_ein_ve(self, edges, n):
-        einstr = _self.einstr_from_graph(edges, n)[0]
-        ve_elim_order, max_min_degree = ve_elim_order(graph)
-        return max_min_degree, einstr, None, ve_elim_order
+        einstr, einpath = self.ve.einspecs()
+        self.einstrs_d[ne].append(einstr)
+        self.einpaths_d[ne].append(einpath)
 
     # generator for edges not already in list
     def _edge_filter(self, n, edges):
@@ -175,7 +164,7 @@ class EFPGenerator(EFPSet, EFP):
             print('# of weightings by n:', self._count_weighted_by_n())
             print('# of weightings by d:', self._count_weighted_by_d())
 
-    def _init_disconnected(self):
+    def _generate_disconnected(self):
 
         """ 
         Column descriptions:
@@ -190,7 +179,7 @@ class EFPGenerator(EFPSet, EFP):
         """
 
         self.cols = ['n','e','d','k','g','w','c','p']
-        self.get_col_inds()
+        self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
         self.connected_specs = []
         self.edges, self.weights, self.einstrs, self.einpaths = [], [], [], []
         self.ks, self.ndk2i = {}, {}
@@ -213,9 +202,8 @@ class EFPGenerator(EFPSet, EFP):
                 self.einstrs.append(es)
                 self.einpaths.append(ep)
                 g += 1
-        self.connected_specs = np.asarray(self.connected_specs)
 
-    def _generate_disconnected(self):
+        self.connected_specs = np.asarray(self.connected_specs)
         
         disc_formulae, disc_specs = [], []
 
@@ -330,6 +318,6 @@ class EFPGenerator(EFPSet, EFP):
                               'specs':         self.specs,
                               'disc_formulae': self.disc_formulae,
                               'edges':         self.edges,
-                              'einstrs':    self.einstrs,
+                              'einstrs':       self.einstrs,
                               'einpaths':      self.einpaths,
                               'weights':       self.weights})
