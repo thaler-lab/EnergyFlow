@@ -4,6 +4,7 @@ from energyflow.utils import igraph_import
 
 igraph = igraph_import(__file__)
 
+__all__ = []
 if igraph:
     from . import gen
     from .gen import *

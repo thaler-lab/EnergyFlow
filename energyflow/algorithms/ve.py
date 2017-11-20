@@ -32,8 +32,10 @@ class VariableElimination:
 
     def _ve_numpy(self, edges, n):
         d = len(edges)
-        self.einstr = self._einstr_from_graph(edges, n)
-        self.einpath = np.einsum_path(einstr, *[self.X]*d, *[self.y]*n, optimize=self.np_optimize)
+        self.einstr = self._einstr_from_edges(edges, n)
+        args = [self.X]*d + [self.y]*n
+        einpath = np.einsum_path(self.einstr, *args, optimize=self.np_optimize)
+        self.einpath = einpath[0]
         self.chi = int(einpath[1].split('\n')[2].split(':')[1])
 
     def _ve_ef_chi_elim_order(self, edges):

@@ -20,9 +20,9 @@ class Generator:
 
         # store parameters
         self.dmax = dmax
-        self.Nmax = Nmax
-        self.emax = emax
-        self.cmax = cmax
+        self.Nmax = Nmax if Nmax is not None else self.dmax+1
+        self.emax = emax if emax is not None else self.dmax
+        self.cmax = cmax if cmax is not None else self.Nmax
 
         self.verbose = verbose
 

@@ -8,7 +8,7 @@ def igraph_import(file):
         import igraph
     except:
         igraph = False
-        sys.stderr.write('WARNING: could not import igraph from {}'.format(file))
+        sys.stderr.write('WARNING: could not import igraph from {}\n'.format(file))
         sys.stderr.flush()
     return igraph
 

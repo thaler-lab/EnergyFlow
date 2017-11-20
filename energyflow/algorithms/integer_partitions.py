@@ -2,7 +2,7 @@ import itertools
 
 # gets ordered integer partitions of d of length e
 def int_partition_ordered(d, e):
-    for part in int_partition_generator_unordered(d):
+    for part in int_partition_unordered(d):
         if len(part) != e: continue
         for ordered_part in set(itertools.permutations(part)):
             yield ordered_part
