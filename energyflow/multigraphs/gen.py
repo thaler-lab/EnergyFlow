@@ -313,7 +313,7 @@ class Generator:
         return counts
 
     def save(self, filename):
-        np.savez(filename, **{'ve_alg':        self.ve_alg,
+        np.savez(filename, **{'ve_alg':        self.ve.ve_alg,
                               'cols':          self.cols,
                               'specs':         self.specs,
                               'disc_formulae': self.disc_formulae,
