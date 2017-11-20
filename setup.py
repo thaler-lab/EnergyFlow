@@ -11,4 +11,5 @@ setup(name='EnergyFlow',
       extras_require={'generation': ['igraph']},
       setup_requires=['pytest-runner'],
       tests_require=['pytest'],
+      package_data={'':['data/*']},
       packages=find_packages())

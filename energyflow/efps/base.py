@@ -91,8 +91,8 @@ class EFPSet:
         
         self.specs = specs[mask]
         gs, ws = set(self.specs[:,self.g_ind]), set(self.specs[:,self.w_ind])
-        gs.remove(-1)
-        ws.remove(-1)
+        gs.discard(-1)
+        ws.discard(-1)
         self.edges = [edges for g,edges in enumerate(fdict['edges']) if g in gs]
         self.einstrs = [estr for g,estr in enumerate(fdict['einstrs']) if g in gs]
         self.einpaths = [epath for g,epath in enumerate(fdict['einpaths']) if g in gs]
