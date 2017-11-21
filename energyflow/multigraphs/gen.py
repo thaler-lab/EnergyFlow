@@ -1,7 +1,11 @@
+"""Contains multigraph Generator class."""
+
 from __future__ import absolute_import, division, print_function
 
 import itertools
 import numpy as np
+
+# already checked that we have igraph
 import igraph
 
 from energyflow.algorithms.integer_partitions import *
@@ -12,7 +16,8 @@ __all__ = ['Generator']
 class Generator:
 
     """
-    A class that can generate EFPs and save them to file.
+    A class that can generate multigraphs and their associated properties and
+    save them in a .npz file.
     """
 
     def __init__(self, dmax, Nmax=None, emax=None, cmax=None, verbose=True,
