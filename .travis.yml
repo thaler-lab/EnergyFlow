@@ -9,5 +9,6 @@ python:
 
 install:
   - pip install -U numpy pytest
+  - python setup.py install
 
 script: pytest
