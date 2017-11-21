@@ -1,5 +1,9 @@
 **/__pycache__
 .ipynb_checkpoints
 *.ipynb
-mkdocs
+mkdocs/
 clean
+dist/
+.DS_Store
+.eggs/
+EnergyFlow.egg-info/

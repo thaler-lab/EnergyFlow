@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
+import re
 
 from energyflow.algorithms.ve import VariableElimination
 
@@ -50,7 +51,9 @@ class EFPSet:
 
         self.verbose = verbose
 
-        self.filename = filename if '.npz' in filename else filename+'.npz'
+        self._spec_re = re.compile('(\w+)(<|>|==|<=|>=)(\d+)')
+
+        self.filename = filename if '.npz' == filename[-4:] else filename+'.npz'
         self._load_file(dmax, Nmax, emax, cmax)
         self._make_connected_iterable()
 
@@ -58,7 +61,7 @@ class EFPSet:
 
         fdict = np.load(self.filename)
         specs = fdict['specs']
-        self.cols = fdict['cols']
+        self.cols = fdict['cols'].tolist()
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
 
         f_dmax, f_Nmax = np.max(specs[:,self.d_ind]), np.max(specs[:,self.n_ind])
@@ -122,6 +125,22 @@ class EFPSet:
                                     self.einstrs[spec[self.g_ind]],
                                     self.einpaths[spec[self.g_ind]]) \
                                    for spec in self.connected_specs]
+
+    def sel(self, *args):
+        mask = np.ones(len(self.specs), dtype=bool)
+        for arg in args:
+            if isinstance(arg, str):
+                s = arg.replace(' ', '')
+            elif hasattr(arg, '__iter__'):
+                s = arg[0].replace(' ', '') + str(arg[1])
+            match = self._spec_re.match(s)
+            if match is None:
+                raise ValueError('could not understand \'{}\''.format(arg))
+            var = match.group(1)
+            if var not in self.cols:
+                raise ValueError('\'{}\' not in {}'.format(var, self.cols))
+            mask &= eval('self.specs[:,self.{}_ind] {} {}'.format(var, *match.group(2,3)))
+        return mask
 
     def compute(self, pts, yphis, betas=[1]):
         zs = pts/np.sum(pts)
