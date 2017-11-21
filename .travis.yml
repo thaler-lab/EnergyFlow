@@ -8,6 +8,6 @@ python:
   #- "3.7-dev"
 
 install:
-  - pip install -U numpy
+  - pip install -U numpy pytest
 
 script: pytest
