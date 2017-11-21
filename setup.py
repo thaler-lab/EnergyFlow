@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(name='EnergyFlow',
-      version='0.2.0',
-      description='Energy Flow Basis Implementation',
+      version='0.3.0',
+      description='Python implementation of the energy flow basis',
       author='Patrick T. Komiske III',
       author_email='pkomiske@mit.edu',
       url='https://github.com/pkomiske/EnergyFlow',
@@ -12,5 +12,5 @@ setup(name='EnergyFlow',
       extras_require={'generation': ['igraph']},
       setup_requires=['pytest-runner'],
       tests_require=['pytest'],
-      package_data={'':['data/*']},
+      package_data={'': ['data/*']},
       packages=find_packages())
