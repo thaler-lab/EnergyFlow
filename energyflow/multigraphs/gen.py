@@ -20,32 +20,32 @@ class Generator:
     save them in a .npz file.
     """
 
-    def __init__(self, dmax, Nmax=None, emax=None, cmax=None, verbose=True,
+    def __init__(self, dmax, nmax=None, emax=None, cmax=None, verbose=True,
                        ve_alg='numpy', np_optimize='greedy'):
 
         # store parameters
         self.dmax = dmax
-        self.Nmax = Nmax if Nmax is not None else self.dmax+1
+        self.nmax = nmax if nmax is not None else self.dmax+1
         self.emax = emax if emax is not None else self.dmax
-        self.cmax = cmax if cmax is not None else self.Nmax
+        self.cmax = cmax if cmax is not None else self.nmax
 
         self.verbose = verbose
 
         self.ve = VariableElimination(ve_alg=ve_alg, np_optimize=np_optimize)
 
         # setup N and e values to be used
-        self.Ns = list(range(2, self.Nmax+1))
-        self.emaxs = {n: min(self.emax, int(n/2*(n-1))) for n in self.Ns}
-        self.esbyn = {n: list(range(n-1, self.emaxs[n]+1)) for n in self.Ns}
-        self.dmaxs = {(n,e): self.dmax for n in self.Ns for e in self.esbyn[n]}
+        self.ns = list(range(2, self.nmax+1))
+        self.emaxs = {n: min(self.emax, int(n/2*(n-1))) for n in self.ns}
+        self.esbyn = {n: list(range(n-1, self.emaxs[n]+1)) for n in self.ns}
+        self.dmaxs = {(n,e): self.dmax for n in self.ns for e in self.esbyn[n]}
 
         # setup storage containers
-        self.simple_graphs_d = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.edges_d         = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.chis_d          = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.einpaths_d      = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.einstrs_d       = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
-        self.weights_d       = {(n,e): [] for n in self.Ns for e in self.esbyn[n]}
+        self.simple_graphs_d = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
+        self.edges_d         = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
+        self.chis_d          = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
+        self.einpaths_d      = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
+        self.einstrs_d       = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
+        self.weights_d       = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
 
         # get simple graphs
         self._generate_simple()
@@ -59,12 +59,12 @@ class Generator:
     # generates simple graphs subject to constraints
     def _generate_simple(self):
 
-        self.base_edges = {n: list(itertools.combinations(range(n), 2)) for n in self.Ns}
+        self.base_edges = {n: list(itertools.combinations(range(n), 2)) for n in self.ns}
 
         self._add_if_new(igraph.Graph.Full(2, directed=False), (2,1))
 
         # iterate over all combinations of n>2 and d
-        for n in self.Ns[1:]:
+        for n in self.ns[1:]:
             for e in self.esbyn[n]:
 
                 # consider adding new vertex
@@ -132,14 +132,14 @@ class Generator:
 
         # get ordered integer partitions of d of length e for relevant values
         parts = {}
-        for n in self.Ns[1:]:
+        for n in self.ns[1:]:
             for e in self.esbyn[n]:
                 for d in range(e, self.dmaxs[(n,e)]+1):
                     if (d,e) not in parts:
                         parts[(d,e)] = list(int_partition_ordered(d, e))
 
         # iterate over the rest of ns
-        for n in self.Ns[1:]:
+        for n in self.ns[1:]:
 
             # iterate over es for which there are simple graphs
             for e in self.esbyn[n]:
@@ -215,8 +215,8 @@ class Generator:
         # disconnected start at N>=4
         for n in range(4,2*self.dmax+1):
 
-            # partitions with no 1s, no numbers > self.Nmax, and not the trivial partition
-            good_part = lambda x: (1 not in x and max(x) <= self.Nmax and len(x) > 1)
+            # partitions with no 1s, no numbers > self.nmax, and not the trivial partition
+            good_part = lambda x: (1 not in x and max(x) <= self.nmax and len(x) > 1)
             n_parts = [tuple(x) for x in int_partition_unordered(n) if good_part(x)]
             n_parts.sort(key=len)
 
@@ -299,19 +299,19 @@ class Generator:
             self.specs = self.connected_specs
 
     def _count_simple_by_n(self):
-        return {n: np.sum([len(self.edges_d[(n,e)]) for e in self.esbyn[n]]) for n in self.Ns}
+        return {n: np.sum([len(self.edges_d[(n,e)]) for e in self.esbyn[n]]) for n in self.ns}
 
     def _count_simple_by_e(self):
-        return {e: np.sum([len(self.edges_d[(n,e)]) for n in self.Ns if (n,e) in self.edges_d]) \
+        return {e: np.sum([len(self.edges_d[(n,e)]) for n in self.ns if (n,e) in self.edges_d]) \
                            for e in range(1,self.emax+1)}
 
     def _count_weighted_by_n(self):
         return {n: np.sum([len(weights) for e in self.esbyn[n] \
-                           for weights in self.weights_d[(n,e)]]) for n in self.Ns}
+                           for weights in self.weights_d[(n,e)]]) for n in self.ns}
 
     def _count_weighted_by_d(self):
         counts = {d: 0 for d in range(1,self.dmax+1)}
-        for n in self.Ns:
+        for n in self.ns:
             for e in self.esbyn[n]:
                 for weights in self.weights_d[(n,e)]:
                     for weighting in weights: counts[sum(weighting)] += 1

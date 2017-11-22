@@ -31,40 +31,41 @@ class EFP:
         # deal with arbitrary vertex labels
         vertex_set = set(v for edge in self.initial_edges for v in edge)
         self.vertices = {v: i for i,v in enumerate(sorted(list(vertex_set)))}
-        self.N = len(vertex_set)
+        self.n = len(vertex_set)
 
         # construct new edges
         self.edges = [tuple(self.vertices[v] for v in edge) for edge in self.initial_edges]
         self.d = len(self.edges)
 
         self.ve = VariableElimination(ve_alg=ve_alg, np_optimize=np_optimize)
-        self.c = self.ve.set(self.edges, self.N)
+        self.c = self.ve.set(self.edges, self.n)
         self.einstr, self.einpath = self.ve.einspecs()
 
     # compute the energy flow polynomial corresponding to the graph with certain edge weights
     def compute(self, zs, thetas, weights):
-        return np.einsum(self.einstr, *[thetas[w] for w in weights], *[zs]*self.N, optimize=self.einpath)
+        args = [thetas[w] for w in weights] + [zs]*self.n
+        return np.einsum(self.einstr, *args, optimize=self.einpath)
 
 class EFPSet:
     
-    def __init__(self, filename, dmax=None, Nmax=None, emax=None, cmax=None, verbose=True):
+    def __init__(self, filename, dmax=None, nmax=None, emax=None, cmax=None, verbose=True):
 
         self.verbose = verbose
 
         self._spec_re = re.compile('(\w+)(<|>|==|<=|>=)(\d+)')
 
         self.filename = filename if '.npz' == filename[-4:] else filename+'.npz'
-        self._load_file(dmax, Nmax, emax, cmax)
+        self._load_file(dmax, nmax, emax, cmax)
         self._make_connected_iterable()
 
-    def _load_file(self, dmax, Nmax, emax, cmax):
+    def _load_file(self, dmax, nmax, emax, cmax):
 
         fdict = np.load(self.filename)
         specs = fdict['specs']
         self.cols = fdict['cols'].tolist()
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
 
-        f_dmax, f_Nmax = np.max(specs[:,self.d_ind]), np.max(specs[:,self.n_ind])
+        f_dmax, f_nmax = np.max(specs[:,self.d_ind]), np.max(specs[:,self.n_ind])
         f_emax, f_cmax = np.max(specs[:,self.e_ind]), np.max(specs[:,self.c_ind])
         num_connected = np.count_nonzero(specs[:,self.p_ind] == 1)
 
@@ -73,17 +74,17 @@ class EFPSet:
             print('    Total EFPs:', len(specs))
             print('    Total Prime EFPs:', num_connected)
             print('    Maximum d:', f_dmax)
-            print('    Maximum N:', f_Nmax)
+            print('    Maximum N:', f_nmax)
             print('    Maximum chi:', f_cmax)
             print('    Maximum e:', f_emax)
             print('    ve_alg:', fdict['ve_alg'])
 
         self.dmax = f_dmax if dmax is None else dmax
-        self.Nmax = f_Nmax if Nmax is None else Nmax
+        self.nmax = f_nmax if nmax is None else nmax
         self.emax = f_emax if emax is None else emax
         self.cmax = f_cmax if cmax is None else cmax
 
-        mask = ((specs[:,self.d_ind] <= self.dmax)&(specs[:,self.n_ind] <= self.Nmax)
+        mask = ((specs[:,self.d_ind] <= self.dmax)&(specs[:,self.n_ind] <= self.nmax)
                &(specs[:,self.e_ind] <= self.emax)&(specs[:,self.c_ind] <= self.cmax))
 
         connected_inds = np.nonzero(mask & (specs[:,self.p_ind] == 1))[0]
@@ -111,7 +112,7 @@ class EFPSet:
         self.connected_specs = self.specs[self.specs[:,self.p_ind] == 1]
 
         if self.verbose:
-            if (self.dmax == f_dmax and self.Nmax == f_Nmax and
+            if (self.dmax == f_dmax and self.nmax == f_nmax and
                 self.emax == f_emax and self.cmax == f_cmax):
                 print('\nUsing specifications from file')
             else:
@@ -149,7 +150,7 @@ class EFPSet:
         results = []
         for beta in betas:
             thetas = {d: thetas2**(beta*d/2) for d in range(1, self.dmax + 1)}
-            results.extend([np.einsum(estr, *[thetas[d] for d in ws], *[zs]*n, optimize=epath) \
+            results.extend([np.einsum(estr, *([thetas[d] for d in ws]+[zs]*n), optimize=epath) \
                             for n,ws,estr,epath in self.connected_iterable])
         return results
 
