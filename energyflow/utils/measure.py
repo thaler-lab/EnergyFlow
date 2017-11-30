@@ -1,7 +1,5 @@
 """Implementation of the Measure class and its helpers."""
-
 from __future__ import absolute_import
-
 import numpy as np
 
 __all__ = ['Measure']
@@ -13,7 +11,6 @@ class HadronicMeasure:
     """
     
     def __init__(self):
-
         """ 
         Parameters
         ----------
@@ -28,7 +25,6 @@ class EEMeasure:
     """
 
     def __init__(self):
-
         """ 
         Parameters
         ----------
@@ -37,16 +33,15 @@ class EEMeasure:
         pass
 
 class Measure(HadronicMeasure, EEMeasure):
-
+    
     """
     Class for dealing with any kind of measure.
     """
 
     def __init__(self):
-
         """ 
         Parameters
         ----------
         """
-
+        
         pass

@@ -1,12 +1,10 @@
 """Helper functions related to igraph."""
-
 from __future__ import absolute_import
 import sys
 
 __all__ = ['igraph_import']
 
 def igraph_import(warn=False, file=None):
-
     """
     Determines if igraph can be imported. 
 
@@ -14,7 +12,7 @@ def igraph_import(warn=False, file=None):
     ----------
     warn : bool, optional
         Controls whether or not a warning is printed if igraph cannot be imported.
-    file: string, optional
+    file : string, optional
         Filename to use in the optional warning.
 
     Returns
@@ -22,7 +20,7 @@ def igraph_import(warn=False, file=None):
     output : {igraph, False}
         The igraph module if it was successfully imported, otherwise False.
     """
-
+    
     try:
         import igraph
     except:

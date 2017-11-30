@@ -7,3 +7,5 @@ dist/
 .DS_Store
 .eggs/
 EnergyFlow.egg-info/
+*.pyc
+test.npz
