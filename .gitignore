@@ -1,3 +1,11 @@
 **/__pycache__
 .ipynb_checkpoints
 *.ipynb
+.DS_Store
+LICENSE
+README.md
+clean
+energyflow/
+mkdocs/
+tests/
+test.npz
