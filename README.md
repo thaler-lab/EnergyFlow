@@ -1,5 +1,5 @@
 # EnergyFlow
-![alt-text](https://travis-ci.com/pkomiske/EnergyFlow.svg?token=thsPRj7BDfzqQDjqVPKY&branch=master "Travis-CI Build Status")
+![alt-text](https://travis-ci.org/pkomiske/EnergyFlow.svg?branch=master "Travis-CI Build Status")
 
 EnergyFlow is a Python package that computes Energy Flow quantities such as the Energy Flow Polynomials (EFPs) defined in Ref. [1]. The general formula for an EFP is given in terms of its graph G:
 
