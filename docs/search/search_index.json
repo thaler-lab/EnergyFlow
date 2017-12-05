@@ -21,9 +21,34 @@
             "title": "References"
         },
         {
+            "location": "/intro/efpintro/",
+            "text": "The Energy Flow Basis\n\n\nEnergy flow polynomials (EFPs) are a set of observables, indexed by unique multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) observables.\n\n\nA generic EFP is defined as:\n\n \\text{EFP}_G =  \\sum_{i_1=1}^M \\cdots \\sum_{i_N = 1}^M z_{i_1}\\cdots z_{i_N} \\prod_{(k,\\ell)\\in G} \\theta_{i_k i_\\ell}\n\nwhere $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure of the angular separation between particles $i$ and \nj\n.",
+            "title": "Energy Flow Polynomials"
+        },
+        {
+            "location": "/intro/efpintro/#the-energy-flow-basis",
+            "text": "Energy flow polynomials (EFPs) are a set of observables, indexed by unique multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) observables.  A generic EFP is defined as:  \\text{EFP}_G =  \\sum_{i_1=1}^M \\cdots \\sum_{i_N = 1}^M z_{i_1}\\cdots z_{i_N} \\prod_{(k,\\ell)\\in G} \\theta_{i_k i_\\ell} \nwhere $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure of the angular separation between particles $i$ and  j .",
+            "title": "The Energy Flow Basis"
+        },
+        {
+            "location": "/intro/measures/",
+            "text": "I Am a Header!",
+            "title": "Measures"
+        },
+        {
+            "location": "/intro/measures/#i-am-a-header",
+            "text": "",
+            "title": "I Am a Header!"
+        },
+        {
             "location": "/installation/",
             "text": "The EnergyFlow Python package will be released publically soon on GitHub and published on PyPi!",
             "title": "Installation"
+        },
+        {
+            "location": "/tutorial/",
+            "text": "",
+            "title": "Tutorial"
         },
         {
             "location": "/faq/",
@@ -31,19 +56,14 @@
             "title": "FAQ"
         },
         {
-            "location": "/generation/",
+            "location": "/docs/multigraphs/",
             "text": "",
-            "title": "Generation"
+            "title": "Multigraphs"
         },
         {
-            "location": "/efp/",
+            "location": "/docs/polynomials/",
             "text": "",
-            "title": "EFP"
-        },
-        {
-            "location": "/efpset/",
-            "text": "",
-            "title": "EFPSet"
+            "title": "Polynomials"
         }
     ]
 }
