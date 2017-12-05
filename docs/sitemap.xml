@@ -4,17 +4,49 @@
     
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/</loc>
-     <lastmod>2017-11-21</lastmod>
+     <lastmod>2017-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
 
     
+        
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/installation/</loc>
-     <lastmod>2017-11-21</lastmod>
+     <lastmod>2017-12-04</lastmod>
      <changefreq>daily</changefreq>
     </url>
+        
+    <url>
+     <loc>https://pkomiske.github.io/EnergyFlow/faq/</loc>
+     <lastmod>2017-12-04</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+    <url>
+     <loc>https://pkomiske.github.io/EnergyFlow/generation/</loc>
+     <lastmod>2017-12-04</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+        
+    <url>
+     <loc>https://pkomiske.github.io/EnergyFlow/efp/</loc>
+     <lastmod>2017-12-04</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>https://pkomiske.github.io/EnergyFlow/efpset/</loc>
+     <lastmod>2017-12-04</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
     
 
 </urlset>

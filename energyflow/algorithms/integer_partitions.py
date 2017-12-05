@@ -1,5 +1,7 @@
 import itertools
 
+__all__ = ['int_partition_ordered', 'int_partition_unordered']
+
 # gets ordered integer partitions of d of length e
 def int_partition_ordered(d, e):
     for part in int_partition_unordered(d):

@@ -24,6 +24,26 @@
             "location": "/installation/",
             "text": "The EnergyFlow Python package will be released publically soon on GitHub and published on PyPi!",
             "title": "Installation"
+        },
+        {
+            "location": "/faq/",
+            "text": "",
+            "title": "FAQ"
+        },
+        {
+            "location": "/generation/",
+            "text": "",
+            "title": "Generation"
+        },
+        {
+            "location": "/efp/",
+            "text": "",
+            "title": "EFP"
+        },
+        {
+            "location": "/efpset/",
+            "text": "",
+            "title": "EFPSet"
         }
     ]
 }

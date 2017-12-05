@@ -1,17 +1,17 @@
 """Implementation of multigraph Generator class."""
 from __future__ import absolute_import, division, print_function
+import copy
 import itertools
 import numpy as np
 
 # already checked that we have igraph
 import igraph
 
-from energyflow.algorithms.integer_partitions import *
-from energyflow.algorithms.ve import VariableElimination
+from energyflow.algorithms import *
 
 __all__ = ['Generator']
 
-class Generator:
+class Generator(VariableElimination):
 
     """
     A class that facilitates multigraph generation.
@@ -47,15 +47,16 @@ class Generator:
         output : {igraph, False}
             The igraph module if it was successfully imported, otherwise False.
         """
+
+        # initialize base class
+        VariableElimination.__init__(self, ve_alg, np_optimize)
+
         # store parameters
         self.dmax = dmax
         self.nmax = nmax if nmax is not None else self.dmax+1
         self.emax = emax if emax is not None else self.dmax
         self.cmax = cmax if cmax is not None else self.nmax
-
         self.verbose = verbose
-
-        self.ve = VariableElimination(ve_alg=ve_alg, np_optimize=np_optimize)
 
         # setup N and e values to be used
         self.ns = list(range(2, self.nmax+1))
@@ -64,12 +65,9 @@ class Generator:
         self.dmaxs = {(n,e): self.dmax for n in self.ns for e in self.esbyn[n]}
 
         # setup storage containers
-        self.simple_graphs_d = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
-        self.edges_d         = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
-        self.chis_d          = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
-        self.einpaths_d      = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
-        self.einstrs_d       = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
-        self.weights_d       = {(n,e): [] for n in self.ns for e in self.esbyn[n]}
+        containers = [{(n,e): [] for n in self.ns for e in self.esbyn[n]} for i in range(6)]
+        (self.simple_graphs_d, self.edges_d, self.chis_d, 
+         self.einpaths_d, self.einstrs_d, self.weights_d) = containers
 
         # get simple graphs
         self._generate_simple()
@@ -129,15 +127,15 @@ class Generator:
 
         # check that ve complexity for this graph is valid
         new_edges = new_graph.get_edgelist()
-        chi = self.ve.set(new_edges, ne[0])
-        if chi > self.cmax: return
+        self.ve(new_edges, ne[0])
+        if self.chi > self.cmax: return
         
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
         self.edges_d[ne].append(new_edges)
-        self.chis_d[ne].append(chi)
+        self.chis_d[ne].append(self.chi)
 
-        einstr, einpath = self.ve.einspecs()
+        einstr, einpath = self.einspecs()
         self.einstrs_d[ne].append(einstr)
         self.einpaths_d[ne].append(einpath)
 
@@ -221,7 +219,7 @@ class Generator:
                     d = sum(weighting)
                     k = self.ks.setdefault((n,d), 0)
                     self.ks[(n,d)] += 1
-                    self.connected_specs.append([n,e,d,k,g,w,chi,1])
+                    self.connected_specs.append([n, e, d, k, g, w, chi, 1])
                     self.ndk2i[(n,d,k)] = i
                     self.weights.append(weighting)
                     w += 1
@@ -304,7 +302,7 @@ class Generator:
 
                             # append to stored array
                             disc_formulae.append(tuple(sorted(formula)))
-                            disc_specs.append([n,emax,d,kcount,-1,-1,cmax,len(kspec)])
+                            disc_specs.append([n, emax, d, kcount, -1, -1, cmax, len(kspec)])
                             kcount += 1
 
         # ensure unique formulae (deals with possible degeneracy in selection of factors)

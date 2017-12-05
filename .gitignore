@@ -9,3 +9,6 @@ dist/
 EnergyFlow.egg-info/
 *.pyc
 test.npz
+mnist*
+*.txt
+plan.jpg
