@@ -3,18 +3,20 @@ from collections import Counter
 import numpy as np
 
 from energyflow.algorithms import VariableElimination
-from energyflow.polynomials.base import EFPBase
+from energyflow.polynomials.base import EFPBase, EFPElem
 
 __all__ = ['EFP']
 
-class EFP(EFPBase, VariableElimination):
+class EFP(EFPBase, EFPElem):
 
     def __init__(self, edges, measure='hadr_yphi', beta=1.0, normed=True, check_type=False, 
                               ve_alg='numpy', np_optimize='greedy'):
 
         # initialize base class
-        EFPBase.__init__(self, measure, beta, normed, check_type)
-        VariableElimination.__init__(self, ve_alg, np_optimize)
+        super().__init__(self, measure, beta, normed, check_type)
+
+        # get ve instance
+        self.ve = VariableElimination(ve_alg, np_optimize)
 
         # deal with arbitrary vertex labels
         vertex_set = set(v for edge in edges for v in edge)
@@ -38,10 +40,19 @@ class EFP(EFPBase, VariableElimination):
         self.c = self.chi
         self.einstr, self.einpath = self.einspecs()
 
-    def compute(self, event):
-        zs, thetas = self.zs_thetas(event)
-        thetas_dict = {w: thetas**w for w in self.weight_set}
-        einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
+    def _make_thetas_dict(self, thetas):
+        return {w: thetas**w for w in self.weight_set}
+
+    def compute(self, event=None, zs_thetas_d=None):
+        if zs_thetas_d is not None:
+            zs, thetasd = zs_thetas_d
+        elif event is not None:
+            zs, thetas = self.zs_thetas(event)
+            thetas_d = self._make_thetas_dict(thetas)
+        else:
+            raise ValueError('event and zs_thetas_d cannot both be None')
+
+        einsum_args = [thetas_d[w] for w in self.weights] + self.n*[zs]
         return np.einsum(self.einstr, *einsum_args, optimize=self.einpath)
 
     def batch_compute(self, events, n_jobs=None):

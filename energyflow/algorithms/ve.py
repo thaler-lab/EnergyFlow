@@ -28,7 +28,7 @@ class VariableElimination:
             self.y = np.random.rand(self.dummy_dim)
 
         # set public methods based on which ve_alg is chosen
-        self.ve = _ve_numpy if self._use_numpy_ve else _ve_ef
+        self.__call__ = _ve_numpy if self._use_numpy_ve else _ve_ef
         self.einspecs = _einspecs_numpy if self._use_numpy_ve else _einspecs_ef
 
     def _einstr_from_edges(self, edges, n):
