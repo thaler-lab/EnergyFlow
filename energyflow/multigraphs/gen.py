@@ -1,17 +1,16 @@
 """Implementation of multigraph Generator class."""
 from __future__ import absolute_import, division, print_function
-import copy
 import itertools
 import numpy as np
 
-# already checked that we have igraph
-import igraph
-
 from energyflow.algorithms import *
+from energyflow.utils import igraph_import
+
+igraph = igraph_import()
 
 __all__ = ['Generator']
 
-class Generator(VariableElimination):
+class Generator:
 
     """
     A class that facilitates multigraph generation.
@@ -48,8 +47,10 @@ class Generator(VariableElimination):
             The igraph module if it was successfully imported, otherwise False.
         """
 
-        # initialize base class
-        VariableElimination.__init__(self, ve_alg, np_optimize)
+        if not igraph:
+            raise NotImplementedError('cannot use Generator without igraph')
+
+        self.ve = VariableElimination(ve_alg, np_optimize)
 
         # store parameters
         self.dmax = dmax
@@ -69,10 +70,10 @@ class Generator(VariableElimination):
         (self.simple_graphs_d, self.edges_d, self.chis_d, 
          self.einpaths_d, self.einstrs_d, self.weights_d) = containers
 
-        # get simple graphs
+        # get simple connected graphs
         self._generate_simple()
 
-        # get weighted graphs
+        # get weighted connected graphs
         self._generate_weights()
 
         # get disconnected graphs
@@ -127,15 +128,15 @@ class Generator(VariableElimination):
 
         # check that ve complexity for this graph is valid
         new_edges = new_graph.get_edgelist()
-        self.ve(new_edges, ne[0])
-        if self.chi > self.cmax: return
+        self.ve.run(new_edges, ne[0])
+        if self.ve.chi > self.cmax: return
         
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
         self.edges_d[ne].append(new_edges)
-        self.chis_d[ne].append(self.chi)
+        self.chis_d[ne].append(self.ve.chi)
 
-        einstr, einpath = self.einspecs()
+        einstr, einpath = self.ve.einspecs()
         self.einstrs_d[ne].append(einstr)
         self.einpaths_d[ne].append(einpath)
 
@@ -208,8 +209,8 @@ class Generator(VariableElimination):
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
         self.connected_specs = []
         self.edges, self.weights, self.einstrs, self.einpaths = [], [], [], []
-        self.ks, self.ndk2i = {}, {}
-        g = w = i = 0
+        self.ks, self.ndk2w = {}, {}
+        g = w = 0
         for ne in sorted(self.chis_d.keys()):
             n, e = ne
             z = zip(self.edges_d[ne], self.weights_d[ne], self.chis_d[ne], 
@@ -220,10 +221,9 @@ class Generator(VariableElimination):
                     k = self.ks.setdefault((n,d), 0)
                     self.ks[(n,d)] += 1
                     self.connected_specs.append([n, e, d, k, g, w, chi, 1])
-                    self.ndk2i[(n,d,k)] = i
+                    self.ndk2w[(n,d,k)] = w
                     self.weights.append(weighting)
                     w += 1
-                    i += 1
                 self.edges.append(edges)
                 self.einstrs.append(es)
                 self.einpaths.append(ep)
@@ -292,11 +292,12 @@ class Generator(VariableElimination):
                             cmax = emax = 0 
                             for (nn,dd),kk in zip(spec,kspec):
 
-                                # select original simple graph
-                                ind = self.ndk2i[(nn,dd,kk)]
+                                # add (n,d,k) of factor to formula
+                                ndk = (nn,dd,kk)
+                                formula.append(ndk)
 
-                                # add col index of factor to formula
-                                formula.append(ind)
+                                # select original simple graph
+                                ind = self.ndk2w[ndk]
                                 cmax = max(cmax, self.connected_specs[ind,self.c_ind])
                                 emax = max(emax, self.connected_specs[ind,self.e_ind])
 

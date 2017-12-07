@@ -1,12 +1,12 @@
 """Implementation of the Measure class and its helpers."""
 from __future__ import absolute_import, division
-import abc
+from abc import ABCMeta, abstractmethod
 import numpy as np
-import six
+from six import add_metaclass
 
 __all__ = ['Measure']
 
-@six.add_metaclass(abc.ABCMeta)
+@add_metaclass(ABCMeta)
 class Measure:
     
     """Class for dealing with any kind of measure."""
@@ -58,12 +58,14 @@ class Measure:
     def _set_meas_func(self, arg):
 
         # support arg as numpy.ndarray
-        if isinstance(arg, np.ndarray) and not self._ndarray_handler(arg.shape[1]):
-            raise IndexError('second dimension of arg must be in {}'.format(self.allowed_dims))
+        if isinstance(arg, np.ndarray):
+            if not self._ndarray_handler(arg.shape[1]):
+                raise IndexError('second dimension of arg must be in {}'.format(self.allowed_dims))
 
         # support arg as list (of lists)
-        elif isinstance(arg, list) and not self._list_handler(len(arg[0])):
-            raise IndexError('second dimension of arg must be in {}'.format(self.allowed_dims))
+        elif isinstance(arg, list):
+            if not self._list_handler(len(arg[0])):
+                raise IndexError('second dimension of arg must be in {}'.format(self.allowed_dims))
 
         # support arg as fastjet pseudojet
         elif hasattr(arg, 'constituents'):
@@ -75,15 +77,15 @@ class Measure:
 
         self._lacks_meas_func = False
 
-    @abc.abstractmethod
+    @abstractmethod
     def _ndarray_handler(self, dim):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def _list_handler(self, dim):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def _pseudojet_handler(self, dim):
         pass
 
@@ -125,11 +127,11 @@ class HadronicMeasure(Measure):
         self._meas_func = self._pseudojet
         return True
 
-    @abc.abstractmethod
+    @abstractmethod
     def _ndarray_dim3(self, arg):
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def _ndarray_dim4(self, arg):
         pass
 
@@ -139,7 +141,7 @@ class HadronicMeasure(Measure):
     def _list_dim4(self, arg):
         return self._ndarray_dim4(np.asarray(arg))
 
-    @abc.abstractmethod
+    @abstractmethod
     def _pseudojet(self, arg):
         constituents = arg.constituents()
         pts = np.asarray([c.pt() for c in constituents])
@@ -187,14 +189,14 @@ class EEMeasure(Measure):
         self._meas_func = self._pseudojet
         return True
 
-    @abc.abstractmethod
+    @abstractmethod
     def _ndarray_dim4(self, arg):
         pass
 
     def _list_dim4(self, arg):
         return self._ndarray_dim4(np.asarray(arg))
 
-    @abc.abstractmethod
+    @abstractmethod
     def _pseudojet(self, arg):
         constituents = arg.constituents()
         Es = np.asarray([c.e() for c in constituents])

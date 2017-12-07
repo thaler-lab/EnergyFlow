@@ -2,38 +2,38 @@
 from __future__ import absolute_import
 
 import itertools
-import sys
 import numpy as np
 
 from energyflow.utils import igraph_import
 
 igraph = igraph_import()
 
-einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
 __all__ = ['VariableElimination']
 
 class VariableElimination:
 
+    einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
     def __init__(self, ve_alg, np_optimize='greedy'):
         possible_algs = ['numpy'] + (['ef'] if igraph else [])
-        assert ve_alg in possible_algs, 've_alg must be in {}'.format(possible_algs)
+        if ve_alg not in possible_algs:
+            raise ValueError('ve_alg must be one of {}'.format(possible_algs))
         self.ve_alg = ve_alg
-        self._use_numpy_ve = self.ve_alg == 'numpy'
+        self._use_numpy_ve = (self.ve_alg == 'numpy')
 
-        if self._use_numpy_ve == 'numpy':
+        if self._use_numpy_ve:
             self.np_optimize = np_optimize
-            self.dummy_dim = 10
-            self.X = np.random.rand(self.dummy_dim, self.dummy_dim)
-            self.y = np.random.rand(self.dummy_dim)
+            dummy_dim = 10
+            self.X = np.random.rand(dummy_dim, dummy_dim)
+            self.y = np.random.rand(dummy_dim)
 
         # set public methods based on which ve_alg is chosen
-        self.__call__ = _ve_numpy if self._use_numpy_ve else _ve_ef
-        self.einspecs = _einspecs_numpy if self._use_numpy_ve else _einspecs_ef
+        setattr(self, 'run', self._ve_numpy if self._use_numpy_ve else self._ve_ef)
+        setattr(self, 'einspecs', self._einspecs_numpy if self._use_numpy_ve else self._einspecs_ef)
 
     def _einstr_from_edges(self, edges, n):
-        einstr  = ','.join([einsum_symbols[j] + einsum_symbols[k] for (j, k) in edges]) + ','
-        einstr += ','.join([einsum_symbols[v] for v in range(n)])
+        einstr  = ','.join([self.einsum_symbols[j] + self.einsum_symbols[k] for (j, k) in edges]) + ','
+        einstr += ','.join([self.einsum_symbols[v] for v in range(n)])
         return einstr
 
     def _ve_numpy(self, edges, n):
