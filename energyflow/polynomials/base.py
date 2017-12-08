@@ -18,12 +18,10 @@ class EFPBase:
         self.measure = Measure(measure, beta, normed, check_type)
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
-        print(event[:2])
         if event is not None:
             zs, thetas = self.measure(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
-        print(thetas[:2])
         thetas_dict = {w: thetas**w for w in self.weight_set}
         return zs, thetas_dict
 

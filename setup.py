@@ -13,4 +13,5 @@ setup(name='EnergyFlow',
       setup_requires=['pytest-runner'],
       tests_require=['pytest'],
       package_data={'': ['data/*']},
+      keywords=['physics', 'jets', 'energy flow', 'correlator', 'multigraph'],
       packages=find_packages())
