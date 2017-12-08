@@ -12,3 +12,4 @@ test.npz
 mnist*
 *.txt
 plan.jpg
+.cache

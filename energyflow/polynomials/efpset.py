@@ -6,31 +6,41 @@ import numpy as np
 
 from energyflow.multigraphs import Generator
 from energyflow.polynomials.base import EFPBase, EFPElem
+from energyflow.utils import kwargs_check, explicit_comp
 
 __all__ = ['EFPSet']
 
-default_multigraph_filename = os.path.join(__file__, '..', 'data', 'multigraphs_d<=10_numpy.npz')
+data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+default_file = os.path.join(data_dir, 'multigraphs_d<=7_numpy.npz')
 
 class EFPSet(EFPBase):
 
-    constructor_attrs = ['cols', 'specs', 'disc_formulae', 'edges', 
-                                  'einstrs', 'einpaths', 'weights']
+    def __init__(self, *args, **kwargs):
 
-    def __init__(self, *args, filename=None, measure='hadr', beta=1.0, normed=True, 
-                              check_type=False, verbose=True):
-        
+        default_kwargs = {'filename': None, 
+                          'measure':'hadr',
+                          'beta': 1,
+                          'normed': True,
+                          'check_type': False, 
+                          'verbose': False}
+
+        for k,v in default_kwargs.items():
+            setattr(self, k, kwargs.pop(k, v))
+        kwargs_check('__init__', kwargs)
+
         # initialize EFPBase
-        super().__init__(measure, beta, normed, check_type)
-        self.verbose = verbose
+        super().__init__(self.measure, self.beta, self.normed, self.check_type)
 
         if len(args) == 1 and isinstance(args[0], Generator):
-            constructor_dict = {attr: getattr(args[0], attr) for attr in self.constructor_attrs}
+            constructor_attrs = ['cols', 'specs', 'disc_formulae', 'edges', 
+                                 'einstrs', 'einpaths', 'weights']
+            constructor_dict = {attr: getattr(args[0], attr) for attr in constructor_attrs}
             args = args[1:]
-        elif filename is not None:
-            filename += '.npz' if not filename.endswith('.npz') else ''
-            constructor_dict = dict(np.load(filename))
+        elif self.filename is not None:
+            self.filename += '.npz' if not self.filename.endswith('.npz') else ''
+            constructor_dict = dict(np.load(self.filename))
         else:
-            constructor_dict = dict(np.load(default_multigraph_filename))
+            constructor_dict = dict(np.load(default_file))
 
         self._sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
         
@@ -62,7 +72,7 @@ class EFPSet(EFPBase):
         if self.verbose:
             num_prime = self.count('p==1', specs=orig_specs)
             num_composite = self.count('p>1', specs=orig_specs)
-            print('Originally available EFPs:')
+            print('Originally Available EFPs:')
             self._print_efp_nums(orig_specs)
             if len(args) > 0:
                 print('Current Stored EFPs:')
@@ -81,7 +91,9 @@ class EFPSet(EFPBase):
     def specs(self):
         return self.stored_specs[self.compute_mask]
 
-    def set_compute_mask(self, *args, mask=None):
+    def set_compute_mask(self, *args, **kwargs):
+        mask = kwargs.pop('mask', None)
+        kwargs_check('set_compute_mask', kwargs)
         if mask is None:
             self.compute_mask = np.ones(len(self.stored_specs), dtype=bool)
             mask = self.sel(*args)
@@ -89,7 +101,7 @@ class EFPSet(EFPBase):
             raise IndexError('length of mask does not match internal specs')
         self.compute_mask = mask
 
-        self.weight_set = set(w for efpelem in self.efpelems for w in efpelem.weight_set)
+        self.weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
         connected_ndk = [efpelem.ndk for efpelem in self._efpelems_iterator()]
 
         # get col indices for disconnected formulae
@@ -105,9 +117,16 @@ class EFPSet(EFPBase):
             if self.compute_mask[i]:
                 yield elem
 
-    def compute(self, event=None, zs=None, thetas=None):
+    def _compute_func(self, args):
+        return self.compute(zs=args[0], thetas=args[1], batch_call=True)
+
+    def compute(self, event=None, zs=None, thetas=None, batch_call=False):
         zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
-        return [efpelem.compute(zs, thetas_dict) for efpelem in self._efpelems_iterator()]
+        results = [efpelem.compute(zs, thetas_dict) for efpelem in self._efpelems_iterator()]
+        if batch_call:
+            return results
+        else:
+            return self.calc_disc(results, concat=True)
 
     def batch_compute(self, events=None, zs=None, thetas=None, calc_all=True, n_jobs=None):
         results = super().batch_compute(events, zs, thetas, n_jobs)
@@ -117,7 +136,9 @@ class EFPSet(EFPBase):
         else:
             return results
 
-    def sel(self, *args, specs=None):
+    def sel(self, *args, **kwargs):
+        specs = kwargs.pop('specs', None)
+        kwargs_check('sel', kwargs)
         if specs is None:
             specs = self.specs
         mask = np.ones(len(specs), dtype=bool)
@@ -137,30 +158,39 @@ class EFPSet(EFPBase):
             var = match.group(1)
             if var not in self.cols:
                 raise ValueError('\'{}\' not in {}'.format(var, self.cols))
-            mask &= eval('specs[:,self.{}_ind] {} {}'.format(var, *match.group(2,3)))
+            comp, val = match.group(2, 3)
+            mask &= explicit_comp(specs[:,getattr(self, var+'_ind')], comp, int(val))
         return mask
 
-    def count(self, *args, specs=None):
+    def count(self, *args, **kwargs):
+        specs = kwargs.pop('specs', None)
+        kwargs_check('sel', kwargs)
         return np.count_nonzero(self.sel(*args, specs=specs))
 
     def calc_disc(self, X, concat=False):
 
         if len(self.disc_col_inds) == 0:
-            if concat:
-                return X
-            else:
-                return
-
-        results = np.ones((len(X), len(self.disc_col_inds)), dtype=float)
+            return X if concat else None
 
         XX = X
         if not isinstance(X, np.ndarray):
             XX = np.asarray(X)
 
-        for i,formula in enumerate(self.disc_col_inds):
+        l = len(XX.shape) 
+        if l == 2:
+            results = np.ones((len(X), len(self.disc_col_inds)), dtype=float)
+            for i,formula in enumerate(self.disc_col_inds):
                 results[:,i] = np.prod(XX[:,formula], axis=1)
+            concat_axis = 1
+        elif l == 1:
+            results = np.ones(len(self.disc_col_inds), dtype=float)
+            for i,formula in enumerate(self.disc_col_inds):
+                results[i] = np.prod(XX[formula])
+            concat_axis = 0
+        else:
+            raise ValueError('X has the wrong dimensions')
 
         if concat: 
-            return np.concatenate([XX, results], axis=1)
+            return np.concatenate([XX, results], axis=concat_axis)
         else: 
             return results

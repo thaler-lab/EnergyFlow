@@ -1,14 +1,16 @@
 from __future__ import absolute_import
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from collections import Counter
 import multiprocessing as mp
 
 import numpy as np
+from six import add_metaclass
 
 from energyflow.utils.measure import Measure
 
-class EFPBase(ABC):
+@add_metaclass(ABCMeta)
+class EFPBase:
 
     def __init__(self, measure='hadr', beta=1.0, normed=True, check_type=False):
 
@@ -16,15 +18,16 @@ class EFPBase(ABC):
         self.measure = Measure(measure, beta, normed, check_type)
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
+        print(event[:2])
         if event is not None:
             zs, thetas = self.measure(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
-
+        print(thetas[:2])
         thetas_dict = {w: thetas**w for w in self.weight_set}
         return zs, thetas_dict
 
-    def _computestar(self, args):
+    def _compute_func(self, args):
         return self.compute(zs=args[0], thetas=args[1])
 
     @abstractmethod
@@ -50,7 +53,7 @@ class EFPBase(ABC):
         # setup processor pool
         with mp.Pool(processes) as pool:
             chunksize = int(len(iterable)/processes)
-            results = np.asarray(list(pool.imap(self._computestar, iterable, chunksize)))
+            results = np.asarray(list(pool.imap(self._compute_func, iterable, chunksize)))
 
         return results
 

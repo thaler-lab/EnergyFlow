@@ -32,7 +32,7 @@ class VariableElimination:
         setattr(self, 'einspecs', self._einspecs_numpy if self._use_numpy_ve else self._einspecs_ef)
 
     def _einstr_from_edges(self, edges, n):
-        einstr  = ','.join([self.einsum_symbols[j] + self.einsum_symbols[k] for (j, k) in edges]) + ','
+        einstr  = ','.join([self.einsum_symbols[j]+self.einsum_symbols[k] for (j, k) in edges])+','
         einstr += ','.join([self.einsum_symbols[v] for v in range(n)])
         return einstr
 

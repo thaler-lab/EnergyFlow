@@ -11,8 +11,9 @@ class Measure:
     
     """Class for dealing with any kind of measure."""
 
-    def __new__(cls, measure, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
         if cls is Measure:
+            measure = args[0]
             if 'hadr' in measure:
                 return super(Measure, cls).__new__(HadronicMeasure._factory(measure))
             if 'ee' in measure:
@@ -33,7 +34,7 @@ class Measure:
         assert beta > 0, 'beta must be greater than zero'
 
         self.measure = measure
-        self.beta = beta
+        self.beta = float(beta)
         self.normed = normed
         self.check_type = check_type
 
@@ -49,23 +50,19 @@ class Measure:
         # get zs and thetas 
         zs, thetas = self._meas_func(arg)
 
-        # normalize zs
-        if self.normed:
-            zs /= np.sum(zs)
-
-        return zs, thetas
+        return (zs/np.sum(zs) if self.normed else zs), thetas
 
     def _set_meas_func(self, arg):
 
         # support arg as numpy.ndarray
         if isinstance(arg, np.ndarray):
             if not self._ndarray_handler(arg.shape[1]):
-                raise IndexError('second dimension of arg must be in {}'.format(self.allowed_dims))
+                raise IndexError('second dimension of arg must be in {}'.format(self._allowed_dims))
 
         # support arg as list (of lists)
         elif isinstance(arg, list):
             if not self._list_handler(len(arg[0])):
-                raise IndexError('second dimension of arg must be in {}'.format(self.allowed_dims))
+                raise IndexError('second dimension of arg must be in {}'.format(self._allowed_dims))
 
         # support arg as fastjet pseudojet
         elif hasattr(arg, 'constituents'):
@@ -91,8 +88,8 @@ class Measure:
 
     def _p4s_dot(self, p4s, Es):
         p4hats = p4s/Es[:,np.newaxis]
-        X = p4hats[:,np.newaxis]*p4hats[np.newaxis,:]
-        return Es, (2*(X[0] - X[1] - X[2] - X[3]))**self._half_beta
+        X = (p4hats[:,np.newaxis]*p4hats[np.newaxis,:]).T
+        return (2*(X[0] - X[1] - X[2] - X[3]))**self._half_beta
 
 class HadronicMeasure(Measure):
 
@@ -167,7 +164,7 @@ class EEMeasure(Measure):
 
     @staticmethod
     def _factory(measure):
-        return HadronicDefaultMeasure
+        return EEDefaultMeasure
 
     _allowed_dims = [4]
 
@@ -237,7 +234,7 @@ class EEDefaultMeasure(EEMeasure):
         Es = arg[:,0]
         return Es, self._p4s_dot(arg, Es)
 
-    def _ee_pseudojet(self, arg):
+    def _pseudojet(self, arg):
         Es, constituents =  super()._pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return Es, self._p4s_dot(p4s, Es)

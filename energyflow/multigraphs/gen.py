@@ -29,7 +29,7 @@ class Generator:
     Multigraphs and associated properties can be easily saved in a .npz file.
     """
 
-    def __init__(self, dmax, nmax=None, emax=None, cmax=None, verbose=True,
+    def __init__(self, dmax, nmax=None, emax=None, cmax=None, verbose=False,
                        ve_alg='numpy', np_optimize='greedy'):
         """
         Initializes a Generator object for generating multigraphs.
