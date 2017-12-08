@@ -13,3 +13,4 @@ mnist*
 *.txt
 plan.jpg
 .cache
+build
