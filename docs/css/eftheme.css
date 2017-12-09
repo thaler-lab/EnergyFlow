@@ -43,3 +43,7 @@ a:visited {
 .wy-menu-vertical a {
     color: #b3b3b3;
 }
+
+.wy-breadcrumbs li.wy-breadcrumbs-aside {
+    display: none;
+}

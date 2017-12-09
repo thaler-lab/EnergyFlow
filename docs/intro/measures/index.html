@@ -70,7 +70,15 @@
     <a class="current" href="./">Measures</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#i-am-a-header">I Am a Header!</a></li>
+    <li class="toctree-l3"><a href="#energy-and-angular-measures">Energy and Angular Measures</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#hadronic-collisions">Hadronic Collisions</a></li>
+        
+            <li><a class="toctree-l4" href="#ee-collisions">e+e- Collisions</a></li>
+        
+        </ul>
     
 
     </ul>
@@ -151,7 +159,24 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="i-am-a-header">I Am a Header!</h1>
+                <h1 id="energy-and-angular-measures">Energy and Angular Measures</h1>
+<p>The appropriate notions of energy and angle in particle collisions depend on the collider context. There are many possible choices for the energy fraction $z_i$ and pairwise angular distance $\theta_{ij}$. Typically, one wants to work with observables that respect the appropriate Lorentz subgroup for the collision type of interest.</p>
+<p>Here we discuss the energy and angular measures presently implemented in the EnergyFlow platform for hadronic and $e^+e^-$ collisions. Beyond these measures, user-defined custom energies $z_i$ and pairwise angular distances and $\theta_{ij}$ can be specified.</p>
+<p>For substructure applications, the energy measure is typically normalized so that $\sum_i z_i = 1$, and this will be the convention when specifying the default measures. However, the user has the option to omit this normalization.</p>
+<h2 id="hadronic-collisions">Hadronic Collisions</h2>
+<p>For hadronic collisions, observables are typically required to be invariant under boosts along the beam direction and rotations about the beam direction.</p>
+<p>For the energy measure, we work in terms of the particle transverse momenta $p_{T,i}$ which is unchanged under boosts along and rotations about the beam direction. For the angular measure, we work in terms of the pairwise distances in the rapidity-azimuth $(y,\phi)$ plane to make these invariances manifest. For simplicity, we further restrict our default hadronic measure to be further invariant to rotations in the $(y,\phi)$-plane.</p>
+<p>The default hadronic measures in the EnergyFlow framework are:
+<script type="math/tex; mode=display">z_i \equiv \frac{p_{T,i}}{\sum_{k=1} p_{T,k}},
+\quad\quad \theta_{ij} \equiv (\Delta y_{ij}^2 + \Delta\phi_{ij}^2)^{\beta/2}.</script>
+where $\beta&gt;0$ is an angular weighting factor.</p>
+<h2 id="ee-collisions"><em>e+e-</em> Collisions</h2>
+<p>For $e^+e^-$ collisions, observables are typically required to be invariant under the full group of rotations about the interaction point.</p>
+<p>For the energy measure, we work in terms of the particle energies $E_i$, which are unchanged under rotations. For the angular measure, we use pairwise Lorentz contractions of the particle four-momenta divided by their energies. </p>
+<p>The default $e^+e^-$ measures in the EnergyFlow framework are:
+<script type="math/tex; mode=display">z_i \equiv \frac{E_{i}}{\sum_{k=1} E_{k}},
+\quad\quad \theta_{ij} \equiv \left(\frac{2p_i^\mu p_{j \mu}}{E_i E_j}\right)^{\beta/2}.</script>
+where $\beta&gt;0$ is an angular weighting factor.</p>
               
             </div>
           </div>

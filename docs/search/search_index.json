@@ -2,43 +2,48 @@
     "docs": [
         {
             "location": "/",
-            "text": "Welcome to EnergyFlow\n\n\nFormula\n\n\nComing Soon!\n\n\nReferences\n\n\n[1] P.T. Komiske, E.M. Metodiev, J. Thaler, \"Energy Flow Polynomials: A complete linear basis for jet substructure\"",
+            "text": "Welcome to EnergyFlow\n\n\nUnder construction! Coming soon!\n\n\nEnergyFlow is a Python package for computing Energy Flow Polynomials, a collection of jet substructure observables which form a linear basis of IRC-safe observables.\n\n\nReferences\n\n\n[1] P.T. Komiske, E.M. Metodiev, J. Thaler, \"Energy Flow Polynomials: A complete linear basis for jet substructure.\" \nTo appear soon.",
             "title": "Home"
         },
         {
             "location": "/#welcome-to-energyflow",
-            "text": "",
+            "text": "Under construction! Coming soon!  EnergyFlow is a Python package for computing Energy Flow Polynomials, a collection of jet substructure observables which form a linear basis of IRC-safe observables.",
             "title": "Welcome to EnergyFlow"
         },
         {
-            "location": "/#formula",
-            "text": "Coming Soon!",
-            "title": "Formula"
-        },
-        {
             "location": "/#references",
-            "text": "[1] P.T. Komiske, E.M. Metodiev, J. Thaler, \"Energy Flow Polynomials: A complete linear basis for jet substructure\"",
+            "text": "[1] P.T. Komiske, E.M. Metodiev, J. Thaler, \"Energy Flow Polynomials: A complete linear basis for jet substructure.\"  To appear soon.",
             "title": "References"
         },
         {
             "location": "/intro/efpintro/",
-            "text": "The Energy Flow Basis\n\n\nEnergy flow polynomials (EFPs) are a set of observables, indexed by unique multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) observables.\n\n\nA generic EFP is defined as:\n\n \\text{EFP}_G =  \\sum_{i_1=1}^M \\cdots \\sum_{i_N = 1}^M z_{i_1}\\cdots z_{i_N} \\prod_{(k,\\ell)\\in G} \\theta_{i_k i_\\ell}\n\nwhere $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure of the angular separation between particles $i$ and \nj\n.",
+            "text": "The Energy Flow Basis\n\n\nEnergy flow polynomials (EFPs) are a set of observables, indexed by non-isomorphic multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) observables.\n\n\nAn EFP index by a multigraph $G$ takes the following form:\n\n \\text{EFP}_G =  \\sum_{i_1=1}^M \\cdots \\sum_{i_N = 1}^M z_{i_1}\\cdots z_{i_N} \\prod_{(k,\\ell)\\in G} \\theta_{i_k i_\\ell}\n\nwhere $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure of the angular separation between particles $i$ and $j$. The specific choices for energy and angular measure depend on the collider context and are discussed at length in the \nMeasures\n section.",
             "title": "Energy Flow Polynomials"
         },
         {
             "location": "/intro/efpintro/#the-energy-flow-basis",
-            "text": "Energy flow polynomials (EFPs) are a set of observables, indexed by unique multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) observables.  A generic EFP is defined as:  \\text{EFP}_G =  \\sum_{i_1=1}^M \\cdots \\sum_{i_N = 1}^M z_{i_1}\\cdots z_{i_N} \\prod_{(k,\\ell)\\in G} \\theta_{i_k i_\\ell} \nwhere $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure of the angular separation between particles $i$ and  j .",
+            "text": "Energy flow polynomials (EFPs) are a set of observables, indexed by non-isomorphic multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) observables.  An EFP index by a multigraph $G$ takes the following form:  \\text{EFP}_G =  \\sum_{i_1=1}^M \\cdots \\sum_{i_N = 1}^M z_{i_1}\\cdots z_{i_N} \\prod_{(k,\\ell)\\in G} \\theta_{i_k i_\\ell} \nwhere $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure of the angular separation between particles $i$ and $j$. The specific choices for energy and angular measure depend on the collider context and are discussed at length in the  Measures  section.",
             "title": "The Energy Flow Basis"
         },
         {
             "location": "/intro/measures/",
-            "text": "I Am a Header!",
+            "text": "Energy and Angular Measures\n\n\nThe appropriate notions of energy and angle in particle collisions depend on the collider context. There are many possible choices for the energy fraction $z_i$ and pairwise angular distance $\\theta_{ij}$. Typically, one wants to work with observables that respect the appropriate Lorentz subgroup for the collision type of interest.\n\n\nHere we discuss the energy and angular measures presently implemented in the EnergyFlow platform for hadronic and $e^+e^-$ collisions. Beyond these measures, user-defined custom energies $z_i$ and pairwise angular distances and $\\theta_{ij}$ can be specified.\n\n\nFor substructure applications, the energy measure is typically normalized so that $\\sum_i z_i = 1$, and this will be the convention when specifying the default measures. However, the user has the option to omit this normalization.\n\n\nHadronic Collisions\n\n\nFor hadronic collisions, observables are typically required to be invariant under boosts along the beam direction and rotations about the beam direction.\n\n\nFor the energy measure, we work in terms of the particle transverse momenta $p_{T,i}$ which is unchanged under boosts along and rotations about the beam direction. For the angular measure, we work in terms of the pairwise distances in the rapidity-azimuth $(y,\\phi)$ plane to make these invariances manifest. For simplicity, we further restrict our default hadronic measure to be further invariant to rotations in the $(y,\\phi)$-plane.\n\n\nThe default hadronic measures in the EnergyFlow framework are:\n\nz_i \\equiv \\frac{p_{T,i}}{\\sum_{k=1} p_{T,k}},\n\\quad\\quad \\theta_{ij} \\equiv (\\Delta y_{ij}^2 + \\Delta\\phi_{ij}^2)^{\\beta/2}.\n\nwhere $\\beta>0$ is an angular weighting factor.\n\n\ne+e-\n Collisions\n\n\nFor $e^+e^-$ collisions, observables are typically required to be invariant under the full group of rotations about the interaction point.\n\n\nFor the energy measure, we work in terms of the particle energies $E_i$, which are unchanged under rotations. For the angular measure, we use pairwise Lorentz contractions of the particle four-momenta divided by their energies. \n\n\nThe default $e^+e^-$ measures in the EnergyFlow framework are:\n\nz_i \\equiv \\frac{E_{i}}{\\sum_{k=1} E_{k}},\n\\quad\\quad \\theta_{ij} \\equiv \\left(\\frac{2p_i^\\mu p_{j \\mu}}{E_i E_j}\\right)^{\\beta/2}.\n\nwhere $\\beta>0$ is an angular weighting factor.",
             "title": "Measures"
         },
         {
-            "location": "/intro/measures/#i-am-a-header",
-            "text": "",
-            "title": "I Am a Header!"
+            "location": "/intro/measures/#energy-and-angular-measures",
+            "text": "The appropriate notions of energy and angle in particle collisions depend on the collider context. There are many possible choices for the energy fraction $z_i$ and pairwise angular distance $\\theta_{ij}$. Typically, one wants to work with observables that respect the appropriate Lorentz subgroup for the collision type of interest.  Here we discuss the energy and angular measures presently implemented in the EnergyFlow platform for hadronic and $e^+e^-$ collisions. Beyond these measures, user-defined custom energies $z_i$ and pairwise angular distances and $\\theta_{ij}$ can be specified.  For substructure applications, the energy measure is typically normalized so that $\\sum_i z_i = 1$, and this will be the convention when specifying the default measures. However, the user has the option to omit this normalization.",
+            "title": "Energy and Angular Measures"
+        },
+        {
+            "location": "/intro/measures/#hadronic-collisions",
+            "text": "For hadronic collisions, observables are typically required to be invariant under boosts along the beam direction and rotations about the beam direction.  For the energy measure, we work in terms of the particle transverse momenta $p_{T,i}$ which is unchanged under boosts along and rotations about the beam direction. For the angular measure, we work in terms of the pairwise distances in the rapidity-azimuth $(y,\\phi)$ plane to make these invariances manifest. For simplicity, we further restrict our default hadronic measure to be further invariant to rotations in the $(y,\\phi)$-plane.  The default hadronic measures in the EnergyFlow framework are: z_i \\equiv \\frac{p_{T,i}}{\\sum_{k=1} p_{T,k}},\n\\quad\\quad \\theta_{ij} \\equiv (\\Delta y_{ij}^2 + \\Delta\\phi_{ij}^2)^{\\beta/2}. \nwhere $\\beta>0$ is an angular weighting factor.",
+            "title": "Hadronic Collisions"
+        },
+        {
+            "location": "/intro/measures/#ee-collisions",
+            "text": "For $e^+e^-$ collisions, observables are typically required to be invariant under the full group of rotations about the interaction point.  For the energy measure, we work in terms of the particle energies $E_i$, which are unchanged under rotations. For the angular measure, we use pairwise Lorentz contractions of the particle four-momenta divided by their energies.   The default $e^+e^-$ measures in the EnergyFlow framework are: z_i \\equiv \\frac{E_{i}}{\\sum_{k=1} E_{k}},\n\\quad\\quad \\theta_{ij} \\equiv \\left(\\frac{2p_i^\\mu p_{j \\mu}}{E_i E_j}\\right)^{\\beta/2}. \nwhere $\\beta>0$ is an angular weighting factor.",
+            "title": "e+e- Collisions"
         },
         {
             "location": "/installation/",
@@ -52,8 +57,38 @@
         },
         {
             "location": "/faq/",
-            "text": "",
+            "text": "Frequently Asked EnergyFlow Questions\n\n\n\n\nHow do I cite the EnergyFlow package?\n\n\nWhy Python instead of C++?\n\n\nCan I contribute to the code?\n\n\nHow do I report an issue or a bug?\n\n\nWhere can I get graph image files?\n\n\n\n\n\n\nHow do I cite the EnergyFlow package?\n\n\nPlease cite the relevant Energy Flow papers if they or this package helps your research. Here are the BibTeX entries to use:\n\n\n@article{Komiske:temp,\n      author         = \"Komiske, Patrick T. and Metodiev, Eric M. and Thaler, Jesse\",\n      title          = \"{Energy Flow Polynomials: A complete linear basis for jet substructure}\",\n      archivePrefix  = \"arXiv\",\n      primaryClass   = \"hep-ph\",\n      reportNumber   = \"MIT-CTP-4965\",\n }\n\n\n\n\nWhy Python instead of C++?\n\n\nComputing the energy flow polynomials requires a function such as NumPy's \neinsum\n that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use.\n\n\nNumPy\n is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the energy flow polynomials. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and features such as SSE instructions.\n\n\nCan I contribute to the code?\n\n\nAll of our code is open source and hosted on \nGitHub\n. We welcome additional contributors, and if you are interested in getting involved please contact us directly. Contact information is included in the relevant Energy Flow papers and our GitHub repository.\n\n\nHow do I report an issue?\n\n\nPlease let us know of any issues you encounter as soon as possible by creating an \nIssue\n on the EnergyFlow GitHub repository.\n\n\nWhere can I get graph image files?\n\n\nImage files for all connected multigraphs with up to 7 edges in the energy flow polynomial style are available as pdf files \nhere\n. You are free to use them with the proper attribution.",
             "title": "FAQ"
+        },
+        {
+            "location": "/faq/#frequently-asked-energyflow-questions",
+            "text": "How do I cite the EnergyFlow package?  Why Python instead of C++?  Can I contribute to the code?  How do I report an issue or a bug?  Where can I get graph image files?",
+            "title": "Frequently Asked EnergyFlow Questions"
+        },
+        {
+            "location": "/faq/#how-do-i-cite-the-energyflow-package",
+            "text": "Please cite the relevant Energy Flow papers if they or this package helps your research. Here are the BibTeX entries to use:  @article{Komiske:temp,\n      author         = \"Komiske, Patrick T. and Metodiev, Eric M. and Thaler, Jesse\",\n      title          = \"{Energy Flow Polynomials: A complete linear basis for jet substructure}\",\n      archivePrefix  = \"arXiv\",\n      primaryClass   = \"hep-ph\",\n      reportNumber   = \"MIT-CTP-4965\",\n }",
+            "title": "How do I cite the EnergyFlow package?"
+        },
+        {
+            "location": "/faq/#why-python-instead-of-c",
+            "text": "Computing the energy flow polynomials requires a function such as NumPy's  einsum  that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use.  NumPy  is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the energy flow polynomials. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and features such as SSE instructions.",
+            "title": "Why Python instead of C++?"
+        },
+        {
+            "location": "/faq/#can-i-contribute-to-the-code",
+            "text": "All of our code is open source and hosted on  GitHub . We welcome additional contributors, and if you are interested in getting involved please contact us directly. Contact information is included in the relevant Energy Flow papers and our GitHub repository.",
+            "title": "Can I contribute to the code?"
+        },
+        {
+            "location": "/faq/#how-do-i-report-an-issue",
+            "text": "Please let us know of any issues you encounter as soon as possible by creating an  Issue  on the EnergyFlow GitHub repository.",
+            "title": "How do I report an issue?"
+        },
+        {
+            "location": "/faq/#where-can-i-get-graph-image-files",
+            "text": "Image files for all connected multigraphs with up to 7 edges in the energy flow polynomial style are available as pdf files  here . You are free to use them with the proper attribution.",
+            "title": "Where can I get graph image files?"
         },
         {
             "location": "/docs/multigraphs/",
