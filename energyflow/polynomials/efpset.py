@@ -11,7 +11,7 @@ from energyflow.utils import kwargs_check, explicit_comp
 __all__ = ['EFPSet']
 
 data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
-default_file = os.path.join(data_dir, 'multigraphs_d<=7_numpy.npz')
+default_file = os.path.join(data_dir, 'multigraphs_d<=10_numpy.npz')
 
 class EFPSet(EFPBase):
 

@@ -81,6 +81,18 @@
     <a class="current" href="./">Installation</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#install-with-pip-recommended">Install with pip (recommended)</a></li>
+    
+
+    <li class="toctree-l3"><a href="#bleeding-edge-install">Bleeding edge install</a></li>
+    
+
+    <li class="toctree-l3"><a href="#igraph">iGraph</a></li>
+    
+
+    <li class="toctree-l3"><a href="#development-numpy">Development NumPy</a></li>
+    
+
     </ul>
                 </li>
                 <li class="">
@@ -148,7 +160,15 @@
           <div role="main">
             <div class="section">
               
-                <p>The EnergyFlow Python package will be released publically soon on GitHub and published on PyPi!</p>
+                <p>The EnergyFlow package is (currently) written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python3.</p>
+<p>The EnergyFlow package is designed to work with Python 2.7, 3.4, 3.5, 3.6. These can be installed from <a href="https://www.python.org/downloads/">here</a>. The latest stable version of Python 3 is highly recommended.</p>
+<h3 id="install-with-pip-recommended">Install with <code>pip</code> (recommended)</h3>
+<p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
+<h3 id="bleeding-edge-install">Bleeding edge install</h3>
+<p>EnergyFlow is <a href="https://github.com/pkomiske/EnergyFlow/">hosted on GitHub</a> and can be installed by cloning the repository and running <code>python setup.py install</code>. This is not recommended compared to installation with <code>pip</code> because the released versions are more thoroughly tested.</p>
+<h3 id="igraph">iGraph</h3>
+<h3 id="development-numpy">Development NumPy</h3>
+<p>Since EnergyFlow relies on <code>numpy.einsum</code> to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if <code>einsum</code> changes. At the present time, the master branch of the NumPy repo contains some significant changes to <code>einsum</code> compared to NumPy <code>1.1.13</code>. Currently, we recommend using the latest stable version of NumPy, but this may change in the future.</p>
               
             </div>
           </div>

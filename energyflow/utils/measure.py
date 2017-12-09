@@ -89,7 +89,7 @@ class Measure:
     def _p4s_dot(self, p4s, Es):
         p4hats = p4s/Es[:,np.newaxis]
         X = (p4hats[:,np.newaxis]*p4hats[np.newaxis,:]).T
-        return (2*(X[0] - X[1] - X[2] - X[3]))**self._half_beta
+        return (2*np.abs(X[0] - X[1] - X[2] - X[3]))**self._half_beta
 
 class HadronicMeasure(Measure):
 

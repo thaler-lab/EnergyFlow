@@ -47,8 +47,28 @@
         },
         {
             "location": "/installation/",
-            "text": "The EnergyFlow Python package will be released publically soon on GitHub and published on PyPi!",
+            "text": "The EnergyFlow package is (currently) written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python3.\n\n\nThe EnergyFlow package is designed to work with Python 2.7, 3.4, 3.5, 3.6. These can be installed from \nhere\n. The latest stable version of Python 3 is highly recommended.\n\n\nInstall with \npip\n (recommended)\n\n\nTo install from PyPI using \npip\n, make sure you have one of the supported versions of Python installed and that \npip\n is available in the system path. Simply execute \npip install energyflow\n and EnergyFlow will be installed in your default location for Python packages.\n\n\nBleeding edge install\n\n\nEnergyFlow is \nhosted on GitHub\n and can be installed by cloning the repository and running \npython setup.py install\n. This is not recommended compared to installation with \npip\n because the released versions are more thoroughly tested.\n\n\niGraph\n\n\nDevelopment NumPy\n\n\nSince EnergyFlow relies on \nnumpy.einsum\n to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if \neinsum\n changes. At the present time, the master branch of the NumPy repo contains some significant changes to \neinsum\n compared to NumPy \n1.1.13\n. Currently, we recommend using the latest stable version of NumPy, but this may change in the future.",
             "title": "Installation"
+        },
+        {
+            "location": "/installation/#install-with-pip-recommended",
+            "text": "To install from PyPI using  pip , make sure you have one of the supported versions of Python installed and that  pip  is available in the system path. Simply execute  pip install energyflow  and EnergyFlow will be installed in your default location for Python packages.",
+            "title": "Install with pip (recommended)"
+        },
+        {
+            "location": "/installation/#bleeding-edge-install",
+            "text": "EnergyFlow is  hosted on GitHub  and can be installed by cloning the repository and running  python setup.py install . This is not recommended compared to installation with  pip  because the released versions are more thoroughly tested.",
+            "title": "Bleeding edge install"
+        },
+        {
+            "location": "/installation/#igraph",
+            "text": "",
+            "title": "iGraph"
+        },
+        {
+            "location": "/installation/#development-numpy",
+            "text": "Since EnergyFlow relies on  numpy.einsum  to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if  einsum  changes. At the present time, the master branch of the NumPy repo contains some significant changes to  einsum  compared to NumPy  1.1.13 . Currently, we recommend using the latest stable version of NumPy, but this may change in the future.",
+            "title": "Development NumPy"
         },
         {
             "location": "/tutorial/",
@@ -92,18 +112,28 @@
         },
         {
             "location": "/docs/multigraphs/",
-            "text": "Generator\n\n\nthis is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message",
+            "text": "Note that unless igraph is importable, the functionality of this module will not be available. EnergyFlow is still usable with the provided default file of precomputed multigraphs.\n\n\nGenerator\n\n\nGenerator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg='numpy', np_optimize='greedy')\n\n\n\n\nArguments\n\n\n\n\ndmax\n: Positive integer, the maximum degree (number of edges).\n\n\nnmax\n: Positive integer, the maximum number of vertices (\nNone\n sets \nnmax=dmax+1\n).\n\n\nemax\n: Positive integer, maximum number of edges of the underlying simples graphs (\nNone\n sets \nemax=dmax\n).\n\n\ncmax\n: Positive integer, maximum ve complexity (\nNone\n sets  \ncmax=nmax\n).\n\n\nverbose\n: Boolean, controls printing output.\n\n\nve_alg\n: String, controls which variable elimination algorithm is used, either \nnumpy\n or \nef\n. Leave as \nnumpy\n unless you know what you're doing.\n\n\nnp_optimize\n: String, when \nve_alg='numpy'\n this is the \noptimize\n keyword of \nnumpy.einsum_path\n.",
             "title": "Multigraphs"
         },
         {
             "location": "/docs/multigraphs/#generator",
-            "text": "this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message this is a very long message",
+            "text": "Generator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg='numpy', np_optimize='greedy')  Arguments   dmax : Positive integer, the maximum degree (number of edges).  nmax : Positive integer, the maximum number of vertices ( None  sets  nmax=dmax+1 ).  emax : Positive integer, maximum number of edges of the underlying simples graphs ( None  sets  emax=dmax ).  cmax : Positive integer, maximum ve complexity ( None  sets   cmax=nmax ).  verbose : Boolean, controls printing output.  ve_alg : String, controls which variable elimination algorithm is used, either  numpy  or  ef . Leave as  numpy  unless you know what you're doing.  np_optimize : String, when  ve_alg='numpy'  this is the  optimize  keyword of  numpy.einsum_path .",
             "title": "Generator"
         },
         {
             "location": "/docs/polynomials/",
-            "text": "",
+            "text": "These are the classes that actually compute EFPs. If you plan on studying single graphs, \nEFP\n would typically be used. For studying EFPs in large collections, use \nEFPSet\n for greater efficiency and simplicity.\n\n\nEFP\n\n\nEFP(edges, measure='hadr', beta=1.0, normed=True, check_type=True, ve_alg='numpy', np_optimize='greedy')\n\n\n\n\nA class for a storing and computing a single EFP.\n\n\nArguments\n\n\n\n\nedges\n: List, edges of the EFP specified by tuple-pairs of vertices.\n\n\nmeasure\n: String, see \nMeasures\n for options (defaults to \n'hadr'\n.\n\n\nbeta\n: Float, a value great than zero (defaults to \n1.0\n). \n\n\nnormed\n: Boolean, controls energy normalization (defaults to \nTrue\n).\n\n\ncheck_type\n: Boolean, whether to check the type of the input or use the first input type (defaults to \nTrue\n).\n\n\nve_alg\n: String, controls which variable elimination algorithm is used, either \nnumpy\n or \nef\n. Leave as \nnumpy\n unless you know what you're doing.\n\n\nnp_optimize\n: String, when \nve_alg='numpy'\n this is the \noptimize\n keyword of \nnumpy.einsum_path\n \n\n\n\n\nEFPSet\n\n\nEFP(*args, filename=None, measure='hadr', beta=1.0, normed=True, check_type=True, verbose=False)\n\n\n\n\nA class for holding collections of EFPs.\n\n\nArguments\n\n\n\n\n*args\n: An arbitrary number of selection criteria. See \nsel\n.\n\n\nfilename\n: String, name of a file saved by a custom \nGenerator\n.\n\n\nmeasure\n: String, see \nMeasures\n for options (defaults to \n'hadr'\n.\n\n\nbeta\n: Float, a value great than zero (defaults to \n1.0\n). \n\n\nnormed\n: Boolean, controls energy normalization (defaults to \nTrue\n).\n\n\ncheck_type\n: Boolean, whether to check the type of the input or use the first input type (defaults to \nTrue\n).\n\n\nverbose\n: Boolean, controls printing output.",
             "title": "Polynomials"
+        },
+        {
+            "location": "/docs/polynomials/#efp",
+            "text": "EFP(edges, measure='hadr', beta=1.0, normed=True, check_type=True, ve_alg='numpy', np_optimize='greedy')  A class for a storing and computing a single EFP.  Arguments   edges : List, edges of the EFP specified by tuple-pairs of vertices.  measure : String, see  Measures  for options (defaults to  'hadr' .  beta : Float, a value great than zero (defaults to  1.0 ).   normed : Boolean, controls energy normalization (defaults to  True ).  check_type : Boolean, whether to check the type of the input or use the first input type (defaults to  True ).  ve_alg : String, controls which variable elimination algorithm is used, either  numpy  or  ef . Leave as  numpy  unless you know what you're doing.  np_optimize : String, when  ve_alg='numpy'  this is the  optimize  keyword of  numpy.einsum_path",
+            "title": "EFP"
+        },
+        {
+            "location": "/docs/polynomials/#efpset",
+            "text": "EFP(*args, filename=None, measure='hadr', beta=1.0, normed=True, check_type=True, verbose=False)  A class for holding collections of EFPs.  Arguments   *args : An arbitrary number of selection criteria. See  sel .  filename : String, name of a file saved by a custom  Generator .  measure : String, see  Measures  for options (defaults to  'hadr' .  beta : Float, a value great than zero (defaults to  1.0 ).   normed : Boolean, controls energy normalization (defaults to  True ).  check_type : Boolean, whether to check the type of the input or use the first input type (defaults to  True ).  verbose : Boolean, controls printing output.",
+            "title": "EFPSet"
         }
     ]
 }
