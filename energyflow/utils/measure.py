@@ -83,7 +83,7 @@ class Measure:
         pass
 
     @abstractmethod
-    def _pseudojet_handler(self, dim):
+    def _pseudojet_handler(self):
         pass
 
     def _p4s_dot(self, p4s, Es):
@@ -120,7 +120,7 @@ class HadronicMeasure(Measure):
             return False
         return True
 
-    def _pseudojet_handler(self, dim):
+    def _pseudojet_handler(self):
         self._meas_func = self._pseudojet
         return True
 
@@ -182,7 +182,7 @@ class EEMeasure(Measure):
             return False
         return True
 
-    def _pseudojet_handler(self, dim):
+    def _pseudojet_handler(self):
         self._meas_func = self._pseudojet
         return True
 
