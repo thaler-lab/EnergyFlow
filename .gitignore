@@ -8,6 +8,7 @@ dist/
 .eggs/
 *.pyc
 test.npz
+EnergyFlow.egg-info
 mnist*
 *.txt
 plan.jpg
