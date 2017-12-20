@@ -36,15 +36,41 @@ class EFP(EFPBase):
 
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
-        self.weight_set = self.efpelem.weight_set
 
         # get ve instance
         self.ve = VariableElimination(ve_alg, np_optimize)
 
         # set internals of ve to these edges
-        self.ve.run(self.efpelem.simple_edges, self.efpelem.n)
+        self.ve.run(self.simple_graph, self.n)
         self.efpelem.einstr, self.efpelem.einpath = self.ve.einspecs()
 
     def compute(self, event=None, zs=None, thetas=None):
         zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
         return self.efpelem.compute(zs, thetas_dict)
+
+    @property
+    def graph(self):
+        return self.efpelem.edges
+
+    @property
+    def simple_graph(self):
+        return self.efpelem.simple_edges
+
+    @property
+    def n(self):
+        return self.efpelem.n
+
+    @property
+    def d(self):
+        return self.efpelem.d
+
+    @property
+    def c(self):
+        if hasattr(self.ve, 'chi'):
+            return self.ve.chi
+        else:
+            return None
+
+    @property
+    def weight_set(self):
+        return self.efpelem.weight_set

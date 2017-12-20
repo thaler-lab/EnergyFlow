@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
 import multiprocessing as mp
 
@@ -25,6 +25,10 @@ class EFPBase:
         thetas_dict = {w: thetas**w for w in self.weight_set}
         return zs, thetas_dict
 
+    @abstractproperty
+    def weight_set(self):
+        pass
+
     def _compute_func(self, args):
         return self.compute(zs=args[0], thetas=args[1])
 
@@ -36,10 +40,12 @@ class EFPBase:
 
         if events is not None:
             iterable = [self.measure(event) for event in events]
+            length = len(events)
         elif zs is None or thetas is None:
             raise TypeError('if events is None then zs and/or thetas cannot also be None')
         else:
-            iterable = zip(zs, thetas)
+            iterable = zip(zs,thetas)
+            length = min(len(zs),len(thetas))
 
         if n_jobs == -1:
             try: 
@@ -48,8 +54,9 @@ class EFPBase:
                 n_jobs = 4 # choose reasonable value
 
         # setup processor pool
+        self._n_jobs = n_jobs
         with mp.Pool(n_jobs) as pool:
-            chunksize = int(len(iterable)/n_jobs)
+            chunksize = int(length/n_jobs)
             results = np.asarray(list(pool.imap(self._compute_func, iterable, chunksize)))
 
         return results
@@ -58,17 +65,8 @@ class EFPElem:
 
     # if weights are given, edges are assumed to be simple 
     def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None):
-        self.einstr, self.einpath = einstr, einpath
-        self.k = k
 
-        self._remap_edges(edges)
-        self._get_simple_edges()
-        self._get_weights(weights)
-
-        if self.k is not None:
-            self.ndk = (self.n, self.d, self.k)
-
-    def _remap_edges(self, edges):
+        self.einstr, self.einpath, self.k = einstr, einpath, k
 
         # deal with arbitrary vertex labels
         vertex_set = set(v for edge in edges for v in edge)
@@ -78,12 +76,11 @@ class EFPElem:
         # construct new edges with remapped vertices
         self.edges = sorted([tuple(vertices[v] for v in sorted(edge)) for edge in edges])
 
-    def _get_simple_edges(self):
+        # get simple edges
         self.simple_edges = sorted(list(set(self.edges)))
         self.e = len(self.simple_edges)
 
-    # get weights of edges
-    def _get_weights(self, weights):
+        # get weights
         if weights is None:
             counts = Counter(self.edges)
             self.weights = tuple(counts[edge] for edge in self.simple_edges)
@@ -91,14 +88,14 @@ class EFPElem:
             if len(weights) != self.e:
                 raise ValueError('length of weights is not number of simple edges')
             self.weights = tuple(weights)
+            self.edges = [e for w,e in zip(self.weights, self.simple_edges) for i in range(w)]
+
         self.d = sum(self.weights)
         self.weight_set = set(self.weights)
+
+        if self.k is not None:
+            self.ndk = (self.n, self.d, self.k)
 
     def compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
         return np.einsum(self.einstr, *einsum_args, optimize=self.einpath)
-
-
-
-
- 

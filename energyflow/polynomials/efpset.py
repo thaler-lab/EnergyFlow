@@ -1,4 +1,7 @@
+"""Implementation of EFPSet, an efficient collection of EFPs."""
+
 from __future__ import absolute_import, division, print_function
+import itertools
 import os
 import re
 import warnings
@@ -6,36 +9,48 @@ import numpy as np
 
 from energyflow.multigraphs import Generator
 from energyflow.polynomials.base import EFPBase, EFPElem
-from energyflow.utils import kwargs_check, explicit_comp
+from energyflow.utils import explicit_comp, graph_union, kwargs_check
 
 __all__ = ['EFPSet']
 
+data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+default_file = os.path.join(data_dir, 'multigraphs_d_le_10_numpy.npz')
+
 class EFPSet(EFPBase):
 
-    """A class for holding collections of EFPs."""
+    """A class that holds a collection of EFPs and computes their values on events."""
 
     # EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, 
     #        check_type=False, verbose=False)
     def __init__(self, *args, **kwargs):
 
         """
+        EFPSet can be initialized in one of three ways (in order of precedence):
+
+        1. *Generator* - Pass in a custom `Generator` object as the first positional argument.
+        2. *Custom File* - Pass in the name of a `.npz` file saved with a custom `Generator`.
+        3. *Default* - Use the EFPs that come installed with the `EnergFlow` package.
+
+        To control which EFPs are included, `EFPSet` accepts an arbitrary number of specifications
+        (see `sel`) and only EFPs meeting each specification are included in the set. 
+
         Arguments
         ---------
+        *args : arbitrary positional arguments
+            - If the first positional argument is a `Generator` instance, it is used for
+            initialization. The remaining positional arguments must be valid arguments to `sel`.
         filename : string
-            Edges of the EFP graph specified by tuple-pairs of vertices.
-        measure : string, optional
-            See [Measures](/intro/measures) for options.
-        beta : float, optional
-            A value greater than zero. 
-        normed : bool, optional
-            Controls energy normalization.
-        check_type : bool, optional
-            Whether to check the type of the input or use the first input type.
-        ve_alg : string, optional
-            Controls which variable elimination algorithm is used, either `numpy` or `ef`. 
-            Leave as `numpy` unless you know what you're doing.
-        np_optimize : string, optional
-            When `ve_alg='numpy'` this is the `optimize` keyword of `numpy.einsum_path`
+            - Path to a `.npz` file which has been saved by a valid `energyflow.Generator`.
+        measure : string
+            - One of `'hadr'`, `'hadr-dot'`, `'ee'`. 
+            See [Measures](/intro/measures) additional info.
+        beta : float
+            - The parameter $\\beta$ appearing in the measure. Must be greater than zero.
+        normed : bool
+            - Controls normalization of the energies in the measure.
+        check_type : bool
+            - Whether to check the type of the input each time or use the first input type.
+        verbose : bool
         """
 
         default_kwargs = {'filename': None, 
@@ -52,7 +67,7 @@ class EFPSet(EFPBase):
         # initialize EFPBase
         super().__init__(self.measure, self.beta, self.normed, self.check_type)
 
-        if len(args) == 1 and isinstance(args[0], Generator):
+        if len(args) >= 1 and isinstance(args[0], Generator):
             constructor_attrs = ['cols', 'specs', 'disc_formulae', 'edges', 
                                  'einstrs', 'einpaths', 'weights']
             constructor_dict = {attr: getattr(args[0], attr) for attr in constructor_attrs}
@@ -61,7 +76,6 @@ class EFPSet(EFPBase):
             self.filename += '.npz' if not self.filename.endswith('.npz') else ''
             constructor_dict = dict(np.load(self.filename))
         else:
-            default_file = os.path.join('..', 'data', 'multigraphs_d<=10_numpy.npz')
             constructor_dict = dict(np.load(default_file))
 
         self._sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
@@ -113,6 +127,22 @@ class EFPSet(EFPBase):
     def specs(self):
         return self.stored_specs[self.compute_mask]
 
+    def _make_graphs(self, connected_graphs):
+        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
+        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
+
+    def graphs(self, *args):
+        if not hasattr(self, '_graphs'):
+            self._graphs = self._make_graphs([elem.edges for elem in self.efpelems])
+        mask = self.sel(*args)
+        return [g for g,m in zip(self._graphs, mask) if m]
+
+    def simple_graphs(self, *args):
+        if not hasattr(self, '_simple_graphs'):
+            self._simple_graphs = self._make_graphs([elem.simple_edges for elem in self.efpelems])
+        mask = self.sel(*args)
+        return [g for g,m in zip(self._simple_graphs, mask) if m]
+
     # _set_compute_mask(*args, mask=None)
     def _set_compute_mask(self, *args, **kwargs):
         mask = kwargs.pop('mask', None)
@@ -124,7 +154,7 @@ class EFPSet(EFPBase):
             raise IndexError('length of mask does not match internal specs')
         self.compute_mask = mask
 
-        self.weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
+        self._weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
         connected_ndk = [efpelem.ndk for efpelem in self._efpelems_iterator()]
 
         # get col indices for disconnected formulae
@@ -136,12 +166,16 @@ class EFPSet(EFPBase):
                 warnings.warn('connected efp needed for {} not found'.format(formula))
 
     def _efpelems_iterator(self):
-        for i,elem in enumerate(self.efpelems):
-            if self.compute_mask[i]:
+        for cm,elem in zip(self.compute_mask,self.efpelems):
+            if cm:
                 yield elem
 
     def _compute_func(self, args):
         return self.compute(zs=args[0], thetas=args[1], batch_call=True)
+
+    @property
+    def weight_set(self):
+        return self._weight_set
 
     # compute(event=None, zs=None, thetas=None)
     def compute(self, event=None, zs=None, thetas=None, batch_call=False):
@@ -189,9 +223,7 @@ class EFPSet(EFPBase):
 
     # count(*args, specs=None)
     def count(self, *args, **kwargs):
-        specs = kwargs.pop('specs', None)
-        kwargs_check('count', kwargs)
-        return np.count_nonzero(self.sel(*args, specs=specs))
+        return np.count_nonzero(self.sel(*args, **kwargs))
 
     def calc_disc(self, X, concat=False):
 
