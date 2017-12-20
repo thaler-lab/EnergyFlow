@@ -32,7 +32,7 @@ class EFPBase:
     def compute(self, *args):
         pass
 
-    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=None):
+    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
 
         if events is not None:
             iterable = [self.measure(event) for event in events]
@@ -41,16 +41,15 @@ class EFPBase:
         else:
             iterable = zip(zs, thetas)
 
-        processes = n_jobs
-        if processes is None:
+        if n_jobs == -1:
             try: 
-                processes = mp.cpu_count()
+                n_jobs = mp.cpu_count()
             except:
-                processes = 4 # choose reasonable value
+                n_jobs = 4 # choose reasonable value
 
         # setup processor pool
-        with mp.Pool(processes) as pool:
-            chunksize = int(len(iterable)/processes)
+        with mp.Pool(n_jobs) as pool:
+            chunksize = int(len(iterable)/n_jobs)
             results = np.asarray(list(pool.imap(self._compute_func, iterable, chunksize)))
 
         return results

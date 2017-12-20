@@ -10,9 +10,6 @@ from energyflow.utils import kwargs_check, explicit_comp
 
 __all__ = ['EFPSet']
 
-data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
-default_file = os.path.join(data_dir, 'multigraphs_d<=10_numpy.npz')
-
 class EFPSet(EFPBase):
 
     """A class for holding collections of EFPs."""
@@ -64,6 +61,7 @@ class EFPSet(EFPBase):
             self.filename += '.npz' if not self.filename.endswith('.npz') else ''
             constructor_dict = dict(np.load(self.filename))
         else:
+            default_file = os.path.join('..', 'data', 'multigraphs_d<=10_numpy.npz')
             constructor_dict = dict(np.load(default_file))
 
         self._sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
@@ -115,6 +113,7 @@ class EFPSet(EFPBase):
     def specs(self):
         return self.stored_specs[self.compute_mask]
 
+    # _set_compute_mask(*args, mask=None)
     def _set_compute_mask(self, *args, **kwargs):
         mask = kwargs.pop('mask', None)
         kwargs_check('set_compute_mask', kwargs)
@@ -134,7 +133,7 @@ class EFPSet(EFPBase):
             try:
                 self.disc_col_inds.append([connected_ndk.index(factor) for factor in formula])
             except ValueError:
-                warnings.warn('connected efp needed for  {} not found'.format(formula))
+                warnings.warn('connected efp needed for {} not found'.format(formula))
 
     def _efpelems_iterator(self):
         for i,elem in enumerate(self.efpelems):
@@ -144,6 +143,7 @@ class EFPSet(EFPBase):
     def _compute_func(self, args):
         return self.compute(zs=args[0], thetas=args[1], batch_call=True)
 
+    # compute(event=None, zs=None, thetas=None)
     def compute(self, event=None, zs=None, thetas=None, batch_call=False):
         zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
         results = [efpelem.compute(zs, thetas_dict) for efpelem in self._efpelems_iterator()]
@@ -152,7 +152,7 @@ class EFPSet(EFPBase):
         else:
             return self.calc_disc(results, concat=True)
 
-    def batch_compute(self, events=None, zs=None, thetas=None, calc_all=True, n_jobs=None):
+    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1, calc_all=True):
         results = super().batch_compute(events, zs, thetas, n_jobs)
 
         if calc_all:
@@ -160,6 +160,7 @@ class EFPSet(EFPBase):
         else:
             return results
 
+    # sel(*args, specs=None)
     def sel(self, *args, **kwargs):
         specs = kwargs.pop('specs', None)
         kwargs_check('sel', kwargs)
@@ -186,9 +187,10 @@ class EFPSet(EFPBase):
             mask &= explicit_comp(specs[:,getattr(self, var+'_ind')], comp, int(val))
         return mask
 
+    # count(*args, specs=None)
     def count(self, *args, **kwargs):
         specs = kwargs.pop('specs', None)
-        kwargs_check('sel', kwargs)
+        kwargs_check('count', kwargs)
         return np.count_nonzero(self.sel(*args, specs=specs))
 
     def calc_disc(self, X, concat=False):
