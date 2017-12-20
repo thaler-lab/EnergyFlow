@@ -47,3 +47,12 @@ a:visited {
 .wy-breadcrumbs li.wy-breadcrumbs-aside {
     display: none;
 }
+
+.wy-menu-vertical .subnav li.current > ul li a {
+    padding-left: 2.4em;
+}
+
+.wy-menu-vertical .subnav li.current a.toctree-l4 {
+    padding-left: 3.6em;
+    /*display: none;*/
+}

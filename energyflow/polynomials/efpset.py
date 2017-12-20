@@ -15,7 +15,31 @@ default_file = os.path.join(data_dir, 'multigraphs_d<=10_numpy.npz')
 
 class EFPSet(EFPBase):
 
+    """A class for holding collections of EFPs."""
+
+    # EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, 
+    #        check_type=False, verbose=False)
     def __init__(self, *args, **kwargs):
+
+        """
+        Arguments
+        ---------
+        filename : string
+            Edges of the EFP graph specified by tuple-pairs of vertices.
+        measure : string, optional
+            See [Measures](/intro/measures) for options.
+        beta : float, optional
+            A value greater than zero. 
+        normed : bool, optional
+            Controls energy normalization.
+        check_type : bool, optional
+            Whether to check the type of the input or use the first input type.
+        ve_alg : string, optional
+            Controls which variable elimination algorithm is used, either `numpy` or `ef`. 
+            Leave as `numpy` unless you know what you're doing.
+        np_optimize : string, optional
+            When `ve_alg='numpy'` this is the `optimize` keyword of `numpy.einsum_path`
+        """
 
         default_kwargs = {'filename': None, 
                           'measure':'hadr',
@@ -67,7 +91,7 @@ class EFPSet(EFPBase):
             self.efpelems.append(EFPElem(edges[g], weights=weights[w], einstr=einstrs[g], 
                                                    einpath=einpaths[g], k=k))
 
-        self.set_compute_mask()
+        self._set_compute_mask()
 
         if self.verbose:
             num_prime = self.count('p==1', specs=orig_specs)
@@ -91,7 +115,7 @@ class EFPSet(EFPBase):
     def specs(self):
         return self.stored_specs[self.compute_mask]
 
-    def set_compute_mask(self, *args, **kwargs):
+    def _set_compute_mask(self, *args, **kwargs):
         mask = kwargs.pop('mask', None)
         kwargs_check('set_compute_mask', kwargs)
         if mask is None:

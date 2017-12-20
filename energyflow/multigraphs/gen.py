@@ -36,15 +36,13 @@ class Generator:
 
         Parameters
         ----------
-        warn : bool, optional
-            Controls whether or not a warning is printed if igraph cannot be imported.
-        file : string, optional
-            Filename to use in the optional warning.
+        dmax : int
+            test
 
         Returns
         -------
-        output : {igraph, False}
-            The igraph module if it was successfully imported, otherwise False.
+        output : Generator
+            The Generator object.
         """
 
         if not igraph:

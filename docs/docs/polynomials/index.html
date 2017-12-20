@@ -106,8 +106,30 @@
             
     <li class="toctree-l3"><a href="#efp">EFP</a></li>
     
+        <ul>
+        
+            <li><a class="toctree-l4" href="#batch_compute">batch_compute</a></li>
+        
+            <li><a class="toctree-l4" href="#compute">compute</a></li>
+        
+        </ul>
+    
 
     <li class="toctree-l3"><a href="#efpset">EFPSet</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#batch_compute_1">batch_compute</a></li>
+        
+            <li><a class="toctree-l4" href="#calc_disc">calc_disc</a></li>
+        
+            <li><a class="toctree-l4" href="#compute_1">compute</a></li>
+        
+            <li><a class="toctree-l4" href="#count">count</a></li>
+        
+            <li><a class="toctree-l4" href="#sel">sel</a></li>
+        
+        </ul>
     
 
     </ul>
@@ -155,36 +177,67 @@
             <div class="section">
               
                 <p>These are the classes that actually compute EFPs. If you plan on studying single graphs, <code>EFP</code> would typically be used. For studying EFPs in large collections, use <code>EFPSet</code> for greater efficiency and simplicity.</p>
+<hr />
 <h3 id="efp">EFP</h3>
-<pre><code class="python">EFP(edges, measure='hadr', beta=1.0, normed=True, check_type=True, ve_alg='numpy', np_optimize='greedy')
-</code></pre>
-
 <p>A class for a storing and computing a single EFP.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>edges</strong>: List, edges of the EFP graph specified by tuple-pairs of vertices.</li>
-<li><strong>measure</strong>: String, see <a href="../../intro/measures">Measures</a> for options (defaults to <code>'hadr'</code>).</li>
-<li><strong>beta</strong>: Float, a value greater than zero (defaults to <code>1.0</code>). </li>
-<li><strong>normed</strong>: Boolean, controls energy normalization (defaults to <code>True</code>).</li>
-<li><strong>check_type</strong>: Boolean, whether to check the type of the input or use the first input type (defaults to <code>True</code>).</li>
-<li><strong>ve_alg</strong>: String, controls which variable elimination algorithm is used, either <code>numpy</code> or <code>ef</code>. Leave as <code>numpy</code> unless you know what you're doing.</li>
-<li><strong>np_optimize</strong>: String, when <code>ve_alg='numpy'</code> this is the <code>optimize</code> keyword of <code>numpy.einsum_path</code> </li>
-</ul>
-<h3 id="efpset">EFPSet</h3>
-<pre><code class="python">EFP(*args, filename=None, measure='hadr', beta=1.0, normed=True, check_type=True, verbose=False)
+<pre><code class="python">EFP(edges, measure=hadr, beta=1, normed=True, check_type=True, ve_alg=numpy, np_optimize=greedy)
 </code></pre>
 
-<p>A class for holding collections of EFPs.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>*args</strong>: An arbitrary number of selection criteria. See <code>sel</code>.</li>
-<li><strong>filename</strong>: String, name of a file saved by a custom <code>Generator</code>.</li>
-<li><strong>measure</strong>: String, see <a href="../../intro/measures">Measures</a> for options (defaults to <code>'hadr'</code>).</li>
-<li><strong>beta</strong>: Float, a value greater than zero (defaults to <code>1.0</code>). </li>
-<li><strong>normed</strong>: Boolean, controls energy normalization (defaults to <code>True</code>).</li>
-<li><strong>check_type</strong>: Boolean, whether to check the type of the input or use the first input type (defaults to <code>True</code>).</li>
-<li><strong>verbose</strong>: Boolean, controls printing output.</li>
+<li><strong>edges</strong>: list,  Edges of the EFP graph specified by tuple-pairs of vertices.</li>
+<li><strong>measure</strong>: string, optional,  See <a href="../../intro/measures">Measures</a> for options.</li>
+<li><strong>beta</strong>: float, optional,  A value greater than zero.</li>
+<li><strong>normed</strong>: bool, optional,  Controls energy normalization.</li>
+<li><strong>check_type</strong>: bool, optional,  Whether to check the type of the input or use the first input type.</li>
+<li><strong>ve_alg</strong>: string, optional,  Controls which variable elimination algorithm is used, either <code>numpy</code> or <code>ef</code>. Leave as <code>numpy</code> unless you know what you're doing.</li>
+<li><strong>np_optimize</strong>: string, optional,  When <code>ve_alg='numpy'</code> this is the <code>optimize</code> keyword of <code>numpy.einsum_path</code></li>
 </ul>
+<h4 id="batch_compute">batch_compute</h4>
+<pre><code class="python">batch_compute(events=None, zs=None, thetas=None, n_jobs=None)
+</code></pre>
+
+<h4 id="compute">compute</h4>
+<pre><code class="python">compute(event=None, zs=None, thetas=None)
+</code></pre>
+
+<hr />
+<h3 id="efpset">EFPSet</h3>
+<p>A class for holding collections of EFPs.</p>
+<pre><code class="python">EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, check_type=False, verbose=False)
+</code></pre>
+
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>filename</strong>: string,  Edges of the EFP graph specified by tuple-pairs of vertices.</li>
+<li><strong>measure</strong>: string, optional,  See <a href="../../intro/measures">Measures</a> for options.</li>
+<li><strong>beta</strong>: float, optional,  A value greater than zero.</li>
+<li><strong>normed</strong>: bool, optional,  Controls energy normalization.</li>
+<li><strong>check_type</strong>: bool, optional,  Whether to check the type of the input or use the first input type.</li>
+<li><strong>ve_alg</strong>: string, optional,  Controls which variable elimination algorithm is used, either <code>numpy</code> or <code>ef</code>. Leave as <code>numpy</code> unless you know what you're doing.</li>
+<li><strong>np_optimize</strong>: string, optional,  When <code>ve_alg='numpy'</code> this is the <code>optimize</code> keyword of <code>numpy.einsum_path</code></li>
+</ul>
+<h4 id="batch_compute_1">batch_compute</h4>
+<pre><code class="python">batch_compute(events=None, zs=None, thetas=None, calc_all=True, n_jobs=None)
+</code></pre>
+
+<h4 id="calc_disc">calc_disc</h4>
+<pre><code class="python">calc_disc(X, concat=False)
+</code></pre>
+
+<h4 id="compute_1">compute</h4>
+<pre><code class="python">compute(event=None, zs=None, thetas=None, batch_call=False)
+</code></pre>
+
+<h4 id="count">count</h4>
+<pre><code class="python">count(args, kwargs)
+</code></pre>
+
+<h4 id="sel">sel</h4>
+<pre><code class="python">sel(args, kwargs)
+</code></pre>
+
+<hr />
               
             </div>
           </div>
