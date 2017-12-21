@@ -56,3 +56,7 @@ a:visited {
     padding-left: 3.6em;
     /*display: none;*/
 }
+
+.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+    list-style: none;
+}
