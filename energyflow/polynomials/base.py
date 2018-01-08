@@ -34,9 +34,39 @@ class EFPBase:
 
     @abstractmethod
     def compute(self, *args):
+        """Computes the value(s) of the EFP(s) on a single event.
+
+        Arguments
+        ---------
+        event : array_like or `fastjet.PseudoJet`
+            - The event or jet as an array or `PseudoJet`.
+        zs : 1-dim array_like
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
+        thetas : 2-dim array_like
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+        """
+
         pass
 
     def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
+        """Computes the value(s) of the EFP(s) on several events.
+
+        Arguments
+        ---------
+        events : array_like or `fastjet.PseudoJet`
+            - The events or jets as an array or list of `PseudoJet`s.
+        zs : list of 1-dim array
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of the events.
+        thetas : list of 2-dim array
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of the events.
+        n_jobs : int
+            - The number of worker processes to use. A value of `-1` will attempt
+            to use as many processes as there are CPUs on the machine.
+        """
 
         if events is not None:
             iterable = [self.measure(event) for event in events]

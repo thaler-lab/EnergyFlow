@@ -27,30 +27,38 @@ class EFPSet(EFPBase):
         """
         EFPSet can be initialized in one of three ways (in order of precedence):
 
-        1. *Generator* - Pass in a custom `Generator` object as the first positional argument.
-        2. *Custom File* - Pass in the name of a `.npz` file saved with a custom `Generator`.
-        3. *Default* - Use the EFPs that come installed with the `EnergFlow` package.
+        1. *Generator* - Pass in a custom `Generator` object as the 
+        first positional argument.
+        2. *Custom File* - Pass in the name of a `.npz` file saved 
+        with a custom `Generator`.
+        3. *Default* - Use the EFPs that come installed with the 
+        `EnergFlow` package.
 
-        To control which EFPs are included, `EFPSet` accepts an arbitrary number of specifications
-        (see `sel`) and only EFPs meeting each specification are included in the set. 
+        To control which EFPs are included, `EFPSet` accepts an arbitrary 
+        number of specifications (see `sel`) and only EFPs meeting each 
+        specification are included in the set. 
 
         Arguments
         ---------
         *args : arbitrary positional arguments
-            - If the first positional argument is a `Generator` instance, it is used for
-            initialization. The remaining positional arguments must be valid arguments to `sel`.
+            - If the first positional argument is a `Generator` instance, 
+            it is used for initialization. The remaining positional 
+            arguments must be valid arguments to `sel`.
         filename : string
-            - Path to a `.npz` file which has been saved by a valid `energyflow.Generator`.
-        measure : string
-            - One of `'hadr'`, `'hadr-dot'`, `'ee'`. 
-            See [Measures](/intro/measures) additional info.
+            - Path to a `.npz` file which has been saved by a valid  
+            `energyflow.Generator`.
+        measure : {`'hadr'`, `'hadr-dot'`, `'ee'`}
+            - See [Measures](/intro/measures) for additional info.
         beta : float
-            - The parameter $\\beta$ appearing in the measure. Must be greater than zero.
+            - The parameter $\\beta$ appearing in the measure. 
+            Must be greater than zero.
         normed : bool
             - Controls normalization of the energies in the measure.
         check_type : bool
-            - Whether to check the type of the input each time or use the first input type.
+            - Whether to check the type of the input each time or use 
+            the first input type.
         verbose : bool
+            - Controls printed output when initializing EFPSet.
         """
 
         default_kwargs = {'filename': None, 
@@ -82,7 +90,7 @@ class EFPSet(EFPBase):
         
         # put column headers and indices into namespace
         cols = constructor_dict['cols']
-        self.cols = cols if isinstance(cols, list) else cols.tolist()
+        self._cols = cols if isinstance(cols, list) else cols.tolist()
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
 
         # get efps which will be kept
@@ -114,34 +122,9 @@ class EFPSet(EFPBase):
                 print('Current Stored EFPs:')
                 self._print_efp_nums()
 
-    def _print_efp_nums(self, specs=None):
-        if specs is None:
-            specs = self.specs
-        num_prime = self.count('p==1', specs=specs)
-        num_composite = self.count('p>1', specs=specs)
-        print('  Prime:', num_prime)
-        print('  Composite:', num_composite)
-        print('  Total: ', num_prime+num_composite)
-
-    @property
-    def specs(self):
-        return self.stored_specs[self.compute_mask]
-
-    def _make_graphs(self, connected_graphs):
-        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
-        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
-
-    def graphs(self, *args):
-        if not hasattr(self, '_graphs'):
-            self._graphs = self._make_graphs([elem.edges for elem in self.efpelems])
-        mask = self.sel(*args)
-        return [g for g,m in zip(self._graphs, mask) if m]
-
-    def simple_graphs(self, *args):
-        if not hasattr(self, '_simple_graphs'):
-            self._simple_graphs = self._make_graphs([elem.simple_edges for elem in self.efpelems])
-        mask = self.sel(*args)
-        return [g for g,m in zip(self._simple_graphs, mask) if m]
+    #================
+    # private methods
+    #================
 
     # _set_compute_mask(*args, mask=None)
     def _set_compute_mask(self, *args, **kwargs):
@@ -165,20 +148,34 @@ class EFPSet(EFPBase):
             except ValueError:
                 warnings.warn('connected efp needed for {} not found'.format(formula))
 
+    def _print_efp_nums(self, specs=None):
+        if specs is None:
+            specs = self.specs
+        num_prime = self.count('p==1', specs=specs)
+        num_composite = self.count('p>1', specs=specs)
+        print('  Prime:', num_prime)
+        print('  Composite:', num_composite)
+        print('  Total: ', num_prime+num_composite)
+
+    def _compute_func(self, args):
+        return self.compute(zs=args[0], thetas=args[1], batch_call=True)
+
     def _efpelems_iterator(self):
         for cm,elem in zip(self.compute_mask,self.efpelems):
             if cm:
                 yield elem
 
-    def _compute_func(self, args):
-        return self.compute(zs=args[0], thetas=args[1], batch_call=True)
+    def _make_graphs(self, connected_graphs):
+        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
+        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
 
-    @property
-    def weight_set(self):
-        return self._weight_set
+    #===============
+    # public methods
+    #===============
 
     # compute(event=None, zs=None, thetas=None)
     def compute(self, event=None, zs=None, thetas=None, batch_call=False):
+
         zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
         results = [efpelem.compute(zs, thetas_dict) for efpelem in self._efpelems_iterator()]
         if batch_call:
@@ -186,46 +183,13 @@ class EFPSet(EFPBase):
         else:
             return self.calc_disc(results, concat=True)
 
-    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1, calc_all=True):
+    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
+
         results = super().batch_compute(events, zs, thetas, n_jobs)
 
-        if calc_all:
-            return self.calc_disc(results, concat=True)
-        else:
-            return results
+        return self._calc_disc(results, concat=True)
 
-    # sel(*args, specs=None)
-    def sel(self, *args, **kwargs):
-        specs = kwargs.pop('specs', None)
-        kwargs_check('sel', kwargs)
-        if specs is None:
-            specs = self.specs
-        mask = np.ones(len(specs), dtype=bool)
-        for arg in args:
-            if isinstance(arg, str):
-                s = arg.replace(' ', '')
-            elif hasattr(arg, '__getitem__'):
-                if len(arg) == 2:
-                    s = arg[0].replace(' ', '') + str(arg[1])
-                else:
-                    raise ValueError('{} is not length 2'.format(arg))
-            else:
-                raise TypeError('invalid type for {}'.format(arg))
-            match = self._sel_re.match(s)
-            if match is None:
-                raise ValueError('could not understand \'{}\''.format(arg))
-            var = match.group(1)
-            if var not in self.cols:
-                raise ValueError('\'{}\' not in {}'.format(var, self.cols))
-            comp, val = match.group(2, 3)
-            mask &= explicit_comp(specs[:,getattr(self, var+'_ind')], comp, int(val))
-        return mask
-
-    # count(*args, specs=None)
-    def count(self, *args, **kwargs):
-        return np.count_nonzero(self.sel(*args, **kwargs))
-
-    def calc_disc(self, X, concat=False):
+    def _calc_disc(self, X, concat=False):
 
         if len(self.disc_col_inds) == 0:
             return X if concat else None
@@ -252,3 +216,124 @@ class EFPSet(EFPBase):
             return np.concatenate([XX, results], axis=concat_axis)
         else: 
             return results
+
+    # sel(*args)
+    def sel(self, *args, **kwargs):
+        """Computes a boolean mask of EFPs matching each of the
+        specifications provided by the `args`. 
+
+        Arguments
+        ---------
+        *args : arbitrary positional arguments
+            - Each argument can be either a string or a length-two 
+            iterable. If the argument is a string, it should consist 
+            of three parts: a character which is a valid element of 
+            `cols`, a comparison operator (one of `<`, `>`, `<=`, 
+            `>=`, `==`, `!=`), and a number. Whitespace between the 
+            parts does not matter. If the argument is a tuple, the 
+            first element should be a string containing a column 
+            header character and a comparison operator; the second 
+            element is the value to be compared. The tuple version 
+            is useful when the value is a variable that changes 
+            (such as in a list comprehension).
+
+        __Returns__: A boolean `numpy.ndarray` of length `len(specs)`.
+        """
+
+        # ensure only valid keyword args are passed
+        specs = kwargs.pop('specs', None)
+        kwargs_check('sel', kwargs)
+
+        # use default specs if non provided
+        if specs is None:
+            specs = self.specs
+
+        # iterate through arguments
+        mask = np.ones(len(specs), dtype=bool)
+        for arg in args:
+
+            # parse arg
+            if isinstance(arg, str):
+                s = arg.replace(' ', '')
+            elif hasattr(arg, '__getitem__'):
+                if len(arg) == 2:
+                    s = arg[0].replace(' ', '') + str(arg[1])
+                else:
+                    raise ValueError('{} is not length 2'.format(arg))
+            else:
+                raise TypeError('invalid type for {}'.format(arg))
+
+            # match string to pattern
+            match = self._sel_re.match(s)
+            if match is None:
+                raise ValueError('could not understand \'{}\''.format(arg))
+
+            # get the variable of the selection
+            var = match.group(1)
+            if var not in self.cols:
+                raise ValueError('\'{}\' not in {}'.format(var, self.cols))
+
+            # get the comparison and value
+            comp, val = match.group(2, 3)
+
+            # AND the selection with mask
+            mask &= explicit_comp(specs[:,getattr(self, var+'_ind')], comp, int(val))
+            
+        return mask
+
+    # count(*args)
+    def count(self, *args, **kwargs):
+        """Counts the number of EFPs meeting the specifications
+        of the arguments using `sel`."""
+
+        return np.count_nonzero(self.sel(*args, **kwargs))
+
+    def graphs(self, *args):
+        """Returns a list of graphs (as lists of edges) 
+        that meet the specifications of the arguments using `sel`."""
+
+        # if we haven't extracted the graphs, do it now
+        if not hasattr(self, '_graphs'):
+            self._graphs = self._make_graphs([elem.edges for elem in self.efpelems])
+
+        # filter graphs based on mask
+        mask = self.sel(*args)
+        return [g for g,m in zip(self._graphs, mask) if m]
+
+    def simple_graphs(self, *args):
+        """Returns a list of simple graphs (without any multiedges) 
+        that meet the specifications of the arguments using `sel`."""
+
+        # is we haven't extracted the simple graphs, do it now
+        if not hasattr(self, '_simple_graphs'):
+            self._simple_graphs = self._make_graphs([elem.simple_edges for elem in self.efpelems])
+
+        # filter simple graphs based on mask
+        mask = self.sel(*args)
+        return [g for g,m in zip(self._simple_graphs, mask) if m]
+
+    #===========
+    # properties
+    #===========
+
+    @property
+    def cols(self):
+        """Column labels for `specs`. 
+        Those of primary interest are listed below.
+
+        - `n` : Number of vertices.
+        - `e` : Number of simple edges.
+        - `d` : Degree, or number of multiedges.
+        - `k` : Unique identifier within EFPs of this (n,d).
+        - `c` : VE complexity $\\chi$.
+        - `p` : Number of prime factors (or connected components).
+        """
+
+        return self._cols
+
+    @property
+    def specs(self):
+        """An array of EFP specifications. Each row represents an EFP 
+        and the columns represent the quantities indicated by `cols`."""
+
+        return self.stored_specs[self.compute_mask]
