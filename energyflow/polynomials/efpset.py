@@ -125,6 +125,19 @@ class EFPSet(EFPBase):
     #================
     # private methods
     #================
+    
+    def _print_efp_nums(self, specs=None):
+        if specs is None:
+            specs = self.specs
+        num_prime = self.count('p==1', specs=specs)
+        num_composite = self.count('p>1', specs=specs)
+        print('  Prime:', num_prime)
+        print('  Composite:', num_composite)
+        print('  Total: ', num_prime+num_composite)
+
+    def _make_graphs(self, connected_graphs):
+        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
+        return connected_graphs + [graph_union(*dc) for dc in disc_comps]
 
     # _set_compute_mask(*args, mask=None)
     def _set_compute_mask(self, *args, **kwargs):
