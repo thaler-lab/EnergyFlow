@@ -129,7 +129,7 @@ class EFPSet(EFPBase):
 
     def _make_graphs(self, connected_graphs):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
-        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
+        return connected_graphs + [graph_union(*dc) for dc in disc_comps]
 
     def graphs(self, *args):
         if not hasattr(self, '_graphs'):
