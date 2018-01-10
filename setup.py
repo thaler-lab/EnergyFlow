@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='EnergyFlow',
-      version='0.4.0',
+      version='0.4.1',
       description='Python implementation of the energy flow basis',
       author='Patrick T. Komiske III',
       author_email='pkomiske@mit.edu',
