@@ -22,11 +22,11 @@ class EFPBase:
             zs, thetas = self.measure(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
-        thetas_dict = {w: thetas**w for w in self.weight_set}
+        thetas_dict = {w: thetas**w for w in self._weight_set}
         return zs, thetas_dict
 
     @abstractproperty
-    def weight_set(self):
+    def _weight_set(self):
         pass
 
     def _compute_func(self, args):
@@ -50,6 +50,7 @@ class EFPBase:
 
         pass
 
+    @abstractmethod
     def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
         """Computes the value(s) of the EFP(s) on several events.
 
@@ -121,7 +122,7 @@ class EFPElem:
             self.edges = [e for w,e in zip(self.weights, self.simple_edges) for i in range(w)]
 
         self.d = sum(self.weights)
-        self.weight_set = set(self.weights)
+        self.weight_set = frozenset(self.weights)
 
         if self.k is not None:
             self.ndk = (self.n, self.d, self.k)

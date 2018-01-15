@@ -182,26 +182,6 @@ class EFPSet(EFPBase):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
         return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
 
-    #===============
-    # public methods
-    #===============
-
-    # compute(event=None, zs=None, thetas=None)
-    def compute(self, event=None, zs=None, thetas=None, batch_call=False):
-
-        zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
-        results = [efpelem.compute(zs, thetas_dict) for efpelem in self._efpelems_iterator()]
-        if batch_call:
-            return results
-        else:
-            return self.calc_disc(results, concat=True)
-
-    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
-
-        results = super().batch_compute(events, zs, thetas, n_jobs)
-
-        return self._calc_disc(results, concat=True)
-
     def _calc_disc(self, X, concat=False):
 
         if len(self.disc_col_inds) == 0:
@@ -229,6 +209,26 @@ class EFPSet(EFPBase):
             return np.concatenate([XX, results], axis=concat_axis)
         else: 
             return results
+
+    #===============
+    # public methods
+    #===============
+
+    # compute(event=None, zs=None, thetas=None)
+    def compute(self, event=None, zs=None, thetas=None, batch_call=False):
+
+        zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
+        results = [efpelem.compute(zs, thetas_dict) for efpelem in self._efpelems_iterator()]
+        if batch_call:
+            return results
+        else:
+            return self.calc_disc(results, concat=True)
+
+    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
+
+        results = super().batch_compute(events, zs, thetas, n_jobs)
+
+        return self._calc_disc(results, concat=True)
 
     # sel(*args)
     def sel(self, *args, **kwargs):
@@ -328,6 +328,14 @@ class EFPSet(EFPBase):
     #===========
     # properties
     #===========
+
+    @property
+    def _weight_set(self):
+        return self.__weight_set
+
+    @_weight_set.setter
+    def _weight_set(self, val):
+        self.__weight_set = val
 
     @property
     def cols(self):
