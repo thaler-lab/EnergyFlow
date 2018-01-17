@@ -148,7 +148,8 @@ class HadronicMeasure(Measure):
         return np.sqrt(p4s[:,1]**2 + p4s[:,2]**2)
 
     def _yphis(self, p4s):
-        return np.arctan2(p4s[:,2], p4s[:,1])
+        return np.vstack([0.5*np.log((p4s[:,0]+p4s[:,3])/(p4s[:,0]-p4s[:,3])),
+                          np.arctan2(p4s[:,2], p4s[:,1])]).T
 
     def _thetas_from_yphis(self, yphis):
         X = yphis[:,np.newaxis] - yphis[np.newaxis,:]
