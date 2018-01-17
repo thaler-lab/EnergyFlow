@@ -222,7 +222,7 @@ class EFPSet(EFPBase):
         if batch_call:
             return results
         else:
-            return self.calc_disc(results, concat=True)
+            return self._calc_disc(results, concat=True)
 
     def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
 
