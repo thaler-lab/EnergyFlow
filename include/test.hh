@@ -1,6 +1,7 @@
-#include <vector>
-#include <cmath>
+#include <random>
+#include <iostream>
 
-#include <algorithm>
+#include "taco.h"
 
-int x = 4;
+using namespace taco;
+using namespace std;
