@@ -61,7 +61,9 @@ class EFP(EFPBase):
         # call compute on the EFPElem
         return self.efpelem.compute(zs, thetas_dict)
 
-    # inherits batch_compute from EFPBase
+    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
+
+        return super().batch_compute(events, zs, thetas, n_jobs)
 
     #===========
     # properties
