@@ -47,7 +47,7 @@
         },
         {
             "location": "/installation/",
-            "text": "The EnergyFlow package is (currently) written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python3.\n\n\nThe EnergyFlow package is designed to work with Python 2.7, 3.4, 3.5, 3.6. These can be installed from \nhere\n. The latest stable version of Python 3 is highly recommended.\n\n\nInstall with \npip\n (recommended)\n\n\nTo install from PyPI using \npip\n, make sure you have one of the supported versions of Python installed and that \npip\n is available in the system path. Simply execute \npip install energyflow\n and EnergyFlow will be installed in your default location for Python packages.\n\n\nBleeding edge install\n\n\nEnergyFlow is \nhosted on GitHub\n and can be installed by cloning the repository and running \npython setup.py install\n. This is not recommended compared to installation with \npip\n because the released versions are more thoroughly tested.\n\n\niGraph\n\n\nDevelopment NumPy\n\n\nSince EnergyFlow relies on \nnumpy.einsum\n to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if \neinsum\n changes. At the present time, the master branch of the NumPy repo contains some significant changes to \neinsum\n compared to NumPy \n1.1.13\n. Currently, we recommend using the latest stable version of NumPy, but this may change in the future.",
+            "text": "The EnergyFlow package is (currently) written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3.\n\n\nThe EnergyFlow package is designed to work with Python 2.7, 3.4, 3.5, 3.6. These can be installed from \nhere\n. The latest stable version of Python 3 is highly recommended.\n\n\nInstall with \npip\n (recommended)\n\n\nTo install from PyPI using \npip\n, make sure you have one of the supported versions of Python installed and that \npip\n is available in the system path. Simply execute \npip install energyflow\n and EnergyFlow will be installed in your default location for Python packages.\n\n\nBleeding edge install\n\n\nEnergyFlow is \nhosted on GitHub\n and can be installed by cloning the repository and running \npython setup.py install\n.\n\n\niGraph\n\n\nEnergyFlow relies on \niGraph\n for generation of multigraphs. This is not required if using the provided graphs suits your needs. If you wish to generate your own graphs, make sure that iGraph is importable.\n\n\nNumPy\n\n\nSince EnergyFlow relies on \nnumpy.einsum\n to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if \neinsum\n changes. NumPy \n1.14.0\n changed \neinsum\n to use \ntensordot\n when possible compared to \n1.13.3\n, which only used \nc_einsum\n. This means that computations are faster on larger tensors but may be slower on smaller tensors.",
             "title": "Installation"
         },
         {
@@ -57,18 +57,18 @@
         },
         {
             "location": "/installation/#bleeding-edge-install",
-            "text": "EnergyFlow is  hosted on GitHub  and can be installed by cloning the repository and running  python setup.py install . This is not recommended compared to installation with  pip  because the released versions are more thoroughly tested.",
+            "text": "EnergyFlow is  hosted on GitHub  and can be installed by cloning the repository and running  python setup.py install .",
             "title": "Bleeding edge install"
         },
         {
             "location": "/installation/#igraph",
-            "text": "",
+            "text": "EnergyFlow relies on  iGraph  for generation of multigraphs. This is not required if using the provided graphs suits your needs. If you wish to generate your own graphs, make sure that iGraph is importable.",
             "title": "iGraph"
         },
         {
-            "location": "/installation/#development-numpy",
-            "text": "Since EnergyFlow relies on  numpy.einsum  to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if  einsum  changes. At the present time, the master branch of the NumPy repo contains some significant changes to  einsum  compared to NumPy  1.1.13 . Currently, we recommend using the latest stable version of NumPy, but this may change in the future.",
-            "title": "Development NumPy"
+            "location": "/installation/#numpy",
+            "text": "Since EnergyFlow relies on  numpy.einsum  to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if  einsum  changes. NumPy  1.14.0  changed  einsum  to use  tensordot  when possible compared to  1.13.3 , which only used  c_einsum . This means that computations are faster on larger tensors but may be slower on smaller tensors.",
+            "title": "NumPy"
         },
         {
             "location": "/tutorial/",
@@ -116,79 +116,114 @@
             "title": "Where can I get graph image files?"
         },
         {
+            "location": "/docs/algorithms/",
+            "text": "Implements algorithms necessary for EnergyFlow.",
+            "title": "Algorithms"
+        },
+        {
             "location": "/docs/multigraphs/",
-            "text": "A subpackage for handling multigraph generation.\nNote that unless igraph is importable, the functionality of this module will not be available.\nIn this case, EnergyFlow is still usable with the provided default file of precomputed multigraphs.\n\n\n\n\nGenerator\n\n\nA class that facilitates multigraph generation.\n\n\nMultiraphs are generated by first finding all simple graphs up to some nmax\nnumber of vertices, emax number of edges, and cmax VE complexity (which \ndepends on the particular VE implementation chosen). Next, weights are added\nto each of these simple graphs using integer partitions up to dome dmax number \nof multigraph edges. Disconnected graphs are determined using the connected \ngraphs by using integer partitions to determine all unique multiplications of\nthe connected graphs up to nmax and dmax.\n\n\nSince computation will ultimately be done with numpy.einsum, einstrings and\neinpaths are also computed for each simple graph\n\n\nMultigraphs and associated properties can be easily saved in a .npz file.\n\n\nGenerator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg=numpy, np_optimize=greedy)\n\n\n\n\nInitializes a Generator object for generating multigraphs.\n\n\nParameters\n\n\n\n\n\n\ndmax\n : \nint\n\n    test\n\nReturns\n\n\n\n\n\n\noutput\n : \nGenerator\n\n    The Generator object.\n\n\n\n\n\n\nsave\n\n\nsave(filename)",
+            "text": "A subpackage for handling multigraph generation.\nNote that unless igraph is importable, the functionality of this module will not be available.\nIn this case, EnergyFlow is still usable with the provided default file of precomputed multigraphs.\n\n\n\n\nGenerator\n\n\nA class that facilitates multigraph generation.\n\n\nMultiraphs are generated by first finding all simple graphs up to some nmax\nnumber of vertices, emax number of edges, and cmax VE complexity (which \ndepends on the particular VE implementation chosen). Next, weights are added\nto each of these simple graphs using integer partitions up to dome dmax number \nof multigraph edges. Disconnected graphs are determined using the connected \ngraphs by using integer partitions to determine all unique multiplications of\nthe connected graphs up to nmax and dmax.\n\n\nSince computation will ultimately be done with numpy.einsum, einstrings and\neinpaths are also computed for each simple graph\n\n\nMultigraphs and associated properties can be easily saved in a .npz file.\n\n\nGenerator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg='numpy', np_optimize='greedy')\n\n\n\n\nInitializes a Generator object for generating multigraphs.\n\n\nParameters\n\n\n\n\ndmax\n : \nint\n\n    test\n\n\n\n\nReturns\n\n\n\n\noutput\n : \nGenerator\n\n    The Generator object.",
             "title": "Multigraphs"
         },
         {
             "location": "/docs/multigraphs/#generator",
-            "text": "A class that facilitates multigraph generation.  Multiraphs are generated by first finding all simple graphs up to some nmax\nnumber of vertices, emax number of edges, and cmax VE complexity (which \ndepends on the particular VE implementation chosen). Next, weights are added\nto each of these simple graphs using integer partitions up to dome dmax number \nof multigraph edges. Disconnected graphs are determined using the connected \ngraphs by using integer partitions to determine all unique multiplications of\nthe connected graphs up to nmax and dmax.  Since computation will ultimately be done with numpy.einsum, einstrings and\neinpaths are also computed for each simple graph  Multigraphs and associated properties can be easily saved in a .npz file.  Generator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg=numpy, np_optimize=greedy)  Initializes a Generator object for generating multigraphs.  Parameters    dmax  :  int \n    test Returns    output  :  Generator \n    The Generator object.",
+            "text": "A class that facilitates multigraph generation.  Multiraphs are generated by first finding all simple graphs up to some nmax\nnumber of vertices, emax number of edges, and cmax VE complexity (which \ndepends on the particular VE implementation chosen). Next, weights are added\nto each of these simple graphs using integer partitions up to dome dmax number \nof multigraph edges. Disconnected graphs are determined using the connected \ngraphs by using integer partitions to determine all unique multiplications of\nthe connected graphs up to nmax and dmax.  Since computation will ultimately be done with numpy.einsum, einstrings and\neinpaths are also computed for each simple graph  Multigraphs and associated properties can be easily saved in a .npz file.  Generator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg='numpy', np_optimize='greedy')  Initializes a Generator object for generating multigraphs.  Parameters   dmax  :  int \n    test   Returns   output  :  Generator \n    The Generator object.",
             "title": "Generator"
         },
         {
-            "location": "/docs/multigraphs/#save",
-            "text": "save(filename)",
-            "title": "save"
-        },
-        {
             "location": "/docs/polynomials/",
-            "text": "These are the classes that actually compute EFPs.\nIf you plan on studying single graphs, \nEFP\n would typically be used.\nFor studying EFPs in large collections, use \nEFPSet\n for greater efficiency and simplicity.\n\n\n\n\nEFP\n\n\nA class for a storing and computing a single EFP.\n\n\nEFP(edges, measure=hadr, beta=1, normed=True, check_type=True, ve_alg=numpy, np_optimize=greedy)\n\n\n\n\nArguments\n\n\n\n\nedges\n : \nlist\n\n    Edges of the EFP graph specified by tuple-pairs of vertices.\n\n\nmeasure\n : \nstring, optional\n\n    See \nMeasures\n for options.\n\n\nbeta\n : \nfloat, optional\n\n    A value greater than zero.\n\n\nnormed\n : \nbool, optional\n\n    Controls energy normalization.\n\n\ncheck_type\n : \nbool, optional\n\n    Whether to check the type of the input or use the first input type.\n\n\nve_alg\n : \nstring, optional\n\n    Controls which variable elimination algorithm is used, either \nnumpy\n or \nef\n. Leave as \nnumpy\n unless you know what you're doing.\n\n\nnp_optimize\n : \nstring, optional\n\n    When \nve_alg='numpy'\n this is the \noptimize\n keyword of \nnumpy.einsum_path\n\n\n\n\nbatch_compute\n\n\nbatch_compute(events=None, zs=None, thetas=None, n_jobs=-1)\n\n\n\n\ncompute\n\n\ncompute(event=None, zs=None, thetas=None)\n\n\n\n\n\n\nEFPSet\n\n\nA class that holds a collection of EFPs and computes their values on events.\n\n\nEFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, check_type=False, verbose=False)\n\n\n\n\nEFPSet can be initialized in one of three ways (in order of precedence):\n\n\n\n\nGenerator\n - Pass in a custom \nGenerator\n object as the first positional argument.\n\n\nCustom File\n - Pass in the name of a \n.npz\n file saved with a custom \nGenerator\n.\n\n\nDefault\n - Use the EFPs that come installed with the \nEnergFlow\n package.\n\n\n\n\nTo control which EFPs are included, \nEFPSet\n accepts an arbitrary number of specifications\n(see \nsel\n) and only EFPs meeting each specification are included in the set.\n\n\nArguments\n\n\n\n\n*args\n : \narbitrary positional arguments\n\n\nIf the first positional argument is a \nGenerator\n instance, it is used for\ninitialization. The remaining positional arguments must be valid arguments to \nsel\n.\n\n\n\n\n\n\nfilename\n : \nstring\n\n\nPath to a \n.npz\n file which has been saved by a valid \nenergyflow.Generator\n.\n\n\n\n\n\n\nmeasure\n : \nstring\n\n\nOne of \n'hadr'\n, \n'hadr-dot'\n, \n'ee'\n.\nSee \nMeasures\n additional info.\n\n\n\n\n\n\nbeta\n : \nfloat\n\n\nThe parameter $\\beta$ appearing in the measure. Must be greater than zero.\n\n\n\n\n\n\nnormed\n : \nbool\n\n\nControls normalization of the energies in the measure.\n\n\n\n\n\n\ncheck_type\n : \nbool\n\n\nWhether to check the type of the input each time or use the first input type.\n\n\n\n\n\n\nverbose\n : \nbool\n\n\n\n\nbatch_compute\n\n\nbatch_compute(events=None, zs=None, thetas=None, n_jobs=-1, calc_all=True)\n\n\n\n\ncalc_disc\n\n\ncalc_disc(X, concat=False)\n\n\n\n\ncompute\n\n\ncompute(event=None, zs=None, thetas=None)\n\n\n\n\ncount\n\n\ncount(*args, specs=None)\n\n\n\n\ngraphs\n\n\ngraphs(args)\n\n\n\n\nsel\n\n\nsel(*args, specs=None)\n\n\n\n\nsimple_graphs\n\n\nsimple_graphs(args)",
+            "text": "These are the classes that actually compute EFPs.\nIf you plan on studying single graphs, \nEFP\n would typically be used.\nFor studying EFPs in large collections, use \nEFPSet\n for greater efficiency and simplicity.\n\n\n\n\nEFP\n\n\nA class for representing and computing a single EFP.\n\n\nEFP(edges, nfree=0, measure='hadr', beta=1, normed=True, check_type=True, ve_alg='numpy', np_optimize='greedy')\n\n\n\n\nArguments\n\n\n\n\nedges\n : \nlist\n\n\nEdges of the EFP graph specified by tuple-pairs of vertices.\n\n\n\n\n\n\nmeasure\n : {\n'hadr'\n, \n'hadr-dot'\n, \n'ee'\n}\n\n\nSee \nMeasures\n for additional info.\n\n\n\n\n\n\nbeta\n : \nfloat\n\n\nThe parameter $\\beta$ appearing in the measure.\nMust be greater than zero.\n\n\n\n\n\n\nnormed\n : \nbool\n\n\nControls normalization of the energies in the measure.\n\n\n\n\n\n\ncheck_type\n : \nbool\n\n\nWhether to check the type of the input each time or use\nthe first input type.\n\n\n\n\n\n\nve_alg\n : {\n'numpy'\n, \n'ef'\n}\n\n\nWhich variable elimination algorithm to use.\n\n\n\n\n\n\nnp_optimize\n : {\nTrue\n, \nFalse\n, \n'greedy'\n, \n'optimal'\n}\n\n\nWhen \nve_alg='numpy'\n this is the \noptimize\n keyword\nof \nnumpy.einsum_path\n.\n\n\n\n\n\n\n\n\ncompute\n\n\ncompute(event=None, zs=None, thetas=None)\n\n\n\n\nComputes the value(s) of the EFP(s) on a single event.\n\n\nArguments\n\n\n\n\nevent\n : \narray_like or \nfastjet.PseudoJet\n\n\nThe event or jet as an array or \nPseudoJet\n.\n\n\n\n\n\n\nzs\n : \n1-dim array_like\n\n\nIf present, \nthetas\n must also be present, and \nzs\n is used in place\nof the energies of an event.\n\n\n\n\n\n\nthetas\n : \n2-dim array_like\n\n\nIf present, \nzs\n must also be present, and \nthetas\n is used in place\nof the pairwise angles of an event.\n\n\n\n\n\n\n\n\nbatch_compute\n\n\nbatch_compute(events=None, zs=None, thetas=None, n_jobs=-1)\n\n\n\n\nComputes the value(s) of the EFP(s) on several events.\n\n\nArguments\n\n\n\n\nevents\n : \narray_like or \nfastjet.PseudoJet\n\n\nThe events or jets as an array or list of \nPseudoJet\ns.\n\n\n\n\n\n\nzs\n : \nlist of 1-dim array\n\n\nIf present, \nthetas\n must also be present, and \nzs\n is used in place\nof the energies of the events.\n\n\n\n\n\n\nthetas\n : \nlist of 2-dim array\n\n\nIf present, \nzs\n must also be present, and \nthetas\n is used in place\nof the pairwise angles of the events.\n\n\n\n\n\n\nn_jobs\n : \nint\n\n\nThe number of worker processes to use. A value of \n-1\n will attempt\nto use as many processes as there are CPUs on the machine.\n\n\n\n\n\n\n\n\nn\n\n\nn\n\n\n\n\nNumber of vertices in the graph of this EFP.\n\n\nd\n\n\nd\n\n\n\n\nDegree, or number of edges, in the graph of this EFP.\n\n\nc\n\n\nc\n\n\n\n\nVE complexity $\\chi$ of this EFP.\n\n\ngraph\n\n\ngraph\n\n\n\n\nGraph of this EFP represented by a list of edges.\n\n\nsimple_graph\n\n\nsimple_graph\n\n\n\n\nSimple graph of this EFP (forgetting all multiedges)\nrepresented by a list of edges.\n\n\n\n\nEFPSet\n\n\nA class that holds a collection of EFPs and computes their values on events.\n\n\nEFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, check_type=False, verbose=False)\n\n\n\n\nEFPSet can be initialized in one of three ways (in order of precedence):\n\n\n\n\nGenerator\n - Pass in a custom \nGenerator\n object as the\nfirst positional argument.\n\n\nCustom File\n - Pass in the name of a \n.npz\n file saved\nwith a custom \nGenerator\n.\n\n\nDefault\n - Use the EFPs that come installed with the\n\nEnergFlow\n package.\n\n\n\n\nTo control which EFPs are included, \nEFPSet\n accepts an arbitrary\nnumber of specifications (see \nsel\n) and only EFPs meeting each\nspecification are included in the set.\n\n\nArguments\n\n\n\n\n*args\n : \narbitrary positional arguments\n\n\nIf the first positional argument is a \nGenerator\n instance,\nit is used for initialization. The remaining positional\narguments must be valid arguments to \nsel\n.\n\n\n\n\n\n\nfilename\n : \nstring\n\n\nPath to a \n.npz\n file which has been saved by a valid\n\nenergyflow.Generator\n.\n\n\n\n\n\n\nmeasure\n : {\n'hadr'\n, \n'hadr-dot'\n, \n'ee'\n}\n\n\nSee \nMeasures\n for additional info.\n\n\n\n\n\n\nbeta\n : \nfloat\n\n\nThe parameter $\\beta$ appearing in the measure.\nMust be greater than zero.\n\n\n\n\n\n\nnormed\n : \nbool\n\n\nControls normalization of the energies in the measure.\n\n\n\n\n\n\ncheck_type\n : \nbool\n\n\nWhether to check the type of the input each time or use\nthe first input type.\n\n\n\n\n\n\nverbose\n : \nbool\n\n\nControls printed output when initializing EFPSet.\n\n\n\n\n\n\n\n\ncompute\n\n\ncompute(event=None, zs=None, thetas=None)\n\n\n\n\nComputes the value(s) of the EFP(s) on a single event.\n\n\nArguments\n\n\n\n\nevent\n : \narray_like or \nfastjet.PseudoJet\n\n\nThe event or jet as an array or \nPseudoJet\n.\n\n\n\n\n\n\nzs\n : \n1-dim array_like\n\n\nIf present, \nthetas\n must also be present, and \nzs\n is used in place\nof the energies of an event.\n\n\n\n\n\n\nthetas\n : \n2-dim array_like\n\n\nIf present, \nzs\n must also be present, and \nthetas\n is used in place\nof the pairwise angles of an event.\n\n\n\n\n\n\n\n\nbatch_compute\n\n\nbatch_compute(events=None, zs=None, thetas=None, n_jobs=-1)\n\n\n\n\nComputes the value(s) of the EFP(s) on several events.\n\n\nArguments\n\n\n\n\nevents\n : \narray_like or \nfastjet.PseudoJet\n\n\nThe events or jets as an array or list of \nPseudoJet\ns.\n\n\n\n\n\n\nzs\n : \nlist of 1-dim array\n\n\nIf present, \nthetas\n must also be present, and \nzs\n is used in place\nof the energies of the events.\n\n\n\n\n\n\nthetas\n : \nlist of 2-dim array\n\n\nIf present, \nzs\n must also be present, and \nthetas\n is used in place\nof the pairwise angles of the events.\n\n\n\n\n\n\nn_jobs\n : \nint\n\n\nThe number of worker processes to use. A value of \n-1\n will attempt\nto use as many processes as there are CPUs on the machine.\n\n\n\n\n\n\n\n\nsel\n\n\nsel(*args)\n\n\n\n\nComputes a boolean mask of EFPs matching each of the\nspecifications provided by the \nargs\n.\n\n\nArguments\n\n\n\n\n*args\n : \narbitrary positional arguments\n\n\nEach argument can be either a string or a length-two\niterable. If the argument is a string, it should consist\nof three parts: a character which is a valid element of\n\ncols\n, a comparison operator (one of \n<\n, \n>\n, \n<=\n,\n\n>=\n, \n==\n, \n!=\n), and a number. Whitespace between the\nparts does not matter. If the argument is a tuple, the\nfirst element should be a string containing a column\nheader character and a comparison operator; the second\nelement is the value to be compared. The tuple version\nis useful when the value is a variable that changes\n(such as in a list comprehension).\n\n\n\n\n\n\n\n\nReturns\n: A boolean \nnumpy.ndarray\n of length \nlen(specs)\n.\n\n\ncount\n\n\ncount(*args)\n\n\n\n\nCounts the number of EFPs meeting the specifications\nof the arguments using \nsel\n.\n\n\ngraphs\n\n\ngraphs(*args)\n\n\n\n\nReturns a list of graphs (as lists of edges)\nthat meet the specifications of the arguments using \nsel\n.\n\n\nsimple_graphs\n\n\nsimple_graphs(*args)\n\n\n\n\nReturns a list of simple graphs (without any multiedges)\nthat meet the specifications of the arguments using \nsel\n.\n\n\nspecs\n\n\nspecs\n\n\n\n\nAn array of EFP specifications. Each row represents an EFP\nand the columns represent the quantities indicated by \ncols\n.\n\n\ncols\n\n\ncols\n\n\n\n\nColumn labels for \nspecs\n.\nThose of primary interest are listed below.\n\n\n\n\nn\n : Number of vertices.\n\n\ne\n : Number of simple edges.\n\n\nd\n : Degree, or number of multiedges.\n\n\nk\n : Unique identifier within EFPs of this (n,d).\n\n\nc\n : VE complexity $\\chi$.\n\n\np\n : Number of prime factors (or connected components).",
             "title": "Polynomials"
         },
         {
             "location": "/docs/polynomials/#efp",
-            "text": "A class for a storing and computing a single EFP.  EFP(edges, measure=hadr, beta=1, normed=True, check_type=True, ve_alg=numpy, np_optimize=greedy)  Arguments   edges  :  list \n    Edges of the EFP graph specified by tuple-pairs of vertices.  measure  :  string, optional \n    See  Measures  for options.  beta  :  float, optional \n    A value greater than zero.  normed  :  bool, optional \n    Controls energy normalization.  check_type  :  bool, optional \n    Whether to check the type of the input or use the first input type.  ve_alg  :  string, optional \n    Controls which variable elimination algorithm is used, either  numpy  or  ef . Leave as  numpy  unless you know what you're doing.  np_optimize  :  string, optional \n    When  ve_alg='numpy'  this is the  optimize  keyword of  numpy.einsum_path",
+            "text": "A class for representing and computing a single EFP.  EFP(edges, nfree=0, measure='hadr', beta=1, normed=True, check_type=True, ve_alg='numpy', np_optimize='greedy')  Arguments   edges  :  list  Edges of the EFP graph specified by tuple-pairs of vertices.    measure  : { 'hadr' ,  'hadr-dot' ,  'ee' }  See  Measures  for additional info.    beta  :  float  The parameter $\\beta$ appearing in the measure.\nMust be greater than zero.    normed  :  bool  Controls normalization of the energies in the measure.    check_type  :  bool  Whether to check the type of the input each time or use\nthe first input type.    ve_alg  : { 'numpy' ,  'ef' }  Which variable elimination algorithm to use.    np_optimize  : { True ,  False ,  'greedy' ,  'optimal' }  When  ve_alg='numpy'  this is the  optimize  keyword\nof  numpy.einsum_path .",
             "title": "EFP"
         },
         {
+            "location": "/docs/polynomials/#compute",
+            "text": "compute(event=None, zs=None, thetas=None)  Computes the value(s) of the EFP(s) on a single event.  Arguments   event  :  array_like or  fastjet.PseudoJet  The event or jet as an array or  PseudoJet .    zs  :  1-dim array_like  If present,  thetas  must also be present, and  zs  is used in place\nof the energies of an event.    thetas  :  2-dim array_like  If present,  zs  must also be present, and  thetas  is used in place\nof the pairwise angles of an event.",
+            "title": "compute"
+        },
+        {
             "location": "/docs/polynomials/#batch_compute",
-            "text": "batch_compute(events=None, zs=None, thetas=None, n_jobs=-1)",
+            "text": "batch_compute(events=None, zs=None, thetas=None, n_jobs=-1)  Computes the value(s) of the EFP(s) on several events.  Arguments   events  :  array_like or  fastjet.PseudoJet  The events or jets as an array or list of  PseudoJet s.    zs  :  list of 1-dim array  If present,  thetas  must also be present, and  zs  is used in place\nof the energies of the events.    thetas  :  list of 2-dim array  If present,  zs  must also be present, and  thetas  is used in place\nof the pairwise angles of the events.    n_jobs  :  int  The number of worker processes to use. A value of  -1  will attempt\nto use as many processes as there are CPUs on the machine.",
             "title": "batch_compute"
         },
         {
-            "location": "/docs/polynomials/#compute",
-            "text": "compute(event=None, zs=None, thetas=None)",
-            "title": "compute"
+            "location": "/docs/polynomials/#n",
+            "text": "n  Number of vertices in the graph of this EFP.",
+            "title": "n"
+        },
+        {
+            "location": "/docs/polynomials/#d",
+            "text": "d  Degree, or number of edges, in the graph of this EFP.",
+            "title": "d"
+        },
+        {
+            "location": "/docs/polynomials/#c",
+            "text": "c  VE complexity $\\chi$ of this EFP.",
+            "title": "c"
+        },
+        {
+            "location": "/docs/polynomials/#graph",
+            "text": "graph  Graph of this EFP represented by a list of edges.",
+            "title": "graph"
+        },
+        {
+            "location": "/docs/polynomials/#simple_graph",
+            "text": "simple_graph  Simple graph of this EFP (forgetting all multiedges)\nrepresented by a list of edges.",
+            "title": "simple_graph"
         },
         {
             "location": "/docs/polynomials/#efpset",
-            "text": "A class that holds a collection of EFPs and computes their values on events.  EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, check_type=False, verbose=False)  EFPSet can be initialized in one of three ways (in order of precedence):   Generator  - Pass in a custom  Generator  object as the first positional argument.  Custom File  - Pass in the name of a  .npz  file saved with a custom  Generator .  Default  - Use the EFPs that come installed with the  EnergFlow  package.   To control which EFPs are included,  EFPSet  accepts an arbitrary number of specifications\n(see  sel ) and only EFPs meeting each specification are included in the set.  Arguments   *args  :  arbitrary positional arguments  If the first positional argument is a  Generator  instance, it is used for\ninitialization. The remaining positional arguments must be valid arguments to  sel .    filename  :  string  Path to a  .npz  file which has been saved by a valid  energyflow.Generator .    measure  :  string  One of  'hadr' ,  'hadr-dot' ,  'ee' .\nSee  Measures  additional info.    beta  :  float  The parameter $\\beta$ appearing in the measure. Must be greater than zero.    normed  :  bool  Controls normalization of the energies in the measure.    check_type  :  bool  Whether to check the type of the input each time or use the first input type.    verbose  :  bool",
+            "text": "A class that holds a collection of EFPs and computes their values on events.  EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, check_type=False, verbose=False)  EFPSet can be initialized in one of three ways (in order of precedence):   Generator  - Pass in a custom  Generator  object as the\nfirst positional argument.  Custom File  - Pass in the name of a  .npz  file saved\nwith a custom  Generator .  Default  - Use the EFPs that come installed with the EnergFlow  package.   To control which EFPs are included,  EFPSet  accepts an arbitrary\nnumber of specifications (see  sel ) and only EFPs meeting each\nspecification are included in the set.  Arguments   *args  :  arbitrary positional arguments  If the first positional argument is a  Generator  instance,\nit is used for initialization. The remaining positional\narguments must be valid arguments to  sel .    filename  :  string  Path to a  .npz  file which has been saved by a valid energyflow.Generator .    measure  : { 'hadr' ,  'hadr-dot' ,  'ee' }  See  Measures  for additional info.    beta  :  float  The parameter $\\beta$ appearing in the measure.\nMust be greater than zero.    normed  :  bool  Controls normalization of the energies in the measure.    check_type  :  bool  Whether to check the type of the input each time or use\nthe first input type.    verbose  :  bool  Controls printed output when initializing EFPSet.",
             "title": "EFPSet"
         },
         {
-            "location": "/docs/polynomials/#batch_compute_1",
-            "text": "batch_compute(events=None, zs=None, thetas=None, n_jobs=-1, calc_all=True)",
-            "title": "batch_compute"
-        },
-        {
-            "location": "/docs/polynomials/#calc_disc",
-            "text": "calc_disc(X, concat=False)",
-            "title": "calc_disc"
-        },
-        {
             "location": "/docs/polynomials/#compute_1",
-            "text": "compute(event=None, zs=None, thetas=None)",
+            "text": "compute(event=None, zs=None, thetas=None)  Computes the value(s) of the EFP(s) on a single event.  Arguments   event  :  array_like or  fastjet.PseudoJet  The event or jet as an array or  PseudoJet .    zs  :  1-dim array_like  If present,  thetas  must also be present, and  zs  is used in place\nof the energies of an event.    thetas  :  2-dim array_like  If present,  zs  must also be present, and  thetas  is used in place\nof the pairwise angles of an event.",
             "title": "compute"
         },
         {
+            "location": "/docs/polynomials/#batch_compute_1",
+            "text": "batch_compute(events=None, zs=None, thetas=None, n_jobs=-1)  Computes the value(s) of the EFP(s) on several events.  Arguments   events  :  array_like or  fastjet.PseudoJet  The events or jets as an array or list of  PseudoJet s.    zs  :  list of 1-dim array  If present,  thetas  must also be present, and  zs  is used in place\nof the energies of the events.    thetas  :  list of 2-dim array  If present,  zs  must also be present, and  thetas  is used in place\nof the pairwise angles of the events.    n_jobs  :  int  The number of worker processes to use. A value of  -1  will attempt\nto use as many processes as there are CPUs on the machine.",
+            "title": "batch_compute"
+        },
+        {
+            "location": "/docs/polynomials/#sel",
+            "text": "sel(*args)  Computes a boolean mask of EFPs matching each of the\nspecifications provided by the  args .  Arguments   *args  :  arbitrary positional arguments  Each argument can be either a string or a length-two\niterable. If the argument is a string, it should consist\nof three parts: a character which is a valid element of cols , a comparison operator (one of  < ,  > ,  <= , >= ,  == ,  != ), and a number. Whitespace between the\nparts does not matter. If the argument is a tuple, the\nfirst element should be a string containing a column\nheader character and a comparison operator; the second\nelement is the value to be compared. The tuple version\nis useful when the value is a variable that changes\n(such as in a list comprehension).     Returns : A boolean  numpy.ndarray  of length  len(specs) .",
+            "title": "sel"
+        },
+        {
             "location": "/docs/polynomials/#count",
-            "text": "count(*args, specs=None)",
+            "text": "count(*args)  Counts the number of EFPs meeting the specifications\nof the arguments using  sel .",
             "title": "count"
         },
         {
             "location": "/docs/polynomials/#graphs",
-            "text": "graphs(args)",
+            "text": "graphs(*args)  Returns a list of graphs (as lists of edges)\nthat meet the specifications of the arguments using  sel .",
             "title": "graphs"
         },
         {
-            "location": "/docs/polynomials/#sel",
-            "text": "sel(*args, specs=None)",
-            "title": "sel"
+            "location": "/docs/polynomials/#simple_graphs",
+            "text": "simple_graphs(*args)  Returns a list of simple graphs (without any multiedges)\nthat meet the specifications of the arguments using  sel .",
+            "title": "simple_graphs"
         },
         {
-            "location": "/docs/polynomials/#simple_graphs",
-            "text": "simple_graphs(args)",
-            "title": "simple_graphs"
+            "location": "/docs/polynomials/#specs",
+            "text": "specs  An array of EFP specifications. Each row represents an EFP\nand the columns represent the quantities indicated by  cols .",
+            "title": "specs"
+        },
+        {
+            "location": "/docs/polynomials/#cols",
+            "text": "cols  Column labels for  specs .\nThose of primary interest are listed below.   n  : Number of vertices.  e  : Number of simple edges.  d  : Degree, or number of multiedges.  k  : Unique identifier within EFPs of this (n,d).  c  : VE complexity $\\chi$.  p  : Number of prime factors (or connected components).",
+            "title": "cols"
+        },
+        {
+            "location": "/docs/utils/",
+            "text": "A subpackage containing utility functions and classes. Not meant to be\nimported directly in energyflow.",
+            "title": "Utils"
         }
     ]
 }

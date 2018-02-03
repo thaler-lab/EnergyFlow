@@ -90,7 +90,7 @@
     <li class="toctree-l3"><a href="#igraph">iGraph</a></li>
     
 
-    <li class="toctree-l3"><a href="#development-numpy">Development NumPy</a></li>
+    <li class="toctree-l3"><a href="#numpy">NumPy</a></li>
     
 
     </ul>
@@ -112,11 +112,19 @@
     <ul class="subnav">
                 <li class="">
                     
+    <a class="" href="../docs/algorithms/">Algorithms</a>
+                </li>
+                <li class="">
+                    
     <a class="" href="../docs/multigraphs/">Multigraphs</a>
                 </li>
                 <li class="">
                     
     <a class="" href="../docs/polynomials/">Polynomials</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../docs/utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -160,15 +168,16 @@
           <div role="main">
             <div class="section">
               
-                <p>The EnergyFlow package is (currently) written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python3.</p>
+                <p>The EnergyFlow package is (currently) written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3.</p>
 <p>The EnergyFlow package is designed to work with Python 2.7, 3.4, 3.5, 3.6. These can be installed from <a href="https://www.python.org/downloads/">here</a>. The latest stable version of Python 3 is highly recommended.</p>
 <h3 id="install-with-pip-recommended">Install with <code>pip</code> (recommended)</h3>
 <p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
 <h3 id="bleeding-edge-install">Bleeding edge install</h3>
-<p>EnergyFlow is <a href="https://github.com/pkomiske/EnergyFlow/">hosted on GitHub</a> and can be installed by cloning the repository and running <code>python setup.py install</code>. This is not recommended compared to installation with <code>pip</code> because the released versions are more thoroughly tested.</p>
+<p>EnergyFlow is <a href="https://github.com/pkomiske/EnergyFlow/">hosted on GitHub</a> and can be installed by cloning the repository and running <code>python setup.py install</code>.</p>
 <h3 id="igraph">iGraph</h3>
-<h3 id="development-numpy">Development NumPy</h3>
-<p>Since EnergyFlow relies on <code>numpy.einsum</code> to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if <code>einsum</code> changes. At the present time, the master branch of the NumPy repo contains some significant changes to <code>einsum</code> compared to NumPy <code>1.1.13</code>. Currently, we recommend using the latest stable version of NumPy, but this may change in the future.</p>
+<p>EnergyFlow relies on <a href="http://igraph.org/redirect.html">iGraph</a> for generation of multigraphs. This is not required if using the provided graphs suits your needs. If you wish to generate your own graphs, make sure that iGraph is importable.</p>
+<h3 id="numpy">NumPy</h3>
+<p>Since EnergyFlow relies on <code>numpy.einsum</code> to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if <code>einsum</code> changes. NumPy <code>1.14.0</code> changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. This means that computations are faster on larger tensors but may be slower on smaller tensors.</p>
               
             </div>
           </div>

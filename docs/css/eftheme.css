@@ -54,7 +54,10 @@ a:visited {
 
 .wy-menu-vertical .subnav li.current a.toctree-l4 {
     padding-left: 3.6em;
-    /*display: none;*/
+}
+
+.wy-menu-vertical .subnav li.current a.toctree-l5 {
+    display: none;
 }
 
 .wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
