@@ -36,9 +36,12 @@ class VariableElimination:
         einstr += ','.join([self.einsum_symbols[v] for v in range(n)])
         return einstr
 
-    def _ve_numpy(self, edges, n):
+    def _ve_numpy(self, edges, n, nfree=0):
         d = len(edges)
-        self.einstr = self._einstr_from_edges(edges, n)
+        freeinds = ''
+        if nfree > 0:
+            freeinds = '->'+self.einsum_symbols[:nfree]
+        self.einstr = self._einstr_from_edges(edges, n) + freeinds
         args = [self.X]*d + [self.y]*n
         einpath = np.einsum_path(self.einstr, *args, optimize=self.np_optimize)
         self.einpath = einpath[0]

@@ -22,7 +22,7 @@ class Measure:
         else:
             return super(Measure, cls).__new__(cls)
 
-    def __init__(self, measure, beta=1.0, normed=True, check_type=True):
+    def __init__(self, measure, beta, normed, check_type):
 
         """ 
         Parameters

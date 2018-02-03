@@ -68,12 +68,17 @@ class EFPSet(EFPBase):
                           'check_type': False, 
                           'verbose': False}
 
+        measure_kwargs = ['measure', 'beta', 'normed', 'check_type']
+
         for k,v in default_kwargs.items():
-            setattr(self, k, kwargs.pop(k, v))
-        kwargs_check('__init__', kwargs)
+            if k not in kwargs:
+                kwargs[k] = v
+            if k not in measure_kwargs:
+                setattr(self, k, kwargs.pop(k))
+        kwargs_check('__init__', kwargs, allowed=measure_kwargs)
 
         # initialize EFPBase
-        super().__init__(self.measure, self.beta, self.normed, self.check_type)
+        super().__init__(*[kwargs[k] for k in measure_kwargs])
 
         if len(args) >= 1 and isinstance(args[0], Generator):
             constructor_attrs = ['cols', 'specs', 'disc_formulae', 'edges', 
@@ -182,14 +187,14 @@ class EFPSet(EFPBase):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
         return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
 
-    def _calc_disc(self, X, concat=False):
-
-        if len(self.disc_col_inds) == 0:
-            return X if concat else None
+    def _calc_disc(self, X):
 
         XX = X
         if not isinstance(X, np.ndarray):
             XX = np.asarray(X)
+
+        if len(self.disc_col_inds) == 0:
+            return XX 
 
         l = len(XX.shape) 
         if l == 2:
@@ -205,10 +210,7 @@ class EFPSet(EFPBase):
         else:
             raise ValueError('X has the wrong dimensions')
 
-        if concat: 
-            return np.concatenate([XX, results], axis=concat_axis)
-        else: 
-            return results
+        return np.concatenate([XX, results], axis=concat_axis)
 
     #===============
     # public methods
@@ -222,13 +224,13 @@ class EFPSet(EFPBase):
         if batch_call:
             return results
         else:
-            return self._calc_disc(results, concat=True)
+            return self._calc_disc(results)
 
     def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
 
         results = super().batch_compute(events, zs, thetas, n_jobs)
 
-        return self._calc_disc(results, concat=True)
+        return self._calc_disc(results)
 
     # sel(*args)
     def sel(self, *args, **kwargs):
@@ -301,6 +303,7 @@ class EFPSet(EFPBase):
 
         return np.count_nonzero(self.sel(*args, **kwargs))
 
+    # graphs(*args)
     def graphs(self, *args):
         """Returns a list of graphs (as lists of edges) 
         that meet the specifications of the arguments using `sel`."""
@@ -313,6 +316,7 @@ class EFPSet(EFPBase):
         mask = self.sel(*args)
         return [g for g,m in zip(self._graphs, mask) if m]
 
+    # simple_graphs(*args)
     def simple_graphs(self, *args):
         """Returns a list of simple graphs (without any multiedges) 
         that meet the specifications of the arguments using `sel`."""

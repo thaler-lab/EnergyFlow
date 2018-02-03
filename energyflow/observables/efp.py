@@ -12,7 +12,7 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadr', beta=1, normed=True, check_type=True, 
+    def __init__(self, edges, nfree=0, measure='hadr', beta=1, normed=True, check_type=True, 
                               ve_alg='numpy', np_optimize='greedy'):
         """
         Arguments
@@ -46,7 +46,7 @@ class EFP(EFPBase):
         self.ve = VariableElimination(ve_alg, np_optimize)
 
         # set internals of ve to these edges
-        self.ve.run(self.simple_graph, self.n)
+        self.ve.run(self.simple_graph, self.n, nfree)
         self.efpelem.einstr, self.efpelem.einpath = self.ve.einspecs()
 
     #===============

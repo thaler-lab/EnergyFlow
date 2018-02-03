@@ -15,11 +15,11 @@ class EFPBase:
     def __init__(self, measure='hadr', beta=1.0, normed=True, check_type=False):
 
         # store measure object
-        self.measure = Measure(measure, beta, normed, check_type)
+        self._measure = Measure(measure, beta, normed, check_type)
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
-            zs, thetas = self.measure(event)
+            zs, thetas = self._measure(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
         thetas_dict = {w: thetas**w for w in self._weight_set}
@@ -28,6 +28,22 @@ class EFPBase:
     @abstractproperty
     def _weight_set(self):
         pass
+
+    @property
+    def measure(self):
+        return self._measure.measure
+
+    @property
+    def beta(self):
+        return self._measure.beta
+
+    @property
+    def normed(self):
+        return self._measure.normed
+
+    @property
+    def check_type(self):
+        return self._measure.check_type
 
     def _compute_func(self, args):
         return self.compute(zs=args[0], thetas=args[1])
@@ -70,7 +86,7 @@ class EFPBase:
         """
 
         if events is not None:
-            iterable = [self.measure(event) for event in events]
+            iterable = [self._measure(event) for event in events]
             length = len(events)
         elif zs is None or thetas is None:
             raise TypeError('if events is None then zs and/or thetas cannot also be None')

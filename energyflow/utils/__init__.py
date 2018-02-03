@@ -3,7 +3,9 @@ imported directly in energyflow."""
 from __future__ import absolute_import
 import itertools
 
+from . import measure
 from .measure import *
+__all__ = []
 
 def igraph_import():
     """
@@ -21,8 +23,10 @@ def igraph_import():
         igraph = False
     return igraph
 
-def kwargs_check(name, kwargs):
+def kwargs_check(name, kwargs, allowed=[]):
     for k in kwargs:
+        if k in allowed:
+            continue
         message = name + '() got an unexpected keyword argument \'{}\''.format(k)
         raise TypeError(message)
 
@@ -45,3 +49,4 @@ def graph_union(*graphs):
     adds = [sum(ns[:i]) for i in range(1,len(graphs))]
     new_comps = [[tuple(a+v for v in edge) for edge in graph] for a,graph in zip(adds,graphs[1:])]
     return list(itertools.chain(graphs[0], *new_comps))
+    

@@ -95,6 +95,10 @@
 		
     <span class="caption-text">Documentation</span>
     <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../algorithms/">Algorithms</a>
+                </li>
                 <li class=" current">
                     
     <a class="current" href="./">Multigraphs</a>
@@ -102,18 +106,16 @@
             
     <li class="toctree-l3"><a href="#generator">Generator</a></li>
     
-        <ul>
-        
-            <li><a class="toctree-l4" href="#save">save</a></li>
-        
-        </ul>
-    
 
     </ul>
                 </li>
                 <li class="">
                     
     <a class="" href="../polynomials/">Polynomials</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -173,26 +175,20 @@ the connected graphs up to nmax and dmax.</p>
 <p>Since computation will ultimately be done with numpy.einsum, einstrings and
 einpaths are also computed for each simple graph</p>
 <p>Multigraphs and associated properties can be easily saved in a .npz file.</p>
-<pre><code class="python">Generator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg=numpy, np_optimize=greedy)
+<pre><code class="python">Generator(dmax, nmax=None, emax=None, cmax=None, verbose=False, ve_alg='numpy', np_optimize='greedy')
 </code></pre>
 
 <p>Initializes a Generator object for generating multigraphs.</p>
 <p><strong>Parameters</strong></p>
 <ul>
-<li>
-<p><strong>dmax</strong> : <em>int</em>
-    test
-<strong>Returns</strong></p>
-</li>
-<li>
-<p><strong>output</strong> : <em>Generator</em>
-    The Generator object.</p>
-</li>
+<li><strong>dmax</strong> : <em>int</em>
+    test</li>
 </ul>
-<h4 id="save">save</h4>
-<pre><code class="python">save(filename)
-</code></pre>
-
+<p><strong>Returns</strong></p>
+<ul>
+<li><strong>output</strong> : <em>Generator</em>
+    The Generator object.</li>
+</ul>
 <hr />
               
             </div>
@@ -204,7 +200,7 @@ einpaths are also computed for each simple graph</p>
         <a href="../polynomials/" class="btn btn-neutral float-right" title="Polynomials">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../faq/" class="btn btn-neutral" title="FAQ"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../algorithms/" class="btn btn-neutral" title="Algorithms"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -232,7 +228,7 @@ einpaths are also computed for each simple graph</p>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../../faq/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../algorithms/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../polynomials/" style="color: #fcfcfc">Next &raquo;</a></span>
