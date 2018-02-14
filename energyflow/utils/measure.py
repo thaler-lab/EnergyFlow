@@ -1,6 +1,9 @@
 """Implementation of the Measure class and its helpers."""
+
 from __future__ import absolute_import, division
+
 from abc import ABCMeta, abstractmethod
+
 import numpy as np
 from six import add_metaclass
 

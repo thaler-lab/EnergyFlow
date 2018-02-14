@@ -2,18 +2,20 @@ CXX = g++
 ifeq ($(shell uname), Darwin)
   CXX = clang++
 endif
+
 CXXFLAGS = -std=c++11 -g -Wall -O3
 
 SRCDIR = src
-INCLUDEDIR = include
+INCDIR = include
 TMPDIR = tmp
 BINDIR = bin
 
+# if not cleaning, make directories
 ifeq (,$(findstring clean, $(MAKECMDGOALS)))
   $(shell mkdir -p $(TMPDIR) $(BINDIR))
  endif
 
-INCLUDES = -I$(INCLUDEDIR)
+INCLUDES = -I$(INCDIR)
 LIBS = -ltaco
 LDFLAGS = 
 

@@ -1,10 +1,11 @@
 """Implementation of EFP."""
 
 from __future__ import absolute_import, division, print_function
+
 import numpy as np
 
 from energyflow.algorithms import VariableElimination
-from energyflow.polynomials.base import EFPBase, EFPElem
+from energyflow.polynomials.efpbase import EFPBase, EFPElem
 
 __all__ = ['EFP']
 

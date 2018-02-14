@@ -1,5 +1,7 @@
 """Implementation of multigraph Generator class."""
+
 from __future__ import absolute_import, division, print_function
+
 import itertools
 import numpy as np
 

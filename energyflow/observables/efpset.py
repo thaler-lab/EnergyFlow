@@ -1,14 +1,16 @@
 """Implementation of EFPSet, an efficient collection of EFPs."""
 
 from __future__ import absolute_import, division, print_function
+
 import itertools
 import os
 import re
 import warnings
+
 import numpy as np
 
 from energyflow.multigraphs import Generator
-from energyflow.polynomials.base import EFPBase, EFPElem
+from energyflow.polynomials.efpbase import EFPBase, EFPElem
 from energyflow.utils import explicit_comp, graph_union, kwargs_check
 
 __all__ = ['EFPSet']

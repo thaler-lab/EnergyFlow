@@ -1,4 +1,5 @@
-"""Need docstring here."""
+"""Implementation of Variable Elimination (VE) Algorithm."""
+
 from __future__ import absolute_import
 
 import itertools
@@ -10,9 +11,9 @@ igraph = igraph_import()
 
 __all__ = ['VariableElimination']
 
-class VariableElimination:
+einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-    einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+class VariableElimination:
 
     def __init__(self, ve_alg, np_optimize='greedy'):
         possible_algs = ['numpy'] + (['ef'] if igraph else [])
@@ -32,15 +33,15 @@ class VariableElimination:
         setattr(self, 'einspecs', self._einspecs_numpy if self._use_numpy_ve else self._einspecs_ef)
 
     def _einstr_from_edges(self, edges, n):
-        einstr  = ','.join([self.einsum_symbols[j]+self.einsum_symbols[k] for (j, k) in edges])+','
-        einstr += ','.join([self.einsum_symbols[v] for v in range(n)])
+        einstr  = ','.join([einsum_symbols[j]+einsum_symbols[k] for (j, k) in edges])+','
+        einstr += ','.join([einsum_symbols[v] for v in range(n)])
         return einstr
 
     def _ve_numpy(self, edges, n, nfree=0):
         d = len(edges)
         freeinds = ''
         if nfree > 0:
-            freeinds = '->'+self.einsum_symbols[:nfree]
+            freeinds = '->'+einsum_symbols[:nfree]
         self.einstr = self._einstr_from_edges(edges, n) + freeinds
         args = [self.X]*d + [self.y]*n
         einpath = np.einsum_path(self.einstr, *args, optimize=self.np_optimize)

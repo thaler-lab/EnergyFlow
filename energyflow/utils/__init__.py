@@ -1,10 +1,13 @@
 """A subpackage containing utility functions and classes. Not meant to be 
 imported directly in energyflow."""
+
 from __future__ import absolute_import
+
 import itertools
 
 from . import measure
 from .measure import *
+
 __all__ = []
 
 def igraph_import():
