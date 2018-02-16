@@ -10,7 +10,7 @@ import warnings
 import numpy as np
 
 from energyflow.multigraphs import Generator
-from energyflow.polynomials.efpbase import EFPBase, EFPElem
+from energyflow.observables.efpbase import EFPBase, EFPElem
 from energyflow.utils import explicit_comp, graph_union, kwargs_check
 
 __all__ = ['EFPSet']
@@ -102,7 +102,7 @@ class EFPSet(EFPBase):
 
         # get efps which will be kept
         orig_specs = constructor_dict['specs']
-        self.stored_specs = orig_specs[self.sel(*args, specs=orig_specs)]
+        self._specs = orig_specs[self.sel(*args, specs=orig_specs)]
 
         disc_mask = self.sel(*args, specs=orig_specs[orig_specs[:,self.p_ind]>1])
         self.disc_formulae = constructor_dict['disc_formulae'][disc_mask]
@@ -113,7 +113,7 @@ class EFPSet(EFPBase):
         einpaths = constructor_dict['einpaths']
         weights = constructor_dict['weights']
         self.efpelems = []
-        for cspec in self.stored_specs[self.stored_specs[:,self.p_ind]==1]:
+        for cspec in self._specs[self._specs[:,self.p_ind]==1]:
             k, g, w = cspec[[self.k_ind, self.g_ind, self.w_ind]]
             self.efpelems.append(EFPElem(edges[g], weights=weights[w], einstr=einstrs[g], 
                                                    einpath=einpaths[g], k=k))
@@ -149,11 +149,11 @@ class EFPSet(EFPBase):
     # _set_compute_mask(*args, mask=None)
     def _set_compute_mask(self, *args, **kwargs):
         mask = kwargs.pop('mask', None)
-        kwargs_check('set_compute_mask', kwargs)
+        kwargs_check('_set_compute_mask', kwargs)
         if mask is None:
-            self.compute_mask = np.ones(len(self.stored_specs), dtype=bool)
+            self.compute_mask = np.ones(len(self._specs), dtype=bool)
             mask = self.sel(*args)
-        elif len(mask) != len(self.stored_specs):
+        elif len(mask) != len(self._specs):
             raise IndexError('length of mask does not match internal specs')
         self.compute_mask = mask
 
@@ -184,10 +184,6 @@ class EFPSet(EFPBase):
         for cm,elem in zip(self.compute_mask,self.efpelems):
             if cm:
                 yield elem
-
-    def _make_graphs(self, connected_graphs):
-        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
-        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
 
     def _calc_disc(self, X):
 
@@ -363,4 +359,4 @@ class EFPSet(EFPBase):
         """An array of EFP specifications. Each row represents an EFP 
         and the columns represent the quantities indicated by `cols`."""
 
-        return self.stored_specs[self.compute_mask]
+        return self._specs[self.compute_mask]

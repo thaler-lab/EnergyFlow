@@ -26,22 +26,32 @@ class Measure:
             return super(Measure, cls).__new__(cls)
 
     def __init__(self, measure, beta, normed, check_type):
+        """Processes inputs according to the measure choice.
 
-        """ 
-        Parameters
-        ----------
-        measure : 
-        normed : 
+        Arguments
+        ---------
+        measure : string
+            - The string specifying the measure.
+        beta : float/int
+            - The exponent $\beta$.
+        normed : bool
+            - Whether or not to use normalized energies.
+        check_type : bool
+            - Whether or not to check the input for each new event.
         """
 
-        assert beta > 0, 'beta must be greater than zero'
-
         self.measure = measure
-        self.beta = float(beta)
         self.normed = normed
         self.check_type = check_type
 
-        self._half_beta = self.beta/2
+        if 'efm' in self.measure:
+            self.beta = beta
+            self.sqrt2 = np.sqrt(2)
+        else:
+            assert beta > 0, 'beta must be greater than zero'
+            self.beta = float(beta)
+            self._half_beta = self.beta/2
+
         self._lacks_meas_func = True
 
     def __call__(self, arg):
@@ -50,10 +60,10 @@ class Measure:
         if self._lacks_meas_func or self.check_type:
             self._set_meas_func(arg)
 
-        # get zs and thetas 
-        zs, thetas = self._meas_func(arg)
+        # get zs and angles 
+        zs, angles = self._meas_func(arg)
 
-        return (zs/np.sum(zs) if self.normed else zs), thetas
+        return (zs/np.sum(zs) if self.normed else zs), angles
 
     def _set_meas_func(self, arg):
 
@@ -98,10 +108,11 @@ class HadronicMeasure(Measure):
 
     @staticmethod
     def _factory(measure):
+        if 'efm' in measure:
+            return HadronicEFMMeasure
         if 'dot' in measure:
             return HadronicDotMeasure
-        else:
-            return HadronicDefaultMeasure 
+        return HadronicDefaultMeasure 
 
     _allowed_dims = [3, 4]
 
@@ -113,19 +124,6 @@ class HadronicMeasure(Measure):
         else:
             return False
         return True
-        
-    def _list_handler(self, dim):
-        if dim == 3:
-            self._meas_func = self._list_dim3
-        elif dim == 4:
-            self._meas_func = self._list_dim4
-        else:
-            return False
-        return True
-
-    def _pseudojet_handler(self):
-        self._meas_func = self._pseudojet
-        return True
 
     @abstractmethod
     def _ndarray_dim3(self, arg):
@@ -134,12 +132,25 @@ class HadronicMeasure(Measure):
     @abstractmethod
     def _ndarray_dim4(self, arg):
         pass
+        
+    def _list_handler(self, dim):
+        if dim == 3:
+            self._meas_func = self._list_dim3
+        elif dim == 4:
+            self._meas_func = self._list_dim4
+        else:
+            return False
+        return True    
 
     def _list_dim3(self, arg):
         return self._ndarray_dim3(np.asarray(arg))
 
     def _list_dim4(self, arg):
         return self._ndarray_dim4(np.asarray(arg))
+
+    def _pseudojet_handler(self):
+        self._meas_func = self._pseudojet
+        return True
 
     @abstractmethod
     def _pseudojet(self, arg):
@@ -150,16 +161,6 @@ class HadronicMeasure(Measure):
     def _pts(self, p4s):
         return np.sqrt(p4s[:,1]**2 + p4s[:,2]**2)
 
-    def _yphis(self, p4s):
-        return np.vstack([0.5*np.log((p4s[:,0]+p4s[:,3])/(p4s[:,0]-p4s[:,3])),
-                          np.arctan2(p4s[:,2], p4s[:,1])]).T
-
-    def _thetas_from_yphis(self, yphis):
-        X = yphis[:,np.newaxis] - yphis[np.newaxis,:]
-        X[:,:,0] **= 2
-        X[:,:,1] = (np.pi - np.abs(np.abs(X[:,:,1]) - np.pi))**2
-        return (X[:,:,0] + X[:,:,1]) ** self._half_beta
-
     def _p4s_from_ptyphis(self, ptyphis):
         pts, ys, phis = ptyphis[:,0], ptyphis[:,1], ptyphis[:,2]
         return (pts*np.vstack([np.cosh(ys), np.cos(phis), np.sin(phis), np.sinh(ys)])).T
@@ -168,6 +169,8 @@ class EEMeasure(Measure):
 
     @staticmethod
     def _factory(measure):
+        if 'efm' in measure:
+            return EEEFMMeasure
         return EEDefaultMeasure
 
     _allowed_dims = [4]
@@ -178,6 +181,10 @@ class EEMeasure(Measure):
         else:
             return False
         return True
+
+    @abstractmethod
+    def _ndarray_dim4(self, arg):
+        pass
         
     def _list_handler(self, dim):
         if dim == 4:
@@ -186,16 +193,12 @@ class EEMeasure(Measure):
             return False
         return True
 
+    def _list_dim4(self, arg):
+        return self._ndarray_dim4(np.asarray(arg))
+
     def _pseudojet_handler(self):
         self._meas_func = self._pseudojet
         return True
-
-    @abstractmethod
-    def _ndarray_dim4(self, arg):
-        pass
-
-    def _list_dim4(self, arg):
-        return self._ndarray_dim4(np.asarray(arg))
 
     @abstractmethod
     def _pseudojet(self, arg):
@@ -204,6 +207,16 @@ class EEMeasure(Measure):
         return Es, constituents
 
 class HadronicDefaultMeasure(HadronicMeasure):
+
+    def _yphis(self, p4s):
+        return np.vstack([0.5*np.log((p4s[:,0]+p4s[:,3])/(p4s[:,0]-p4s[:,3])),
+                          np.arctan2(p4s[:,2], p4s[:,1])]).T
+
+    def _thetas_from_yphis(self, yphis):
+        X = yphis[:,np.newaxis] - yphis[np.newaxis,:]
+        X[:,:,0] **= 2
+        X[:,:,1] = (np.pi - np.abs(np.abs(X[:,:,1]) - np.pi))**2
+        return (X[:,:,0] + X[:,:,1])**self._half_beta
 
     def _ndarray_dim3(self, arg):
         return arg[:,0], self._thetas_from_yphis(arg[:,(1,2)])
@@ -232,6 +245,22 @@ class HadronicDotMeasure(HadronicMeasure):
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return pts, self._p4s_dot(p4s, pts)
 
+class HadronicEFMMeasure(HadronicMeasure):
+
+    def _ndarray_dim3(self, arg):
+        pts = arg[:,0]
+        p4s = self._p4s_from_ptyphis(arg)
+        return pts, p4s/pts[:,np.newaxis]
+
+    def _ndarray_dim4(self, arg):
+        pts = self._pts(arg)
+        return pts, arg/pts[:,np.newaxis]
+
+    def _pseudojet(self, arg):
+        pts, constituents = super()._pseudojet(arg)
+        p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
+        return pts, p4s/pts[:,np.newaxis]
+
 class EEDefaultMeasure(EEMeasure):
 
     def _ndarray_dim4(self, arg):
@@ -242,3 +271,14 @@ class EEDefaultMeasure(EEMeasure):
         Es, constituents =  super()._pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return Es, self._p4s_dot(p4s, Es)
+
+class EEEFMMeasure(EEMeasure):
+
+    def _ndarray_dim4(self, arg):
+        Es = arg[:,0]
+        return Es, arg/Es[:,np.newaxis]
+
+    def _pseudojet(self, arg):
+        Es, constituents = super()._pseudojet(arg)
+        p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
+        return Es, p4s/Es[:,np.newaxis]

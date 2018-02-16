@@ -5,10 +5,12 @@ For studying EFPs in large collections, use `EFPSet` for greater efficiency and 
 
 from __future__ import absolute_import
 
+from . import efm
 from . import efpbase
 from . import efp
 from . import efpset
+from .efm import *
 from .efp import *
 from .efpset import *
 
-__all__ = efp.__all__ + efpset.__all__
+__all__ = efm.__all__ + efp.__all__ + efpset.__all__

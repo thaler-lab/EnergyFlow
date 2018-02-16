@@ -9,12 +9,18 @@ import multiprocessing as mp
 import numpy as np
 from six import add_metaclass
 
-from energyflow.utils.measure import Measure
+from energyflow.utils import Measure
 
 @add_metaclass(ABCMeta)
 class EFPBase:
 
     def __init__(self, measure='hadr', beta=1.0, normed=True, check_type=False):
+
+        # handle using EFMs
+        self.use_efms = False
+        if 'efm' in measure:
+            self.use_efms = True
+            beta = None
 
         # store measure object
         self._measure = Measure(measure, beta, normed, check_type)
@@ -24,11 +30,21 @@ class EFPBase:
             zs, thetas = self._measure(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
-        thetas_dict = {w: thetas**w for w in self._weight_set}
-        return zs, thetas_dict
+        return zs, {w: thetas**w for w in self._weight_set}
 
     @abstractproperty
     def _weight_set(self):
+        pass
+
+    def _get_efms(self, event, zs, p4hats):
+        if event is not None:
+            zs, p4hats = self._measure(event)
+        elif zs is None or p4hats is None:
+            raise TypeError('if event is None then zs and/or p4hats cannot also be None')
+        return {dim: efm.construct(zs, p4hats) for dim,efm in self.efms.items()}
+
+    @abstractproperty
+    def efms(self):
         pass
 
     @property
@@ -48,7 +64,7 @@ class EFPBase:
         return self._measure.check_type
 
     def _compute_func(self, args):
-        return self.compute(zs=args[0], thetas=args[1])
+        return self.compute(zs=args[0], angles=args[1])
 
     @abstractmethod
     def compute(self, *args):
@@ -69,7 +85,7 @@ class EFPBase:
         pass
 
     @abstractmethod
-    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
+    def batch_compute(self, events=None, zs=None, angles=None, n_jobs=-1):
         """Computes the value(s) of the EFP(s) on several events.
 
         Arguments
@@ -90,11 +106,11 @@ class EFPBase:
         if events is not None:
             iterable = [self._measure(event) for event in events]
             length = len(events)
-        elif zs is None or thetas is None:
+        elif zs is None or angles is None:
             raise TypeError('if events is None then zs and/or thetas cannot also be None')
         else:
-            iterable = zip(zs,thetas)
-            length = min(len(zs),len(thetas))
+            iterable = zip(zs, angles)
+            length = min(len(zs), len(angles))
 
         if n_jobs == -1:
             try: 

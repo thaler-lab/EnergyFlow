@@ -1,11 +1,12 @@
 """Implementation of EFP."""
 
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import, division
 
 import numpy as np
 
 from energyflow.algorithms import VariableElimination
-from energyflow.polynomials.efpbase import EFPBase, EFPElem
+from energyflow.observables.efpbase import EFPBase, EFPElem
+from energyflow.observables.efm import EFM, efp_as_efms, unique_dim_nlows
 
 __all__ = ['EFP']
 
@@ -13,7 +14,7 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, nfree=0, measure='hadr', beta=1, normed=True, check_type=True, 
+    def __init__(self, edges, measure='hadr', beta=1, normed=True, check_type=True, 
                               ve_alg='numpy', np_optimize='greedy'):
         """
         Arguments
@@ -43,28 +44,44 @@ class EFP(EFPBase):
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
 
-        # get ve instance
-        self.ve = VariableElimination(ve_alg, np_optimize)
+        if self.use_efms:
+            self.efm_einstr, self.efm_specs = efp_as_efms(self.graph)
+            dim_nlows = unique_dim_nlows(self.efm_specs)
+            self.efms = {dim: EFM(dim, nlows) for dim,nlows in dim_nlows.items()}
+            self.efm_einpath = np.einsum_path(self.efm_einstr, 
+                                              *[np.empty([4]*s[0]) for s in self.efm_specs],
+                                              optimize=np_optimize)[0]
+            self.pow2 = 2**self.d
+        else:
 
-        # set internals of ve to these edges
-        self.ve.run(self.simple_graph, self.n, nfree)
-        self.efpelem.einstr, self.efpelem.einpath = self.ve.einspecs()
+            # get ve instance
+            self.ve = VariableElimination(ve_alg, np_optimize)
 
+            # set internals of ve to these edges
+            self.ve.run(self.simple_graph, self.n)
+            self.efpelem.einstr, self.efpelem.einpath = self.ve.einspecs()
+            
     #===============
     # public methods
     #===============
 
-    def compute(self, event=None, zs=None, thetas=None):
-        
-        # get dictionary of thetas to use for event
-        zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
+    def compute(self, event=None, zs=None, angles=None):
 
-        # call compute on the EFPElem
-        return self.efpelem.compute(zs, thetas_dict)
+        if self.use_efms:
+            local_efms = self._get_efms(event, zs, angles)
+            einsum_args = [local_efms[dim][nlow] for dim,nlow in self.efm_specs]
+            return np.einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2
+        else:
 
-    def batch_compute(self, events=None, zs=None, thetas=None, n_jobs=-1):
+            # get dictionary of thetas to use for event
+            zs, thetas_dict = self._get_zs_thetas_dict(event, zs, angles)
 
-        return super().batch_compute(events, zs, thetas, n_jobs)
+            # call compute on the EFPElem
+            return self.efpelem.compute(zs, thetas_dict)
+
+    def batch_compute(self, events=None, zs=None, angles=None, n_jobs=-1):
+
+        return super().batch_compute(events, zs, angles, n_jobs)
 
     #===========
     # properties
@@ -75,6 +92,18 @@ class EFP(EFPBase):
         """Set of edge weights for the graph of this EFP."""
 
         return self.efpelem.weight_set
+
+    @property
+    def efms(self):
+        """Get items of EFMs."""
+
+        return self._efms
+
+    @efms.setter
+    def efms(self, arg):
+        """Set items of EFMs."""
+
+        self._efms = arg
 
     @property
     def graph(self):

@@ -3,12 +3,10 @@ imported directly in energyflow."""
 
 from __future__ import absolute_import
 
-import itertools
-
+from . import graph
 from . import measure
+from .graph import *
 from .measure import *
-
-__all__ = []
 
 def igraph_import():
     """
@@ -42,14 +40,3 @@ comp_map = {'>':  '__gt__',
 
 def explicit_comp(obj, comp, val):
     return getattr(obj, comp_map[comp])(val)
-
-def nvert(graph):
-    return 1 + max((max(edge) for edge in graph))
-
-# assumes graphs have vertices 0-(n-1)
-def graph_union(*graphs):
-    ns = [nvert(graph) for graph in graphs[:-1]]
-    adds = [sum(ns[:i]) for i in range(1,len(graphs))]
-    new_comps = [[tuple(a+v for v in edge) for edge in graph] for a,graph in zip(adds,graphs[1:])]
-    return list(itertools.chain(graphs[0], *new_comps))
-    
