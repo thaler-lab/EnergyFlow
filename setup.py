@@ -1,7 +1,8 @@
 from setuptools import setup, find_packages
+import energyflow 
 
 setup(name='EnergyFlow',
-      version='0.4.2',
+      version=energyflow.__version__,
       description='Python implementation of the energy flow basis',
       author='Patrick T. Komiske III',
       author_email='pkomiske@mit.edu',
@@ -13,4 +14,4 @@ setup(name='EnergyFlow',
       tests_require=['pytest'],
       keywords=['physics', 'jets', 'energy flow', 'correlator', 'multigraph', 'EFP'],
       packages=find_packages(),
-      package_data={'':['data/*']})
+      package_data={'': ['data/*']})

@@ -1,0 +1,165 @@
+"""Base classes for EFPs."""
+
+from __future__ import absolute_import
+
+from abc import ABCMeta, abstractmethod, abstractproperty
+from collections import Counter
+import multiprocessing
+
+import numpy as np
+from six import add_metaclass
+
+from energyflow.utils import Measure, transfer
+
+__all__ = ['EFPBase', 'EFPElem']
+
+@add_metaclass(ABCMeta)
+class EFPBase:
+
+    def __init__(self, measure='hadr', beta=1.0, normed=True, check_type=False):
+
+        # handle using EFMs
+        self.use_efms = ('efm' in measure)
+
+        # store measure object
+        self._measure = Measure(measure, 2 if self.use_efms else beta, normed, check_type)
+
+    def _get_zs_thetas_dict(self, event, zs, thetas):
+        if event is not None:
+            zs, thetas = self._measure(event)
+        elif zs is None or thetas is None:
+            raise TypeError('if event is None then zs and/or thetas cannot also be None')
+        return zs, {w: thetas**w for w in self.weight_set}
+
+    @abstractproperty
+    def weight_set(self):
+        pass
+
+    def construct_efms(self, event, zs, p4hats):
+        if event is not None:
+            zs, p4hats = self._measure(event)
+        elif zs is None or p4hats is None:
+            raise TypeError('if event is None then zs and/or p4hats cannot also be None')
+        return {dim: efm.construct(zs, p4hats) for dim,efm in self.efms.items()}
+
+    @abstractproperty
+    def efms(self):
+        pass
+
+    @property
+    def measure(self):
+        return self._measure.measure
+
+    @property
+    def beta(self):
+        return self._measure.beta
+
+    @property
+    def normed(self):
+        return self._measure.normed
+
+    @property
+    def check_type(self):
+        return self._measure.check_type
+
+    def _compute_func(self, args):
+        return self.compute(zs=args[0], angles=args[1])
+
+    @abstractmethod
+    def compute(self, *args):
+        """Computes the value(s) of the EFP(s) on a single event.
+
+        Arguments
+        ---------
+        event : array_like or `fastjet.PseudoJet`
+            - The event or jet as an array or `PseudoJet`.
+        zs : 1-dim array_like
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
+        thetas : 2-dim array_like
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+        """
+
+        pass
+
+    @abstractmethod
+    def batch_compute(self, events, n_jobs=-1):
+        """Computes the value(s) of the EFP(s) on several events.
+
+        Arguments
+        ---------
+        events : array_like or `fastjet.PseudoJet`
+            - The events or jets as an array or list of `PseudoJet`s.
+        n_jobs : int
+            - The number of worker processes to use. A value of `-1` will attempt
+            to use as many processes as there are CPUs on the machine.
+        """
+
+        iterable = [self._measure(event) for event in events]
+        length = len(events)
+
+        if n_jobs == -1:
+            try: 
+                n_jobs = multiprocessing.cpu_count()
+            except:
+                n_jobs = 4 # choose reasonable value
+
+        # setup processor pool
+        self._n_jobs = n_jobs
+        with multiprocessing.Pool(n_jobs) as pool:
+            chunksize = int(length/n_jobs)
+            results = np.asarray(list(pool.imap(self._compute_func, iterable, chunksize)))
+
+        return results
+
+class EFPElem:
+
+    # if weights are given, edges are assumed to be simple 
+    def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None, 
+                       efm_einstr=None, efm_einpath=None, efm_spec=None):
+
+        transfer(self, locals(), ['einstr','einpath','k','efm_einstr','efm_einpath','efm_spec'])
+
+        # deal with arbitrary vertex labels
+        vertex_set = set(v for edge in edges for v in edge)
+        vertices = {v: i for i,v in enumerate(sorted(list(vertex_set)))}
+        self.n = len(vertex_set)
+
+        # construct new edges with remapped vertices
+        self.edges = sorted([tuple(vertices[v] for v in sorted(edge)) for edge in edges])
+
+        # get simple edges
+        self.simple_edges = sorted(list(set(self.edges)))
+        self.e = len(self.simple_edges)
+
+        # get weights
+        if weights is None:
+            counts = Counter(self.edges)
+            self.weights = tuple(counts[edge] for edge in self.simple_edges)
+        else:
+            if len(weights) != self.e:
+                raise ValueError('length of weights is not number of simple edges')
+            self.weights = tuple(weights)
+            self.edges = [e for w,e in zip(self.weights, self.simple_edges) for i in range(w)]
+
+        self.d = sum(self.weights)
+        self.pow2 = 2**self.d
+        self.weight_set = frozenset(self.weights)
+
+        self.ndk = (self.n, self.d, self.k)
+
+        self.use_efms = self.efm_einstr is not None
+        setattr(self, 'compute', self.efm_compute if self.use_efms else self.efp_compute)
+
+    def efp_compute(self, zs, thetas_dict):
+        einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
+        return np.einsum(self.einstr, *einsum_args, optimize=self.einpath)
+
+    def efm_compute(self, efms_dict):
+        einsum_args = [efms_dict[dim][nlow] for dim,nlow in self.efm_spec]
+        return np.einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2
+
+    # properties set above:
+    #     n, e, d, k, ndk, edges, simple_edges, weights, weight_set, einstr, einpath,
+    #     efm_einstr, efm_einpath, efm_spec

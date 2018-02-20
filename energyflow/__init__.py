@@ -2,16 +2,21 @@
 
 from __future__ import absolute_import
 
-# import all submodules
+# import submodules
 from . import algorithms
-from . import multigraphs
-from . import observables
+from . import efps
 from . import utils
 
-# import contents of multigraphs and polynomial modules
-from .multigraphs import *
-from .observables import *
+# import individual files
+from . import efm
+from . import efpbase
+from . import gen
 
-__all__ = multigraphs.__all__ + observables.__all__
+# import efps, efm, gen into top level module
+from .efps import *
+from .efm import *
+from .gen import *
 
-__version__ = '0.5.0'
+__all__ = efm.__all__ + efps.__all__ + gen.__all__
+
+__version__ = '0.5.1'

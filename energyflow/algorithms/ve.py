@@ -11,7 +11,7 @@ igraph = igraph_import()
 
 __all__ = ['VariableElimination']
 
-einsum_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+inds = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 class VariableElimination:
 
@@ -24,17 +24,16 @@ class VariableElimination:
 
         if self._use_numpy_ve:
             self.np_optimize = np_optimize
-            dummy_dim = 10
-            self.X = np.random.rand(dummy_dim, dummy_dim)
-            self.y = np.random.rand(dummy_dim)
+            self.X = np.empty((2,2))
+            self.y = np.empty(2)
 
         # set public methods based on which ve_alg is chosen
         setattr(self, 'run', self._ve_numpy if self._use_numpy_ve else self._ve_ef)
         setattr(self, 'einspecs', self._einspecs_numpy if self._use_numpy_ve else self._einspecs_ef)
 
     def _einstr_from_edges(self, edges, n):
-        einstr  = ','.join([einsum_symbols[j]+einsum_symbols[k] for (j, k) in edges])+','
-        einstr += ','.join([einsum_symbols[v] for v in range(n)])
+        einstr  = ','.join([inds[j]+inds[k] for (j, k) in edges])+','
+        einstr += ','.join([inds[v] for v in range(n)])
         return einstr
 
     def _ve_numpy(self, edges, n):

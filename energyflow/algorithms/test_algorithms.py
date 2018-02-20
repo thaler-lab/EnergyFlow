@@ -18,5 +18,8 @@ def test_has_int_partition_unordered():
 def test_int_partition_ordered_len(n, ans):
     assert len(list(int_partition_unordered(n))) == ans
 
+ve = VariableElimination('numpy', 'greedy')
+
 def test_ve_attrs():
-    pass
+    assert hasattr(ve, 'run')
+    assert hasattr(ve, 'einspecs')
