@@ -5,7 +5,23 @@ from __future__ import absolute_import
 from collections import Counter
 import itertools
 
-__all__ = ['graph_union', 'nvert', 'valencies', 'vv_counts']
+__all__ = ['igraph_import', 'graph_union', 'nvert', 'valencies', 'vv_counts', 'num_valency_ones']
+
+def igraph_import():
+    """
+    Determines if igraph can be imported. 
+
+    Returns
+    -------
+    output : {igraph, False}
+        The igraph module if it was successfully imported, otherwise False.
+    """
+    
+    try:
+        import igraph
+    except:
+        igraph = False
+    return igraph
 
 # standard graph form:
 #   - a graph is a list of tuples
@@ -49,4 +65,6 @@ def vv_counts(graph):
         d.setdefault(edge[1], []).append(edge[0])
     return {v: Counter(d[v]) for v in d}
 
+def num_valency_ones(graph):
+    return Counter(valencies(graph).values())[1]
     

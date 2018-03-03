@@ -7,7 +7,11 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 from six import add_metaclass
 
+from energyflow.utils.helpers import *
+
 __all__ = ['Measure']
+
+pf_marker = 'pf'
 
 @add_metaclass(ABCMeta)
 class Measure:
@@ -18,14 +22,14 @@ class Measure:
         if cls is Measure:
             measure = args[0]
             if 'hadr' in measure:
-                return super(Measure, cls).__new__(HadronicMeasure._factory(measure))
+                return super(Measure, cls).__new__(HadronicMeasure.factory(measure))
             if 'ee' in measure:
-                return super(Measure, cls).__new__(EEMeasure._factory(measure))
+                return super(Measure, cls).__new__(EEMeasure.factory(measure))
             raise NotImplementedError('measure {} is unknown'.format(measure))
         else:
             return super(Measure, cls).__new__(cls)
 
-    def __init__(self, measure, beta, normed, check_type):
+    def __init__(self, measure, beta, kappa, normed, check_type):
         """Processes inputs according to the measure choice.
 
         Arguments
@@ -40,245 +44,201 @@ class Measure:
             - Whether or not to check the input for each new event.
         """
 
-        self.measure = measure
-        self.normed = normed
-        self.check_type = check_type
+        transfer(self, locals(), ['measure', 'kappa', 'normed', 'check_type'])
 
-        if 'efm' in self.measure:
-            self.beta = beta
-            self.sqrt2 = np.sqrt(2)
-        else:
-            assert beta > 0, 'beta must be greater than zero'
-            self.beta = float(beta)
-            self._half_beta = self.beta/2
+        self.beta = float(beta)
 
-        self._lacks_meas_func = True
+        self.half_beta = self.beta/2
+        self.need_meas_func = True
 
     def __call__(self, arg):
 
         # check type only if needed
-        if self._lacks_meas_func or self.check_type:
-            self._set_meas_func(arg)
+        if self.need_meas_func or self.check_type:
+            self.set_meas_func(arg)
 
         # get zs and angles 
-        zs, angles = self._meas_func(arg)
+        zs, angles = self.meas_func(arg)
 
         return (zs/np.sum(zs) if self.normed else zs), angles
 
-    def _set_meas_func(self, arg):
+    def set_meas_func(self, arg):
 
         # support arg as numpy.ndarray
         if isinstance(arg, np.ndarray):
-            if not self._ndarray_handler(arg.shape[1]):
-                raise IndexError('second dimension of arg must be in {}'.format(self._allowed_dims))
+            self.meas_func = self.array_handler(arg.shape[1])
 
         # support arg as list (of lists)
         elif isinstance(arg, list):
-            if not self._list_handler(len(arg[0])):
-                raise IndexError('second dimension of arg must be in {}'.format(self._allowed_dims))
+            array_meas = self.array_handler(len(arg[0]))
+            def wrapped_meas(self, arg):
+                return array_meas(np.asarray(arg))
+            self.meas_func = wrapped_meas
 
         # support arg as fastjet pseudojet
         elif hasattr(arg, 'constituents'):
-            self._pseudojet_handler()
+            self.meas_func = self.pseudojet
 
         # raise error if not one of these types
         else:
             raise TypeError('arg is not one of numpy.ndarray, list, or fastjet.PseudoJet')
 
-        self._lacks_meas_func = False
+        self.need_meas_func = False
 
     @abstractmethod
-    def _ndarray_handler(self, dim):
+    def array_handler(self, dim):
         pass
 
     @abstractmethod
-    def _list_handler(self, dim):
+    def pseudojet(self, arg):
         pass
 
-    @abstractmethod
-    def _pseudojet_handler(self):
-        pass
+    def _ps_dot(self, ps):
+        return np.abs(2*np.dot(ps[:,np.newaxis]*ps[np.newaxis,:], self.metric))
 
-    def _p4s_dot(self, p4s, Es):
-        p4hats = p4s/Es[:,np.newaxis]
-        X = (p4hats[:,np.newaxis]*p4hats[np.newaxis,:]).T
-        return (2*np.abs(X[0] - X[1] - X[2] - X[3]))**self._half_beta
+    def _set_k_func(self):
+        self._k_func = kappa_func
+        if self.kappa == pf_marker:
+            self.normed = False
+            self._k_func = pf_func
 
 class HadronicMeasure(Measure):
 
     @staticmethod
-    def _factory(measure):
+    def factory(measure):
         if 'efm' in measure:
             return HadronicEFMMeasure
         if 'dot' in measure:
             return HadronicDotMeasure
-        return HadronicDefaultMeasure 
+        return HadronicDefaultMeasure
 
-    _allowed_dims = [3, 4]
-
-    def _ndarray_handler(self, dim):
+    def array_handler(self, dim):
         if dim == 3:
-            self._meas_func = self._ndarray_dim3
+            return self.ndarray_dim3
         elif dim == 4:
-            self._meas_func = self._ndarray_dim4
+            return self.ndarray_dim4
         else:
-            return False
-        return True
+            raise ValueError('second dimension of arg must be either 3 or 4')
 
     @abstractmethod
-    def _ndarray_dim3(self, arg):
+    def ndarray_dim3(self, arg):
         pass
 
     @abstractmethod
-    def _ndarray_dim4(self, arg):
+    def ndarray_dim4(self, arg):
         pass
-        
-    def _list_handler(self, dim):
-        if dim == 3:
-            self._meas_func = self._list_dim3
-        elif dim == 4:
-            self._meas_func = self._list_dim4
-        else:
-            return False
-        return True    
-
-    def _list_dim3(self, arg):
-        return self._ndarray_dim3(np.asarray(arg))
-
-    def _list_dim4(self, arg):
-        return self._ndarray_dim4(np.asarray(arg))
-
-    def _pseudojet_handler(self):
-        self._meas_func = self._pseudojet
-        return True
 
     @abstractmethod
-    def _pseudojet(self, arg):
+    def pseudojet(self, arg):
         constituents = arg.constituents()
         pts = np.asarray([c.pt() for c in constituents])
         return pts, constituents
 
-    def _pts(self, p4s):
-        return np.sqrt(p4s[:,1]**2 + p4s[:,2]**2)
-
-    def _p4s_from_ptyphis(self, ptyphis):
-        pts, ys, phis = ptyphis[:,0], ptyphis[:,1], ptyphis[:,2]
-        return (pts*np.vstack([np.cosh(ys), np.cos(phis), np.sin(phis), np.sinh(ys)])).T
-
 class EEMeasure(Measure):
 
     @staticmethod
-    def _factory(measure):
+    def factory(measure):
         if 'efm' in measure:
             return EEEFMMeasure
         return EEDefaultMeasure
 
-    _allowed_dims = [4]
-
-    def _ndarray_handler(self, dim):
-        if dim == 4:
-            self._meas_func = self._ndarray_dim4
-        else:
-            return False
-        return True
+    def array_handler(self, dim):
+        if dim < 2:
+            raise ValueError('second dimension of arg must be >= 2')
+        self.metric = np.asarray([1]+[-1]*(dim-1))
+        return self.ndarray_dim_arb
 
     @abstractmethod
-    def _ndarray_dim4(self, arg):
+    def ndarray_dim_arb(self, arg):
         pass
-        
-    def _list_handler(self, dim):
-        if dim == 4:
-            self._meas_func = self._list_dim4
-        else:
-            return False
-        return True
-
-    def _list_dim4(self, arg):
-        return self._ndarray_dim4(np.asarray(arg))
-
-    def _pseudojet_handler(self):
-        self._meas_func = self._pseudojet
-        return True
 
     @abstractmethod
-    def _pseudojet(self, arg):
+    def pseudojet(self, arg):
         constituents = arg.constituents()
         Es = np.asarray([c.e() for c in constituents])
         return Es, constituents
 
 class HadronicDefaultMeasure(HadronicMeasure):
 
-    def _yphis(self, p4s):
-        return np.vstack([0.5*np.log((p4s[:,0]+p4s[:,3])/(p4s[:,0]-p4s[:,3])),
-                          np.arctan2(p4s[:,2], p4s[:,1])]).T
+    def __init__(self, *args):
+        super().__init__(*args)
+        if self.kappa == pf_marker:
+            raise ValueError('particle flow not available for HadronicDefaultMeasure')
 
-    def _thetas_from_yphis(self, yphis):
-        X = yphis[:,np.newaxis] - yphis[np.newaxis,:]
-        X[:,:,0] **= 2
-        X[:,:,1] = (np.pi - np.abs(np.abs(X[:,:,1]) - np.pi))**2
-        return (X[:,:,0] + X[:,:,1])**self._half_beta
+    def ndarray_dim3(self, arg):
+        return arg[:,0]**self.kappa, thetas2_from_yphis(arg[:,(1,2)])**self.half_beta
 
-    def _ndarray_dim3(self, arg):
-        return arg[:,0], self._thetas_from_yphis(arg[:,(1,2)])
+    def ndarray_dim4(self, arg):
+        return pts_from_p4s(arg)**self.kappa, thetas2_from_p4s(arg)**self.half_beta
 
-    def _ndarray_dim4(self, arg):
-        return self._pts(arg), self._thetas_from_yphis(self._yphis(arg))
-
-    def _pseudojet(self, arg):
-        pts, constituents = super()._pseudojet(arg)
-        thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])**self.beta
-        return pts, thetas
+    def pseudojet(self, arg):
+        pts, constituents = super().pseudojet(arg)
+        thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])
+        return pts**self.kappa, thetas**self.beta
 
 class HadronicDotMeasure(HadronicMeasure):
 
-    def _ndarray_dim3(self, arg):
-        pts = arg[:,0]
-        p4s = self._p4s_from_ptyphis(arg)
-        return pts, self._p4s_dot(p4s, pts)
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.metric = np.array([1., -1., -1., -1.])
+        self._set_k_func()
 
-    def _ndarray_dim4(self, arg):
-        pts = self._pts(arg)
-        return pts, self._p4s_dot(arg, pts)
+    def ndarray_dim3(self, arg):
+        pts, p4s = self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
+        return pts, self._ps_dot(p4s)**self.half_beta
 
-    def _pseudojet(self, arg):
-        pts, constituents = super()._pseudojet(arg)
+    def ndarray_dim4(self, arg):
+        pts, p4s = self._k_func(pts_from_p4s(arg), arg, self.kappa)
+        return pts, self._ps_dot(p4s)**self.half_beta
+
+    def pseudojet(self, arg):
+        pts, constituents = super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return pts, self._p4s_dot(p4s, pts)
+        pts, p4s = self._k_func(pts, p4s, self.kappa)
+        return pts, self._ps_dot(p4s)**self.half_beta
 
 class HadronicEFMMeasure(HadronicMeasure):
 
-    def _ndarray_dim3(self, arg):
-        pts = arg[:,0]
-        p4s = self._p4s_from_ptyphis(arg)
-        return pts, p4s/pts[:,np.newaxis]
+    def __init__(self, *args):
+        super().__init__(*args)
+        self._set_k_func()
 
-    def _ndarray_dim4(self, arg):
-        pts = self._pts(arg)
-        return pts, arg/pts[:,np.newaxis]
+    def ndarray_dim3(self, arg):
+        return self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
 
-    def _pseudojet(self, arg):
-        pts, constituents = super()._pseudojet(arg)
+    def ndarray_dim4(self, arg):
+        return self._k_func(pts_from_p4s(arg), arg, self.kappa)
+
+    def pseudojet(self, arg):
+        pts, constituents = super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return pts, p4s/pts[:,np.newaxis]
+        return self._k_func(pts, p4s, self.kappa)
 
 class EEDefaultMeasure(EEMeasure):
 
-    def _ndarray_dim4(self, arg):
-        Es = arg[:,0]
-        return Es, self._p4s_dot(arg, Es)
+    def __init__(self, *args):
+        super().__init__(*args)
+        self._set_k_func()
 
-    def _pseudojet(self, arg):
-        Es, constituents =  super()._pseudojet(arg)
+    def ndarray_dim_arb(self, arg):
+        return self._k_func(arg[:,0], arg, self.kappa)
+
+    def pseudojet(self, arg):
+        Es, constituents =  super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return Es, self._p4s_dot(p4s, Es)
+        Es, p4s = self._k_func(Es, p4s, self.kappa)
+        return Es, self._ps_dot(p4s)**self.half_beta
 
 class EEEFMMeasure(EEMeasure):
 
-    def _ndarray_dim4(self, arg):
-        Es = arg[:,0]
-        return Es, arg/Es[:,np.newaxis]
+    def __init__(self, *args):
+        super().__init__(*args)
+        self._set_k_func()
 
-    def _pseudojet(self, arg):
-        Es, constituents = super()._pseudojet(arg)
+    def ndarray_dim_arb(self, arg):
+        return self._k_func(arg[:,0], arg, self.kappa)
+
+    def pseudojet(self, arg):
+        Es, constituents = super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return Es, p4s/Es[:,np.newaxis]
+        return self._k_func(Es, p4s, self.kappa)

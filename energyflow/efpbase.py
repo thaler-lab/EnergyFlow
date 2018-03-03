@@ -9,20 +9,20 @@ import multiprocessing
 import numpy as np
 from six import add_metaclass
 
-from energyflow.utils import Measure, transfer
+from energyflow.utils import Measure, transfer, timing
 
 __all__ = ['EFPBase', 'EFPElem']
 
 @add_metaclass(ABCMeta)
 class EFPBase:
 
-    def __init__(self, measure='hadr', beta=1.0, normed=True, check_type=False):
+    def __init__(self, measure, beta, kappa, normed, check_type):
 
         # handle using EFMs
-        self.use_efms = ('efm' in measure)
+        self.use_efms = 'efm' in measure
 
         # store measure object
-        self._measure = Measure(measure, 2 if self.use_efms else beta, normed, check_type)
+        self._measure = Measure(measure, beta, kappa, normed, check_type)
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
@@ -122,27 +122,29 @@ class EFPElem:
         transfer(self, locals(), ['einstr','einpath','k','efm_einstr','efm_einpath','efm_spec'])
 
         # deal with arbitrary vertex labels
-        vertex_set = set(v for edge in edges for v in edge)
-        vertices = {v: i for i,v in enumerate(sorted(list(vertex_set)))}
+        vertex_set = frozenset(v for edge in edges for v in edge)
+        vertices = {v: i for i,v in enumerate(vertex_set)}
         self.n = len(vertex_set)
 
         # construct new edges with remapped vertices
-        self.edges = sorted([tuple(vertices[v] for v in sorted(edge)) for edge in edges])
-
-        # get simple edges
-        self.simple_edges = sorted(list(set(self.edges)))
-        self.e = len(self.simple_edges)
+        self.edges = [tuple(vertices[v] for v in sorted(edge)) for edge in edges]
 
         # get weights
         if weights is None:
+            self.simple_edges = list(frozenset(self.edges))
             counts = Counter(self.edges)
             self.weights = tuple(counts[edge] for edge in self.simple_edges)
-        else:
-            if len(weights) != self.e:
-                raise ValueError('length of weights is not number of simple edges')
-            self.weights = tuple(weights)
-            self.edges = [e for w,e in zip(self.weights, self.simple_edges) for i in range(w)]
 
+            # invalidate einsum quantities because edges got reordered
+            self.einstr = self.einpath = None
+        else:
+            if len(weights) != len(self.edges):
+                raise ValueError('length of weights is not number of edges')
+            self.simple_edges = self.edges
+            self.weights = tuple(weights)
+            self.edges = [e for w,e in zip(self.weights, self.edges) for i in range(w)]
+
+        self.e = len(self.simple_edges)
         self.d = sum(self.weights)
         self.pow2 = 2**self.d
         self.weight_set = frozenset(self.weights)
@@ -150,7 +152,14 @@ class EFPElem:
         self.ndk = (self.n, self.d, self.k)
 
         self.use_efms = self.efm_einstr is not None
-        setattr(self, 'compute', self.efm_compute if self.use_efms else self.efp_compute)
+        self.set_compute()
+
+    def set_timer(self, repeat, number):
+        self.set_compute()
+        self.compute = timing(self, repeat, number)(self.compute)
+
+    def set_compute(self):
+        self.compute = self.efm_compute if self.use_efms else self.efp_compute
 
     def efp_compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]

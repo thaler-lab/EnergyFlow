@@ -46,9 +46,7 @@ def efp_as_efms(graph):
     efms = {}
     ind = 0
     for v,valency in vert_valencies:
-        new_efm = {'dim': valency,
-                   'upper_indices': '',
-                   'lower_indices': ''}
+        new_efm = {'dim': valency, 'upper_indices': '', 'lower_indices': ''}
         for neighbor,count in vert_vert_counts[v].items():
             if neighbor in efms:
                 new_efm['lower_indices'] += efms[neighbor][v]

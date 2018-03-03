@@ -2,13 +2,16 @@
 
 from __future__ import absolute_import, division, print_function
 
+from collections import Counter
 import itertools
 import numpy as np
 
 from energyflow.algorithms import *
 from energyflow.efm import efp_as_efms
 from energyflow.efpbase import EFPElem
-from energyflow.utils import *
+from energyflow.utils.graph import *
+from energyflow.utils.helpers import *
+from energyflow.utils.path import *
 
 igraph = igraph_import()
 
@@ -20,10 +23,30 @@ class Generator:
                        ve_alg='numpy', np_optimize='greedy', 
                        filename=None, gen_efms=True, verbose=False):
 
+        # check for new generation
+        if dmax is not None and filename is None:
+
+            # set maxs
+            self._set_maxs(dmax, nmax, emax, cmax, vmax)
+
+            # set options
+            self.ve_alg = ve_alg
+            self.np_optimize = np_optimize
+            self.gen_efms = gen_efms
+
+            # get prime generator instance
+            self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
+                                         self.ve_alg, self.np_optimize, self.gen_efms)
+            self.cols = self.pr_gen.cols
+
+            # store lists of important quantities
+            transfer(self, self.pr_gen, self._prime_attrs())
+
         # if filename is set, read in file
-        if filename is not None:
-            if filename == 'default':
+        else:
+            if filename is None or filename == 'default':
                 filename = default_file
+
             file = np.load(filename + ('' if filename.endswith('.npz') else '.npz'))
 
             # setup cols and col inds
@@ -34,7 +57,7 @@ class Generator:
             c_specs = file['c_specs']
             local_vars = locals()
             for m in ['dmax','nmax','emax','cmax','vmax']:
-                setattr(self, m, min(file[m], self._none2inf(local_vars[m])))
+                setattr(self, m, min(file[m], none2inf(local_vars[m])))
 
             # select connected specs based on maxs
             mask = ((c_specs[:,self.d_ind] <= self.dmax) & 
@@ -53,29 +76,6 @@ class Generator:
                 setattr(self, attr, [x for x,m in zip(file[attr],mask) if m])
             self.c_specs = c_specs[mask]
 
-        # else if dmax is set then we're doing a new generation
-        elif dmax is not None:
-
-            # set maxs
-            self._set_maxs(dmax, nmax, emax, cmax, vmax)
-
-            # set options
-            self.ve_alg = ve_alg
-            self.np_optimize = np_optimize
-            self.gen_efms = gen_efms
-
-            # get prime generator instance
-            self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
-                                         self.ve_alg, self.np_optimize, self.gen_efms)
-            self.cols = self.pr_gen.cols
-
-            # store lists of important quantities
-            transfer(self, self.pr_gen, self._prime_attrs())
-
-        # handle errors
-        else:
-            raise TypeError('dmax cannoe be None if filename is None')
-
         # setup generator of disconnected graphs
         self._set_comp_dmaxs(comp_dmaxs)
         self.comp_gen = CompositeGenerator(self.c_specs, self.cols, self.comp_dmaxs)
@@ -90,9 +90,6 @@ class Generator:
 
     def _set_col_inds(self):
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
-
-    def _none2inf(self, x):
-        return np.inf if x is None else x
 
     def _set_maxs(self, dmax, nmax, emax, cmax, vmax):
         self.dmax = dmax
@@ -148,11 +145,13 @@ class PrimeGenerator:
     n - number of vertices in graph
     e - number of edges in (underlying) simple graph
     d - number of edges in multigraph
+    v - maximum valency of the graph
     k - unique index for graphs with a fixed (n,d)
     c - complexity, with respect to some VE algorithm
     p - number of prime factors for this EFP
+    h - number of valency 1 vertices in graph
     """
-    cols = ['n','e','d','v','k','c','p']
+    cols = ['n','e','d','v','k','c','p','h']
 
     def __init__(self, dmax, nmax, emax, cmax, vmax, ve_alg, np_optimize, gen_efms):
 
@@ -173,7 +172,7 @@ class PrimeGenerator:
         self.dmaxs = {(n,e): self.dmax for n in self.ns for e in self.esbyn[n]}
 
         # setup storage containers
-        quantities = ['simple_graphs_d', 'edges_d', 'chis_d', 'vs_d', 'einpaths_d',
+        quantities = ['simple_graphs_d', 'edges_d', 'chis_d', 'einpaths_d',
                       'einstrs_d', 'weights_d']
         for q in quantities:
             setattr(self, q, {(n,e): [] for n in self.ns for e in self.esbyn[n]})
@@ -246,17 +245,11 @@ class PrimeGenerator:
         self.ve.run(new_edges, ne[0])
         if self.ve.chi > self.cmax: 
             return
-
-        # check that the maximum valency isn't exceeded
-        maxv = new_graph.maxdegree()
-        if maxv > self.vmax:
-            return
         
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
         self.edges_d[ne].append(new_edges)
         self.chis_d[ne].append(self.ve.chi)
-        self.vs_d[ne].append(maxv)
 
         einstr, einpath = self.ve.einspecs()
         self.einstrs_d[ne].append(einstr)
@@ -321,14 +314,17 @@ class PrimeGenerator:
         ks = {}
         for ne in sorted(self.edges_d.keys()):
             n, e = ne
-            z = zip(self.edges_d[ne], self.weights_d[ne], self.chis_d[ne], self.vs_d[ne],
+            z = zip(self.edges_d[ne], self.weights_d[ne], self.chis_d[ne],
                     self.einstrs_d[ne], self.einpaths_d[ne])
-            for edgs, ws, c, v, es, ep in z:
+            for edgs, ws, c, es, ep in z:
                 for w in ws:
                     d = sum(w)
                     k = ks.setdefault((n,d), 0)
                     ks[(n,d)] += 1
-                    c_specs.append([n, e, d, v, k, c, 1])
+                    vs = valencies(EFPElem(edgs, weights=w).edges).values()
+                    v = max(vs)
+                    h = Counter(vs)[1]
+                    c_specs.append([n, e, d, v, k, c, 1, h])
                     self.edges.append(edgs)
                     self.weights.append(w)
                     self.einstrs.append(es)
@@ -428,7 +424,7 @@ class CompositeGenerator:
 
                             # iterate over factors
                             formula = []
-                            cmax = emax = vmax = 0 
+                            cmax = e = vmax = h = 0 
                             for (nn,dd),kk in zip(spec,kspec):
 
                                 # add (n,d,k) of factor to formula
@@ -438,12 +434,13 @@ class CompositeGenerator:
                                 # select original simple graph
                                 ind = self.ndk2i[ndk]
                                 cmax = max(cmax, self.c_specs[ind, self.c_ind])
-                                emax = max(emax, self.c_specs[ind, self.e_ind])
+                                e += self.c_specs[ind, self.e_ind]
                                 vmax = max(vmax, self.c_specs[ind, self.v_ind])
+                                h += self.c_specs[ind, self.h_ind]
 
                             # append to stored array
                             disc_formulae.append(tuple(sorted(formula)))
-                            disc_specs.append([n, emax, d, vmax, kcount, cmax, len(kspec)])
+                            disc_specs.append([n, e, d, vmax, kcount, cmax, len(kspec), h])
                             kcount += 1
 
         # ensure unique formulae (deals with possible degeneracy in selection of factors)

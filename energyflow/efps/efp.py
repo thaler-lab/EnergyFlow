@@ -15,7 +15,7 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadr', beta=1, normed=True, check_type=True, 
+    def __init__(self, edges, measure='hadr', beta=1, kappa=1, normed=True, check_type=True, 
                               ve_alg='numpy', np_optimize='greedy'):
         """
         Arguments
@@ -40,7 +40,7 @@ class EFP(EFPBase):
         """
 
         # initialize EFPBase
-        super().__init__(measure, beta, normed, check_type)
+        super().__init__(measure, beta, kappa, normed, check_type)
 
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)

@@ -11,7 +11,9 @@ import numpy as np
 from energyflow.gen import Generator
 from energyflow.efm import EFM
 from energyflow.efpbase import *
-from energyflow.utils import *
+from energyflow.utils.graph import graph_union
+from energyflow.utils.helpers import *
+from energyflow.utils.path import *
 
 __all__ = ['EFPSet']
 
@@ -62,10 +64,11 @@ class EFPSet(EFPBase):
         default_kwargs = {'filename': None,
                           'measure': 'hadr',
                           'beta': 1,
+                          'kappa': 1,
                           'normed': True,
                           'check_type': False,
                           'verbose': False}
-        measure_kwargs = ['measure', 'beta', 'normed', 'check_type']
+        measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'check_type']
 
         # process arguments
         for k,v in default_kwargs.items():
@@ -108,18 +111,20 @@ class EFPSet(EFPBase):
         self.gen_maxs = {m: gen[m] for m in maxs}
 
         # get disc formulae and disc mask
-        disc_mask = self.sel(*args, specs=gen['disc_specs'])
+        orig_disc_specs = gen['disc_specs']
+        disc_mask = self.sel(*args, specs=orig_disc_specs)
         self.disc_formulae = gen['disc_formulae'][disc_mask]
 
         # get connected specs and full specs
-        c_mask = self.sel(*args, specs=gen['c_specs'])
-        c_specs = gen['c_specs'][c_mask]
-        self._specs = concat_specs(c_specs, gen['disc_specs'][disc_mask])
+        orig_c_specs = gen['c_specs']
+        c_mask = self.sel(*args, specs=orig_c_specs)
+        self._specs = concat_specs(orig_c_specs[c_mask], orig_disc_specs[disc_mask])
 
         # make EFPElem list
         z = zip(*([gen[v] for v in elemvs] + 
                   [gen[v] if self.use_efms else nonegen() for v in efmvs]))
-        self.efpelems = [EFPElem(edgs, ws, es, ep, gen['c_specs'][m,self.k_ind], efm_es, efm_ep, efm_sp) \
+        ks = orig_c_specs[:,self.k_ind]
+        self.efpelems = [EFPElem(edgs, ws, es, ep, ks[m], efm_es, efm_ep, efm_sp) \
                          for m,(edgs,ws,es,ep,efm_es,efm_ep,efm_sp) in enumerate(z) if c_mask[m]]
 
         # setup EFMs
@@ -186,7 +191,7 @@ class EFPSet(EFPBase):
 
     def _make_graphs(self, connected_graphs):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
-        return connected_graphs + [graph_union(*dc) for dc in disc_comps]
+        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
 
 
     #===============
@@ -285,7 +290,7 @@ class EFPSet(EFPBase):
 
     # graphs(*args)
     def graphs(self, *args):
-        """Returns a list of graphs (as lists of edges) 
+        """Returns a `numpy.ndarray` of graphs (as lists of edges) 
         that meet the specifications of the arguments using `sel`."""
 
         # if we haven't extracted the graphs, do it now
@@ -293,12 +298,11 @@ class EFPSet(EFPBase):
             self._graphs = self._make_graphs([elem.edges for elem in self.efpelems])
 
         # filter graphs based on mask
-        mask = self.sel(*args)
-        return [g for g,m in zip(self._graphs, mask) if m]
+        return self._graphs[self.sel(*args)]
 
     # simple_graphs(*args)
     def simple_graphs(self, *args):
-        """Returns a list of simple graphs (without any multiedges) 
+        """Returns a `numpy.ndarray` of simple graphs (without any multiedges) 
         that meet the specifications of the arguments using `sel`."""
 
         # is we haven't extracted the simple graphs, do it now
@@ -306,8 +310,7 @@ class EFPSet(EFPBase):
             self._simple_graphs = self._make_graphs([elem.simple_edges for elem in self.efpelems])
 
         # filter simple graphs based on mask
-        mask = self.sel(*args)
-        return [g for g,m in zip(self._simple_graphs, mask) if m]
+        return self._simple_graphs[self.sel(*args)]
 
     def print_stats(self, specs=None, lws=0):
         if specs is None:
@@ -318,6 +321,14 @@ class EFPSet(EFPBase):
         print(pad + 'Prime:', num_prime)
         print(pad + 'Composite:', num_composite)
         print(pad + 'Total: ', num_prime+num_composite)
+
+    def set_timers(self, repeat=5, number=10):
+        for efpelem in self.efpelems:
+            efpelem.set_timer(repeat, number)
+
+    def get_times(self):
+        return [elem.times for elem in self.efpelems]
+
 
     #===========
     # properties

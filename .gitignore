@@ -19,3 +19,5 @@ autogen.py
 Energy\ Flow.sublime*
 tmp/
 bin/
+*.nb
+.pytest_cache
