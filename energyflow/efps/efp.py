@@ -14,7 +14,7 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadr', beta=1, kappa=1, normed=True, check_type=True, 
+    def __init__(self, edges, measure='hadr', beta=1, kappa=1, normed=True, check_input=True, 
                               ve_alg='numpy', np_optimize='greedy'):
         """
         Arguments
@@ -28,7 +28,7 @@ class EFP(EFPBase):
             Must be greater than zero.
         normed : bool
             - Controls normalization of the energies in the measure.
-        check_type : bool
+        check_input : bool
             - Whether to check the type of the input each time or use 
             the first input type.
         ve_alg : {`'numpy'`, `'ef'`}
@@ -39,7 +39,7 @@ class EFP(EFPBase):
         """
 
         # initialize EFPBase
-        super().__init__(measure, beta, kappa, normed, check_type)
+        super().__init__(measure, beta, kappa, normed, check_input)
 
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
@@ -48,7 +48,7 @@ class EFP(EFPBase):
 
         if self.use_efms:
             efm_einstr, efm_spec = efp2efms(self.graph)
-            self.efmset = EFMSet(efm_spec, subslicing=self.subslicing)
+            self._efmset = EFMSet(efm_spec, subslicing=self.subslicing)
             efm_einpath = np.einsum_path(efm_einstr, 
                                          *[np.empty([4]*sum(s)) for s in efm_spec],
                                          optimize=np_optimize)[0]
@@ -95,10 +95,10 @@ class EFP(EFPBase):
         return self.efpelem.weight_set
 
     @property
-    def efms(self):
+    def efmset(self):
         """Get items of EFMs."""
 
-        return self._efms
+        return self._efmset
 
     @property
     def graph(self):

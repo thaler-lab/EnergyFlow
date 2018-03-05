@@ -16,10 +16,10 @@ __all__ = ['EFPBase', 'EFPElem']
 @add_metaclass(ABCMeta)
 class EFPBase:
 
-    def __init__(self, measure, beta, kappa, normed, check_type):
+    def __init__(self, measure, beta, kappa, normed, check_input):
 
         # store measure object
-        self._measure = Measure(measure, beta, kappa, normed, check_type)
+        self._measure = Measure(measure, beta, kappa, normed, check_input)
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
@@ -40,7 +40,7 @@ class EFPBase:
         return self.efmset.construct(zs, phats)
 
     @abstractproperty
-    def efms(self):
+    def efmset(self):
         pass
 
     @property
@@ -52,12 +52,16 @@ class EFPBase:
         return self._measure.beta
 
     @property
+    def kappa(self):
+        return self._measure.kappa
+
+    @property
     def normed(self):
         return self._measure.normed
 
     @property
-    def check_type(self):
-        return self._measure.check_type
+    def check_input(self):
+        return self._measure.check_input
 
     @property
     def subslicing(self):

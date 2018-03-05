@@ -29,7 +29,7 @@ class Measure:
         else:
             return super(Measure, cls).__new__(cls)
 
-    def __init__(self, measure, beta, kappa, normed, check_type):
+    def __init__(self, measure, beta, kappa, normed, check_input):
         """Processes inputs according to the measure choice.
 
         Arguments
@@ -40,22 +40,19 @@ class Measure:
             - The exponent $\beta$.
         normed : bool
             - Whether or not to use normalized energies.
-        check_type : bool
+        check_input : bool
             - Whether or not to check the input for each new event.
         """
 
-        transfer(self, locals(), ['measure', 'kappa', 'normed', 'check_type'])
-
+        transfer(self, locals(), ['measure', 'kappa', 'normed', 'check_input'])
         self.beta = float(beta)
         self.half_beta = self.beta/2
-
-        # these will be subsequently altered
-        self.subslicing = self.need_meas_func = True
+        self.need_meas_func = True
 
     def __call__(self, arg):
 
         # check type only if needed
-        if self.need_meas_func or self.check_type:
+        if self.need_meas_func or self.check_input:
             self.set_meas_func(arg)
 
         # get zs and angles 
@@ -72,7 +69,7 @@ class Measure:
         # support arg as list (of lists)
         elif isinstance(arg, list):
             array_meas = self.array_handler(len(arg[0]))
-            def wrapped_meas(self, arg):
+            def wrapped_meas(arg):
                 return array_meas(np.asarray(arg))
             self.meas_func = wrapped_meas
 
@@ -116,9 +113,7 @@ class HadronicMeasure(Measure):
 
     def __init__(self, *args):
         super().__init__(*args)
-
-        # can't subslice in Hadronic case
-        self.subslicing = False
+        self._set_k_func()
 
     def array_handler(self, dim):
         if dim == 3:
@@ -150,6 +145,10 @@ class EEMeasure(Measure):
             return EEEFMMeasure
         return EEDefaultMeasure
 
+    def __init__(self, *args):
+        super().__init__(*args)
+        self._set_k_func()
+
     def array_handler(self, dim):
         if dim < 2:
             raise ValueError('second dimension of arg must be >= 2')
@@ -168,8 +167,11 @@ class EEMeasure(Measure):
 
 class HadronicDefaultMeasure(HadronicMeasure):
 
+    subslicing = None
+
     def __init__(self, *args):
-        super().__init__(*args)
+        # skip __init__ of HadronicMeasure
+        super(HadronicMeasure, self).__init__(*args)
         if self.kappa == pf_marker:
             raise ValueError('particle flow not available for HadronicDefaultMeasure')
 
@@ -186,10 +188,8 @@ class HadronicDefaultMeasure(HadronicMeasure):
 
 class HadronicDotMeasure(HadronicMeasure):
 
-    def __init__(self, *args):
-        super().__init__(*args)
-        self.metric = flat_metric(4)
-        self._set_k_func()
+    subslicing = None
+    metric = flat_metric(4)
 
     def ndarray_dim3(self, arg):
         pts, p4s = self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
@@ -207,9 +207,7 @@ class HadronicDotMeasure(HadronicMeasure):
 
 class HadronicEFMMeasure(HadronicMeasure):
 
-    def __init__(self, *args):
-        super().__init__(*args)
-        self._set_k_func()
+    subslicing = False
 
     def ndarray_dim3(self, arg):
         return self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
@@ -224,9 +222,7 @@ class HadronicEFMMeasure(HadronicMeasure):
 
 class EEDefaultMeasure(EEMeasure):
 
-    def __init__(self, *args):
-        super().__init__(*args)
-        self._set_k_func()
+    subslicing = None
 
     def ndarray_dim_arb(self, arg):
         Es, ps = self._k_func(arg[:,0], arg, self.kappa)
@@ -240,9 +236,7 @@ class EEDefaultMeasure(EEMeasure):
 
 class EEEFMMeasure(EEMeasure):
 
-    def __init__(self, *args):
-        super().__init__(*args)
-        self._set_k_func()
+    subslicing = True
 
     def ndarray_dim_arb(self, arg):
         return self._k_func(arg[:,0], arg, self.kappa)

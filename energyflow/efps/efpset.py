@@ -22,7 +22,7 @@ class EFPSet(EFPBase):
     """A class that holds a collection of EFPs and computes their values on events."""
 
     # EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, 
-    #        check_type=False, verbose=False)
+    #        check_input=False, verbose=False)
     def __init__(self, *args, **kwargs):
         """
         EFPSet can be initialized in one of three ways (in order of precedence):
@@ -45,7 +45,7 @@ class EFPSet(EFPBase):
             it is used for initialization. The remaining positional 
             arguments must be valid arguments to `sel`.
         filename : string
-            - Path to a `.npz` file which has been saved by a valid  
+            - Path to a `.npz` file which has been saved by a valid
             `energyflow.Generator`.
         measure : {`'hadr'`, `'hadr-dot'`, `'ee'`}
             - See [Measures](/intro/measures) for additional info.
@@ -54,7 +54,7 @@ class EFPSet(EFPBase):
             Must be greater than zero.
         normed : bool
             - Controls normalization of the energies in the measure.
-        check_type : bool
+        check_input : bool
             - Whether to check the type of the input each time or use 
             the first input type.
         verbose : bool
@@ -66,9 +66,9 @@ class EFPSet(EFPBase):
                           'beta': 1,
                           'kappa': 1,
                           'normed': True,
-                          'check_type': False,
+                          'check_input': False,
                           'verbose': False}
-        measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'check_type']
+        measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'check_input']
 
         # process arguments
         for k,v in default_kwargs.items():
@@ -131,7 +131,7 @@ class EFPSet(EFPBase):
         # setup EFMs
         if self.use_efms:
             efm_specs = chain(*[elem.efm_spec for elem in self.efpelems])
-            self.efmset = EFMSet(efm_specs, subslicing=self.subslicing)
+            self._efmset = EFMSet(efm_specs, subslicing=self.subslicing)
 
         # union over all weights needed
         self._weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
@@ -361,6 +361,5 @@ class EFPSet(EFPBase):
         return self._specs
 
     @property
-    def efms(self):
-
-        return self._efms
+    def efmset(self):
+        return self._efmset

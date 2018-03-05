@@ -12,6 +12,7 @@ __all__ = [
     'gen_random_events_massless_com',
     'load_events',
     'load_big_event',
+    'mass2'
 ]
 
 # implementation of RAMBO algorithm
@@ -60,13 +61,15 @@ def gen_massless_phase_space(nparticles, nevents, energy=1):
 def gen_random_events(nparticles, nevents, dim=4, mass=0):
     spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
-    return np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1)
+    events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
+    if nevents == 1:
+        return events[0]
+    return events
 
 # generate random massless events in the center of momentum frame
-# an energy of zero means treat half the particles as 'incoming' with negative energy
-def gen_random_events_massless_com(nparticles, nevents, dim=4, energy=1):
-    events_1_sp = 2*np.random.rand(nevents, nparticles, dim-1) - 1
-    events_2_sp = 2*np.random.rand(nevents, nparticles, dim-1) - 1
+def gen_random_events_massless_com(nparticles, nevents, dim=4):
+    events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
+    events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
     
     events_1_sp_com = np.concatenate((events_1_sp, -np.sum(events_1_sp, axis=1)[:,np.newaxis]), axis=1)
     events_2_sp_com = np.concatenate((events_2_sp, -np.sum(events_2_sp, axis=1)[:,np.newaxis]), axis=1)
@@ -86,4 +89,7 @@ def load_events():
 
 def load_big_event(num=None):
     return np.concatenate(load_events(), axis=0)[:num]
+
+def mass2(events):
+    return events[...,0]**2 - np.sum(events[...,1:]**2)
     

@@ -20,4 +20,4 @@ from .utils import *
 
 __all__ = efm.__all__ + efps.__all__ + gen.__all__ + utils.__all__
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'

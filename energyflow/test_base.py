@@ -27,7 +27,6 @@ g_7_default = ef.Generator(dmax=7, filename='default')
 g_10_default = ef.Generator(dmax=10, filename='default')
 g_7 = ef.Generator(dmax=7)
 
-
 def test_gen_matches_file():
     assert np.all(g_7_default.specs == g_7.specs)
 
