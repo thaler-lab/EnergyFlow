@@ -7,7 +7,6 @@ import numpy as np
 from energyflow.algorithms import VariableElimination
 from energyflow.efm import *
 from energyflow.efpbase import *
-from energyflow.utils import unique_dim_nlows
 
 __all__ = ['EFP']
 
@@ -45,12 +44,13 @@ class EFP(EFPBase):
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
 
+        self.use_efms = 'efm' in self.measure
+
         if self.use_efms:
-            efm_einstr, efm_spec = efp_as_efms(self.graph)
-            dim_nlows = unique_dim_nlows(efm_spec)
-            self._efms = {dim: EFM(dim, nlows) for dim,nlows in dim_nlows.items()}
+            efm_einstr, efm_spec = efp2efms(self.graph)
+            self.efmset = EFMSet(efm_spec, subslicing=self.subslicing)
             efm_einpath = np.einsum_path(efm_einstr, 
-                                         *[np.empty([4]*s[0]) for s in efm_spec],
+                                         *[np.empty([4]*sum(s)) for s in efm_spec],
                                          optimize=np_optimize)[0]
             self.pow2 = 2**self.d
             self.efpelem = EFPElem(self.graph, efm_einstr=efm_einstr, 

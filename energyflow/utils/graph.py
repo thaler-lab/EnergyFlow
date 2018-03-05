@@ -5,7 +5,14 @@ from __future__ import absolute_import
 from collections import Counter
 import itertools
 
-__all__ = ['igraph_import', 'graph_union', 'nvert', 'valencies', 'vv_counts', 'num_valency_ones']
+__all__ = [
+    'igraph_import', 
+    'graph_union', 
+    'nvert', 
+    'valencies', 
+    'get_valency_structure', 
+    'num_valency_ones'
+]
 
 def igraph_import():
     """
@@ -53,7 +60,7 @@ def valencies(graph):
 
     return Counter((v for edge in graph for v in edge))
 
-def vv_counts(graph):
+def get_valency_structure(graph):
     """Turn graph into a dictionary where the keys are the vertices
     and the values are dictionaries where the keys are again vertices 
     and the values are the number of edges shared by those vertices.

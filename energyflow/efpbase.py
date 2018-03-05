@@ -18,9 +18,6 @@ class EFPBase:
 
     def __init__(self, measure, beta, kappa, normed, check_type):
 
-        # handle using EFMs
-        self.use_efms = 'efm' in measure
-
         # store measure object
         self._measure = Measure(measure, beta, kappa, normed, check_type)
 
@@ -35,12 +32,12 @@ class EFPBase:
     def weight_set(self):
         pass
 
-    def construct_efms(self, event, zs, p4hats):
+    def construct_efms(self, event, zs, phats):
         if event is not None:
-            zs, p4hats = self._measure(event)
-        elif zs is None or p4hats is None:
-            raise TypeError('if event is None then zs and/or p4hats cannot also be None')
-        return {dim: efm.construct(zs, p4hats) for dim,efm in self.efms.items()}
+            zs, phats = self._measure(event)
+        elif zs is None or phats is None:
+            raise TypeError('if event is None then zs and/or phats cannot also be None')
+        return self.efmset.construct(zs, phats)
 
     @abstractproperty
     def efms(self):
@@ -61,6 +58,10 @@ class EFPBase:
     @property
     def check_type(self):
         return self._measure.check_type
+
+    @property
+    def subslicing(self):
+        return self._measure.subslicing
 
     def _compute_func(self, args):
         return self.compute(zs=args[0], angles=args[1])
@@ -142,7 +143,7 @@ class EFPElem:
                 raise ValueError('length of weights is not number of edges')
             self.simple_edges = self.edges
             self.weights = tuple(weights)
-            self.edges = [e for w,e in zip(self.weights, self.edges) for i in range(w)]
+        self.edges = [e for w,e in zip(self.weights, self.simple_edges) for i in range(w)]
 
         self.e = len(self.simple_edges)
         self.d = sum(self.weights)
@@ -166,7 +167,7 @@ class EFPElem:
         return np.einsum(self.einstr, *einsum_args, optimize=self.einpath)
 
     def efm_compute(self, efms_dict):
-        einsum_args = [efms_dict[dim][nlow] for dim,nlow in self.efm_spec]
+        einsum_args = [efms_dict[sig] for sig in self.efm_spec]
         return np.einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2
 
     # properties set above:

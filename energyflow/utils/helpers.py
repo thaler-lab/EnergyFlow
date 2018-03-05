@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from functools import wraps
+from operator import itemgetter
 import timeit
 
 import numpy as np
@@ -10,7 +11,6 @@ __all__ = [
     'explicit_comp', 
     'concat_specs', 
     'transfer', 
-    'unique_dim_nlows', 
     'nonegen',
     'none2inf',
     'timing',
@@ -19,7 +19,10 @@ __all__ = [
     'thetas2_from_p4s',
     'thetas2_from_yphis',
     'pf_func',
-    'kappa_func'
+    'kappa_func',
+    'flat_metric',
+    'find_subslice',
+    'find_minimum_rl'
 ]
 
 def kwargs_check(name, kwargs, allowed=[]):
@@ -52,11 +55,6 @@ def transfer(obj1, obj2, attrs):
     else:
         for attr in attrs:
             setattr(obj1, attr, getattr(obj2, attr))
-
-def unique_dim_nlows(efm_specs, d={}):
-    for spec in efm_specs:
-        d.setdefault(spec[0], set()).update(spec[1:])
-    return d
 
 def nonegen():
     while True:
@@ -100,3 +98,22 @@ def pf_func(Es, ps, kappa):
 
 def kappa_func(Es, ps, kappa):
     return Es**kappa, ps/Es[:,np.newaxis]
+
+long_metric = np.array([1.] + [-1.]*100)
+def flat_metric(dim):
+    if dim <= 101:
+        return long_metric[:dim]
+    return np.asarray([1.] + [-1.]*(dim-1))
+
+def find_subslice(sig, efms):
+    nlow, nup = sig
+    bsigs = list(filter(lambda x: x[0] >= nlow and x[1] >= nup, efms))
+    if not len(bsigs):
+        return
+    return min(bsigs, key=sum)
+
+def find_minimum_rl(sig, efms):
+    v = sum(sig)
+    vsigs = list(filter(lambda x: sum(x) == v, efms))
+    ninds = [(abs(sig[0]-vs[0]), vs) for vs in vsigs]
+    return min(ninds, key=itemgetter(0))[1]

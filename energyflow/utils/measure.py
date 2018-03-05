@@ -47,9 +47,10 @@ class Measure:
         transfer(self, locals(), ['measure', 'kappa', 'normed', 'check_type'])
 
         self.beta = float(beta)
-
         self.half_beta = self.beta/2
-        self.need_meas_func = True
+
+        # these will be subsequently altered
+        self.subslicing = self.need_meas_func = True
 
     def __call__(self, arg):
 
@@ -100,6 +101,7 @@ class Measure:
         self._k_func = kappa_func
         if self.kappa == pf_marker:
             self.normed = False
+            self.subslicing = False
             self._k_func = pf_func
 
 class HadronicMeasure(Measure):
@@ -111,6 +113,12 @@ class HadronicMeasure(Measure):
         if 'dot' in measure:
             return HadronicDotMeasure
         return HadronicDefaultMeasure
+
+    def __init__(self, *args):
+        super().__init__(*args)
+
+        # can't subslice in Hadronic case
+        self.subslicing = False
 
     def array_handler(self, dim):
         if dim == 3:
@@ -145,7 +153,7 @@ class EEMeasure(Measure):
     def array_handler(self, dim):
         if dim < 2:
             raise ValueError('second dimension of arg must be >= 2')
-        self.metric = np.asarray([1]+[-1]*(dim-1))
+        self.metric = flat_metric(dim)
         return self.ndarray_dim_arb
 
     @abstractmethod
@@ -180,7 +188,7 @@ class HadronicDotMeasure(HadronicMeasure):
 
     def __init__(self, *args):
         super().__init__(*args)
-        self.metric = np.array([1., -1., -1., -1.])
+        self.metric = flat_metric(4)
         self._set_k_func()
 
     def ndarray_dim3(self, arg):
@@ -221,7 +229,8 @@ class EEDefaultMeasure(EEMeasure):
         self._set_k_func()
 
     def ndarray_dim_arb(self, arg):
-        return self._k_func(arg[:,0], arg, self.kappa)
+        Es, ps = self._k_func(arg[:,0], arg, self.kappa)
+        return Es, self._ps_dot(ps)**self.half_beta
 
     def pseudojet(self, arg):
         Es, constituents =  super().pseudojet(arg)

@@ -2,14 +2,14 @@
 
 from __future__ import absolute_import, division, print_function
 
-import itertools
+from  itertools import chain
 import re
 import warnings
 
 import numpy as np
 
 from energyflow.gen import Generator
-from energyflow.efm import EFM
+from energyflow.efm import EFMSet
 from energyflow.efpbase import *
 from energyflow.utils.graph import graph_union
 from energyflow.utils.helpers import *
@@ -80,6 +80,7 @@ class EFPSet(EFPBase):
 
         # initialize EFPBase
         super().__init__(*[kwargs[k] for k in measure_kwargs])
+        self.use_efms = 'efm' in self.measure
 
         # handle different methods of initialization
         maxs = ['nmax','emax','dmax','cmax','vmax','comp_dmaxs']
@@ -129,9 +130,8 @@ class EFPSet(EFPBase):
 
         # setup EFMs
         if self.use_efms:
-            efm_specs = [elem.efm_spec for elem in self.efpelems]
-            efm_dim_nlows = unique_dim_nlows(itertools.chain(*efm_specs))
-            self._efms = {dim: EFM(dim, nlows) for dim,nlows in efm_dim_nlows.items()}
+            efm_specs = chain(*[elem.efm_spec for elem in self.efpelems])
+            self.efmset = EFMSet(efm_specs, subslicing=self.subslicing)
 
         # union over all weights needed
         self._weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)

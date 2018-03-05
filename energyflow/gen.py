@@ -7,7 +7,7 @@ import itertools
 import numpy as np
 
 from energyflow.algorithms import *
-from energyflow.efm import efp_as_efms
+from energyflow.efm import efp2efms
 from energyflow.efpbase import EFPElem
 from energyflow.utils.graph import *
 from energyflow.utils.helpers import *
@@ -335,11 +335,11 @@ class PrimeGenerator:
         self.efm_einstrs, self.efm_specs, self.efm_einpaths = [], [], []
         if self.gen_efms:
             for edgs,ws in zip(self.edges, self.weights):
-                einstr, efm_spec = efp_as_efms(EFPElem(edgs, weights=ws).edges)
+                einstr, efm_spec = efp2efms(EFPElem(edgs, weights=ws).edges)
                 self.efm_einstrs.append(einstr)
                 self.efm_specs.append(efm_spec)
                 self.efm_einpaths.append(np.einsum_path(einstr, 
-                                                        *[np.empty([4]*s[0]) for s in efm_spec],
+                                                        *[np.empty([4]*sum(s)) for s in efm_spec],
                                                         optimize=self.ve.np_optimize)[0])
 
 
