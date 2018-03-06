@@ -112,6 +112,7 @@ class EFMSet:
 
         # sort EFMs by decreasing valency and then increasing nlow
         self.sorted_efms = sorted(self.unique_efms, key=lambda x: abs(x[0]-x[1]), reverse=True)
+        self.sorted_efms.sort(key=itemgetter(1), reverse=True)
         self.sorted_efms.sort(key=sum, reverse=True)
 
         # take care of empty set

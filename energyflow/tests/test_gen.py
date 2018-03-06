@@ -23,12 +23,13 @@ table2b = [
 [0,0,0,0,0,0,0,0,0,0,235]
 ]
 
-g_7_default = ef.Generator(dmax=7, filename='default')
-g_10_default = ef.Generator(dmax=10, filename='default')
-g_7 = ef.Generator(dmax=7)
-
 def test_gen_matches_file():
+    pytest.importorskip('igraph')
+    g_7 = ef.Generator(dmax=7)
+    g_7_default = ef.Generator(dmax=7, filename='default')
     assert np.all(g_7_default.specs == g_7.specs)
+
+g_10_default = ef.Generator(dmax=10, filename='default')
 
 sp = g_10_default.specs
 c_sp = g_10_default.c_specs
@@ -46,6 +47,3 @@ def test_table2b():
             nmask = c_sp[:,g_10_default.n_ind] == n
             num = np.count_nonzero(dmask & nmask)
             assert num == table2b[n][d]
-
-
-

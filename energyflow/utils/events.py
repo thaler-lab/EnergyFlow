@@ -17,7 +17,7 @@ __all__ = [
 
 # implementation of RAMBO algorithm
 # citation: http://cds.cern.ch/record/164736/files/198601282.pdf
-def gen_massless_phase_space(nparticles, nevents, energy=1):
+def gen_massless_phase_space(nevents, nparticles, energy=1):
     
     # qs: to be massless four-momenta uniformly sampled in angle
     qs = np.empty((nevents, nparticles, 4))
@@ -58,7 +58,7 @@ def gen_massless_phase_space(nparticles, nevents, energy=1):
 # make random events with a given number of particles
 # the spacetime dimension and mass of the particles can be controlled
 # the spatial vectors are drawn randomly in [-1,1]^(dim-1)
-def gen_random_events(nparticles, nevents, dim=4, mass=0):
+def gen_random_events(nevents, nparticles, dim=4, mass=0):
     spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
     events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
@@ -67,7 +67,7 @@ def gen_random_events(nparticles, nevents, dim=4, mass=0):
     return events
 
 # generate random massless events in the center of momentum frame
-def gen_random_events_massless_com(nparticles, nevents, dim=4):
+def gen_random_events_massless_com(nevents, nparticles, dim=4):
     events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
     events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
     
@@ -91,5 +91,5 @@ def load_big_event(num=None):
     return np.concatenate(load_events(), axis=0)[:num]
 
 def mass2(events):
-    return events[...,0]**2 - np.sum(events[...,1:]**2)
+    return events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1)
     
