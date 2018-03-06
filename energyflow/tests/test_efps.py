@@ -64,7 +64,7 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
         pytest.skip('hadr does not do pf')
     if 'efm' in measure and beta != 2:
         pytest.skip('only test efm when beta=2')
-    s1 = ef.EFPSet('d<=7', measure=measure, beta=beta, kappa=kappa, normed=normed)
+    s1 = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
     efps = [ef.EFP(g, measure=measure, beta=beta, kappa=kappa, normed=normed) for g in s1.graphs()]
     r1 = s1.compute(event)
     r2 = np.asarray([efp.compute(event) for efp in efps])
@@ -79,8 +79,8 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
 @pytest.mark.parametrize('beta', [2, pytest.param(1.9, marks=pytest.mark.xfail)])
 @pytest.mark.parametrize('measures', [('hadrdot', 'hadrefm'), ('ee', 'eeefm')])
 def test_efps_vs_efms(measures, beta, kappa, normed, event):
-    s1 = ef.EFPSet('d<=7', measure=measures[0], beta=beta, kappa=kappa, normed=normed)
-    s2 = ef.EFPSet('d<=7', measure=measures[1], beta=beta, kappa=kappa, normed=normed)
+    s1 = ef.EFPSet('d<=6', measure=measures[0], beta=beta, kappa=kappa, normed=normed)
+    s2 = ef.EFPSet('d<=6', measure=measures[1], beta=beta, kappa=kappa, normed=normed)
     r1 = s1.compute(event)
     r2 = s2.compute(event)
     assert epsilon_percent(r1, r2, 10**-11)

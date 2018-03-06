@@ -34,14 +34,14 @@ g_10_default = ef.Generator(dmax=10, filename='default')
 sp = g_10_default.specs
 c_sp = g_10_default.c_specs
 def test_table2a():
-    for d in range(1, g_10_default.dmax+1):
+    for d in range(1,8+1):
         num_prime = np.count_nonzero(c_sp[:,g_10_default.d_ind] == d)
         num_comp = np.count_nonzero(sp[:,g_10_default.d_ind] == d)
         assert num_prime == table2a['prime'][d]
         assert num_comp == table2a['comp'][d]
 
 def test_table2b():
-    for d in range(g_10_default.dmax+1):
+    for d in range(8+1):
         dmask = c_sp[:,g_10_default.d_ind] == d
         for n in range(g_10_default.nmax+1):
             nmask = c_sp[:,g_10_default.n_ind] == n
