@@ -53,11 +53,11 @@ def test_efp_asymbox(zs, thetas):
 
 # test that efpset matches efps
 @pytest.mark.slow
-@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'ee', 'eeefm'])
-@pytest.mark.parametrize('beta', [.5, 1, 2])
-@pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
-@pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
+@pytest.mark.parametrize('normed', [True, False])
+@pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
+@pytest.mark.parametrize('beta', [.5, 1, 2])
+@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'ee', 'eeefm'])
 def test_efpset_vs_efps(measure, beta, kappa, normed, event):
     # handle cases we want to skip
     if measure == 'hadr' and kappa == 'pf':
@@ -73,14 +73,14 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
 # test that EFM works
 @pytest.mark.slow
 @pytest.mark.efm
-@pytest.mark.parametrize('measures', [('hadrdot', 'hadrefm'), ('ee', 'eeefm')])
-@pytest.mark.parametrize('beta', [2, pytest.param(1.9, marks=pytest.mark.xfail)])
-@pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
-@pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
+@pytest.mark.parametrize('normed', [True, False])
+@pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
+@pytest.mark.parametrize('beta', [2, pytest.param(1.9, marks=pytest.mark.xfail)])
+@pytest.mark.parametrize('measures', [('hadrdot', 'hadrefm'), ('ee', 'eeefm')])
 def test_efps_vs_efms(measures, beta, kappa, normed, event):
     s1 = ef.EFPSet('d<=7', measure=measures[0], beta=beta, kappa=kappa, normed=normed)
     s2 = ef.EFPSet('d<=7', measure=measures[1], beta=beta, kappa=kappa, normed=normed)
     r1 = s1.compute(event)
     r2 = s2.compute(event)
-    assert epsilon_percent(r1, r2, 10**-12)
+    assert epsilon_percent(r1, r2, 10**-11)
