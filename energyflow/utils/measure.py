@@ -112,7 +112,7 @@ class HadronicMeasure(Measure):
         return HadronicDefaultMeasure
 
     def __init__(self, *args):
-        super().__init__(*args)
+        super(HadronicMeasure, self).__init__(*args)
         self._set_k_func()
 
     def array_handler(self, dim):
@@ -146,7 +146,7 @@ class EEMeasure(Measure):
         return EEDefaultMeasure
 
     def __init__(self, *args):
-        super().__init__(*args)
+        super(EEMeasure, self).__init__(*args)
         self._set_k_func()
 
     def array_handler(self, dim):
@@ -182,7 +182,7 @@ class HadronicDefaultMeasure(HadronicMeasure):
         return pts_from_p4s(arg)**self.kappa, thetas2_from_p4s(arg)**self.half_beta
 
     def pseudojet(self, arg):
-        pts, constituents = super().pseudojet(arg)
+        pts, constituents = super(HadronicDefaultMeasure, self).pseudojet(arg)
         thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])
         return pts**self.kappa, thetas**self.beta
 
@@ -200,7 +200,7 @@ class HadronicDotMeasure(HadronicMeasure):
         return pts, self._ps_dot(p4s)**self.half_beta
 
     def pseudojet(self, arg):
-        pts, constituents = super().pseudojet(arg)
+        pts, constituents = super(HadronicDotMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         pts, p4s = self._k_func(pts, p4s, self.kappa)
         return pts, self._ps_dot(p4s)**self.half_beta
@@ -216,7 +216,7 @@ class HadronicEFMMeasure(HadronicMeasure):
         return self._k_func(pts_from_p4s(arg), arg, self.kappa)
 
     def pseudojet(self, arg):
-        pts, constituents = super().pseudojet(arg)
+        pts, constituents = super(HadronicEFMMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return self._k_func(pts, p4s, self.kappa)
 
@@ -229,7 +229,7 @@ class EEDefaultMeasure(EEMeasure):
         return Es, self._ps_dot(ps)**self.half_beta
 
     def pseudojet(self, arg):
-        Es, constituents =  super().pseudojet(arg)
+        Es, constituents =  super(EEDefaultMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         Es, p4s = self._k_func(Es, p4s, self.kappa)
         return Es, self._ps_dot(p4s)**self.half_beta
@@ -242,6 +242,6 @@ class EEEFMMeasure(EEMeasure):
         return self._k_func(arg[:,0], arg, self.kappa)
 
     def pseudojet(self, arg):
-        Es, constituents = super().pseudojet(arg)
+        Es, constituents = super(EEEFMMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return self._k_func(Es, p4s, self.kappa)

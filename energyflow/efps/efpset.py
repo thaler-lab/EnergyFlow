@@ -79,7 +79,7 @@ class EFPSet(EFPBase):
         kwargs_check('__init__', kwargs, allowed=measure_kwargs)
 
         # initialize EFPBase
-        super().__init__(*[kwargs[k] for k in measure_kwargs])
+        super(EFPSet, self).__init__(*[kwargs[k] for k in measure_kwargs])
         self.use_efms = 'efm' in self.measure
 
         # handle different methods of initialization

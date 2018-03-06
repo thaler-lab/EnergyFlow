@@ -39,7 +39,7 @@ class EFP(EFPBase):
         """
 
         # initialize EFPBase
-        super().__init__(measure, beta, kappa, normed, check_input)
+        super(EFP, self).__init__(measure, beta, kappa, normed, check_input)
 
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
