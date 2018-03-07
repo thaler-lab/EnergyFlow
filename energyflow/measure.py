@@ -177,8 +177,8 @@ class HadronicMeasure(Measure):
             return HadronicDotMeasure
         return HadronicDefaultMeasure
 
-    def __init__(self, *args):
-        super(HadronicMeasure, self).__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super(HadronicMeasure, self).__init__(*args, **kwargs)
         self._set_k_func()
 
     def array_handler(self, dim):
@@ -215,8 +215,8 @@ class EEMeasure(Measure):
             return EEEFMMeasure
         return EEDefaultMeasure
 
-    def __init__(self, *args):
-        super(EEMeasure, self).__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super(EEMeasure, self).__init__(*args, **kwargs)
         self._set_k_func()
 
     def array_handler(self, dim):
@@ -243,9 +243,9 @@ class HadronicDefaultMeasure(HadronicMeasure):
 
     subslicing = None
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         # skip __init__ of HadronicMeasure
-        super(HadronicMeasure, self).__init__(*args)
+        super(HadronicMeasure, self).__init__(*args, **kwargs)
         if self.kappa == pf_marker:
             raise ValueError('particle flow not available for HadronicDefaultMeasure')
 
