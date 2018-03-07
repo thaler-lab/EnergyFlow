@@ -19,6 +19,7 @@ def concat_specs(c_specs, d_specs):
     else:
         return c_specs
 
+# transfers attrs from obj2 (dict or object) to obj1
 def transfer(obj1, obj2, attrs):
     if isinstance(obj2, dict):
         for attr in attrs:
@@ -27,7 +28,9 @@ def transfer(obj1, obj2, attrs):
         for attr in attrs:
             setattr(obj1, attr, getattr(obj2, attr))
 
+# get access to the data directory of the installed package and the default efp file
 ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_9.npz')
 
+# only include events functions in top level module
 __all__ = events.__all__

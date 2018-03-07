@@ -21,3 +21,4 @@ tmp/
 bin/
 *.nb
 .pytest_cache
+py2/

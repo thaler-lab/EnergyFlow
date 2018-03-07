@@ -1,6 +1,6 @@
 """Implementation of Variable Elimination (VE) Algorithm."""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 import itertools
 import numpy as np
@@ -11,14 +11,19 @@ igraph = igraph_import()
 
 __all__ = ['VariableElimination']
 
-inds = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+# allowed einsum symbols
+I = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+###############################################################################
+# VariableElimination
+###############################################################################
 class VariableElimination:
 
     def __init__(self, ve_alg, np_optimize='greedy'):
         possible_algs = ['numpy'] + (['ef'] if igraph else [])
         if ve_alg not in possible_algs:
             raise ValueError('ve_alg must be one of {}'.format(possible_algs))
+            
         self.ve_alg = ve_alg
         self._use_numpy_ve = (self.ve_alg == 'numpy')
 
@@ -28,12 +33,12 @@ class VariableElimination:
             self.y = np.empty(2)
 
         # set public methods based on which ve_alg is chosen
-        setattr(self, 'run', self._ve_numpy if self._use_numpy_ve else self._ve_ef)
-        setattr(self, 'einspecs', self._einspecs_numpy if self._use_numpy_ve else self._einspecs_ef)
+        self.run = self._ve_numpy if self._use_numpy_ve else self._ve_ef
+        self.einspecs = self._einspecs_numpy if self._use_numpy_ve else self._einspecs_ef
 
     def _einstr_from_edges(self, edges, n):
-        einstr  = ','.join([inds[j]+inds[k] for (j, k) in edges])+','
-        einstr += ','.join([inds[v] for v in range(n)])
+        einstr  = ','.join([I[j]+I[k] for (j, k) in edges])+','
+        einstr += ','.join([I[v] for v in range(n)])
         return einstr
 
     def _ve_numpy(self, edges, n):

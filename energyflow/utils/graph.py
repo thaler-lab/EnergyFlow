@@ -14,16 +14,8 @@ __all__ = [
     'num_valency_ones'
 ]
 
+# determine if igraph can be imported, returns either the igraph module or false
 def igraph_import():
-    """
-    Determines if igraph can be imported. 
-
-    Returns
-    -------
-    output : {igraph, False}
-        The igraph module if it was successfully imported, otherwise False.
-    """
-    
     try:
         import igraph
     except:

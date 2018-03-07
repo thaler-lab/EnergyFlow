@@ -80,6 +80,7 @@ def gen_random_events_massless_com(nevents, nparticles, dim=4):
 
     return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
 
+# get mass of events
 def mass2(events):
     return events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1)
     

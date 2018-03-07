@@ -193,9 +193,6 @@ class EFPElem:
 
     def efp_compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
-        print(self.edges)
-        print(self.einstr)
-        print(self.einpath)
         return np.einsum(self.einstr, *einsum_args, optimize=self.einpath)
 
     def efm_compute(self, efms_dict):
