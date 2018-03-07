@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Measures - EnergyFlow</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/highlight.css">
+  <link href="../../css/eftheme.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Measures";
+    var mkdocs_page_input_path = "docs/measure.md";
+    var mkdocs_page_url = "/docs/measure/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js"></script>
+  <script src="../../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../..">
+            <div class="eflogo">
+                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+            </div>
+        </a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Getting Started</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../../installation/">Installation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../tutorial/">Tutorial</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../faq/">FAQ</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Documentation</span>
+    <ul class="subnav">
+                <li class=" current">
+                    
+    <a class="current" href="./">Measures</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#energy-and-angular-measures">Energy and Angular Measures</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#hadronic-measures">Hadronic Measures</a></li>
+        
+            <li><a class="toctree-l4" href="#ee-measures">e+e- Measures</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#measure">Measure</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#evaluate">evaluate</a></li>
+        
+        </ul>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../gen/">Generation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efp/">Energy Flow Polynomials</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efm/">Energy Flow Moments</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../utils/">Utils</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">EnergyFlow</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Documentation &raquo;</li>
+        
+      
+    
+    <li>Measures</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/measure.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h3 id="energy-and-angular-measures">Energy and Angular Measures</h3>
+<p>The appropriate notions of energy and angle depend on the collider context. Typically, one wants
+to work with observables that respect the appropriate Lorentz subgroup for the collision type
+of interest. EnergyFlow is capable of handling two broad classes of measures: $e^+e^-$ and
+hadronic, which are selected using the <code>measure</code> keyword argument (default is <code>'hadrdot'</code>).
+For substructure applications, it is often convenient to normalize the energies so that
+$\sum_iz_i=1$. The <code>normed</code> keyword argument is provided to control normalization of the
+energies (default is <code>True</code>).</p>
+<p>Each measure comes with a parameter $\beta&gt;0$ which controls the relative weighting between
+smaller and larger anglular structures. This can be set using the <code>beta</code> keyword argument
+(default is <code>2</code>). There is also a $\kappa$ parameter to control the relative weighting
+between soft and hard energies. This can be set using the <code>kappa</code> keyword argument
+(default is <code>1</code>). Only <code>kappa=1</code> yields collinear-safe observables.</p>
+<p>Beyond the measures implemented here, the user can implement their own custom measure by
+passing ${z_i}$ and ${\theta_{ij}}$ in directly to the EFP classes.</p>
+<h4 id="hadronic-measures">Hadronic Measures</h4>
+<p>For hadronic collisions, observables are typically desired to be invariant under boosts along
+ the beam direction and rotations about the beam direction. Thus, particle transverse momentum
+  $p_T$ and rapidity-azimuth coordinates $(y,\phi)$ are often used.</p>
+<p>There are two hadronic measures implemented in EnergyFlow: <code>'hadr'</code> and <code>'hadrdot'</code> (the default).
+These are listed explicitly below.</p>
+<p><code>'hadr'</code>:
+<script type="math/tex; mode=display">z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + \Delta\phi_{ij}^2)^{\beta/2}.</script>
+</p>
+<p><code>'hadrdot'</code>:
+<script type="math/tex; mode=display">z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=\left(\frac{2p^\mu_ip_{j\mu}}{p_{T,i}p_{T,j}}
+\right)^{\beta/2}.</script>
+</p>
+<h4 id="ee-measures"><em>e+e-</em> Measures</h4>
+<p>For $e^+e^-$ collisions, observables are typically desired to be invariant under the full
+group of reotations about the interaction point. Since the center of momentum energy is known,
+the particle energy $E$ is typically used. For the angular measure, pairwise Lorentz contractions
+of the normalized particle four-momenta are used.</p>
+<p>There is one $e^+e^-$ measure implemented in the EnergyFlow framework.</p>
+<p><code>'ee'</code>:
+<script type="math/tex; mode=display">z_i = E_{i}^{\kappa},
+\quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}{E_i E_j}\right)^{\beta/2}.</script>
+</p>
+<p>When using the <code>'hadrdot'</code> or <code>'ee'</code> measures with $\beta=2$, the user can also append <code>'efm'</code>
+to the measure name in order to perform the calculation in $O(M)$ with
+<a href="../../docs/efm">Energy Flow Moments</a>.</p>
+<hr />
+<h3 id="measure">Measure</h3>
+<p>Class for dealing with any kind of measure.</p>
+<pre><code class="python">energyflow.Measure(measure, beta=2, kappa=1, normed=True, check_input=True)
+</code></pre>
+
+<p>Processes inputs according to the measure choice.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p><strong>measure</strong> : <em>string</em></p>
+<ul>
+<li>The string specifying the energy and angular measures to use.</li>
+</ul>
+</li>
+<li>
+<p><strong>beta</strong> : <em>float</em> or 'pf'</p>
+<ul>
+<li>The angular weighting exponent $\beta$. Must be positive.</li>
+</ul>
+</li>
+<li>
+<p><strong>kappa</strong> : <em>float</em></p>
+<ul>
+<li>If a number, the energy weighting exponent $\kappa$. If <code>'pf'</code>, use $\kappa=v-1$
+ where $v$ is the valency of the vertex. <code>'pf'</code> can be used with measure except <code>'hadr'</code>.
+ Only IRC-safe for <code>kappa=1</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>normed</strong> : bool</p>
+<ul>
+<li>Whether or not to use normalized energies</li>
+</ul>
+</li>
+<li>
+<p><strong>check_input</strong> : bool</p>
+<ul>
+<li>Whether to check the type of input each time or assume the first input type.</li>
+</ul>
+</li>
+</ul>
+<h4 id="evaluate">evaluate</h4>
+<pre><code class="python">energyflow.Measure.evaluate(arg)
+</code></pre>
+
+<p>Evaluate</p>
+<hr />
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../gen/" class="btn btn-neutral float-right" title="Generation">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../../faq/" class="btn btn-neutral" title="FAQ"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../../faq/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../gen/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      <script src="../../js/eftheme.js"></script>
+      <script src="../../search/require.js"></script>
+      <script src="../../search/search.js"></script>
+
+</body>
+</html>
