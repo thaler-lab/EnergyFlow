@@ -1,5 +1,3 @@
-"""A subpackage containing utility functions and classes."""
-
 from __future__ import absolute_import
 
 import os
@@ -8,9 +6,11 @@ import numpy as np
 
 from . import events
 from . import graph
+from . import particles
 
 from .events import *
 from .graph import *
+from .particles import *
 
 # concatenates con. and disc. specs along axis 0, handling empty disc. specs
 def concat_specs(c_specs, d_specs):
@@ -33,4 +33,4 @@ ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_9.npz')
 
 # only include events functions in top level module
-__all__ = events.__all__
+__all__ = events.__all__ + particles.__all__

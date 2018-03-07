@@ -1,4 +1,16 @@
-"""Implementation of EFP."""
+"""
+Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
+multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
+observables.
+
+An EFP index by a multigraph $G$ takes the following form:
+$$\\text{EFP}_G=\\sum_{i_1=1}^M\\cdots\\sum_{i_N=1}^Mz_{i_1}\\cdots z_{i_N}
+\\prod_{(k,\\ell)\\in G}\\theta_{i_ki_\\ell}$$
+where $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure 
+of the angular separation between particles $i$ and $j$. The specific choices for energy 
+and angular measure depend on the collider context and are discussed at length in the 
+[Measures](/docs/measure) section.
+"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -46,27 +58,30 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadr', beta=1, kappa=1, normed=True, check_input=True, 
+    def __init__(self, edges, measure='hadrdot', beta=2, kappa=1, normed=True, check_input=True, 
                               ve_alg='numpy', np_optimize='greedy'):
         """
-        Arguments
-        ----------
-        edges : list
-            - Edges of the EFP graph specified by tuple-pairs of vertices.
-        measure : {`'hadr'`, `'hadr-dot'`, `'ee'`}
-            - See [Measures](/intro/measures) for additional info.
-        beta : float
-            - The parameter $\\beta$ appearing in the measure. 
+        **Arguments**
+
+        - **edges** : _list_
+            - Edges of the EFP graph specified by pairs of vertices.
+        - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
+            - See [Measures](/docs/measure) for additional info.
+        - **beta** : _float_
+            - The parameter $\\beta$ appearing in the measure.
             Must be greater than zero.
-        normed : bool
+        - **kappa** : {_float_, `'pf'`}
+            - If a number, the energy weighting parameter $\\kappa$.
+            If `'pf'`, use $\\kappa=v-1$ where $v$ is the valency of the vertex.
+        - **normed** : _bool_
             - Controls normalization of the energies in the measure.
-        check_input : bool
-            - Whether to check the type of the input each time or use 
+        - **check_input** : _bool_
+            - Whether to check the type of the input each time or assume
             the first input type.
-        ve_alg : {`'numpy'`, `'ef'`}
+        - **ve_alg** : {`'numpy'`, `'ef'`}
             - Which variable elimination algorithm to use.
-        np_optimize : {`True`, `False`, `'greedy'`, `'optimal'`}
-            - When `ve_alg='numpy'` this is the `optimize` keyword 
+        - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
+            - When `ve_alg='numpy'` this is the `optimize` keyword
             of `numpy.einsum_path`.
         """
 
@@ -100,14 +115,15 @@ class EFP(EFPBase):
     # public methods
     #===============
 
-    def compute(self, event=None, zs=None, angles=None):
+    # compute(event=None, zs=None, thetas=None, ps=None)
+    def compute(self, event=None, zs=None, thetas=None, ps=None):
 
         if self.use_efms:
-            return self.efpelem.compute(self.construct_efms(event, zs, angles))
+            return self.efpelem.compute(self.construct_efms(event, zs, ps))
         else:
 
             # get dictionary of thetas to use for event
-            zs, thetas_dict = self._get_zs_thetas_dict(event, zs, angles)
+            zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
 
             # call compute on the EFPElem
             return self.efpelem.compute(zs, thetas_dict)
@@ -121,7 +137,7 @@ class EFP(EFPBase):
     #===========
 
     @property
-    def weight_set(self):
+    def _weight_set(self):
         """Set of edge weights for the graph of this EFP."""
 
         return self.efpelem.weight_set
@@ -180,37 +196,40 @@ class EFPSet(EFPBase):
         """
         EFPSet can be initialized in one of three ways (in order of precedence):
 
-        1. *Generator* - Pass in a custom `Generator` object as the 
-        first positional argument.
-        2. *Custom File* - Pass in the name of a `.npz` file saved 
-        with a custom `Generator`.
-        3. *Default* - Use the EFPs that come installed with the 
+        1. **Default** - Use the EFPs that come installed with the
         `EnergFlow` package.
+        2. **Generator** - Pass in a custom `Generator` object as the
+        first positional argument.
+        3. **Custom File** - Pass in the name of a `.npz` file saved
+        with a custom `Generator`.
 
-        To control which EFPs are included, `EFPSet` accepts an arbitrary 
-        number of specifications (see `sel`) and only EFPs meeting each 
-        specification are included in the set. 
+        To control which EFPs are included, `EFPSet` accepts an arbitrary
+        number of specifications (see `sel`) and only EFPs meeting each
+        specification are included in the set.
 
-        Arguments
-        ---------
-        *args : arbitrary positional arguments
-            - If the first positional argument is a `Generator` instance, 
-            it is used for initialization. The remaining positional 
+        **Arguments**
+
+        - ***args** : _arbitrary positional arguments_
+            - If the first positional argument is a `Generator` instance,
+            it is used for initialization. The remaining positional
             arguments must be valid arguments to `sel`.
-        filename : string
+        - **filename** : _string_
             - Path to a `.npz` file which has been saved by a valid
             `energyflow.Generator`.
-        measure : {`'hadr'`, `'hadr-dot'`, `'ee'`}
+        - **measure** : {`'hadr'`, `'hadr-dot'`, `'ee'`}
             - See [Measures](/intro/measures) for additional info.
-        beta : float
-            - The parameter $\\beta$ appearing in the measure. 
+        - **beta** : _float_
+            - The parameter $\\beta$ appearing in the measure.
             Must be greater than zero.
-        normed : bool
+        - **kappa** : {_float_, `'pf'`}
+            - If a number, the energy weighting parameter $\\kappa$.
+            If `'pf'`, use $\\kappa=v-1$ where $v$ is the valency of the vertex.
+        - **normed** : _bool_
             - Controls normalization of the energies in the measure.
-        check_input : bool
-            - Whether to check the type of the input each time or use 
+        - **check_type** : _bool_
+            - Whether to check the type of the input each time or use
             the first input type.
-        verbose : bool
+        - **verbose** : _bool_
             - Controls printed output when initializing EFPSet.
         """
 
@@ -287,7 +306,7 @@ class EFPSet(EFPBase):
             self._efmset = EFMSet(efm_specs, subslicing=self.subslicing)
 
         # union over all weights needed
-        self._weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
+        self.__weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
 
         # get col indices for disconnected formulae
         connected_ndk = {efpelem.ndk: i for i,efpelem in enumerate(self.efpelems)}
@@ -351,11 +370,11 @@ class EFPSet(EFPBase):
     # PUBLIC METHODS
     #===============
 
-    # compute(event=None, zs=None, thetas=None)
-    def compute(self, event=None, zs=None, angles=None, batch_call=False):
+    # compute(event=None, zs=None, thetas=None, ps=None)
+    def compute(self, event=None, zs=None, angles=None, ps=None, batch_call=False):
 
         if self.use_efms:
-            efms_dict = self.construct_efms(event, zs, angles)
+            efms_dict = self.construct_efms(event, zs, ps)
             results = [efpelem.compute(efms_dict) for efpelem in self.efpelems]
         else:
             zs, thetas_dict = self._get_zs_thetas_dict(event, zs, angles)
@@ -375,9 +394,9 @@ class EFPSet(EFPBase):
         """Computes a boolean mask of EFPs matching each of the
         specifications provided by the `args`. 
 
-        Arguments
-        ---------
-        *args : arbitrary positional arguments
+        **Arguments**
+
+        - ***args** : arbitrary positional arguments
             - Each argument can be either a string or a length-two 
             iterable. If the argument is a string, it should consist 
             of three parts: a character which is a valid element of 
@@ -390,7 +409,10 @@ class EFPSet(EFPBase):
             is useful when the value is a variable that changes 
             (such as in a list comprehension).
 
-        __Returns__: A boolean `numpy.ndarray` of length `len(specs)`.
+        **Returns**
+
+        - _numpy.ndarray_
+            - A boolean array of length the number of EFPs stored by this object. 
         """
 
         # ensure only valid keyword args are passed
@@ -437,30 +459,75 @@ class EFPSet(EFPBase):
     # count(*args)
     def count(self, *args, **kwargs):
         """Counts the number of EFPs meeting the specifications
-        of the arguments using `sel`."""
+        of the arguments using `sel`.
+
+        **Arguments** 
+
+        - ***args** : arbitrary positional arguments
+            - Valid arguments to be passed to `sel`.
+
+        **Returns**
+
+        - _int_
+            - The number of EFPs meeting the specifications provided.
+        """
 
         return np.count_nonzero(self.sel(*args, **kwargs))
 
     # graphs(*args)
     def graphs(self, *args):
-        """Returns a `numpy.ndarray` of graphs (as lists of edges) 
-        that meet the specifications of the arguments using `sel`."""
+        """Graphs meeting provided specifications.
+
+        **Arguments** 
+
+        - ***args** : arbitrary positional arguments
+            - Valid arguments to be passed to `sel`, or, if a single integer, 
+            the index of a particular graph.
+
+        **Returns**
+
+        - _list_, if single integer argument is given
+            - The list of edges corresponding to the specified graph
+        - _numpy.ndarray_, otherwise
+            - An array of graphs (as lists of edges) matching the specifications.
+        """
 
         # if we haven't extracted the graphs, do it now
         if not hasattr(self, '_graphs'):
             self._graphs = self._make_graphs([elem.edges for elem in self.efpelems])
+
+        # handle case of single graph
+        if len(args) and isinstance(args[0], int):
+            return self._graphs[args[0]]
 
         # filter graphs based on mask
         return self._graphs[self.sel(*args)]
 
     # simple_graphs(*args)
     def simple_graphs(self, *args):
-        """Returns a `numpy.ndarray` of simple graphs (without any multiedges) 
-        that meet the specifications of the arguments using `sel`."""
+        """Simple graphs meeting provided specifications.
+
+        **Arguments** 
+
+        - ***args** : arbitrary positional arguments
+            - Valid arguments to be passed to `sel`, or, if a single integer, 
+            the index of particular simple graph.
+
+        **Returns**
+
+        - _list_, if single integer argument is given
+            - The list of edges corresponding to the specified simple graph
+        - _numpy.ndarray_, otherwise
+            - An array of simple graphs (as lists of edges) matching the specifications.
+        """
 
         # is we haven't extracted the simple graphs, do it now
         if not hasattr(self, '_simple_graphs'):
             self._simple_graphs = self._make_graphs([elem.simple_edges for elem in self.efpelems])
+
+        # handle case of single graph
+        if len(args) and isinstance(args[0], int):
+            return self._simple_graphs[args[0]]
 
         # filter simple graphs based on mask
         return self._simple_graphs[self.sel(*args)]
@@ -488,8 +555,8 @@ class EFPSet(EFPBase):
     #===========
 
     @property
-    def weight_set(self):
-        return self._weight_set
+    def _weight_set(self):
+        return self.__weight_set
 
     @property
     def cols(self):
@@ -515,4 +582,6 @@ class EFPSet(EFPBase):
 
     @property
     def efmset(self):
+        """The `EFMset` held by this object, if using EFMs."""
+
         return self._efmset

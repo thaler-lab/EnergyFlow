@@ -14,7 +14,7 @@ from energyflow.utils.graph import *
 
 igraph = igraph_import()
 
-__all__ = ['Generator', 'PrimeGenerator', 'CompositeGenerator']
+__all__ = ['Generator']
 
 
 ###############################################################################
@@ -29,9 +29,49 @@ def none2inf(x):
 ###############################################################################
 class Generator:
 
+    """Generates non-isomorphic multigraphs according to provided specifications."""
+
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
-                       ve_alg='numpy', np_optimize='greedy', 
-                       filename=None, gen_efms=True, verbose=False):
+                       filename=None, gen_efms=True,
+                       ve_alg='numpy', np_optimize='greedy', verbose=False):
+        """
+        Doing a fresh generation of connected multigraphs (`filename=None`) requires
+        that `igraph` be installed.
+
+        **Arguments**
+
+        - **dmax** : _int_
+            - The maximum number of edges of the generated connected graphs.
+        - **nmax** : _int_
+            - The maximum number of vertices of the generated connected graphs.
+        - **emax** : _int_
+            - The maximum number of edges of the generated connected simple graphs.
+        - **cmax** : _int_
+            - The maximum VE complexity $\\chi$ of the generated connected graphs.
+        - **vmax** : _int_
+            - The maximum valency of the generated connected graphs.
+        - **comp_dmaxs** : {_dict_, _int_}
+            - If an integer, the maximum number of edges of the generated disconnected 
+            graphs. If a dictionary, the keys are numbers of vertices and the values are
+            the maximum number of edges of the generated disconnected graphs with that
+            number of vertices.
+        - **filename** : _str_
+            - If `None`, do a complete generation from scratch. If set to a string, 
+            read in connected graphs from the file given, restrict them according to 
+            the various 'max' parameters, and do a fresh disconnected generation. The special
+            value `filename='default'` means to read in graphs from the default file. This
+            is useful when various disconnected graph parameters are to be varied since the 
+            generation of large simple graphs is the most computationlly intensive part.
+        - **gen_efms** : _bool_
+            - Controls whether EFM information is generated.
+        - **ve_alg** : {`'numpy'`, `'ef'`}
+            - Which variable elimination algorithm to use.
+        - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
+            - When `ve_alg='numpy'` this is the `optimize` keyword
+            of `numpy.einsum_path`.
+        - **verbose** : _bool_
+            - A flag to control printing.
+        """
 
         # check for new generation
         if dmax is not None and filename is None:
@@ -136,6 +176,14 @@ class Generator:
     ################
 
     def save(self, filename):
+        """Save the current generator to file.
+
+        **Arguments**
+
+        - **filename** : _str_
+            - The path to save the file.
+        """
+        
         arrs = set(['dmax','nmax','emax','cmax','vmax','comp_dmaxs',
                     'cols','gen_efms','ve_alg','np_optimize'])
         arrs |= self._prime_attrs() | self._comp_attrs()
@@ -143,6 +191,9 @@ class Generator:
 
     @property
     def specs(self):
+        """An array of EFP specifications. Each row represents an EFP 
+        and the columns represent the quantities indicated by `cols`."""
+        
         if not hasattr(self, '_specs'):
             self._specs = concat_specs(self.c_specs, self.disc_specs)
         return self._specs
@@ -167,6 +218,7 @@ class PrimeGenerator:
     cols = ['n','e','d','v','k','c','p','h']
 
     def __init__(self, dmax, nmax, emax, cmax, vmax, ve_alg, np_optimize, gen_efms):
+        """PrimeGenerator init"""
 
         if not igraph:
             raise NotImplementedError('cannot use PrimeGenerator without igraph')
@@ -361,7 +413,10 @@ class PrimeGenerator:
 ###############################################################################
 class CompositeGenerator:
 
+    """CompositeGenerator"""
+
     def __init__(self, c_specs, cols, comp_dmaxs=None):
+        """CompositeGenerator __init__"""
 
         self.c_specs = c_specs
         self.__dict__.update({col+'_ind': i for i,col in enumerate(cols)})

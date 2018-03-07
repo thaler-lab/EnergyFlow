@@ -1,3 +1,12 @@
+"""
+### Test Event Generation
+
+Functions to generate random sets of four-vectors. Includes an implementation
+of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
+sampling uniform M-body massless phase space. Also includes other functions for
+various random, non-center of momentum, and non-uniform sampling.
+"""
+
 from __future__ import absolute_import
 
 import os
@@ -11,9 +20,27 @@ __all__ = [
     'mass2'
 ]
 
-# implementation of RAMBO algorithm
-# citation: http://cds.cern.ch/record/164736/files/198601282.pdf
 def gen_massless_phase_space(nevents, nparticles, energy=1):
+    """Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm
+    for uniformly sampling massless M-body phase space for any center of mass energies.
+    
+    **Arguments**
+
+    - **nevents** : _int_
+        - Number of events to generate.
+
+    - **nparticles** : _int_
+        - Number of particles in each event.
+
+    - **energy** : _float_
+        - Total center of mass energy of each event.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An (`nevents`, `nparticles`, 4) array of events, each with `nparticles` massless
+        particles and center of mass energy equal to `energy`.
+    """
     
     # qs: to be massless four-momenta uniformly sampled in angle
     qs = np.empty((nevents, nparticles, 4))
@@ -51,10 +78,35 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
         return ps[0]
     return ps
 
-# make random events with a given number of particles
-# the spacetime dimension and mass of the particles can be controlled
-# the spatial vectors are drawn randomly in [-1,1]^(dim-1)
+
 def gen_random_events(nevents, nparticles, dim=4, mass=0):
+    """Generate random events with a given number of particles of a given mass
+    in a given spacetime dimension. The energy-momentum vectors have spatial
+    components drawn randomly from [-1,+1]. These events are not guaranteed
+    to uniformly sample phase space.
+
+    
+    **Arguments**
+
+    - **nevents** : _int_
+        - Number of events to generate.
+
+    - **nparticles** : _int_
+        - Number of particles in each event.
+
+    - **dim** : _int_
+        - Number of spacetime dimensions.
+
+    - **mass** : _float_
+        - Mass of the particles to generate.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` particles
+        with mass given by `mass`.
+    """
+
     spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
     events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
@@ -62,8 +114,31 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
         return events[0]
     return events
 
-# generate random massless events in the center of momentum frame
 def gen_random_events_massless_com(nevents, nparticles, dim=4):
+    """Generate random events with a given number of massless particles
+    in a given spacetime dimension. The total energy and momentum are made to sum to zero
+    by making about half of the particles incoming. These events are not guaranteed
+    to uniformly sample phase space.
+
+    
+    **Arguments**
+
+    - **nevents** : _int_
+        - Number of events to generate.
+
+    - **nparticles** : _int_
+        - Number of particles in each event.
+
+    - **dim** : _int_
+        - Number of spacetime dimensions.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` massless
+        particles whose total energy and momentum are all zero.
+    """
+
     events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
     events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
     
@@ -80,7 +155,20 @@ def gen_random_events_massless_com(nevents, nparticles, dim=4):
 
     return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
 
-# get mass of events
 def mass2(events):
+    """Compute the squared masses of every particle in events with any-dimensional energy-momentum vectors.
+
+    **Arguments**
+
+    - **events** : _numpy.ndarray_
+        - Events as an (`nevents`, `M`, `dim`) array of dim-vectors `[p0, p1, ..., pdim-1]` for each particle.
+
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An (`nevents`, `M`) array of calculated particle masses.
+    """
+
     return events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1)
     

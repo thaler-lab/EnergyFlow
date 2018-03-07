@@ -50,7 +50,7 @@ def test_measure_hadr_ptyphi(pts, ys, phis, beta, kappa, normed):
     
     # compute using the energyflow package
     hmeas = ef.Measure('hadr', beta, kappa, normed, True)
-    hzs, hthetas = hmeas(np.vstack((pts,ys,phis)).T)
+    hzs, hthetas = hmeas.evaluate(np.vstack((pts,ys,phis)).T)
     
     # compute naively
     norm = 1 if not normed else np.sum(pts**kappa)
@@ -74,7 +74,7 @@ def test_measure_hadr_p4s(event, beta, kappa, normed):
     
     # compute using the energyflow package
     hmeas = ef.Measure('hadr', beta, kappa, normed, True)
-    hzs, hthetas = hmeas(event)
+    hzs, hthetas = hmeas.evaluate(event)
     
     # compute naively
     norm = 1 if not normed else np.sum(pTs**kappa)
@@ -99,7 +99,7 @@ def test_measure_hadrdot_ptyphi(event, beta, theta_eps, kappa, normed):
    
     # compute using the energyflow package
     hmeas = ef.Measure('hadrdot', beta, kappa, normed, True)
-    hzs, hthetas = hmeas(event)
+    hzs, hthetas = hmeas.evaluate(event)
         
     # compute naively
     norm = 1 if not normed else np.sum(pTs**kappa)
@@ -125,7 +125,7 @@ def test_measure_hadrdot_p4s(event, beta, theta_eps, kappa, normed):
    
     # compute using the energyflow package
     hmeas = ef.Measure('hadrdot', beta, kappa, normed, True)
-    hzs, hthetas = hmeas(event)
+    hzs, hthetas = hmeas.evaluate(event)
         
     # compute naively
     norm = 1 if not normed else np.sum(pTs**kappa)
@@ -149,7 +149,7 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed):
     Es = event[:,0]
 
     emeas = ef.Measure('ee', beta, kappa, normed, True)
-    ezs, ethetas = emeas(event)
+    ezs, ethetas = emeas.evaluate(event)
 
     # compute naively
     if kappa == 'pf':
@@ -174,9 +174,9 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed):
 def test_measure_list_input(measure, event, check_input):
     meas = ef.Measure(measure, check_input=check_input)
     list_event = event.tolist()
-    nd0, nd1 = meas(event)
+    nd0, nd1 = meas.evaluate(event)
     try:
-        list0, list1 = meas(list_event)
+        list0, list1 = meas.evaluate(list_event)
     except:
         assert not check_input
     else:

@@ -1,4 +1,57 @@
-"""Implementation of the Measure class and its helpers."""
+"""
+### Energy and Angular Measures
+
+The appropriate notions of energy and angle depend on the collider context. Typically, one wants
+to work with observables that respect the appropriate Lorentz subgroup for the collision type
+of interest. EnergyFlow is capable of handling two broad classes of measures: $e^+e^-$ and
+hadronic, which are selected using the `measure` keyword argument (default is `'hadrdot'`).
+For substructure applications, it is often convenient to normalize the energies so that
+$\\sum_iz_i=1$. The `normed` keyword argument is provided to control normalization of the
+energies (default is `True`).
+
+Each measure comes with a parameter $\\beta>0$ which controls the relative weighting between
+smaller and larger anglular structures. This can be set using the `beta` keyword argument
+(default is `2`). There is also a $\\kappa$ parameter to control the relative weighting
+between soft and hard energies. This can be set using the `kappa` keyword argument
+(default is `1`). Only `kappa=1` yields collinear-safe observables.
+
+Beyond the measures implemented here, the user can implement their own custom measure by
+passing $\\{z_i\\}$ and $\\{\\theta_{ij}\\}$ in directly to the EFP classes.
+
+#### Hadronic Measures
+
+For hadronic collisions, observables are typically desired to be invariant under boosts along
+ the beam direction and rotations about the beam direction. Thus, particle transverse momentum
+  $p_T$ and rapidity-azimuth coordinates $(y,\\phi)$ are often used.
+
+There are two hadronic measures implemented in EnergyFlow: `'hadr'` and `'hadrdot'` (the default).
+These are listed explicitly below.
+
+```'hadr'```:
+$$z_i=p_{T,i}^{\\kappa},\\quad\\quad \\theta_{ij}=(\\Delta y_{ij}^2 + \\Delta\\phi_{ij}^2)^{\\beta/2}.$$
+
+```'hadrdot'```:
+$$z_i=p_{T,i}^{\\kappa},\\quad\\quad \\theta_{ij}=\\left(\\frac{2p^\\mu_ip_{j\\mu}}{p_{T,i}p_{T,j}}
+\\right)^{\\beta/2}.$$
+
+#### *e+e-* Measures
+
+For $e^+e^-$ collisions, observables are typically desired to be invariant under the full
+group of reotations about the interaction point. Since the center of momentum energy is known,
+the particle energy $E$ is typically used. For the angular measure, pairwise Lorentz contractions
+of the normalized particle four-momenta are used.
+
+There is one $e^+e^-$ measure implemented in the EnergyFlow framework.
+
+```'ee'```:
+$$z_i = E_{i}^{\\kappa},
+\\quad\\quad \\theta_{ij} = \\left(\\frac{2p_i^\\mu p_{j \\mu}}{E_i E_j}\\right)^{\\beta/2}.$$
+
+When using the `'hadrdot'` or `'ee'` measures with $\\beta=2$, the user can also append `'efm'`
+to the measure name in order to perform the calculation in $O(M)$ with
+[Energy Flow Moments](/docs/efm).
+"""
+
 
 from __future__ import absolute_import, division
 
@@ -8,48 +61,12 @@ import numpy as np
 from six import add_metaclass
 
 from energyflow.utils import transfer
+from energyflow.utils.particles import *
 
-__all__ = [
-    'Measure',
-    'flat_metric',
-    'p4s_from_ptyphis',
-    'pts_from_p4s',
-    'ys_from_p4s',
-    'phis_from_p4s'
-]
-
-###############################################################################
-# Measure helpers
-###############################################################################
+__all__ = ['Measure']
 
 # special value of kappa indicating "particle flow"
 pf_marker = 'pf'
-
-# Minkowski metric in dim spacetime dimensions
-long_metric = np.array([1.] + [-1.]*100)
-def flat_metric(dim):
-    if dim <= 101:
-        return long_metric[:dim]
-    return np.asarray([1.] + [-1.]*(dim-1))
-
-# get (massless) four-vectors from (pt,y,phi) values
-def p4s_from_ptyphis(ptyphis):
-    pts, ys, phis = ptyphis[:,0], ptyphis[:,1], ptyphis[:,2]
-    return (pts*np.vstack([np.cosh(ys), np.cos(phis), np.sin(phis), np.sinh(ys)])).T
-
-# get pts from four-vectors
-def pts_from_p4s(p4s):
-    return np.sqrt(p4s[:,1]**2 + p4s[:,2]**2)
-
-# rapidity from four-vectors
-def ys_from_p4s(p4s):
-    return 0.5*np.log((p4s[:,0]+p4s[:,3])/(p4s[:,0]-p4s[:,3]))
-
-# azimuthal angle phi in [0,2pi]
-def phis_from_p4s(p4s):
-    phis = np.arctan2(p4s[:,2], p4s[:,1])
-    phis[phis<0] += 2*np.pi
-    return phis
 
 # form theta_ij**2 matrix from array of (rapidity,phi) values
 # theta_ij**2 = (y_i - y_j)**2 + (phi_i - phi_j)**2
@@ -94,24 +111,36 @@ class Measure:
     def __init__(self, measure, beta=2, kappa=1, normed=True, check_input=True):
         """Processes inputs according to the measure choice.
 
-        Arguments
-        ---------
-        measure : string
-            - The string specifying the measure.
-        beta : float/int
-            - The exponent $\beta$.
-        normed : bool
-            - Whether or not to use normalized energies.
-        check_input : bool
-            - Whether or not to check the input for each new event.
+        **Arguments**
+
+        - **measure** : _string_
+            - The string specifying the energy and angular measures to use.
+
+        - **beta** : _float_ or 'pf'
+            - The angular weighting exponent $\\beta$. Must be positive.
+
+        - **kappa** : _float_
+            - If a number, the energy weighting exponent $\\kappa$. If `'pf'`, use $\\kappa=v-1$
+             where $v$ is the valency of the vertex. `'pf'` can be used with measure except `'hadr'`.
+             Only IRC-safe for `kappa=1`.
+
+        - **normed** : bool
+            - Whether or not to use normalized energies
+        
+        - **check_input** : bool
+            - Whether to check the type of input each time or assume the first input type.
         """
 
         transfer(self, locals(), ['measure', 'kappa', 'normed', 'check_input'])
         self.beta = float(beta)
+        assert self.beta > 0
+
         self.half_beta = self.beta/2
         self.need_meas_func = True
 
-    def __call__(self, arg):
+    def evaluate(self, arg):
+        """ Evaluate
+        """
 
         # check type only if needed
         if self.need_meas_func or self.check_input:

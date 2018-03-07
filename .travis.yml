@@ -4,11 +4,9 @@ python:
   - "3.6"
   - "3.5-dev"
   - "3.6-dev"
-
 install:
-  - python setup.py install
-
-script: python setup.py test -v
-
+  - pip install -e .
+script: 
+  - python setup.py test -v
 after_success:
   - coveralls

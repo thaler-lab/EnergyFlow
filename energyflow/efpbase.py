@@ -44,18 +44,18 @@ class EFPBase:
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
-            zs, thetas = self._measure(event)
+            zs, thetas = self._measure.evaluate(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
-        return zs, {w: thetas**w for w in self.weight_set}
+        return zs, {w: thetas**w for w in self._weight_set}
 
     @abstractproperty
-    def weight_set(self):
+    def _weight_set(self):
         pass
 
     def construct_efms(self, event, zs, phats):
         if event is not None:
-            zs, phats = self._measure(event)
+            zs, phats = self._measure.evaluate(event)
         elif zs is None or phats is None:
             raise TypeError('if event is None then zs and/or phats cannot also be None')
         return self.efmset.construct(zs, phats)
@@ -95,14 +95,14 @@ class EFPBase:
     def compute(self, *args):
         """Computes the value(s) of the EFP(s) on a single event.
 
-        Arguments
-        ---------
-        event : array_like or `fastjet.PseudoJet`
+        **Arguments**
+
+        - **event** : array_like or `fastjet.PseudoJet`
             - The event or jet as an array or `PseudoJet`.
-        zs : 1-dim array_like
+        - **zs** : 1-dim array_like
             - If present, `thetas` must also be present, and `zs` is used in place 
             of the energies of an event.
-        thetas : 2-dim array_like
+        - **angles** : 2-dim array_like
             - If present, `zs` must also be present, and `thetas` is used in place 
             of the pairwise angles of an event.
         """
@@ -113,11 +113,11 @@ class EFPBase:
     def batch_compute(self, events, n_jobs=-1):
         """Computes the value(s) of the EFP(s) on several events.
 
-        Arguments
-        ---------
-        events : array_like or `fastjet.PseudoJet`
+        **Arguments**
+
+        - **events** : array_like or `fastjet.PseudoJet`
             - The events or jets as an array or list of `PseudoJet`s.
-        n_jobs : int
+        - **n_jobs** : int
             - The number of worker processes to use. A value of `-1` will attempt
             to use as many processes as there are CPUs on the machine.
         """

@@ -13,7 +13,7 @@ from energyflow.utils.graph import *
 __all__ = ['EFM', 'EFMSet', 'efp2efms']
 
 ###############################################################################
-# EFM helpers
+# EFM functions
 ###############################################################################
 
 # allowed einsum symbols
@@ -32,9 +32,69 @@ def find_minimum_rl(sig, efms):
     ninds = [(abs(sig[0]-vs[0]), vs) for vs in vsigs]
     return min(ninds, key=itemgetter(0))[1]
 
+def efp2efms(graph):
+    """efp2efms"""
+
+    # build convenient data structure to hold graph information
+    vds = get_valency_structure(graph)
+
+    # dictionary to hold efm terms
+    efms = {}
+
+    # counter to store how to get fresh dummy indices
+    ind = 0
+
+    # iterate over vertices sorted by valency in decreasing order
+    sorted_verts = sorted(valencies(graph).items(), key=lambda x: x[1], reverse=True)
+    for vert,valency in sorted_verts:
+
+        # dict holding info for new efm term
+        new_efm = {'upper_indices': '', 'lower_indices': ''}
+
+        # iterate over neighboring vertices
+        for neighbor,n_shared_edges in vds[vert].items():
+
+            # if a new neighbor, assign fresh I
+            if neighbor not in efms:
+                new_I = I[ind:ind+n_shared_edges]
+                ind += n_shared_edges
+                new_efm['upper_indices'] += new_I
+
+                # store I shared with that neighbor
+                new_efm[neighbor] = new_I
+
+            # if neighbor already has an efm factor, add already assigned indices to lower_indices
+            else:
+                new_efm['lower_indices'] += efms[neighbor][vert]
+
+        # store new efm factor
+        efms[vert] = new_efm
+
+    einstr_list, efm_specs = [], []
+    for vert,valency in sorted_verts:
+        efm = efms[vert]
+        lower_indices = efm['lower_indices']
+
+        # conventionally put lowered indices before upper indices
+        einstr_list.append(lower_indices + efm['upper_indices'])
+
+        # add spec which is (nlow, nup) of efm
+        nlow = len(lower_indices)
+        efm_specs.append((nlow, valency - nlow))
+
+    # return comma joined einstr and efm_specs
+    return ','.join(einstr_list), efm_specs
+
+
+###############################################################################
+# EFM
+###############################################################################
 class EFM:
 
+    """EFM"""
+
     def __init__(self, nlow, nup, raw=False, rlfrom=None):
+        """EFM __init__"""
 
         # store inputs
         self.nlow = nlow
@@ -105,9 +165,16 @@ class EFM:
         self.data = big_efm.data[s]
         return self.data
 
+
+###############################################################################
+# EFMSet
+###############################################################################
 class EFMSet:
 
+    """EFMSet"""
+
     def __init__(self, efm_specs, subslicing=False):
+        """EFMSet __init__"""
 
         # store inputs
         self.subslicing = subslicing
@@ -190,55 +257,3 @@ class EFMSet:
                 arg = zsphats
             data[sig] = self.efms[sig].construct(arg)
         return data
-
-def efp2efms(graph):
-
-    # build convenient data structure to hold graph information
-    vds = get_valency_structure(graph)
-
-    # dictionary to hold efm terms
-    efms = {}
-
-    # counter to store how to get fresh dummy indices
-    ind = 0
-
-    # iterate over vertices sorted by valency in decreasing order
-    sorted_verts = sorted(valencies(graph).items(), key=lambda x: x[1], reverse=True)
-    for vert,valency in sorted_verts:
-
-        # dict holding info for new efm term
-        new_efm = {'upper_indices': '', 'lower_indices': ''}
-
-        # iterate over neighboring vertices
-        for neighbor,n_shared_edges in vds[vert].items():
-
-            # if a new neighbor, assign fresh I
-            if neighbor not in efms:
-                new_I = I[ind:ind+n_shared_edges]
-                ind += n_shared_edges
-                new_efm['upper_indices'] += new_I
-
-                # store I shared with that neighbor
-                new_efm[neighbor] = new_I
-
-            # if neighbor already has an efm factor, add already assigned indices to lower_indices
-            else:
-                new_efm['lower_indices'] += efms[neighbor][vert]
-
-        # store new efm factor
-        efms[vert] = new_efm
-
-    einstr_list, efm_specs = [], []
-    for vert,valency in sorted_verts:
-        efm = efms[vert]
-        lower_indices = efm['lower_indices']
-
-        # conventionally put lowered indices before upper indices
-        einstr_list.append(lower_indices + efm['upper_indices'])
-
-        # add spec which is (nlow, nup) of efm
-        nlow = len(lower_indices)
-        efm_specs.append((nlow, valency - nlow))
-
-    # return comma joined einstr and efm_specs
-    return ','.join(einstr_list), efm_specs

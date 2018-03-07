@@ -13,6 +13,7 @@ def test_has_efpset():
     assert ef.EFPSet
 
 # test individual EFPs
+@pytest.mark.efpsbyhand
 @pytest.mark.parametrize('zs, thetas', [(np.random.rand(M), np.random.rand(M,M)) for M in [10,20]])
 def test_efp_wedge(zs, thetas):
     wedge= 0
@@ -21,9 +22,10 @@ def test_efp_wedge(zs, thetas):
             for i3 in range(len(zs)):
                 wedge += zs[i1]*zs[i2]*zs[i3]*thetas[i1,i2]*thetas[i1,i3]
 
-    efp_result = ef.EFP([(0,1),(0,2)]).compute(zs=zs, angles=thetas)
+    efp_result = ef.EFP([(0,1),(0,2)]).compute(zs=zs, thetas=thetas)
     assert epsilon_percent(wedge, efp_result, epsilon=10**-13)
 
+@pytest.mark.efpsbyhand
 @pytest.mark.parametrize('zs, thetas', [(np.random.rand(M), np.random.rand(M,M)) for M in [10,20]])
 def test_efp_asymfly(zs, thetas):
     asymfly = 0
@@ -34,9 +36,10 @@ def test_efp_asymfly(zs, thetas):
                     asymfly += (zs[i1]*zs[i2]*zs[i3]*zs[i4]*
                                 thetas[i1,i2]*thetas[i2,i3]*thetas[i3,i4]*thetas[i2,i4]**2)
 
-    efp_result = ef.EFP([(0,1),(1,2),(2,3),(1,3),(1,3)]).compute(zs=zs, angles=thetas)
+    efp_result = ef.EFP([(0,1),(1,2),(2,3),(1,3),(1,3)]).compute(zs=zs, thetas=thetas)
     assert epsilon_percent(asymfly, efp_result, epsilon=10**-13)
 
+@pytest.mark.efpsbyhand
 @pytest.mark.parametrize('zs, thetas', [(np.random.rand(M), np.random.rand(M,M)) for M in [10,20]])
 def test_efp_asymbox(zs, thetas):
     asymbox = 0
@@ -48,7 +51,7 @@ def test_efp_asymbox(zs, thetas):
                                 thetas[i2,i3]**3*thetas[i3,i4]**4*thetas[i1,i4]**3)
     
     asymbox_graph = [(0,1),(0,1),(1,2),(1,2),(1,2),(2,3),(2,3),(2,3),(2,3),(3,0),(0,3),(3,0)]
-    efp_result = ef.EFP(asymbox_graph).compute(zs=zs, angles=thetas)
+    efp_result = ef.EFP(asymbox_graph).compute(zs=zs, thetas=thetas)
     return epsilon_percent(asymbox, efp_result, epsilon=10**-13)
 
 # test that efpset matches efps
