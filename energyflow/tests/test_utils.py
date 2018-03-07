@@ -166,3 +166,18 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed):
 
     assert epsilon_diff(ezs, zs, 10**-13)
     assert epsilon_diff(ethetas, thetas, 10**-theta_eps)
+
+@pytest.mark.parametrize('check_input', [True, False])
+@pytest.mark.parametrize('event', [ef.gen_random_events(2,15) for i in range(2)])
+@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'ee', 'eeefm'])
+def test_measure_list_input(measure, event):
+    meas = ef.Measure(measure)
+    
+    list_event = event.tolist()
+
+
+
+
+
+
+

@@ -32,14 +32,6 @@ def flat_metric(dim):
         return long_metric[:dim]
     return np.asarray([1.] + [-1.]*(dim-1))
 
-# kappa is a number, so raise energies to that number and form phats
-def kappa_func(Es, ps, kappa):
-    return Es**kappa, ps/Es[:,np.newaxis]
-
-# kappa indicates particle flow, so make energies 1 and leave ps alone
-def pf_func(Es, ps, kappa):
-    return np.ones(Es.shape), ps
-
 # get (massless) four-vectors from (pt,y,phi) values
 def p4s_from_ptyphis(ptyphis):
     pts, ys, phis = ptyphis[:,0], ptyphis[:,1], ptyphis[:,2]
@@ -70,6 +62,14 @@ def thetas2_from_yphis(yphis):
 # get theta_ij**2 matrix from four-vectors using combination of above functions
 def thetas2_from_p4s(p4s):
     return thetas2_from_yphis(np.vstack([ys_from_p4s(p4s), phis_from_p4s(p4s)]).T)
+
+# kappa is a number, so raise energies to that number and form phats
+def kappa_func(Es, ps, kappa):
+    return Es**kappa, ps/Es[:,np.newaxis]
+
+# kappa indicates particle flow, so make energies 1 and leave ps alone
+def pf_func(Es, ps, kappa):
+    return np.ones(Es.shape), ps
 
 
 ###############################################################################
