@@ -246,9 +246,21 @@ of <code>numpy.einsum_path</code>.</li>
 of the energies of an event.</li>
 </ul>
 </li>
-<li><strong>angles</strong> : 2-dim array_like<ul>
+<li><strong>thetas</strong> : 2-dim array_like<ul>
 <li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
 of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>ps</strong> : <em>numpy.ndarray</em><ul>
+<li>If present, used in place of the dim-vectors returned by the measure
+when using EFMs.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The answers</li>
 </ul>
 </li>
 </ul>
@@ -266,6 +278,13 @@ of the pairwise angles of an event.</li>
 <li><strong>n_jobs</strong> : int<ul>
 <li>The number of worker processes to use. A value of <code>-1</code> will attempt
 to use as many processes as there are CPUs on the machine.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The answers</li>
 </ul>
 </li>
 </ul>
@@ -375,9 +394,21 @@ the first input type.</li>
 of the energies of an event.</li>
 </ul>
 </li>
-<li><strong>angles</strong> : 2-dim array_like<ul>
+<li><strong>thetas</strong> : 2-dim array_like<ul>
 <li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
 of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>ps</strong> : <em>numpy.ndarray</em><ul>
+<li>If present, used in place of the dim-vectors returned by the measure
+when using EFMs.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The answers</li>
 </ul>
 </li>
 </ul>
@@ -395,6 +426,13 @@ of the pairwise angles of an event.</li>
 <li><strong>n_jobs</strong> : int<ul>
 <li>The number of worker processes to use. A value of <code>-1</code> will attempt
 to use as many processes as there are CPUs on the machine.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The answers</li>
 </ul>
 </li>
 </ul>
@@ -512,9 +550,11 @@ Those of primary interest are listed below.</p>
 <li><code>n</code> : Number of vertices.</li>
 <li><code>e</code> : Number of simple edges.</li>
 <li><code>d</code> : Degree, or number of multiedges.</li>
+<li><code>v</code> : Maximum valency (number of edges touching a vertex).</li>
 <li><code>k</code> : Unique identifier within EFPs of this (n,d).</li>
 <li><code>c</code> : VE complexity $\chi$.</li>
 <li><code>p</code> : Number of prime factors (or connected components).</li>
+<li><code>h</code> : Number of valency 1 vertices (a.k.a. 'hanging chads').</li>
 </ul>
 <h5 id="efmset_1">efmset</h5>
 <pre><code class="python">energyflow.EFPSet.efmset

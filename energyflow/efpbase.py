@@ -102,9 +102,17 @@ class EFPBase:
         - **zs** : 1-dim array_like
             - If present, `thetas` must also be present, and `zs` is used in place 
             of the energies of an event.
-        - **angles** : 2-dim array_like
+        - **thetas** : 2-dim array_like
             - If present, `zs` must also be present, and `thetas` is used in place 
             of the pairwise angles of an event.
+        - **ps** : _numpy.ndarray_
+            - If present, used in place of the dim-vectors returned by the measure
+            when using EFMs.
+
+        **Returns**
+
+        - _numpy.ndarray_
+            - The answers
         """
 
         pass
@@ -120,6 +128,11 @@ class EFPBase:
         - **n_jobs** : int
             - The number of worker processes to use. A value of `-1` will attempt
             to use as many processes as there are CPUs on the machine.
+
+        **Returns**
+
+        - _numpy.ndarray_
+            - The answers
         """
 
         iterable = [self._measure(event) for event in events]

@@ -566,9 +566,11 @@ class EFPSet(EFPBase):
         - `n` : Number of vertices.
         - `e` : Number of simple edges.
         - `d` : Degree, or number of multiedges.
+        - `v` : Maximum valency (number of edges touching a vertex).
         - `k` : Unique identifier within EFPs of this (n,d).
         - `c` : VE complexity $\\chi$.
         - `p` : Number of prime factors (or connected components).
+        - `h` : Number of valency 1 vertices (a.k.a. 'hanging chads').
         """
 
         return self._cols
