@@ -9,14 +9,24 @@ import numpy as np
 from energyflow.algorithms import *
 from energyflow.efm import efp2efms
 from energyflow.efpbase import EFPElem
+from energyflow.utils import concat_specs, default_efp_file, transfer
 from energyflow.utils.graph import *
-from energyflow.utils.helpers import *
-from energyflow.utils.path import *
 
 igraph = igraph_import()
 
 __all__ = ['Generator', 'PrimeGenerator', 'CompositeGenerator']
 
+
+###############################################################################
+# Generator helpers
+###############################################################################
+def none2inf(x):
+    return np.inf if x is None else x
+
+
+###############################################################################
+# Generator
+###############################################################################
 class Generator:
 
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
@@ -45,7 +55,7 @@ class Generator:
         # if filename is set, read in file
         else:
             if filename is None or filename == 'default':
-                filename = default_file
+                filename = default_efp_file
 
             file = np.load(filename + ('' if filename.endswith('.npz') else '.npz'))
 
@@ -138,6 +148,9 @@ class Generator:
         return self._specs
 
 
+###############################################################################
+# PrimeGenerator
+###############################################################################
 class PrimeGenerator:
 
     """
@@ -343,6 +356,9 @@ class PrimeGenerator:
                                                         optimize=self.ve.np_optimize)[0])
 
 
+###############################################################################
+# CompositeGenerator
+###############################################################################
 class CompositeGenerator:
 
     def __init__(self, c_specs, cols, comp_dmaxs=None):

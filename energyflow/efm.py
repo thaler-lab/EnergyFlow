@@ -8,11 +8,28 @@ import numpy as np
 from numpy.core.multiarray import c_einsum
 
 from energyflow.utils.graph import *
-from energyflow.utils.helpers import *
 
 __all__ = ['EFM', 'EFMSet', 'efp2efms']
 
+###############################################################################
+# EFM helpers
+###############################################################################
+
+# allowed einsum symbols
 I = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+def find_subslice(sig, efms):
+    nlow, nup = sig
+    bsigs = list(filter(lambda x: x[0] >= nlow and x[1] >= nup, efms))
+    if not len(bsigs):
+        return
+    return min(bsigs, key=sum)
+
+def find_minimum_rl(sig, efms):
+    v = sum(sig)
+    vsigs = list(filter(lambda x: sum(x) == v, efms))
+    ninds = [(abs(sig[0]-vs[0]), vs) for vs in vsigs]
+    return min(ninds, key=itemgetter(0))[1]
 
 class EFM:
 

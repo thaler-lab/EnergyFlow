@@ -4,14 +4,10 @@ import os
 
 import numpy as np
 
-from energyflow.utils.path import *
-
 __all__ = [
     'gen_massless_phase_space',
     'gen_random_events',
     'gen_random_events_massless_com',
-    'load_events',
-    'load_big_event',
     'mass2'
 ]
 
@@ -83,12 +79,6 @@ def gen_random_events_massless_com(nevents, nparticles, dim=4):
     factors = events_1_tot[:,0]/events_2_tot[:,0]
 
     return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
-
-def load_events():
-    return np.load(os.path.join(data_dir, 'events.npy'))
-
-def load_big_event(num=None):
-    return np.concatenate(load_events(), axis=0)[:num]
 
 def mass2(events):
     return events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1)

@@ -1,4 +1,4 @@
-"""Base classes for EFPs."""
+"""Base and helper classes for EFPs."""
 
 from __future__ import absolute_import
 
@@ -9,10 +9,31 @@ import multiprocessing
 import numpy as np
 from six import add_metaclass
 
-from energyflow.utils import Measure, transfer, timing
+from energyflow.measure import Measure
+from energyflow.utils import transfer
 
 __all__ = ['EFPBase', 'EFPElem']
 
+###############################################################################
+# helpers
+###############################################################################
+
+# timing meta-decorator
+def timing(obj, repeat, number):
+    def decorator(func):
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            def test():
+                func(*args, **kwargs)
+            obj.times = timeit.repeat(test, repeat=repeat, number=number)
+            return func(*args, **kwargs)
+        return decorated
+    return decorator
+
+
+###############################################################################
+# EFPBase
+###############################################################################
 @add_metaclass(ABCMeta)
 class EFPBase:
 
@@ -118,6 +139,10 @@ class EFPBase:
 
         return results
 
+
+###############################################################################
+# EFPElem
+###############################################################################
 class EFPElem:
 
     # if weights are given, edges are assumed to be simple 

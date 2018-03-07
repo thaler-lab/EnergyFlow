@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from  itertools import chain
+from  itertools import chain, repeat
 import re
 import warnings
 
@@ -12,12 +12,36 @@ from energyflow.algorithms import VariableElimination
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.efpbase import *
 from energyflow.gen import Generator
+from energyflow.utils import concat_specs, default_efp_file
 from energyflow.utils.graph import graph_union
-from energyflow.utils.helpers import *
-from energyflow.utils.path import *
 
 __all__ = ['EFP', 'EFPSet']
 
+###############################################################################
+# EFP helpers
+###############################################################################
+comp_map = {'>':  '__gt__', 
+            '<':  '__lt__', 
+            '>=': '__ge__', 
+            '<=': '__le__',
+            '==': '__eq__', 
+            '!=': '__ne__'}
+
+# applies comprison comp of obj on val
+def explicit_comp(obj, comp, val):
+    return getattr(obj, comp_map[comp])(val)
+
+# raises TypeError if unexpected keyword left in kwargs
+def kwargs_check(name, kwargs, allowed=[]):
+    for k in kwargs:
+        if k in allowed:
+            continue
+        raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
+
+
+###############################################################################
+# EFP
+###############################################################################
 class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
@@ -142,6 +166,10 @@ class EFP(EFPBase):
         else:
             return None
 
+
+###############################################################################
+# EFPSet
+###############################################################################
 class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on events."""
@@ -220,7 +248,7 @@ class EFPSet(EFPBase):
             self.filename += '.npz' if not self.filename.endswith('.npz') else ''
             gen = np.load(self.filename)
         else:
-            gen = np.load(default_file)
+            gen = np.load(default_efp_file)
 
         # handle not having efm generation
         if not gen['gen_efms'] and self.use_efms:
@@ -248,7 +276,7 @@ class EFPSet(EFPBase):
 
         # make EFPElem list
         z = zip(*([gen[v] for v in elemvs] + 
-                  [gen[v] if self.use_efms else nonegen() for v in efmvs]))
+                  [gen[v] if self.use_efms else repeat(None) for v in efmvs]))
         ks = orig_c_specs[:,self.k_ind]
         self.efpelems = [EFPElem(edgs, ws, es, ep, ks[m], efm_es, efm_ep, efm_sp) \
                          for m,(edgs,ws,es,ep,efm_es,efm_ep,efm_sp) in enumerate(z) if c_mask[m]]
