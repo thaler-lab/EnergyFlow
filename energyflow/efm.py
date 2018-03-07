@@ -7,6 +7,7 @@ from operator import itemgetter
 import numpy as np
 from numpy.core.multiarray import c_einsum
 
+from energyflow.measure import flat_metric
 from energyflow.utils.graph import *
 
 __all__ = ['EFM', 'EFMSet', 'efp2efms']
