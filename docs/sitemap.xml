@@ -4,44 +4,28 @@
     
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
-    
-
-    
-        
-    <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/intro/efpintro/</loc>
-     <lastmod>2018-01-26</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/intro/measures/</loc>
-     <lastmod>2018-01-26</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
     
 
     
         
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/installation/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/tutorial/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/faq/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -50,26 +34,32 @@
     
         
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/algorithms/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <loc>https://pkomiske.github.io/EnergyFlow/docs/measure/</loc>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/multigraphs/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <loc>https://pkomiske.github.io/EnergyFlow/docs/gen/</loc>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/polynomials/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <loc>https://pkomiske.github.io/EnergyFlow/docs/efp/</loc>
+     <lastmod>2018-03-07</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>https://pkomiske.github.io/EnergyFlow/docs/efm/</loc>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://pkomiske.github.io/EnergyFlow/docs/utils/</loc>
-     <lastmod>2018-01-26</lastmod>
+     <lastmod>2018-03-07</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

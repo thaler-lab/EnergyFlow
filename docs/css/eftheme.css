@@ -48,6 +48,12 @@ a:visited {
     display: none;
 }
 
+/* changes sublist item to nothing*/
+.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+    list-style: none;
+}
+
+/* moves menu items left a bit*/
 .wy-menu-vertical .subnav li.current > ul li a {
     padding-left: 2.4em;
 }
@@ -60,6 +66,10 @@ a:visited {
     display: none;
 }
 
-.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+/*.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
     list-style: none;
 }
+
+.wy-menu-vertical li ul.subnav ul.subnav {
+    padding-left: 0em;
+}*/

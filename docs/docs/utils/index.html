@@ -59,21 +59,6 @@
           
             <li class="toctree-l1">
 		
-    <span class="caption-text">Introduction</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../intro/efpintro/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../intro/measures/">Measures</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
     <span class="caption-text">Getting Started</span>
     <ul class="subnav">
                 <li class="">
@@ -97,21 +82,57 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../algorithms/">Algorithms</a>
+    <a class="" href="../measure/">Measures</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../multigraphs/">Multigraphs</a>
+    <a class="" href="../gen/">Generation</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../polynomials/">Polynomials</a>
+    <a class="" href="../efp/">Energy Flow Polynomials</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efm/">Energy Flow Moments</a>
                 </li>
                 <li class=" current">
                     
     <a class="current" href="./">Utils</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#particle-tools">Particle Tools</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#flat_metric">flat_metric</a></li>
+        
+            <li><a class="toctree-l4" href="#p4s_from_ptyphis">p4s_from_ptyphis</a></li>
+        
+            <li><a class="toctree-l4" href="#pts_from_p4s">pts_from_p4s</a></li>
+        
+            <li><a class="toctree-l4" href="#ys_from_p4s">ys_from_p4s</a></li>
+        
+            <li><a class="toctree-l4" href="#phis_from_p4s">phis_from_p4s</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#test-event-generation">Test Event Generation</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#gen_massless_phase_space">gen_massless_phase_space</a></li>
+        
+            <li><a class="toctree-l4" href="#gen_random_events">gen_random_events</a></li>
+        
+            <li><a class="toctree-l4" href="#gen_random_events_massless_com">gen_random_events_massless_com</a></li>
+        
+            <li><a class="toctree-l4" href="#mass2">mass2</a></li>
+        
+        </ul>
+    
+
     </ul>
                 </li>
     </ul>
@@ -156,8 +177,256 @@
           <div role="main">
             <div class="section">
               
-                <p>A subpackage containing utility functions and classes. Not meant to be
-imported directly in energyflow.</p>
+                <h3 id="particle-tools">Particle Tools</h3>
+<p>Tools to compute particle kinematic quantities from four-vectors,
+such as transverse momentum $p_T$, rapidity $y$, and azimuth $\phi$.
+Also includes functions for converting from $(p_T,y,\phi)$ to 
+four-momenta.</p>
+<hr />
+<h4 id="flat_metric">flat_metric</h4>
+<pre><code class="python">energyflow.flat_metric(dim)
+</code></pre>
+
+<p>The Minkowski metric in <code>dim</code> spacetime dimensions in the mostly-minus convention.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>dim</strong> : <em>int</em><ul>
+<li>The number of spacetime dimensions (thought to be four in our universe).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>A <code>dim</code>-length array (not matrix) equal to <code>[+1, -1, ..., -1]</code></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="p4s_from_ptyphis">p4s_from_ptyphis</h4>
+<pre><code class="python">energyflow.p4s_from_ptyphis(ptyphis)
+</code></pre>
+
+<p>Convert transverse momenta $p_T$, rapidities $y$, and azimuths $\phi$ to massless four-vectors</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphis</strong> : <em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 3)</code> array of <code>[pT, y, phi]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="pts_from_p4s">pts_from_p4s</h4>
+<pre><code class="python">energyflow.pts_from_p4s(p4s)
+</code></pre>
+
+<p>Calculate the transverse momenta of a collection of four-vectors</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>p4s</strong> : <em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An <code>M</code>-length array of transverse momenta <code>pT</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="ys_from_p4s">ys_from_p4s</h4>
+<pre><code class="python">energyflow.ys_from_p4s(p4s)
+</code></pre>
+
+<p>Calculate the rapidities of a collection of four-vectors</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>p4s</strong> : <em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An <code>M</code>-length array of rapidities <code>y</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="phis_from_p4s">phis_from_p4s</h4>
+<pre><code class="python">energyflow.phis_from_p4s(p4s)
+</code></pre>
+
+<p>Calculate the azimuthal angles of a collection of four-vectors.
+The angles are chosen to be in the inverval $[0,2\pi]$.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>p4s</strong> : <em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An <code>M</code>-length array of azimuthal angles <code>phi</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="test-event-generation">Test Event Generation</h3>
+<p>Functions to generate random sets of four-vectors. Includes an implementation
+of the <a href="https://doi.org/10.1016/0010-4655(86)90119-0">RAMBO</a> algorithm for
+sampling uniform M-body massless phase space. Also includes other functions for
+various random, non-center of momentum, and non-uniform sampling.</p>
+<hr />
+<h4 id="gen_massless_phase_space">gen_massless_phase_space</h4>
+<pre><code class="python">energyflow.gen_massless_phase_space(nevents, nparticles, energy=1)
+</code></pre>
+
+<p>Implementation of the <a href="https://doi.org/10.1016/0010-4655(86)90119-0">RAMBO</a> algorithm
+for uniformly sampling massless M-body phase space for any center of mass energies.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p><strong>nevents</strong> : <em>int</em></p>
+<ul>
+<li>Number of events to generate.</li>
+</ul>
+</li>
+<li>
+<p><strong>nparticles</strong> : <em>int</em></p>
+<ul>
+<li>Number of particles in each event.</li>
+</ul>
+</li>
+<li>
+<p><strong>energy</strong> : <em>float</em></p>
+<ul>
+<li>Total center of mass energy of each event.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An (<code>nevents</code>, <code>nparticles</code>, 4) array of events, each with <code>nparticles</code> massless
+particles and center of mass energy equal to <code>energy</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="gen_random_events">gen_random_events</h4>
+<pre><code class="python">energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0)
+</code></pre>
+
+<p>Generate random events with a given number of particles of a given mass
+in a given spacetime dimension. The energy-momentum vectors have spatial
+components drawn randomly from [-1,+1]. These events are not guaranteed
+to uniformly sample phase space.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p><strong>nevents</strong> : <em>int</em></p>
+<ul>
+<li>Number of events to generate.</li>
+</ul>
+</li>
+<li>
+<p><strong>nparticles</strong> : <em>int</em></p>
+<ul>
+<li>Number of particles in each event.</li>
+</ul>
+</li>
+<li>
+<p><strong>dim</strong> : <em>int</em></p>
+<ul>
+<li>Number of spacetime dimensions.</li>
+</ul>
+</li>
+<li>
+<p><strong>mass</strong> : <em>float</em></p>
+<ul>
+<li>Mass of the particles to generate.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An (<code>nevents</code>, <code>nparticles</code>, <code>dim</code>) array of events, each with <code>nparticles</code> particles
+with mass given by <code>mass</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="gen_random_events_massless_com">gen_random_events_massless_com</h4>
+<pre><code class="python">energyflow.gen_random_events_massless_com(nevents, nparticles, dim=4)
+</code></pre>
+
+<p>Generate random events with a given number of massless particles
+in a given spacetime dimension. The total energy and momentum are made to sum to zero
+by making about half of the particles incoming. These events are not guaranteed
+to uniformly sample phase space.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p><strong>nevents</strong> : <em>int</em></p>
+<ul>
+<li>Number of events to generate.</li>
+</ul>
+</li>
+<li>
+<p><strong>nparticles</strong> : <em>int</em></p>
+<ul>
+<li>Number of particles in each event.</li>
+</ul>
+</li>
+<li>
+<p><strong>dim</strong> : <em>int</em></p>
+<ul>
+<li>Number of spacetime dimensions.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An (<code>nevents</code>, <code>nparticles</code>, <code>dim</code>) array of events, each with <code>nparticles</code> massless
+particles whose total energy and momentum are all zero.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="mass2">mass2</h4>
+<pre><code class="python">energyflow.mass2(events)
+</code></pre>
+
+<p>Compute the squared masses of every particle in events with any-dimensional energy-momentum vectors.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>events</strong> : <em>numpy.ndarray</em><ul>
+<li>Events as an (<code>nevents</code>, <code>M</code>, <code>dim</code>) array of dim-vectors <code>[p0, p1, ..., pdim-1]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An (<code>nevents</code>, <code>M</code>) array of calculated particle masses.</li>
+</ul>
+</li>
+</ul>
 <hr />
               
             </div>
@@ -167,7 +436,7 @@ imported directly in energyflow.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../polynomials/" class="btn btn-neutral" title="Polynomials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../efm/" class="btn btn-neutral" title="Energy Flow Moments"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -195,7 +464,7 @@ imported directly in energyflow.</p>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../polynomials/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../efm/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
     </span>
