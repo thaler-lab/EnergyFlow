@@ -153,7 +153,7 @@ class EFPBase:
 
         # setup processor pool
         with multiprocessing.Pool(self.n_jobs) as pool:
-            chunksize = len(events)//self.n_jobs
+            chunksize = max(len(events)//self.n_jobs, 1)
             results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
 
         return results
