@@ -182,8 +182,8 @@ between soft and hard energies. This can be set using the <code>kappa</code> key
 passing ${z_i}$ and ${\theta_{ij}}$ in directly to the EFP classes.</p>
 <h4 id="hadronic-measures">Hadronic Measures</h4>
 <p>For hadronic collisions, observables are typically desired to be invariant under boosts along
- the beam direction and rotations about the beam direction. Thus, particle transverse momentum
-  $p_T$ and rapidity-azimuth coordinates $(y,\phi)$ are often used.</p>
+the beam direction and rotations about the beam direction. Thus, particle transverse momentum
+$p_T$ and rapidity-azimuth coordinates $(y,\phi)$ are often used.</p>
 <p>There are two hadronic measures implemented in EnergyFlow: <code>'hadr'</code> and <code>'hadrdot'</code> (the default).
 These are listed explicitly below.</p>
 <p><code>'hadr'</code>:
@@ -203,9 +203,6 @@ of the normalized particle four-momenta are used.</p>
 <script type="math/tex; mode=display">z_i = E_{i}^{\kappa},
 \quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}{E_i E_j}\right)^{\beta/2}.</script>
 </p>
-<p>When using the <code>'hadrdot'</code> or <code>'ee'</code> measures with $\beta=2$, the user can also append <code>'efm'</code>
-to the measure name in order to perform the calculation in $O(M)$ with
-<a href="../../docs/efm">Energy Flow Moments</a>.</p>
 <hr />
 <h3 id="measure">Measure</h3>
 <p>Class for dealing with any kind of measure.</p>
@@ -230,7 +227,7 @@ to the measure name in order to perform the calculation in $O(M)$ with
 <li>
 <p><strong>kappa</strong> : <em>float</em></p>
 <ul>
-<li>If a number, the energy weighting exponent $\kappa$. If <code>'pf'</code>, use $\kappa=v-1$
+<li>If a number, the energy weighting exponent $\kappa$. If <code>'pf'</code>, use $\kappa=v$
  where $v$ is the valency of the vertex. <code>'pf'</code> can be used with measure except <code>'hadr'</code>.
  Only IRC-safe for <code>kappa=1</code>.</li>
 </ul>

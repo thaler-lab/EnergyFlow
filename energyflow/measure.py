@@ -21,16 +21,16 @@ passing $\\{z_i\\}$ and $\\{\\theta_{ij}\\}$ in directly to the EFP classes.
 #### Hadronic Measures
 
 For hadronic collisions, observables are typically desired to be invariant under boosts along
- the beam direction and rotations about the beam direction. Thus, particle transverse momentum
-  $p_T$ and rapidity-azimuth coordinates $(y,\\phi)$ are often used.
+the beam direction and rotations about the beam direction. Thus, particle transverse momentum
+$p_T$ and rapidity-azimuth coordinates $(y,\\phi)$ are often used.
 
 There are two hadronic measures implemented in EnergyFlow: `'hadr'` and `'hadrdot'` (the default).
 These are listed explicitly below.
 
-```'hadr'```:
+`'hadr'`:
 $$z_i=p_{T,i}^{\\kappa},\\quad\\quad \\theta_{ij}=(\\Delta y_{ij}^2 + \\Delta\\phi_{ij}^2)^{\\beta/2}.$$
 
-```'hadrdot'```:
+`'hadrdot'`:
 $$z_i=p_{T,i}^{\\kappa},\\quad\\quad \\theta_{ij}=\\left(\\frac{2p^\\mu_ip_{j\\mu}}{p_{T,i}p_{T,j}}
 \\right)^{\\beta/2}.$$
 
@@ -43,14 +43,14 @@ of the normalized particle four-momenta are used.
 
 There is one $e^+e^-$ measure implemented in the EnergyFlow framework.
 
-```'ee'```:
+`'ee'`:
 $$z_i = E_{i}^{\\kappa},
 \\quad\\quad \\theta_{ij} = \\left(\\frac{2p_i^\\mu p_{j \\mu}}{E_i E_j}\\right)^{\\beta/2}.$$
-
-When using the `'hadrdot'` or `'ee'` measures with $\\beta=2$, the user can also append `'efm'`
-to the measure name in order to perform the calculation in $O(M)$ with
-[Energy Flow Moments](/docs/efm).
 """
+
+# When using the `'hadrdot'` or `'ee'` measures with $\\beta=2$, the user can also append `'efm'`
+# to the measure name in order to perform the calculation in $O(M)$ with
+# [Energy Flow Moments](/docs/efm).
 
 
 from __future__ import absolute_import, division
@@ -120,7 +120,7 @@ class Measure:
             - The angular weighting exponent $\\beta$. Must be positive.
 
         - **kappa** : _float_
-            - If a number, the energy weighting exponent $\\kappa$. If `'pf'`, use $\\kappa=v-1$
+            - If a number, the energy weighting exponent $\\kappa$. If `'pf'`, use $\\kappa=v$
              where $v$ is the valency of the vertex. `'pf'` can be used with measure except `'hadr'`.
              Only IRC-safe for `kappa=1`.
 

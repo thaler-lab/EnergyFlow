@@ -235,7 +235,7 @@ class EFPSet(EFPBase):
 
         default_kwargs = {'filename': None,
                           'measure': 'hadr',
-                          'beta': 1,
+                          'beta': 2,
                           'kappa': 1,
                           'normed': True,
                           'check_input': False,
@@ -330,8 +330,11 @@ class EFPSet(EFPBase):
     # PRIVATE METHODS
     #================
 
-    def _compute_func(self, args):
-        return self.compute(zs=args[0], angles=args[1], batch_call=True)
+    #def _compute_func_thetas(self, args):
+    #    return self.compute(zs=args[0], thetas=args[1], batch_call=True)
+
+    #def _compute_func_ps(self, args):
+    #    return self.compute(zs=args[0], ps=args[1], batch_call=True)
 
     def _set_col_inds(self):
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
@@ -371,13 +374,13 @@ class EFPSet(EFPBase):
     #===============
 
     # compute(event=None, zs=None, thetas=None, ps=None)
-    def compute(self, event=None, zs=None, angles=None, ps=None, batch_call=False):
+    def compute(self, event=None, zs=None, thetas=None, ps=None, batch_call=False):
 
         if self.use_efms:
             efms_dict = self.construct_efms(event, zs, ps)
             results = [efpelem.compute(efms_dict) for efpelem in self.efpelems]
         else:
-            zs, thetas_dict = self._get_zs_thetas_dict(event, zs, angles)
+            zs, thetas_dict = self._get_zs_thetas_dict(event, zs, thetas)
             results = [efpelem.compute(zs, thetas_dict) for efpelem in self.efpelems]
 
         if batch_call:
@@ -387,7 +390,7 @@ class EFPSet(EFPBase):
 
     def batch_compute(self, events, n_jobs=-1):
 
-        return self._calc_disc(super().batch_compute(events, n_jobs))
+        return self._calc_disc(super(EFPSet, self).batch_compute(events, n_jobs))
 
     # sel(*args)
     def sel(self, *args, **kwargs):

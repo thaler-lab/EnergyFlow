@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
 import multiprocessing
+import os
 
 import numpy as np
 from six import add_metaclass
@@ -13,6 +14,8 @@ from energyflow.measure import Measure
 from energyflow.utils import transfer
 
 __all__ = ['EFPBase', 'EFPElem']
+
+sysname = os.uname().sysname
 
 ###############################################################################
 # helpers
@@ -88,11 +91,14 @@ class EFPBase:
     def subslicing(self):
         return self._measure.subslicing
 
-    def _compute_func(self, args):
-        return self.compute(zs=args[0], angles=args[1])
+    def _batch_compute_func(self, event):
+        return self.compute(event, batch_call=True)
+
+    #def _compute_func_ps(self, args):
+    #    return self.compute(zs=args[0], ps=args[1])
 
     @abstractmethod
-    def compute(self, *args):
+    def compute(self, *args, **kwargs):
         """Computes the value(s) of the EFP(s) on a single event.
 
         **Arguments**
@@ -135,20 +141,20 @@ class EFPBase:
             - The answers
         """
 
-        iterable = [self._measure(event) for event in events]
-        length = len(events)
+        if sysname != 'Linux' and self.use_efms:
+            m = 'batch_compute currently not implemented for EFMs on {}!'.format(sysname)
+            raise NotImplementedError(m)
 
         if n_jobs == -1:
             try: 
-                n_jobs = multiprocessing.cpu_count()
+                self.n_jobs = multiprocessing.cpu_count()
             except:
-                n_jobs = 4 # choose reasonable value
+                self.n_jobs = 4 # choose reasonable value
 
         # setup processor pool
-        self._n_jobs = n_jobs
-        with multiprocessing.Pool(n_jobs) as pool:
-            chunksize = int(length/n_jobs)
-            results = np.asarray(list(pool.imap(self._compute_func, iterable, chunksize)))
+        with multiprocessing.Pool(self.n_jobs) as pool:
+            chunksize = len(events)//self.n_jobs
+            results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
 
         return results
 

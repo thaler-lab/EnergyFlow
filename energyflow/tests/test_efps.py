@@ -1,10 +1,14 @@
 from __future__ import absolute_import
 
+import os
+
 import numpy as np
 import pytest
 
 import energyflow as ef
-from test_utils import epsilon_percent
+from test_utils import epsilon_percent, epsilon_diff
+
+sysname = os.uname().sysname
 
 def test_has_efp():
     assert ef.EFP
@@ -54,6 +58,26 @@ def test_efp_asymbox(zs, thetas):
     efp_result = ef.EFP(asymbox_graph).compute(zs=zs, thetas=thetas)
     return epsilon_percent(asymbox, efp_result, epsilon=10**-13)
 
+nogood = pytest.mark.xfail(raises=NotImplementedError) if sysname != 'Linux' else []
+
+@pytest.mark.batch_compute
+@pytest.mark.slow
+@pytest.mark.parametrize('normed', [True, False])
+@pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
+@pytest.mark.parametrize('beta', [.5, 1, 2])
+@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', pytest.param('hadrefm', marks=nogood), 
+                                     'ee', pytest.param('eeefm', marks=nogood)])
+def test_batch_compute_vs_compute(measure, beta, kappa, normed):
+    if measure == 'hadr' and kappa == 'pf':
+        pytest.skip('hadr does not do pf')
+    if 'efm' in measure and beta != 2:
+        pytest.skip('only test efm when beta=2')
+    events = ef.gen_random_events(10, 15)
+    s = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
+    r_batch = s.batch_compute(events)
+    r = np.asarray([s.compute(event) for event in events])
+    assert epsilon_percent(r_batch, r, 10**-14)
+
 # test that efpset matches efps
 @pytest.mark.slow
 @pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
@@ -80,10 +104,10 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [2, pytest.param(1.9, marks=pytest.mark.xfail)])
-@pytest.mark.parametrize('measures', [('hadrdot', 'hadrefm'), ('ee', 'eeefm')])
+@pytest.mark.parametrize('measures', [('hadrdot', 'hadrefm', 10), ('ee', 'eeefm', 13)])
 def test_efps_vs_efms(measures, beta, kappa, normed, event):
     s1 = ef.EFPSet('d<=6', measure=measures[0], beta=beta, kappa=kappa, normed=normed)
     s2 = ef.EFPSet('d<=6', measure=measures[1], beta=beta, kappa=kappa, normed=normed)
     r1 = s1.compute(event)
     r2 = s2.compute(event)
-    assert epsilon_percent(r1, r2, 10**-11)
+    assert epsilon_percent(r1, r2, 10**-measures[2])

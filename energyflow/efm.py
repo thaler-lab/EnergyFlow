@@ -1,4 +1,4 @@
-"""Implementation of Energy Flow Moments (EFMs)."""
+"""_**Under Construction**_"""
 
 from __future__ import absolute_import, division
 
@@ -33,7 +33,7 @@ def find_minimum_rl(sig, efms):
     return min(ninds, key=itemgetter(0))[1]
 
 def efp2efms(graph):
-    """efp2efms"""
+    """This function converts an EFP to an EFM formula."""
 
     # build convenient data structure to hold graph information
     vds = get_valency_structure(graph)
@@ -91,16 +91,17 @@ def efp2efms(graph):
 ###############################################################################
 class EFM:
 
-    """EFM"""
+    """"""
 
-    def __init__(self, nlow, nup, raw=False, rlfrom=None):
-        """EFM __init__"""
+    def __init__(self, nlow, nup, raw=False, rlfrom=None, subslicefrom=None):
+        """A class representing a single EFM"""
 
         # store inputs
         self.nlow = nlow
         self.nup = nup
         self.raw = raw
         self.rlfrom = rlfrom
+        self.subslicefrom = subslicefrom
 
         # get useful derived quantities
         self.v = self.nlow + self.nup
@@ -121,7 +122,16 @@ class EFM:
             nlow_tup = (rlfrom[0], self.nlow) if diff > 0 else (self.nlow, rlfrom[0])
             self.rl_einstr = ','.join([I[:self.v]] + list(I[slice(*nlow_tup)])) + '->' + I[:self.v]
             self.construct = self.rl_construct
-        else:
+        elif self.subslicefrom is not None:
+            num_up_subslices = self.subslicefrom[1] - self.nup
+            num_low_subslices = self.subslicefrom[0] - self.nlow
+            
+            # perform check
+            if num_up_subslices < 0 or num_low_subslices < 0:
+                m = 'cannot perform subslicing from {} to {}'.format(self.subslicingfrom, self.sig)
+                raise ValueError(m)
+
+            self.subslice = [0]*num_low_subslices + [Ellipsis] + [0]*num_up_subslices
             self.construct = self.subslice_construct
 
     def raise_lower(self, tensor):
@@ -148,21 +158,12 @@ class EFM:
 
         return self.data
 
-    def rl_construct(self, other_efm):       
-        self.data = self.raise_lower(other_efm.data)
+    def rl_construct(self, other_data):       
+        self.data = self.raise_lower(other_data)
         return self.data
 
-    def subslice_construct(self, big_efm):
-        num_up_subslices = big_efm.nup - self.nup
-        num_low_subslices = big_efm.nlow - self.nlow
-
-        # perform check
-        if num_up_subslices < 0 or num_low_subslices < 0:
-            m = 'cannot perform subslicing from {} to {}'.format(big_efm.sig, self.sig)
-            raise RuntimeError(m)
-
-        s = [0]*num_low_subslices + [Ellipsis] + [0]*num_up_subslices
-        self.data = big_efm.data[s]
+    def subslice_construct(self, other_data):
+        self.data = other_data[self.subslice]
         return self.data
 
 
@@ -171,10 +172,10 @@ class EFM:
 ###############################################################################
 class EFMSet:
 
-    """EFMSet"""
+    """"""
 
     def __init__(self, efm_specs, subslicing=False):
-        """EFMSet __init__"""
+        """A collection of EFMs"""
 
         # store inputs
         self.subslicing = subslicing
@@ -215,15 +216,15 @@ class EFMSet:
             # determine if we can subslice
             big_sig = find_subslice(sig, self.efms)
             if big_sig is not None:
-                self.efms[sig] = EFM(*sig)
-                self.efm_args[sig] = self.efms[big_sig]
+                self.efms[sig] = EFM(*sig, subslicefrom=big_sig)
+                self.efm_args[sig] = big_sig
                 self.efm_rules[sig] = 'subslicing from {}'.format(big_sig)
 
             # find best raise/lower available
             else:
                 rlsig = find_minimum_rl(sig, self.efms)
                 self.efms[sig] = EFM(*sig, rlfrom=rlsig)
-                self.efm_args[sig] = self.efms[rlsig]
+                self.efm_args[sig] = rlsig
                 self.efm_rules[sig] = 'raising/lowering from {}, {}'.format(rlsig, abs(rlsig[0]-sig[0]))
 
     def full_setup(self):
@@ -243,7 +244,7 @@ class EFMSet:
             # construct from lowering
             else:
                 self.efms[sig] = EFM(*sig, rlfrom=sigprev)
-                self.efm_args[sig] = self.efms[sigprev]
+                self.efm_args[sig] = sigprev
                 self.efm_rules[sig] = 'lowering from {}'.format(sigprev)
 
             vprev, sigprev = v, sig
@@ -254,6 +255,8 @@ class EFMSet:
         for sig in self.sorted_efms:
             arg = self.efm_args[sig]
             if arg == 'r':
-                arg = zsphats
-            data[sig] = self.efms[sig].construct(arg)
+                data_arg = zsphats
+            else:
+                data_arg = self.efms[arg].data
+            data[sig] = self.efms[sig].construct(data_arg)
         return data
