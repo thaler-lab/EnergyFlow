@@ -30,7 +30,7 @@ def transfer(obj1, obj2, attrs):
 
 # get access to the data directory of the installed package and the default efp file
 ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
-default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_9.npz')
+default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_10.npz')
 
 # only include events functions in top level module
 __all__ = events.__all__ + particles.__all__

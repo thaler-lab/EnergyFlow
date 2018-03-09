@@ -104,7 +104,7 @@ class EFPBase:
         **Arguments**
 
         - **event** : array_like or `fastjet.PseudoJet`
-            - The event or jet as an array or `PseudoJet`.
+            - The event as an array of `[E,px,py,pz]` or `[pT,y,phi]` (if hadronic).
         - **zs** : 1-dim array_like
             - If present, `thetas` must also be present, and `zs` is used in place 
             of the energies of an event.
@@ -130,7 +130,8 @@ class EFPBase:
         **Arguments**
 
         - **events** : array_like or `fastjet.PseudoJet`
-            - The events or jets as an array or list of `PseudoJet`s.
+            - The events as an array of arrays of `[E,px,py,pz]` or `[pT,y,phi]` 
+            (if hadronic).
         - **n_jobs** : int
             - The number of worker processes to use. A value of `-1` will attempt
             to use as many processes as there are CPUs on the machine.

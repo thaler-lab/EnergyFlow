@@ -116,7 +116,7 @@ class EFP(EFPBase):
     #===============
 
     # compute(event=None, zs=None, thetas=None, ps=None)
-    def compute(self, event=None, zs=None, thetas=None, ps=None):
+    def compute(self, event=None, zs=None, thetas=None, ps=None, **kwargs):
 
         if self.use_efms:
             return self.efpelem.compute(self.construct_efms(event, zs, ps))
@@ -130,7 +130,7 @@ class EFP(EFPBase):
 
     def batch_compute(self, events, n_jobs=-1):
 
-        return super().batch_compute(events, n_jobs)
+        return super(EFP, self).batch_compute(events, n_jobs)
 
     #===========
     # properties
@@ -190,8 +190,8 @@ class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on events."""
 
-    # EFPSet(*args, filename=None, measure='hadr', beta=1, normed=True, 
-    #        check_input=False, verbose=False)
+    # EFPSet(*args, filename=None, measure='hadrdot', beta=2, kappa=1, normed=True, 
+    #        check_input=True, verbose=False)
     def __init__(self, *args, **kwargs):
         """
         EFPSet can be initialized in one of three ways (in order of precedence):
@@ -234,11 +234,11 @@ class EFPSet(EFPBase):
         """
 
         default_kwargs = {'filename': None,
-                          'measure': 'hadr',
+                          'measure': 'hadrdot',
                           'beta': 2,
                           'kappa': 1,
                           'normed': True,
-                          'check_input': False,
+                          'check_input': True,
                           'verbose': False}
         measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'check_input']
 
@@ -320,7 +320,7 @@ class EFPSet(EFPBase):
         # handle printing
         if self.verbose:
             print('Originally Available EFPs:')
-            self.print_stats(specs=orig_specs, lws=2)
+            self.print_stats(specs=concat_specs(orig_c_specs, orig_disc_specs), lws=2)
             if len(args) > 0:
                 print('Current Stored EFPs:')
                 self.print_stats(lws=2)
