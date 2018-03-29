@@ -27,8 +27,8 @@ class VariableElimination:
         self.ve_alg = ve_alg
         self._use_numpy_ve = (self.ve_alg == 'numpy')
 
+        self.np_optimize = np_optimize
         if self._use_numpy_ve:
-            self.np_optimize = np_optimize
             self.X = np.empty((2,2))
             self.y = np.empty(2)
 

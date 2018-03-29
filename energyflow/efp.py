@@ -550,7 +550,7 @@ class EFPSet(EFPBase):
             efpelem.set_timer(repeat, number)
 
     def get_times(self):
-        return [elem.times for elem in self.efpelems]
+        return np.asarray([elem.times for elem in self.efpelems])
 
 
     #===========

@@ -14,6 +14,7 @@ import numpy as np
 
 __all__ = [
     'flat_metric',
+    'p4s_from_ptyphims',
     'p4s_from_ptyphis',
     'pts_from_p4s',
     'ys_from_p4s',
@@ -42,6 +43,24 @@ def flat_metric(dim):
     if dim <= 101:
         return long_metric[:dim]
     return np.asarray([1.] + [-1.]*(dim-1))
+
+def p4s_from_ptyphims(ptyphim):
+    """Convert transverse momenta $p_T$, rapidities $y$, azimuths $\phi$, and masses $m$ to four-vectors
+    
+    **Arguments**
+
+    - **ptyphims** : _numpy.ndarray_
+        - An event as an `(M, 4)` array of `[pT, y, phi, m]` for each particle.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
+    """
+
+    pts, ys, phis, ms = [ptyphim[:,i] for i in range(4)]
+    Ets = np.sqrt(pts**2 + ms**2)
+    return np.vstack([Ets*np.cosh(ys), pts*np.cos(phis), pts*np.sin(phis), Ets*np.sinh(ys)]).T
 
 def p4s_from_ptyphis(ptyphis):
     """Convert transverse momenta $p_T$, rapidities $y$, and azimuths $\phi$ to massless four-vectors

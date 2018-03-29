@@ -4,8 +4,10 @@ from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
+from functools import wraps
 import multiprocessing
 import os
+import timeit
 
 import numpy as np
 from six import add_metaclass
@@ -28,7 +30,7 @@ def timing(obj, repeat, number):
         def decorated(*args, **kwargs):
             def test():
                 func(*args, **kwargs)
-            obj.times = timeit.repeat(test, repeat=repeat, number=number)
+            obj.times.append(timeit.repeat(test, repeat=repeat, number=number))
             return func(*args, **kwargs)
         return decorated
     return decorator
@@ -206,6 +208,7 @@ class EFPElem:
 
     def set_timer(self, repeat, number):
         self.set_compute()
+        self.times = []
         self.compute = timing(self, repeat, number)(self.compute)
 
     def set_compute(self):
