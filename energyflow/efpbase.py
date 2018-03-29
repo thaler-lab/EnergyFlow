@@ -17,7 +17,7 @@ from energyflow.utils import transfer
 
 __all__ = ['EFPBase', 'EFPElem']
 
-sysname = os.uname().sysname
+sysname = os.uname()[0]
 
 ###############################################################################
 # helpers
