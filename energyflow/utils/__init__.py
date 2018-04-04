@@ -1,6 +1,8 @@
 from __future__ import absolute_import
 
+from functools import wraps
 import os
+import timeit
 
 import numpy as np
 
@@ -18,6 +20,18 @@ def concat_specs(c_specs, d_specs):
         return np.concatenate((c_specs, d_specs), axis=0)
     else:
         return c_specs
+
+# timing meta-decorator
+def timing(obj, repeat, number):
+    def decorator(func):
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            def test():
+                func(*args, **kwargs)
+            obj.times.append(timeit.repeat(test, repeat=repeat, number=number))
+            return func(*args, **kwargs)
+        return decorated
+    return decorator
 
 # transfers attrs from obj2 (dict or object) to obj1
 def transfer(obj1, obj2, attrs):

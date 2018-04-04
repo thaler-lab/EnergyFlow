@@ -91,8 +91,6 @@ class EFP(EFPBase):
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
 
-        self.use_efms = 'efm' in self.measure
-
         if self.use_efms:
             efm_einstr, efm_spec = efp2efms(self.graph)
             self._efmset = EFMSet(efm_spec, subslicing=self.subslicing)
@@ -252,7 +250,6 @@ class EFPSet(EFPBase):
 
         # initialize EFPBase
         super(EFPSet, self).__init__(*[kwargs[k] for k in measure_kwargs])
-        self.use_efms = 'efm' in self.measure
 
         # handle different methods of initialization
         maxs = ['nmax','emax','dmax','cmax','vmax','comp_dmaxs']
@@ -545,12 +542,17 @@ class EFPSet(EFPBase):
         print(pad + 'Composite:', num_composite)
         print(pad + 'Total: ', num_prime+num_composite)
 
-    def set_timers(self, repeat=5, number=10):
+    def set_timers(self, repeat=1, number=1):
         for efpelem in self.efpelems:
             efpelem.set_timer(repeat, number)
+        if self.use_efms:
+            self.efmset.set_timers(repeat, number)
 
     def get_times(self):
-        return np.asarray([elem.times for elem in self.efpelems])
+        efp_times = np.asarray([elem.times for elem in self.efpelems])
+        if self.use_efms:
+            return efp_times, self.efmset.get_times()
+        return efp_times
 
 
     #===========
@@ -589,4 +591,4 @@ class EFPSet(EFPBase):
     def efmset(self):
         """The `EFMset` held by this object, if using EFMs."""
 
-        return self._efmset
+        return self._efmset if self.use_efms else None

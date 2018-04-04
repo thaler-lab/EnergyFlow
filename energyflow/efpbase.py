@@ -4,7 +4,6 @@ from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
-from functools import wraps
 import multiprocessing
 import os
 import timeit
@@ -13,27 +12,11 @@ import numpy as np
 from six import add_metaclass
 
 from energyflow.measure import Measure
-from energyflow.utils import transfer
+from energyflow.utils import timing, transfer
 
 __all__ = ['EFPBase', 'EFPElem']
 
 sysname = os.uname()[0]
-
-###############################################################################
-# helpers
-###############################################################################
-
-# timing meta-decorator
-def timing(obj, repeat, number):
-    def decorator(func):
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            def test():
-                func(*args, **kwargs)
-            obj.times.append(timeit.repeat(test, repeat=repeat, number=number))
-            return func(*args, **kwargs)
-        return decorated
-    return decorator
 
 
 ###############################################################################
@@ -46,6 +29,11 @@ class EFPBase:
 
         # store measure object
         self._measure = Measure(measure, beta, kappa, normed, check_input)
+        self.use_efms = 'efm' in self.measure
+
+        # store additional measure object if using EFMs
+        efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
+        self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
 
     def _get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
@@ -169,9 +157,21 @@ class EFPElem:
 
     # if weights are given, edges are assumed to be simple 
     def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None, 
-                       efm_einstr=None, efm_einpath=None, efm_spec=None):
+                       efm_einstr=None, efm_einpath=None, efm_spec=None, M_thresh=None):
 
-        transfer(self, locals(), ['einstr','einpath','k','efm_einstr','efm_einpath','efm_spec'])
+        transfer(self, locals(), ['einstr', 'einpath', 'k', 'M_thresh', 
+                                  'efm_einstr', 'efm_einpath', 'efm_spec'])
+
+        self.process_edges(edges, weights)
+
+        self.pow2d = 2**self.d
+        self.ndk = (self.n, self.d, self.k)
+
+        self.has_efms = self.efm_spec is not None
+        if not self.has_efms:
+            self.get_compute_func = lambda x: return self.efp_compute
+
+    def process_edges(self, edges, weights):
 
         # deal with arbitrary vertex labels
         vertex_set = frozenset(v for edge in edges for v in edge)
@@ -198,21 +198,15 @@ class EFPElem:
 
         self.e = len(self.simple_edges)
         self.d = sum(self.weights)
-        self.pow2 = 2**self.d
         self.weight_set = frozenset(self.weights)
 
-        self.ndk = (self.n, self.d, self.k)
-
-        self.use_efms = self.efm_einstr is not None
-        self.set_compute()
+    def get_compute_func(self, M):
+        return self.efp_compute if M < self.M_thresh else self.efm_compute
 
     def set_timer(self, repeat, number):
-        self.set_compute()
         self.times = []
-        self.compute = timing(self, repeat, number)(self.compute)
-
-    def set_compute(self):
-        self.compute = self.efm_compute if self.use_efms else self.efp_compute
+        self.efp_compute = timing(self, repeat, number)(self.efp_compute)
+        self.efm_compute = timing(self, repeat, number)(self.efm_compute)
 
     def efp_compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
@@ -220,8 +214,8 @@ class EFPElem:
 
     def efm_compute(self, efms_dict):
         einsum_args = [efms_dict[sig] for sig in self.efm_spec]
-        return np.einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2
+        return np.einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2d
 
     # properties set above:
     #     n, e, d, k, ndk, edges, simple_edges, weights, weight_set, einstr, einpath,
-    #     efm_einstr, efm_einpath, efm_spec
+    #     efm_einstr, efm_einpath, efm_spec, M_thresh

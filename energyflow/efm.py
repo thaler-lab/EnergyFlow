@@ -2,12 +2,15 @@
 
 from __future__ import absolute_import, division
 
+from functools import wraps
 from operator import itemgetter
+import timeit
 
 import numpy as np
 from numpy.core.multiarray import c_einsum
 
 from energyflow.measure import flat_metric
+from energyflow.utils import timing
 from energyflow.utils.graph import *
 
 __all__ = ['EFM', 'EFMSet', 'efp2efms']
@@ -166,6 +169,10 @@ class EFM:
         self.data = other_data[self.subslice]
         return self.data
 
+    def set_timer(self, repeat, number):
+        self.times = []
+        self.construct = timing(self, repeat, number)(self.construct)
+
 
 ###############################################################################
 # EFMSet
@@ -196,9 +203,9 @@ class EFMSet:
         maxsig = max(self.unique_efms, key=itemgetter(1))
         self.unique_efms |= set((0,n) for n in range(1,maxsig[1]))
 
-        # sort EFMs by decreasing valency and then increasing nlow
-        self.sorted_efms = sorted(self.unique_efms, key=lambda x: abs(x[0]-x[1]), reverse=True)
-        self.sorted_efms.sort(key=itemgetter(1), reverse=True)
+        # sort EFMs to minimize raising/lowering operations
+        self.sorted_efms = sorted(self.unique_efms, key=itemgetter(1), reverse=True)
+        self.sorted_efms.sort(key=lambda x: abs(x[0]-x[1]), reverse=True)
         self.sorted_efms.sort(key=sum, reverse=True)
 
         # take care of empty set
@@ -260,3 +267,10 @@ class EFMSet:
                 data_arg = self.efms[arg].data
             data[sig] = self.efms[sig].construct(data_arg)
         return data
+
+    def set_timers(self, repeat=1, number=1):
+        for efm in self.efms.values():
+            efm.set_timer(repeat, number)
+
+    def get_times(self):
+        return {sig: np.asarray(efm.times) for sig,efm in self.efms.items()}
