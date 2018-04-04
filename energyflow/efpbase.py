@@ -30,30 +30,29 @@ class EFPBase:
         self._measure = Measure(measure, beta, kappa, normed, check_input)
         self.use_efms = 'efm' in self.measure
 
-        # store additional measure object if using EFMs
-        efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
-        self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
+        # store additional EFP measure object if using EFMs
+        if self.use_efms:
+            efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
+            self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
+        else:
+            self._efp_measure = self._measure
 
-    def _get_zs_thetas_dict(self, event, zs, thetas):
+    def get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
-            zs, thetas = self._measure.evaluate(event)
+            zs, thetas = self._efp_measure.evaluate(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
         return zs, {w: thetas**w for w in self._weight_set}
 
-    @abstractproperty
-    def _weight_set(self):
-        pass
-
-    def construct_efms(self, event, zs, phats):
+    def construct_efms(self, event, zs, phats, efmset):
         if event is not None:
             zs, phats = self._measure.evaluate(event)
         elif zs is None or phats is None:
             raise TypeError('if event is None then zs and/or phats cannot also be None')
-        return self.efmset.construct(zs, phats)
+        return efmset.construct(zs, phats)
 
     @abstractproperty
-    def efmset(self):
+    def _weight_set(self):
         pass
 
     @property
@@ -156,7 +155,7 @@ class EFPElem:
 
     # if weights are given, edges are assumed to be simple 
     def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None, 
-                       efm_einstr=None, efm_einpath=None, efm_spec=None, M_thresh=None):
+                       efm_einstr=None, efm_einpath=None, efm_spec=None, M_thresh=0):
 
         transfer(self, locals(), ['einstr', 'einpath', 'k', 'M_thresh', 
                                   'efm_einstr', 'efm_einpath', 'efm_spec'])
@@ -168,7 +167,8 @@ class EFPElem:
 
         self.has_efms = self.efm_spec is not None
         if not self.has_efms:
-            self.get_compute_func = lambda x: return self.efp_compute
+            self.efm_spec_set = frozenset(self.efm_spec)
+            self.determine_efm_compute = lambda x: False
 
     def process_edges(self, edges, weights):
 
@@ -199,8 +199,12 @@ class EFPElem:
         self.d = sum(self.weights)
         self.weight_set = frozenset(self.weights)
 
-    def get_compute_func(self, M):
-        return self.efp_compute if M < self.M_thresh else self.efm_compute
+    def determine_efm_compute(self, M):
+        self.use_efms = M >= self.M_thresh
+        return self.use_efms
+
+    def compute(self, zs, thetas_dict, efms_dict):
+        return self.efm_compute(efms_dict) if self.use_efms else self.efp_compute(zs, tehtas_dict)
 
     def set_timer(self):
         self.times = []

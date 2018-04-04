@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, division
 
+from collections import OrderedDict
 from operator import itemgetter
 
 import numpy as np
@@ -30,8 +31,7 @@ def find_subslice(sig, efms):
 def find_minimum_rl(sig, efms):
     v = sum(sig)
     vsigs = list(filter(lambda x: sum(x) == v, efms))
-    ninds = [(abs(sig[0]-vs[0]), vs) for vs in vsigs]
-    return min(ninds, key=itemgetter(0))[1]
+    return min(vsigs, key=lambda x: abs(sig[0]-x[0]))
 
 def efp2efms(graph):
     """This function converts an EFP to an EFM formula."""
@@ -179,17 +179,17 @@ class EFMSet:
 
     """"""
 
-    def __init__(self, efm_specs, subslicing=False):
+    def __init__(self, efm_specs, subslicing=False, max_v=None):
         """A collection of EFMs"""
 
         # store inputs
         self.subslicing = subslicing
 
         # get unique EFMs 
-        self.unique_efms = set(efm_specs)
+        self.unique_efms = set(filter(lambda x: sum(x) <= max_v, efm_specs))
 
         # setup EFMs based on whether we can subslice or not
-        self.efms, self.efm_args, self.efm_rules = {}, {}, {}
+        self.efms, self.efm_args, self.efm_rules = {}, {}, OrderedDict()
         if self.subslicing:
             self.subslicing_setup()
         else:
@@ -198,8 +198,8 @@ class EFMSet:
     def subslicing_setup(self):
 
         # ensure there is at least one EFM of each valency for rl purposes
-        maxsig = max(self.unique_efms, key=itemgetter(1))
-        self.unique_efms |= set((0,n) for n in range(1,maxsig[1]))
+        maxsig = max(self.unique_efms, key=sum)
+        self.unique_efms |= set((0,n) for n in range(1, sum(maxsig)+1))
 
         # sort EFMs to minimize raising/lowering operations
         self.sorted_efms = sorted(self.unique_efms, key=itemgetter(1), reverse=True)
@@ -254,17 +254,14 @@ class EFMSet:
 
             vprev, sigprev = v, sig
 
-    def construct(self, zs, phats):
-        data = {}
+    def construct(self, zs, phats, efm_specs):
+        efm_dict = {}
         zsphats = (zs, phats)
         for sig in self.sorted_efms:
             arg = self.efm_args[sig]
-            if arg == 'r':
-                data_arg = zsphats
-            else:
-                data_arg = self.efms[arg].data
-            data[sig] = self.efms[sig].construct(data_arg)
-        return data
+            data_arg = zsphats if arg == 'r' else self.efms[arg].data
+            efm_dict[sig] = self.efms[sig].construct(data_arg)
+        return efm_dict
 
     def set_timers(self):
         for efm in self.efms.values():
