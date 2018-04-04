@@ -2,9 +2,7 @@
 
 from __future__ import absolute_import, division
 
-from functools import wraps
 from operator import itemgetter
-import timeit
 
 import numpy as np
 from numpy.core.multiarray import c_einsum
