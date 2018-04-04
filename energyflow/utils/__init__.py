@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from functools import wraps
 import os
-import timeit
+import time
 
 import numpy as np
 
@@ -41,6 +41,17 @@ def transfer(obj1, obj2, attrs):
     else:
         for attr in attrs:
             setattr(obj1, attr, getattr(obj2, attr))
+
+# timing meta-decorator
+def timing(obj, func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        ts = time.process_time()
+        r = func(*args, **kwargs)
+        te = time.process_time()
+        obj.times.append(te - ts)
+        return r
+    return decorated
 
 # get access to the data directory of the installed package and the default efp file
 ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')

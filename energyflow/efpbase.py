@@ -6,7 +6,6 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
 import multiprocessing
 import os
-import timeit
 
 import numpy as np
 from six import add_metaclass
@@ -203,10 +202,10 @@ class EFPElem:
     def get_compute_func(self, M):
         return self.efp_compute if M < self.M_thresh else self.efm_compute
 
-    def set_timer(self, repeat, number):
+    def set_timer(self):
         self.times = []
-        self.efp_compute = timing(self, repeat, number)(self.efp_compute)
-        self.efm_compute = timing(self, repeat, number)(self.efm_compute)
+        self.efp_compute = timing(self, self.efp_compute)
+        self.efm_compute = timing(self, self.efm_compute)
 
     def efp_compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]

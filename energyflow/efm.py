@@ -167,9 +167,9 @@ class EFM:
         self.data = other_data[self.subslice]
         return self.data
 
-    def set_timer(self, repeat, number):
+    def set_timer(self):
         self.times = []
-        self.construct = timing(self, repeat, number)(self.construct)
+        self.construct = timing(self, self.construct)
 
 
 ###############################################################################
@@ -266,9 +266,9 @@ class EFMSet:
             data[sig] = self.efms[sig].construct(data_arg)
         return data
 
-    def set_timers(self, repeat=1, number=1):
+    def set_timers(self):
         for efm in self.efms.values():
-            efm.set_timer(repeat, number)
+            efm.set_timer()
 
     def get_times(self):
         return {sig: np.asarray(efm.times) for sig,efm in self.efms.items()}
