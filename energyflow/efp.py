@@ -545,12 +545,17 @@ class EFPSet(EFPBase):
         print(pad + 'Composite:', num_composite)
         print(pad + 'Total: ', num_prime+num_composite)
 
-    def set_timers(self, repeat=5, number=10):
+    def set_timers(self):
+        if self.use_efms:
+            self.efmset.set_timers()
         for efpelem in self.efpelems:
-            efpelem.set_timer(repeat, number)
+            efpelem.set_timer()
 
     def get_times(self):
-        return np.asarray([elem.times for elem in self.efpelems])
+        efp_times = np.asarray([elem.times for elem in self.efpelems])
+        if self.use_efms:
+            return efp_times, self.efmset.get_times()
+        return efp_times
 
 
     #===========

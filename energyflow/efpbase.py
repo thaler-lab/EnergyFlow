@@ -4,35 +4,18 @@ from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
-from functools import wraps
 import multiprocessing
 import os
-import time
 
 import numpy as np
 from six import add_metaclass
 
 from energyflow.measure import Measure
-from energyflow.utils import transfer
+from energyflow.utils import timing, transfer
 
 __all__ = ['EFPBase', 'EFPElem']
 
 sysname = os.uname()[0]
-
-###############################################################################
-# helpers
-###############################################################################
-
-# timing meta-decorator
-def timing(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        ts = time.process_time()
-        r = func(*args, **kwargs)
-        te = time.process_time()
-        obj.times.append(te - ts)
-        return r
-    return decorated
 
 
 ###############################################################################
@@ -205,10 +188,10 @@ class EFPElem:
         self.use_efms = self.efm_einstr is not None
         self.set_compute()
 
-    def set_timer(self, repeat, number):
+    def set_timer(self):
         self.set_compute()
         self.times = []
-        self.compute = timing(self, repeat, number)(self.compute)
+        self.compute = timing(self, self.compute)
 
     def set_compute(self):
         self.compute = self.efm_compute if self.use_efms else self.efp_compute

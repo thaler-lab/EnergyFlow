@@ -22,4 +22,4 @@ from .utils import *
 
 __all__ = gen.__all__ + efm.__all__ + efp.__all__ + measure.__all__ + utils.__all__
 
-__version__ = '0.7.4'
+__version__ = '0.7.5'
