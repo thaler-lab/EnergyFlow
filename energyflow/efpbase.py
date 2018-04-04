@@ -7,7 +7,7 @@ from collections import Counter
 from functools import wraps
 import multiprocessing
 import os
-import timeit
+import time
 
 import numpy as np
 from six import add_metaclass
@@ -24,16 +24,15 @@ sysname = os.uname()[0]
 ###############################################################################
 
 # timing meta-decorator
-def timing(obj, repeat, number):
-    def decorator(func):
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            def test():
-                func(*args, **kwargs)
-            obj.times.append(timeit.repeat(test, repeat=repeat, number=number))
-            return func(*args, **kwargs)
-        return decorated
-    return decorator
+def timing(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        ts = time.process_time()
+        r = func(*args, **kwargs)
+        te = time.process_time()
+        obj.times.append(te - ts)
+        return r
+    return decorated
 
 
 ###############################################################################
