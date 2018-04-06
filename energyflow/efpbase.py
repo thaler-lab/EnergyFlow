@@ -26,12 +26,15 @@ class EFPBase:
 
     def __init__(self, measure, beta, kappa, normed, check_input):
 
+        self.use_efpm_hybrid = 'efpm' in measure
+        measure = measure.replace('efpm', 'efm')
+        self.use_efms = 'efm' in measure
+
         # store measure object
         self._measure = Measure(measure, beta, kappa, normed, check_input)
-        self.use_efms = 'efm' in self.measure
 
         # store additional EFP measure object if using EFMs
-        if self.use_efms:
+        if self.use_efpm_hybrid:
             efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
             self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
         else:
@@ -165,10 +168,9 @@ class EFPElem:
         self.pow2d = 2**self.d
         self.ndk = (self.n, self.d, self.k)
 
-        self.has_efms = self.efm_spec is not None
-        if not self.has_efms:
+        self.use_efms = self.has_efms = self.efm_spec is not None
+        if self.has_efms:
             self.efm_spec_set = frozenset(self.efm_spec)
-            self.determine_efm_compute = lambda x: False
 
     def process_edges(self, edges, weights):
 
@@ -204,7 +206,7 @@ class EFPElem:
         return self.use_efms
 
     def compute(self, zs, thetas_dict, efms_dict):
-        return self.efm_compute(efms_dict) if self.use_efms else self.efp_compute(zs, tehtas_dict)
+        return self.efm_compute(efms_dict) if self.use_efms else self.efp_compute(zs, thetas_dict)
 
     def set_timer(self):
         self.times = []

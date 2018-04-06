@@ -186,7 +186,8 @@ class EFMSet:
         self.subslicing = subslicing
 
         # get unique EFMs 
-        self.unique_efms = set(filter(lambda x: sum(x) <= max_v, efm_specs))
+        self.unique_efms = set(efm_specs if max_v is None else 
+                               filter(lambda x: sum(x) <= max_v, efm_specs))
 
         # setup EFMs based on whether we can subslice or not
         self.efms, self.efm_args, self.efm_rules = {}, {}, OrderedDict()
@@ -254,7 +255,7 @@ class EFMSet:
 
             vprev, sigprev = v, sig
 
-    def construct(self, zs, phats, efm_specs):
+    def construct(self, zs, phats):
         efm_dict = {}
         zsphats = (zs, phats)
         for sig in self.sorted_efms:

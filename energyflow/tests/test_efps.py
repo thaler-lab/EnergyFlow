@@ -60,17 +60,22 @@ def test_efp_asymbox(zs, thetas):
 
 nogood = pytest.mark.xfail(raises=NotImplementedError) if sysname != 'Linux' else []
 
-@pytest.mark.batch_compute
 @pytest.mark.slow
+@pytest.mark.batch_compute
+@pytest.mark.efpm
+@pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
-@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', pytest.param('hadrefm', marks=nogood), 
-                                     'ee', pytest.param('eeefm', marks=nogood)])
+@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'ee',
+                                     pytest.param('hadrefm', marks=nogood),
+                                     pytest.param('hadrefpm', marks=nogood),
+                                     pytest.param('eeefm', marks=nogood), 
+                                     pytest.param('eeefpm', marks=nogood)])
 def test_batch_compute_vs_compute(measure, beta, kappa, normed):
     if measure == 'hadr' and kappa == 'pf':
         pytest.skip('hadr does not do pf')
-    if 'efm' in measure and beta != 2:
+    if 'efm' in measure.replace('efpm', 'efm') and beta != 2:
         pytest.skip('only test efm when beta=2')
     events = ef.gen_random_events(10, 15)
     s = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
@@ -80,16 +85,19 @@ def test_batch_compute_vs_compute(measure, beta, kappa, normed):
 
 # test that efpset matches efps
 @pytest.mark.slow
+@pytest.mark.efpm
+@pytest.mark.efm
+@pytest.mark.efpset
 @pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
-@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'ee', 'eeefm'])
+@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'hadrefpm', 'ee', 'eeefm', 'eeefpm'])
 def test_efpset_vs_efps(measure, beta, kappa, normed, event):
     # handle cases we want to skip
     if measure == 'hadr' and kappa == 'pf':
         pytest.skip('hadr does not do pf')
-    if 'efm' in measure and beta != 2:
+    if 'efm' in measure.replace('efpm', 'efm') and beta != 2:
         pytest.skip('only test efm when beta=2')
     s1 = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
     efps = [ef.EFP(g, measure=measure, beta=beta, kappa=kappa, normed=normed) for g in s1.graphs()]
@@ -111,3 +119,17 @@ def test_efps_vs_efms(measures, beta, kappa, normed, event):
     r1 = s1.compute(event)
     r2 = s2.compute(event)
     assert epsilon_percent(r1, r2, 10**-measures[2])
+
+# test different M values for efpm
+@pytest.mark.slow
+@pytest.mark.efpm
+@pytest.mark.parametrize('M', np.arange(5,151,5))
+@pytest.mark.parametrize('kappa', [1, 'pf'])
+@pytest.mark.parametrize('measure', ['hadrefpm', 'eeefpm'])
+def test_efpms(measure, kappa, M):
+    s1 = ef.EFPSet('d<=7', measure=measure, kappa=kappa)
+    s2 = ef.EFPSet('d<=7', measure=measure.replace('efpm', 'efm'), kappa=kappa)
+    event = ef.gen_random_events(1, M)
+    r1 = s1.compute(event)
+    r2 = s2.compute(event)
+    assert epsilon_percent(r1, r2, 10**-12)

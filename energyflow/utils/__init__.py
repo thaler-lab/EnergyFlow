@@ -56,6 +56,7 @@ def timing(obj, func):
 # get access to the data directory of the installed package and the default efp file
 ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_10.npz')
+default_M_thresh_file = os.path.join(ef_data_dir, 'M_threshs_d_le_10.npy')
 
 # only include events functions in top level module
 __all__ = events.__all__ + particles.__all__
