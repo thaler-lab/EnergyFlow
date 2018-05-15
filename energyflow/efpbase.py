@@ -10,6 +10,7 @@ import os
 import numpy as np
 from six import add_metaclass
 
+from energyflow.algorithms import einsum
 from energyflow.measure import Measure
 from energyflow.utils import timing, transfer
 
@@ -215,11 +216,11 @@ class EFPElem:
 
     def efp_compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
-        return np.einsum(self.einstr, *einsum_args, optimize=self.einpath)
+        return einsum(self.einstr, *einsum_args, optimize=self.einpath)
 
     def efm_compute(self, efms_dict):
         einsum_args = [efms_dict[sig] for sig in self.efm_spec]
-        return np.einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2d
+        return einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2d
 
     # properties set above:
     #     n, e, d, k, ndk, edges, simple_edges, weights, weight_set, einstr, einpath,

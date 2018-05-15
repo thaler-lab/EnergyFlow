@@ -5,6 +5,7 @@ from __future__ import absolute_import, division
 import itertools
 import numpy as np
 
+from energyflow.algorithms.einsumfunc import *
 from energyflow.utils import igraph_import
 
 igraph = igraph_import()
@@ -45,7 +46,7 @@ class VariableElimination:
         d = len(edges)
         self.einstr = self._einstr_from_edges(edges, n)
         args = [self.X]*d + [self.y]*n
-        einpath = np.einsum_path(self.einstr, *args, optimize=self.np_optimize)
+        einpath = einsum_path(self.einstr, *args, optimize=self.np_optimize)
         self.einpath = einpath[0]
         self.chi = int(einpath[1].split('\n')[2].split(':')[1])
 

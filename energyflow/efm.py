@@ -199,7 +199,7 @@ class EFMSet:
     def subslicing_setup(self):
 
         # ensure there is at least one EFM of each valency for rl purposes
-        maxsig = max(self.unique_efms, key=sum)
+        maxsig = max(self.unique_efms, key=sum) if len(self.unique_efms) else (0,0)
         self.unique_efms |= set((0,n) for n in range(1, sum(maxsig)+1))
 
         # sort EFMs to minimize raising/lowering operations

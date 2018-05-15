@@ -20,7 +20,7 @@ import warnings
 
 import numpy as np
 
-from energyflow.algorithms import VariableElimination
+from energyflow.algorithms import VariableElimination, einsum_path
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.efpbase import *
 from energyflow.gen import Generator
@@ -54,6 +54,8 @@ def kwargs_check(name, kwargs, allowed=[]):
 
 def vmax_from_specs(efm_specs):
     return sum(max(efm_specs, key=sum))
+
+_sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 
 
 ###############################################################################
@@ -99,9 +101,9 @@ class EFP(EFPBase):
         if self.use_efms:
             efm_einstr, efm_spec = efp2efms(self.graph)
             self._efmset = EFMSet(efm_spec, subslicing=self.subslicing)
-            efm_einpath = np.einsum_path(efm_einstr, 
-                                         *[np.empty([4]*sum(s)) for s in efm_spec],
-                                         optimize=np_optimize)[0]
+            efm_einpath = einsum_path(efm_einstr, 
+                                      *[np.empty([4]*sum(s)) for s in efm_spec],
+                                      optimize=np_optimize)[0]
             self.efpelem = EFPElem(self.graph, efm_einstr=efm_einstr, efm_einpath=efm_einpath, 
                                                efm_spec=efm_spec)
 
@@ -181,7 +183,7 @@ class EFP(EFPBase):
 
     @property
     def efmset(self):
-        """Get items of EFMs."""
+        """Instance of `EFMSet` help by this EFP."""
 
         return self._efmset
 
@@ -320,7 +322,7 @@ class EFPSet(EFPBase):
             raise ValueError('cannot use efm measure without providing efm generation')
 
         # compile regular expression for use in sel()
-        self._sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
+        self._sel_re = _sel_re
         
         # put column headers and indices into namespace
         self._cols = gen['cols']
@@ -387,31 +389,6 @@ class EFPSet(EFPBase):
     def _set_col_inds(self):
         self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
 
-    def _calc_disc(self, X):
-
-        XX = X
-        if not isinstance(X, np.ndarray):
-            XX = np.asarray(X)
-
-        if len(self.disc_col_inds) == 0:
-            return XX
-
-        l = len(XX.shape) 
-        if l == 2:
-            results = np.ones((len(X), len(self.disc_col_inds)), dtype=float)
-            for i,formula in enumerate(self.disc_col_inds):
-                results[:,i] = np.prod(XX[:,formula], axis=1)
-            concat_axis = 1
-        elif l == 1:
-            results = np.ones(len(self.disc_col_inds), dtype=float)
-            for i,formula in enumerate(self.disc_col_inds):
-                results[i] = np.prod(XX[formula])
-            concat_axis = 0
-        else:
-            raise ValueError('X has the wrong dimensions')
-
-        return np.concatenate([XX, results], axis=concat_axis)
-
     def _make_graphs(self, connected_graphs):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
         return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
@@ -420,6 +397,39 @@ class EFPSet(EFPBase):
     #===============
     # PUBLIC METHODS
     #===============
+
+    # calc_disc(X)
+    def calc_disc(self, X):
+        """Computes disconnected EFPs according to the internal 
+        specifications using the connected EFPs provided as input.
+
+        **Arguments**
+
+        - **X** : _numpy.ndarray_
+            - Array of connected EFPs. Rows are different events, columns 
+            are the different EFPs. Can handle a single event (a 1-dim array) 
+            as input. EFPs are assumed to be in the order expected by the 
+            instance of `EFPSet`; the safest way to ensure this is to use 
+            the same `EFPSet` to calculate both connected and disconnected 
+            EFPs. This function is used internally in `compute` and 
+            `batch_compute`.
+
+        **Returns**
+
+        - _numpy.ndarray_
+            - A concatenated array of the connected and disconnected EFPs.
+        """
+
+        if len(self.disc_col_inds) == 0:
+            return np.asarray(X)
+
+        X = np.atleast_2d(X)
+
+        results = np.empty((len(X), len(self.disc_col_inds)), dtype=float)
+        for i,formula in enumerate(self.disc_col_inds):
+            results[:,i] = np.prod(X[:,formula], axis=1)
+
+        return np.squeeze(np.concatenate((X, results), axis=1))
 
     # compute(event=None, zs=None, thetas=None, ps=None)
     def compute(self, event=None, zs=None, thetas=None, ps=None, batch_call=False):
@@ -466,11 +476,11 @@ class EFPSet(EFPBase):
         if batch_call:
             return results
         else:
-            return self._calc_disc(results)
+            return self.calc_disc(results)
 
     def batch_compute(self, events, n_jobs=-1):
 
-        return self._calc_disc(super(EFPSet, self).batch_compute(events, n_jobs))
+        return self.calc_disc(super(EFPSet, self).batch_compute(events, n_jobs))
 
     # sel(*args)
     def sel(self, *args, **kwargs):
@@ -678,12 +688,12 @@ class EFPSet(EFPBase):
 
     @property
     def cspecs(self):
-        """Specification array for prime EFPs."""
+        """Specification array for connected EFPs."""
 
         return self._cspecs
 
     @property
     def efmsets(self):
-        """The `EFMset` held by this object, if using EFMs."""
+        """The `EFMset`s held by this object, if using EFMs."""
 
         return self._efmsets if self.use_efms else None
