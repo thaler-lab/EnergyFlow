@@ -9,13 +9,11 @@ dist/
 *.pyc
 test.npz
 EnergyFlow.egg-info
-mnist*
 *.txt
 plan.jpg
 .cache
 build
 scrap
-autogen.py
 Energy\ Flow.sublime*
 tmp/
 bin/
@@ -28,4 +26,6 @@ taco
 Moments
 Networks
 Polynomials
-Icon[]
+Icon[
+
+]

@@ -112,6 +112,8 @@
         
             <li><a class="toctree-l4" href="#batch_compute_1">batch_compute</a></li>
         
+            <li><a class="toctree-l4" href="#calc_disc">calc_disc</a></li>
+        
             <li><a class="toctree-l4" href="#sel">sel</a></li>
         
             <li><a class="toctree-l4" href="#count">count</a></li>
@@ -188,7 +190,7 @@ and angular measure depend on the collider context and are discussed at length i
 <hr />
 <h3 id="efp">EFP</h3>
 <p>A class for representing and computing a single EFP.</p>
-<pre><code class="python">energyflow.EFP(edges, measure='hadrdot', beta=2, kappa=1, normed=True, check_input=True, ve_alg='numpy', np_optimize='greedy')
+<pre><code class="python">energyflow.EFP(edges, measure='hadrdot', beta=2, kappa=1, normed=True, check_input=True, ve_alg='numpy', np_optimize='greedy', M_thresh=None)
 </code></pre>
 
 <p><strong>Arguments</strong></p>
@@ -231,7 +233,7 @@ of <code>numpy.einsum_path</code>.</li>
 </li>
 </ul>
 <h4 id="compute">compute</h4>
-<pre><code class="python">energyflow.EFP.compute(event=None, zs=None, thetas=None, ps=None)
+<pre><code class="python">compute(event=None, zs=None, thetas=None, ps=None)
 </code></pre>
 
 <p>Computes the value(s) of the EFP(s) on a single event.</p>
@@ -265,7 +267,7 @@ when using EFMs.</li>
 </li>
 </ul>
 <h4 id="batch_compute">batch_compute</h4>
-<pre><code class="python">energyflow.EFP.batch_compute(events, n_jobs=-1)
+<pre><code class="python">batch_compute(events, n_jobs=-1)
 </code></pre>
 
 <p>Computes the value(s) of the EFP(s) on several events.</p>
@@ -290,36 +292,36 @@ to use as many processes as there are CPUs on the machine.</li>
 </li>
 </ul>
 <h5 id="graph">graph</h5>
-<pre><code class="python">energyflow.EFP.graph
+<pre><code class="python">graph
 </code></pre>
 
 <p>Graph of this EFP represented by a list of edges.</p>
 <h5 id="simple_graph">simple_graph</h5>
-<pre><code class="python">energyflow.EFP.simple_graph
+<pre><code class="python">simple_graph
 </code></pre>
 
 <p>Simple graph of this EFP (forgetting all multiedges)
 represented by a list of edges.</p>
 <h5 id="n">n</h5>
-<pre><code class="python">energyflow.EFP.n
+<pre><code class="python">n
 </code></pre>
 
 <p>Number of vertices in the graph of this EFP.</p>
 <h5 id="d">d</h5>
-<pre><code class="python">energyflow.EFP.d
+<pre><code class="python">d
 </code></pre>
 
 <p>Degree, or number of edges, in the graph of this EFP.</p>
 <h5 id="c">c</h5>
-<pre><code class="python">energyflow.EFP.c
+<pre><code class="python">c
 </code></pre>
 
 <p>VE complexity $\chi$ of this EFP.</p>
 <h5 id="efmset">efmset</h5>
-<pre><code class="python">energyflow.EFP.efmset
+<pre><code class="python">efmset
 </code></pre>
 
-<p>Get items of EFMs.</p>
+<p>Instance of <code>EFMSet</code> help by this EFP.</p>
 <hr />
 <h3 id="efpset">EFPSet</h3>
 <p>A class that holds a collection of EFPs and computes their values on events.</p>
@@ -380,7 +382,7 @@ the first input type.</li>
 </li>
 </ul>
 <h4 id="compute_1">compute</h4>
-<pre><code class="python">energyflow.EFPSet.compute(event=None, zs=None, thetas=None, ps=None)
+<pre><code class="python">compute(event=None, zs=None, thetas=None, ps=None)
 </code></pre>
 
 <p>Computes the value(s) of the EFP(s) on a single event.</p>
@@ -414,7 +416,7 @@ when using EFMs.</li>
 </li>
 </ul>
 <h4 id="batch_compute_1">batch_compute</h4>
-<pre><code class="python">energyflow.EFPSet.batch_compute(events, n_jobs=-1)
+<pre><code class="python">batch_compute(events, n_jobs=-1)
 </code></pre>
 
 <p>Computes the value(s) of the EFP(s) on several events.</p>
@@ -438,8 +440,34 @@ to use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
+<h4 id="calc_disc">calc_disc</h4>
+<pre><code class="python">calc_disc(X)
+</code></pre>
+
+<p>Computes disconnected EFPs according to the internal 
+specifications using the connected EFPs provided as input.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>X</strong> : <em>numpy.ndarray</em><ul>
+<li>Array of connected EFPs. Rows are different events, columns 
+are the different EFPs. Can handle a single event (a 1-dim array) 
+as input. EFPs are assumed to be in the order expected by the 
+instance of <code>EFPSet</code>; the safest way to ensure this is to use 
+the same <code>EFPSet</code> to calculate both connected and disconnected 
+EFPs. This function is used internally in <code>compute</code> and 
+<code>batch_compute</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>A concatenated array of the connected and disconnected EFPs.</li>
+</ul>
+</li>
+</ul>
 <h4 id="sel">sel</h4>
-<pre><code class="python">energyflow.EFPSet.sel(*args)
+<pre><code class="python">sel(*args)
 </code></pre>
 
 <p>Computes a boolean mask of EFPs matching each of the
@@ -469,7 +497,7 @@ is useful when the value is a variable that changes
 </li>
 </ul>
 <h4 id="count">count</h4>
-<pre><code class="python">energyflow.EFPSet.count(*args)
+<pre><code class="python">count(*args)
 </code></pre>
 
 <p>Counts the number of EFPs meeting the specifications
@@ -489,7 +517,7 @@ of the arguments using <code>sel</code>.</p>
 </li>
 </ul>
 <h4 id="graphs">graphs</h4>
-<pre><code class="python">energyflow.EFPSet.graphs(*args)
+<pre><code class="python">graphs(*args)
 </code></pre>
 
 <p>Graphs meeting provided specifications.</p>
@@ -513,7 +541,7 @@ the index of a particular graph.</li>
 </li>
 </ul>
 <h4 id="simple_graphs">simple_graphs</h4>
-<pre><code class="python">energyflow.EFPSet.simple_graphs(*args)
+<pre><code class="python">simple_graphs(*args)
 </code></pre>
 
 <p>Simple graphs meeting provided specifications.</p>
@@ -537,13 +565,18 @@ the index of particular simple graph.</li>
 </li>
 </ul>
 <h5 id="specs">specs</h5>
-<pre><code class="python">energyflow.EFPSet.specs
+<pre><code class="python">specs
 </code></pre>
 
 <p>An array of EFP specifications. Each row represents an EFP 
 and the columns represent the quantities indicated by <code>cols</code>.</p>
+<h5 id="cspecs">cspecs</h5>
+<pre><code class="python">cspecs
+</code></pre>
+
+<p>Specification array for connected EFPs.</p>
 <h5 id="cols">cols</h5>
-<pre><code class="python">energyflow.EFPSet.cols
+<pre><code class="python">cols
 </code></pre>
 
 <p>Column labels for <code>specs</code>. 
@@ -558,11 +591,11 @@ Those of primary interest are listed below.</p>
 <li><code>p</code> : Number of prime factors (or connected components).</li>
 <li><code>h</code> : Number of valency 1 vertices (a.k.a. 'hanging chads').</li>
 </ul>
-<h5 id="efmset_1">efmset</h5>
-<pre><code class="python">energyflow.EFPSet.efmset
+<h5 id="efmsets">efmsets</h5>
+<pre><code class="python">efmsets
 </code></pre>
 
-<p>The <code>EFMset</code> held by this object, if using EFMs.</p>
+<p>The <code>EFMset</code>s held by this object, if using EFMs.</p>
 <hr />
               
             </div>

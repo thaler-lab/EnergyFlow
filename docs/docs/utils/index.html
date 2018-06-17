@@ -107,6 +107,8 @@
         
             <li><a class="toctree-l4" href="#flat_metric">flat_metric</a></li>
         
+            <li><a class="toctree-l4" href="#p4s_from_ptyphims">p4s_from_ptyphims</a></li>
+        
             <li><a class="toctree-l4" href="#p4s_from_ptyphis">p4s_from_ptyphis</a></li>
         
             <li><a class="toctree-l4" href="#pts_from_p4s">pts_from_p4s</a></li>
@@ -199,6 +201,26 @@ four-momenta.</p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
 <li>A <code>dim</code>-length array (not matrix) equal to <code>[+1, -1, ..., -1]</code></li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="p4s_from_ptyphims">p4s_from_ptyphims</h4>
+<pre><code class="python">energyflow.p4s_from_ptyphims(ptyphim)
+</code></pre>
+
+<p>Convert transverse momenta $p_T$, rapidities $y$, azimuths $\phi$, and masses $m$ to four-vectors</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 4)</code> array of <code>[pT, y, phi, m]</code> for each particle.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.</li>
 </ul>
 </li>
 </ul>
