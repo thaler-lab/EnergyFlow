@@ -18,7 +18,9 @@ __all__ = [
     'p4s_from_ptyphis',
     'pts_from_p4s',
     'ys_from_p4s',
-    'phis_from_p4s'
+    'phis_from_p4s',
+    'ms_from_p4s',
+    'ptyphims_from_p4s'
 ]
 
 ###############################################################################
@@ -131,3 +133,20 @@ def phis_from_p4s(p4s):
     phis = np.arctan2(p4s[:,2], p4s[:,1])
     phis[phis<0] += 2*np.pi
     return phis
+
+def ms_from_p4s(p4s):
+
+    return np.sqrt(np.abs(p4s[:,0]**2 - p4s[:,1]**2 - p4s[:,2]**2 - p4s[:,3]**2))
+
+def ptyphims_from_p4s(p4s, keep_shape=True):
+    pts = pts_from_p4s(p4s)
+    mask = pts > 0.
+    ys = ys_from_p4s(p4s[mask])
+    phis = phis_from_p4s(p4s[mask])
+    ms = ms_from_p4s(p4s[mask])
+    ptyphims = np.vstack((pts[mask], ys, phis, ms)).T
+    if keep_shape:
+        num_zeros = len(p4s) - np.count_nonzero(mask)
+        if num_zeros > 0:
+            ptyphims = np.vstack((ptyphims, np.zeros((num_zeros, 4))))
+    return ptyphims

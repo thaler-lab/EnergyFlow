@@ -22,3 +22,11 @@ bin/
 *.nb
 .pytest_cache
 py2/
+.dropbox
+*sublime*
+taco
+Moments
+Networks
+Polynomials
+Icon[
+]
