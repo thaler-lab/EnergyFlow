@@ -132,4 +132,4 @@ def test_efpms(measure, kappa, M):
     event = ef.gen_random_events(1, M)
     r1 = s1.compute(event)
     r2 = s2.compute(event)
-    assert epsilon_percent(r1, r2, 10**-12)
+    assert epsilon_percent(r1, r2, 10**-10)
