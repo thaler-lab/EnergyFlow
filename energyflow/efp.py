@@ -65,7 +65,7 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadrdot', beta=2, kappa=1, normed=True, check_input=True, 
+    def __init__(self, edges, measure='hadrdot', beta=1, kappa=1, normed=True, check_input=True, 
                               ve_alg='numpy', np_optimize='greedy', M_thresh=None):
         """
         **Arguments**
@@ -235,7 +235,7 @@ class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on events."""
 
-    # EFPSet(*args, filename=None, measure='hadrdot', beta=2, kappa=1, normed=True, 
+    # EFPSet(*args, filename=None, measure='hadrdot', beta=1, kappa=1, normed=True, 
     #        check_input=True, verbose=False)
     def __init__(self, *args, **kwargs):
         """
@@ -280,7 +280,7 @@ class EFPSet(EFPBase):
 
         default_kwargs = {'filename': None,
                           'measure': 'hadrdot',
-                          'beta': 2,
+                          'beta': 1,
                           'kappa': 1,
                           'normed': True,
                           'check_input': True,

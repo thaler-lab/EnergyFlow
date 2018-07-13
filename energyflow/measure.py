@@ -52,7 +52,6 @@ $$z_i = E_{i}^{\\kappa},
 # to the measure name in order to perform the calculation in $O(M)$ with
 # [Energy Flow Moments](/docs/efm).
 
-
 from __future__ import absolute_import, division
 
 from abc import ABCMeta, abstractmethod
@@ -72,9 +71,9 @@ pf_marker = 'pf'
 # theta_ij**2 = (y_i - y_j)**2 + (phi_i - phi_j)**2
 def thetas2_from_yphis(yphis):
     X = yphis[:,np.newaxis] - yphis[np.newaxis,:]
-    X[:,:,0] **= 2
-    X[:,:,1] = (np.pi - np.abs(np.abs(X[:,:,1]) - np.pi))**2
-    return X[:,:,0] + X[:,:,1]
+    X[...,0] **= 2
+    X[...,1] = (np.pi - np.abs(np.abs(X[...,1]) - np.pi))**2
+    return X[...,0] + X[...,1]
 
 # get theta_ij**2 matrix from four-vectors using combination of above functions
 def thetas2_from_p4s(p4s):
@@ -108,7 +107,7 @@ class Measure:
         else:
             return super(Measure, cls).__new__(cls)
 
-    def __init__(self, measure, beta=2, kappa=1, normed=True, check_input=True):
+    def __init__(self, measure, beta=1, kappa=1, normed=True, check_input=True):
         """Processes inputs according to the measure choice.
 
         **Arguments**
