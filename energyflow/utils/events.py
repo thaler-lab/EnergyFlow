@@ -20,6 +20,10 @@ __all__ = [
     'mass2'
 ]
 
+###############################################################################
+# event functions
+###############################################################################
+
 def gen_massless_phase_space(nevents, nparticles, energy=1):
     """Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm
     for uniformly sampling massless M-body phase space for any center of mass energies.
@@ -163,12 +167,12 @@ def mass2(events):
     - **events** : _numpy.ndarray_
         - Events as an (`nevents`, `M`, `dim`) array of dim-vectors `[p0, p1, ..., pdim-1]` for each particle.
 
-
     **Returns**
 
     - _numpy.ndarray_
         - An (`nevents`, `M`) array of calculated particle masses.
     """
 
+    events = np.atleast_2d(events)
     return events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1)
     
