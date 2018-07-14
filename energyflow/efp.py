@@ -138,9 +138,6 @@ class EFP(EFPBase):
             zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
             return self.efpelem.efp_compute(zs, thetas_dict)
 
-    def batch_compute(self, events, n_jobs=-1):
-        return super(EFP, self).batch_compute(events, n_jobs)
-
     #===========
     # properties
     #===========

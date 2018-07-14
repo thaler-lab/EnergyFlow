@@ -78,9 +78,7 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
     ps[:,:,1:] = xs[:,np.newaxis]*(qs[:,:,1:] + 
                                               bs*qs[:,:,0,np.newaxis] + 
                                               As*bdotq[:,:,np.newaxis]*bs)
-    if nevents == 1:
-        return ps[0]
-    return ps
+    return np.squeeze(ps)
 
 
 def gen_random_events(nevents, nparticles, dim=4, mass=0):
@@ -114,9 +112,7 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
     spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
     events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
-    if nevents == 1:
-        return events[0]
-    return events
+    return np.squeeze(events)
 
 def gen_random_events_massless_com(nevents, nparticles, dim=4):
     """Generate random events with a given number of massless particles

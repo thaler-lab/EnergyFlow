@@ -166,7 +166,7 @@
 <h3 id="igraph">iGraph</h3>
 <p>EnergyFlow relies on <a href="http://igraph.org/redirect.html">iGraph</a> for generation of multigraphs. This is not required if using the provided graphs suits your needs. If you wish to generate your own graphs, make sure that iGraph is importable.</p>
 <h3 id="numpy">NumPy</h3>
-<p>Since EnergyFlow relies on <code>numpy.einsum</code> to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if <code>einsum</code> changes. NumPy <code>1.14.0</code> changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. This means that computations are faster on larger tensors but may be slower on smaller tensors.</p>
+<p>Since EnergyFlow relies on <code>numpy.einsum</code> to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if <code>einsum</code> changes. NumPy <code>1.14.0</code> changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. This means that computations are faster on larger tensors but may be slower on smaller tensors. EnergyFlow currently uses only <code>c_einsum</code> because it was found to be substantially faster for typical pp-jet applications.</p>
               
             </div>
           </div>

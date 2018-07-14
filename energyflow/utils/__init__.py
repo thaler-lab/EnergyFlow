@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from functools import wraps
 import os
+import sys
 import time
 
 import numpy as np
@@ -13,6 +14,39 @@ from . import particles
 from .events import *
 from .graph import *
 from .particles import *
+
+__all__ = events.__all__ + particles.__all__
+
+py_version = sys.version_info[:2]
+sysname = os.uname()[0]
+
+# get access to the data directory of the installed package and the default efp file
+ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
+default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_10.npz')
+default_M_thresh_file = os.path.join(ef_data_dir, 'M_threshs_d_le_10.npy')
+
+# handle pickling methods in python 2
+if py_version[0] == 2:
+    import copy_reg
+    import types
+
+    def pickle_method(method):
+        func_name = method.__name__
+        obj = method.__self__
+        cls = obj.__class__
+        return unpickle_method, (func_name, obj, cls)
+
+    def unpickle_method(func_name, obj, cls):
+        for cls in cls.__mro__:
+            try:
+                func = cls.__dict__[func_name]
+            except KeyError:
+                pass
+            else:
+                break
+        return func.__get__(obj, cls)
+
+    copy_reg.pickle(types.MethodType, pickle_method, unpickle_method)
 
 # concatenates con. and disc. specs along axis 0, handling empty disc. specs
 def concat_specs(c_specs, d_specs):
@@ -52,11 +86,3 @@ def timing(obj, func):
         obj.times.append(te - ts)
         return r
     return decorated
-
-# get access to the data directory of the installed package and the default efp file
-ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
-default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_10.npz')
-default_M_thresh_file = os.path.join(ef_data_dir, 'M_threshs_d_le_10.npy')
-
-# only include events functions in top level module
-__all__ = events.__all__ + particles.__all__

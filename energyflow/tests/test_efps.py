@@ -1,14 +1,14 @@
 from __future__ import absolute_import
 
 import os
+import sys
 
 import numpy as np
 import pytest
 
 import energyflow as ef
+from energyflow.utils import sysname
 from test_utils import epsilon_percent, epsilon_diff
-
-sysname = os.uname().sysname
 
 def test_has_efp():
     assert ef.EFP

@@ -5,18 +5,15 @@ from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
 import multiprocessing
-import os
 
 import numpy as np
 from six import add_metaclass
 
 from energyflow.algorithms import einsum
 from energyflow.measure import Measure
-from energyflow.utils import timing, transfer
+from energyflow.utils import py_version, sysname, timing, transfer
 
 __all__ = ['EFPBase', 'EFPElem']
-
-sysname = os.uname()[0]
 
 
 ###############################################################################
@@ -86,9 +83,6 @@ class EFPBase:
     def _batch_compute_func(self, event):
         return self.compute(event, batch_call=True)
 
-    #def _compute_func_ps(self, args):
-    #    return self.compute(zs=args[0], ps=args[1])
-
     @abstractmethod
     def compute(self, *args, **kwargs):
         """Computes the value(s) of the EFP(s) on a single event.
@@ -115,7 +109,6 @@ class EFPBase:
 
         pass
 
-    @abstractmethod
     def batch_compute(self, events, n_jobs=-1):
         """Computes the value(s) of the EFP(s) on several events.
 
@@ -145,8 +138,13 @@ class EFPBase:
                 self.n_jobs = 4 # choose reasonable value
 
         # setup processor pool
-        with multiprocessing.Pool(self.n_jobs) as pool:
-            chunksize = max(len(events)//self.n_jobs, 1)
+        chunksize = max(len(events)//self.n_jobs, 1)
+        if py_version[0] == 3:
+            with multiprocessing.Pool(self.n_jobs) as pool:
+                results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
+        # Pool is not a context manager in python 2
+        else:
+            pool = multiprocessing.Pool(self.n_jobs)
             results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
 
         return results
