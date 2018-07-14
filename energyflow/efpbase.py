@@ -1,6 +1,6 @@
 """Base and helper classes for EFPs."""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
