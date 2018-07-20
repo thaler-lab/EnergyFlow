@@ -37,7 +37,7 @@ if py_version[0] == 2:
         return unpickle_method, (func_name, obj, cls)
 
     def unpickle_method(func_name, obj, cls):
-        for cls in cls.__mro__:
+        for cls in cls.mro():
             try:
                 func = cls.__dict__[func_name]
             except KeyError:

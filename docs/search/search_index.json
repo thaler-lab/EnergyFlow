@@ -2,12 +2,12 @@
     "docs": [
         {
             "location": "/",
-            "text": "Welcome to EnergyFlow\n\n\nEnergyFlow is a Python package for computing Energy Flow Polynomials (EFPs), a collection of jet substructure observables which form a complete, linear basis of IRC-safe observables. The source code can be found on \nGitHub\n.\n\n\nThe current version is \n0.9.0\n. We recommend that you use the most up-to-date version as things may change quickly. As of version \n0.7.0\n, tests have been written covering the majority of the EFP code.\n\n\nGet started by \ninstalling EnergyFlow\n and \nchecking out the demo\n!\n\n\nReferences\n\n\n[1] P.T. Komiske, E.M. Metodiev, and J. Thaler, \nEnergy Flow Polynomials: A complete linear basis for jet substructure\n, \nJHEP \n04\n (2018) 013\n [\n1712.07124\n].",
+            "text": "Welcome to EnergyFlow\n\n\nEnergyFlow is a Python package for computing Energy Flow Polynomials (EFPs), a collection of jet substructure observables which form a complete, linear basis of IRC-safe observables. The source code can be found on \nGitHub\n.\n\n\nThe current version is \n0.9.2\n. We recommend that you use the most up-to-date version as things may change quickly. As of version \n0.7.0\n, tests have been written covering the majority of the EFP code.\n\n\nGet started by \ninstalling EnergyFlow\n and \nchecking out the demo\n!\n\n\nReferences\n\n\n[1] P.T. Komiske, E.M. Metodiev, and J. Thaler, \nEnergy Flow Polynomials: A complete linear basis for jet substructure\n, \nJHEP \n04\n (2018) 013\n [\n1712.07124\n].",
             "title": "Home"
         },
         {
             "location": "/#welcome-to-energyflow",
-            "text": "EnergyFlow is a Python package for computing Energy Flow Polynomials (EFPs), a collection of jet substructure observables which form a complete, linear basis of IRC-safe observables. The source code can be found on  GitHub .  The current version is  0.9.0 . We recommend that you use the most up-to-date version as things may change quickly. As of version  0.7.0 , tests have been written covering the majority of the EFP code.  Get started by  installing EnergyFlow  and  checking out the demo !",
+            "text": "EnergyFlow is a Python package for computing Energy Flow Polynomials (EFPs), a collection of jet substructure observables which form a complete, linear basis of IRC-safe observables. The source code can be found on  GitHub .  The current version is  0.9.2 . We recommend that you use the most up-to-date version as things may change quickly. As of version  0.7.0 , tests have been written covering the majority of the EFP code.  Get started by  installing EnergyFlow  and  checking out the demo !",
             "title": "Welcome to EnergyFlow"
         },
         {
