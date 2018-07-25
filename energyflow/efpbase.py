@@ -22,21 +22,22 @@ __all__ = ['EFPBase', 'EFPElem']
 @add_metaclass(ABCMeta)
 class EFPBase:
 
-    def __init__(self, measure, beta, kappa, normed, check_input):
+    def __init__(self, measure, beta, kappa, normed, coords, check_input):
 
-        self.use_efpm_hybrid = 'efpm' in measure
-        measure = measure.replace('efpm', 'efm')
+        if 'efpm' in measure:
+            raise ValueError('\'efpm\' no longer supported')
+
         self.use_efms = 'efm' in measure
 
         # store measure object
-        self._measure = Measure(measure, beta, kappa, normed, check_input)
+        self._measure = self._efp_measure = Measure(measure, beta, kappa, normed, coords, check_input)
 
         # store additional EFP measure object if using EFMs
-        if self.use_efpm_hybrid:
-            efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
-            self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
-        else:
-            self._efp_measure = self._measure
+        #if self.use_efpm_hybrid:
+        #    efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
+        #    self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
+        #else:
+        #    self._efp_measure = self._measure
 
     def get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:

@@ -48,14 +48,15 @@ def flat_metric(dim):
         return long_metric[:dim]
     return np.asarray([1.] + [-1.]*(dim-1))
 
-def p4s_from_ptyphims(ptyphim):
+def p4s_from_ptyphims(ptyphims):
     """Calculate Euclidean four-vectors from transverse momentum, rapidity, azimuthal angle,
-    and mass per input.
+    and (optionally) mass for each input.
     
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M, 4)` of `[pT, y, phi, m]` for each particle. A single 
+        - An array with shape `(M, 4)` of `[pT, y, phi, m]` for each particle. An array with 
+        shape `(M, 3)` is also accepted where the masses are taken to be zero. A single 
         particle is also accepted.
 
     **Returns**
@@ -65,7 +66,15 @@ def p4s_from_ptyphims(ptyphim):
         If a single particle was given as input, a single four-vector will be returned.
     """
 
-    pts, ys, phis, ms = [np.atleast_2d(ptyphim)[:,i] for i in range(4)]
+    # ensure a two-dimensional array
+    ptyphims = np.atleast_2d(ptyphims)
+
+    # handle case of no masses
+    if ptyphims.shape[1] == 3:
+        return p4s_from_ptyphis(ptyphims)
+
+    # handle regular case
+    pts, ys, phis, ms = [ptyphims[:,i] for i in range(4)]
     Ets = np.sqrt(pts**2 + ms**2)
     p4s = np.vstack([Ets*np.cosh(ys), pts*np.cos(phis), pts*np.sin(phis), Ets*np.sinh(ys)]).T
     return np.squeeze(p4s)

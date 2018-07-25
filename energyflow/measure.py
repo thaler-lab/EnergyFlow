@@ -52,7 +52,7 @@ $$z_i = E_{i}^{\\kappa},
 # to the measure name in order to perform the calculation in $O(M)$ with
 # [Energy Flow Moments](/docs/efm).
 
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod
 
@@ -107,7 +107,7 @@ class Measure:
         else:
             return super(Measure, cls).__new__(cls)
 
-    def __init__(self, measure, beta=1, kappa=1, normed=True, check_input=True):
+    def __init__(self, measure, beta=1, kappa=1, normed=True, coords=None, check_input=True):
         """Processes inputs according to the measure choice.
 
         **Arguments**
@@ -130,11 +130,15 @@ class Measure:
             - Whether to check the type of input each time or assume the first input type.
         """
 
-        transfer(self, locals(), ['measure', 'kappa', 'normed', 'check_input'])
+        transfer(self, locals(), ['measure', 'kappa', 'normed', 'coords', 'check_input'])
+
         self.beta = float(beta)
+        self.half_beta = self.beta/2
         assert self.beta > 0
 
-        self.half_beta = self.beta/2
+        if self.coords not in [None, 'epxpypz', 'ptyphim']:
+            raise ValueError('coords must be one of epxpypz, ptyphim, or None')
+
         self.need_meas_func = True
 
     def evaluate(self, arg):
@@ -208,9 +212,14 @@ class HadronicMeasure(Measure):
     def __init__(self, *args, **kwargs):
         super(HadronicMeasure, self).__init__(*args, **kwargs)
         self._set_k_func()
+        if self.coords is None:
+            self.coords = 'ptyphim'
+        self.epxpypz = self.coords == 'epxpypz'
 
     def array_handler(self, dim):
         if dim == 3:
+            if self.epxpypz:
+                raise ValueError('epxpypz coords require second dimension of arg to be 4')
             return self.ndarray_dim3
         elif dim == 4:
             return self.ndarray_dim4
@@ -246,10 +255,15 @@ class EEMeasure(Measure):
     def __init__(self, *args, **kwargs):
         super(EEMeasure, self).__init__(*args, **kwargs)
         self._set_k_func()
+        if self.coords is None:
+            self.coords = 'epxpypz'
+        self.epxpypz = self.coords == 'epxpypz'
 
     def array_handler(self, dim):
         if dim < 2:
             raise ValueError('second dimension of arg must be >= 2')
+        if not self.epxpypz and dim not in [3, 4]:
+            raise ValueError('ptyphim coords only work with inputs of dimension 3 or 4')
         self.metric = flat_metric(dim)
         return self.ndarray_dim_arb
 
@@ -281,7 +295,10 @@ class HadronicDefaultMeasure(HadronicMeasure):
         return arg[:,0]**self.kappa, thetas2_from_yphis(arg[:,(1,2)])**self.half_beta
 
     def ndarray_dim4(self, arg):
-        return pts_from_p4s(arg)**self.kappa, thetas2_from_p4s(arg)**self.half_beta
+        if self.epxpypz:
+            return pts_from_p4s(arg)**self.kappa, thetas2_from_p4s(arg)**self.half_beta
+        else:
+            return self.ndarray_dim3(arg[:,:3])
 
     def pseudojet(self, arg):
         pts, constituents = super(HadronicDefaultMeasure, self).pseudojet(arg)
@@ -302,7 +319,10 @@ class HadronicDotMeasure(HadronicMeasure):
         return pts, self._ps_dot(p4s)**self.half_beta
 
     def ndarray_dim4(self, arg):
-        pts, p4s = self._k_func(pts_from_p4s(arg), arg, self.kappa)
+        if self.epxpypz:
+            pts, p4s = self._k_func(pts_from_p4s(arg), arg, self.kappa)
+        else:
+            pts, p4s = self._k_func(arg[:,0], p4s_from_ptyphims(arg), self.kappa)
         return pts, self._ps_dot(p4s)**self.half_beta
 
     def pseudojet(self, arg):
@@ -323,7 +343,10 @@ class HadronicEFMMeasure(HadronicMeasure):
         return self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
 
     def ndarray_dim4(self, arg):
-        return self._k_func(pts_from_p4s(arg), arg, self.kappa)
+        if self.epxpypz:
+            return self._k_func(pts_from_p4s(arg), arg, self.kappa)
+        else:
+            return self._k_func(arg[:,0], p4s_from_ptyphims(arg), self.kappa)
 
     def pseudojet(self, arg):
         pts, constituents = super(HadronicEFMMeasure, self).pseudojet(arg)
@@ -339,6 +362,8 @@ class EEDefaultMeasure(EEMeasure):
     subslicing = None
 
     def ndarray_dim_arb(self, arg):
+        if not self.epxpypz:
+            arg = p4s_from_ptyphims(arg)
         Es, ps = self._k_func(arg[:,0], arg, self.kappa)
         return Es, self._ps_dot(ps)**self.half_beta
 
@@ -357,6 +382,8 @@ class EEEFMMeasure(EEMeasure):
     subslicing = True
 
     def ndarray_dim_arb(self, arg):
+        if not self.epxpypz:
+            arg = p4s_from_ptyphims(arg)
         return self._k_func(arg[:,0], arg, self.kappa)
 
     def pseudojet(self, arg):

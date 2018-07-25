@@ -24,7 +24,7 @@ from energyflow.algorithms import VariableElimination, einsum_path
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.efpbase import *
 from energyflow.gen import Generator
-from energyflow.utils import concat_specs, default_efp_file, default_M_thresh_file
+from energyflow.utils import concat_specs, default_efp_file
 from energyflow.utils.graph import graph_union
 
 __all__ = ['EFP', 'EFPSet']
@@ -38,8 +38,6 @@ comp_map = {'>':  '__gt__',
             '<=': '__le__',
             '==': '__eq__', 
             '!=': '__ne__'}
-
-M_threshs = {2: 75, 3: 50}
 
 # applies comprison comp of obj on val
 def explicit_comp(obj, comp, val):
@@ -65,8 +63,8 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadrdot', beta=1, kappa=1, normed=True, check_input=True, 
-                              ve_alg='numpy', np_optimize='greedy', M_thresh=None):
+    def __init__(self, edges, measure='hadrdot', beta=1, kappa=1, normed=True, coords=None, 
+                              check_input=True, ve_alg='numpy', np_optimize='greedy'):
         """
         **Arguments**
 
@@ -101,10 +99,10 @@ class EFP(EFPBase):
         if self.use_efms:
             efm_einstr, efm_spec = efp2efms(self.graph)
             self._efmset = EFMSet(efm_spec, subslicing=self.subslicing)
-            efm_einpath = einsum_path(efm_einstr, 
+            efm_einpath = einsum_path(efm_einstr,
                                       *[np.empty([4]*sum(s)) for s in efm_spec],
                                       optimize=np_optimize)[0]
-            self.efpelem = EFPElem(self.graph, efm_einstr=efm_einstr, efm_einpath=efm_einpath, 
+            self.efpelem = EFPElem(self.graph, efm_einstr=efm_einstr, efm_einpath=efm_einpath,
                                                efm_spec=efm_spec)
 
         # setup ve for standard efp compute
@@ -113,7 +111,6 @@ class EFP(EFPBase):
 
         # store values in efpelem
         self.efpelem.einstr, self.efpelem.einpath = self.ve.einspecs()
-        self.efpelem.M_thresh = M_threshs.get(self.c, 0)
             
     #===============
     # public methods
@@ -123,14 +120,14 @@ class EFP(EFPBase):
     def compute(self, event=None, zs=None, thetas=None, ps=None, **kwargs):
 
         # determine if we use EFMs
-        if self.use_efpm_hybrid:
-            if event is not None:
-                M = len(event)
-            elif zs is not None:
-                M = len(zs)
-            else:
-                raise TypeError('if event is None then zs cannot also be None')
-            self.use_efms = self.efpelem.determine_efm_compute(M)
+        #if self.use_efpm_hybrid:
+        #    if event is not None:
+        #        M = len(event)
+        #    elif zs is not None:
+        #        M = len(zs)
+        #    else:
+        #        raise TypeError('if event is None then zs cannot also be None')
+        #    self.use_efms = self.efpelem.determine_efm_compute(M)
 
         if self.use_efms:
             return self.efpelem.efm_compute(self.construct_efms(event, zs, ps, self.efmset))
@@ -280,9 +277,10 @@ class EFPSet(EFPBase):
                           'beta': 1,
                           'kappa': 1,
                           'normed': True,
+                          'coords': None,
                           'check_input': True,
                           'verbose': False}
-        measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'check_input']
+        measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'coords', 'check_input']
 
         # process arguments
         for k,v in default_kwargs.items():
@@ -304,15 +302,11 @@ class EFPSet(EFPBase):
                                                          'c_specs','disc_specs','disc_formulae']
             gen = {attr: getattr(args[0], attr) for attr in constructor_attrs}
             args = args[1:]
-            self.use_efpm_hybrid = False
         elif self.filename is not None:
             self.filename += '.npz' if not self.filename.endswith('.npz') else ''
             gen = np.load(self.filename)
-            self.use_efpm_hybrid = False
         else:
             gen = np.load(default_efp_file)
-            M_threshs = np.load(default_M_thresh_file)
-            self.use_efpm_hybrid &= True
 
         # handle not having efm generation
         if not gen['gen_efms'] and self.use_efms:
@@ -341,8 +335,7 @@ class EFPSet(EFPBase):
 
         # make EFPElem list
         z = zip(*([gen[v] for v in elemvs] + [orig_c_specs[:,self.k_ind]] +
-                  [gen[v] if self.use_efms else repeat(None) for v in efmvs] +
-                  ([M_threshs] if self.use_efpm_hybrid else [repeat(0)])))
+                  [gen[v] if self.use_efms else repeat(None) for v in efmvs]))
         self.efpelems = [EFPElem(*args) for m,args in enumerate(z) if c_mask[m]]
 
         # setup EFMs
@@ -430,40 +423,40 @@ class EFPSet(EFPBase):
 
     # compute(event=None, zs=None, thetas=None, ps=None)
     def compute(self, event=None, zs=None, thetas=None, ps=None, batch_call=False):
-        if self.use_efpm_hybrid:
+        #if self.use_efpm_hybrid:
+        #
+        #    # get M
+        #    if event is not None:
+        #        M = len(event)
+        #    elif zs is not None:
+        #        M = len(zs)
+        #    else:
+        #        raise TypeError('if event is None then zs cannot also be None')
+        #
+        #    # determine weight_set and efm_specs depending on how each efpelem computes
+        #    self.__weight_set, efm_specs = set(), set()
+        #    for efpelem in self.efpelems:
+        #        if efpelem.determine_efm_compute(M):
+        #            efm_specs |= efpelem.efm_spec_set
+        #        else:
+        #            self.__weight_set |= efpelem.weight_set
+        #
+        #    # get EFP ingredients, if needed
+        #    if self.__weight_set:
+        #        zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
+        #    else:
+        #        thetas_dict = None
+        #
+        #    # get EFM ingredients, if needed
+        #    if efm_specs:
+        #        efmset = self.efmsets[vmax_from_specs(efm_specs)]
+        #        efms_dict = self.construct_efms(event, zs, ps, efmset)
+        #    else:
+        #        efms_dict = None
+        #
+        #    results = [efpelem.compute(zs, thetas_dict, efms_dict) for efpelem in self.efpelems]
 
-            # get M
-            if event is not None:
-                M = len(event)
-            elif zs is not None:
-                M = len(zs)
-            else:
-                raise TypeError('if event is None then zs cannot also be None')
-
-            # determine weight_set and efm_specs depending on how each efpelem computes
-            self.__weight_set, efm_specs = set(), set()
-            for efpelem in self.efpelems:
-                if efpelem.determine_efm_compute(M):
-                    efm_specs |= efpelem.efm_spec_set
-                else:
-                    self.__weight_set |= efpelem.weight_set
-
-            # get EFP ingredients, if needed
-            if self.__weight_set:
-                zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
-            else:
-                thetas_dict = None
-
-            # get EFM ingredients, if needed
-            if efm_specs:
-                efmset = self.efmsets[vmax_from_specs(efm_specs)]
-                efms_dict = self.construct_efms(event, zs, ps, efmset)
-            else:
-                efms_dict = None
-
-            results = [efpelem.compute(zs, thetas_dict, efms_dict) for efpelem in self.efpelems]
-
-        elif self.use_efms:
+        if self.use_efms:
             efms_dict = self.construct_efms(event, zs, ps, self.efmsets[self.vmax])
             results = [efpelem.efm_compute(efms_dict) for efpelem in self.efpelems]
         else:
