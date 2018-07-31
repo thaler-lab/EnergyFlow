@@ -212,15 +212,16 @@ four-momenta and $(p_T,y,\phi,[m])$.</p>
 </ul>
 <hr />
 <h4 id="p4s_from_ptyphims">p4s_from_ptyphims</h4>
-<pre><code class="python">energyflow.p4s_from_ptyphims(ptyphim)
+<pre><code class="python">energyflow.p4s_from_ptyphims(ptyphims)
 </code></pre>
 
 <p>Calculate Euclidean four-vectors from transverse momentum, rapidity, azimuthal angle,
-and mass per input.</p>
+and (optionally) mass for each input.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An array with shape <code>(M, 4)</code> of <code>[pT, y, phi, m]</code> for each particle. A single 
+<li>An array with shape <code>(M, 4)</code> of <code>[pT, y, phi, m]</code> for each particle. An array with 
+shape <code>(M, 3)</code> is also accepted where the masses are taken to be zero. A single 
 particle is also accepted.</li>
 </ul>
 </li>
