@@ -32,6 +32,7 @@ __all__ = ['EFP', 'EFPSet']
 ###############################################################################
 # EFP helpers
 ###############################################################################
+
 comp_map = {'>':  '__gt__', 
             '<':  '__lt__', 
             '>=': '__ge__', 
@@ -59,6 +60,7 @@ _sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 ###############################################################################
 # EFP
 ###############################################################################
+
 class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
@@ -225,6 +227,7 @@ class EFP(EFPBase):
 ###############################################################################
 # EFPSet
 ###############################################################################
+
 class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on events."""
@@ -288,6 +291,7 @@ class EFPSet(EFPBase):
                 kwargs[k] = v
             if k not in measure_kwargs:
                 setattr(self, k, kwargs.pop(k))
+
         kwargs_check('__init__', kwargs, allowed=measure_kwargs)
 
         # initialize EFPBase

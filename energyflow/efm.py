@@ -6,7 +6,6 @@ from collections import OrderedDict
 from operator import itemgetter
 
 import numpy as np
-from numpy.core.multiarray import c_einsum
 
 from energyflow.measure import flat_metric
 from energyflow.utils import timing
@@ -90,6 +89,7 @@ def efp2efms(graph):
 ###############################################################################
 # EFM
 ###############################################################################
+
 class EFM:
 
     """"""
@@ -136,7 +136,10 @@ class EFM:
             self.construct = self.subslice_construct
 
     def raise_lower(self, tensor):
-        return c_einsum(self.rl_einstr, tensor, *[flat_metric(len(tensor))]*self.rl_diff)
+
+        # having optimize=False immediately turns this into pure c_einsum
+        return np.einsum(self.rl_einstr, tensor, *[flat_metric(len(tensor))]*self.rl_diff, 
+                         optimize=False)
 
     def raw_construct(self, zsphats):
         zs, phats = zsphats
@@ -175,6 +178,7 @@ class EFM:
 ###############################################################################
 # EFMSet
 ###############################################################################
+
 class EFMSet:
 
     """"""

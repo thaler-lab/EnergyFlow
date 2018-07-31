@@ -6,6 +6,8 @@ from __future__ import absolute_import
 from . import algorithms
 from . import utils
 
+# architectures is not imported
+
 # import individual files
 from . import efm
 from . import efp

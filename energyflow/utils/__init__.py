@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from functools import wraps
+from itertools import repeat
 import os
 import sys
 import time
@@ -54,26 +55,23 @@ def concat_specs(c_specs, d_specs):
     else:
         return c_specs
 
-# timing meta-decorator
-def timing(obj, repeat, number):
-    def decorator(func):
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            def test():
-                func(*args, **kwargs)
-            obj.times.append(timeit.repeat(test, repeat=repeat, number=number))
-            return func(*args, **kwargs)
-        return decorated
-    return decorator
-
-# transfers attrs from obj2 (dict or object) to obj1
-def transfer(obj1, obj2, attrs):
-    if isinstance(obj2, dict):
-        for attr in attrs:
-            setattr(obj1, attr, obj2[attr])
+# return argument if iterable else make repeat generator
+def iter_or_rep(arg):
+    if hasattr(arg, '__getitem__'):
+        if len(arg) == 1:
+            return repeat(arg[0])
+        else:
+            return arg
     else:
-        for attr in attrs:
-            setattr(obj1, attr, getattr(obj2, attr))
+        return repeat(arg)
+
+# check for sklearn
+def sklearn_import():
+    try:
+        import sklearn
+    except:
+        sklearn = False
+    return sklearn
 
 # timing meta-decorator
 def timing(obj, func):
@@ -85,3 +83,12 @@ def timing(obj, func):
         obj.times.append(te - ts)
         return r
     return decorated
+
+# transfers attrs from obj2 (dict or object) to obj1
+def transfer(obj1, obj2, attrs):
+    if isinstance(obj2, dict):
+        for attr in attrs:
+            setattr(obj1, attr, obj2[attr])
+    else:
+        for attr in attrs:
+            setattr(obj1, attr, getattr(obj2, attr))
