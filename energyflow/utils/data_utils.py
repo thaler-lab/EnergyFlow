@@ -63,42 +63,6 @@ from six.moves.urllib.error import HTTPError, URLError
 __all__ = ['data_split', 'get_examples', 'get_file', 'pixelate', 'remap_pids', 
            'standardize', 'to_categorical', 'zero_center']
 
-# PDGid to isCharged dictionary
-pid2abschg_mapping = {22: 0,             # photon
-                      211: 1, -211: 1,   # pi+-
-                      321: 1, -321: 1,   # K+-
-                      130: 0,            # K-long
-                      2112: 0, -2112: 0, # neutron, anti-neutron
-                      2212: 1, -2212: 1, # proton, anti-proton
-                      11: 1, -11: 1,     # electron, positron
-                      13: 1, -13: 1}     # muon, anti-muon
-
-def get_examples(which='all', path='~/.energyflow', verbose=True):
-
-    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 'dnn_example.py'}
-    if which == 'all':
-        examples = all_examples
-    else:
-        if not isinstance(which, (tuple, list)):
-            which = [which]
-        examples = all_examples.intersection(which)
-
-    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
-    if verbose:
-        print()
-        print('Downloading examples to {}:'.format(os.path.join(os.path.expanduser(path), 'examples')))
-    for example in examples:
-        fpath = get_file(example, 
-                 url=base_url+example,
-                 cache_dir=os.path.expanduser(path),
-                 cache_subdir='examples')
-
-        if verbose:
-            print('    '+example)
-
-    if verbose:
-        print()
-
 def data_split(*args, **kwargs):
     """A function to split an arbitrary number of arrays into train, 
     validation, and test sets. If val_frac = 0, then we don't split any 
@@ -142,6 +106,33 @@ def data_split(*args, **kwargs):
 
     # return list of new datasets
     return [arg[mask] for arg in args for mask in masks]
+
+def get_examples(which='all', path='~/.energyflow'):
+
+    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 'dnn_example.py'}
+    if which == 'all':
+        examples = all_examples
+    else:
+        if not isinstance(which, (tuple, list)):
+            which = [which]
+        examples = all_examples.intersection(which)
+
+    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
+    for example in examples:
+        fpath = get_file(example, 
+                 url=base_url+example,
+                 cache_dir=os.path.expanduser(path),
+                 cache_subdir='examples')
+
+# PDGid to isCharged dictionary
+pid2abschg_mapping = {22: 0,             # photon
+                      211: 1, -211: 1,   # pi+-
+                      321: 1, -321: 1,   # K+-
+                      130: 0,            # K-long
+                      2112: 0, -2112: 0, # neutron, anti-neutron
+                      2212: 1, -2212: 1, # proton, anti-proton
+                      11: 1, -11: 1,     # electron, positron
+                      13: 1, -13: 1}     # muon, anti-muon
 
 def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, charged_counts_only=False, norm=True):
     """A function for creating a jet image from a list of particles.
@@ -432,8 +423,8 @@ def get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=N
 
     # determine if file needs to be downloaded
     download = False
-    if os.path.exists(fpath) and file_hash is not None:
-        if not _validate_file(fpath, file_hash, 'sha256'):
+    if os.path.exists(fpath):
+        if file_hash is not None and not _validate_file(fpath, file_hash, 'sha256'):
             print('local file hash does not match so we will redownload')
             download = True
     else:
@@ -455,6 +446,7 @@ def get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=N
                 os.remove(fpath)
             raise
 
-        assert _validate_file(fpath, file_hash, 'sha256')
+        if file_hash is not None:
+            assert _validate_file(fpath, file_hash, 'sha256')
 
     return fpath
