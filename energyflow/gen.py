@@ -1,4 +1,4 @@
-"""Implementation of EFP/EFM Generator class."""
+"""Implementation of EFP Generator class."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -7,7 +7,6 @@ import itertools
 import numpy as np
 
 from energyflow.algorithms import *
-from energyflow.efm import efp2efms
 from energyflow.efpbase import EFPElem
 from energyflow.utils import concat_specs, default_efp_file, transfer
 from energyflow.utils.graph_utils import *
@@ -32,8 +31,7 @@ class Generator(object):
     """Generates non-isomorphic multigraphs according to provided specifications."""
 
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
-                       filename=None, gen_efms=True,
-                       ve_alg='numpy', np_optimize='greedy', verbose=False):
+                       filename=None, ve_alg='numpy', np_optimize='greedy', verbose=False):
         """
         Doing a fresh generation of connected multigraphs (`filename=None`) requires
         that `igraph` be installed.
@@ -62,8 +60,6 @@ class Generator(object):
             value `filename='default'` means to read in graphs from the default file. This
             is useful when various disconnected graph parameters are to be varied since the 
             generation of large simple graphs is the most computationlly intensive part.
-        - **gen_efms** : _bool_
-            - Controls whether EFM information is generated.
         - **ve_alg** : {`'numpy'`, `'ef'`}
             - Which variable elimination algorithm to use.
         - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
@@ -82,11 +78,10 @@ class Generator(object):
             # set options
             self.ve_alg = ve_alg
             self.np_optimize = np_optimize
-            self.gen_efms = gen_efms
 
             # get prime generator instance
             self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
-                                         self.ve_alg, self.np_optimize, self.gen_efms)
+                                         self.ve_alg, self.np_optimize)
             self.cols = self.pr_gen.cols
 
             # store lists of important quantities
@@ -121,7 +116,6 @@ class Generator(object):
             self.np_optimize = file['np_optimize']
 
             # get lists of important quantities
-            self.gen_efms = file['gen_efms'] and gen_efms
             for attr in (self._prime_attrs()):
                 setattr(self, attr, [x for x,m in zip(file[attr],mask) if m])
             self.c_specs = c_specs[mask]
@@ -163,12 +157,11 @@ class Generator(object):
                 self.comp_dmaxs = {n: comp_dmaxs for n in range(4, 2*comp_dmaxs+1)}
 
     def _prime_attrs(self, no_global=False):
-        attrs = set(['edges','weights','einstrs','einpaths','efm_einstrs',
-                     'efm_einpaths','efm_specs','c_specs'])
+        attrs = set(['edges', 'weights', 'einstrs', 'einpaths', 'c_specs'])
         return attrs
 
     def _comp_attrs(self):
-        return set(['disc_specs','disc_formulae'])
+        return set(['disc_specs', 'disc_formulae'])
 
 
     ################
@@ -184,8 +177,8 @@ class Generator(object):
             - The path to save the file.
         """
         
-        arrs = set(['dmax','nmax','emax','cmax','vmax','comp_dmaxs',
-                    'cols','gen_efms','ve_alg','np_optimize'])
+        arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
+                    'cols', 've_alg', 'np_optimize'])
         arrs |= self._prime_attrs() | self._comp_attrs()
         np.savez(filename, **{arr: getattr(self, arr) for arr in arrs})
 
@@ -217,7 +210,7 @@ class PrimeGenerator(object):
     """
     cols = ['n','e','d','v','k','c','p','h']
 
-    def __init__(self, dmax, nmax, emax, cmax, vmax, ve_alg, np_optimize, gen_efms):
+    def __init__(self, dmax, nmax, emax, cmax, vmax, ve_alg, np_optimize):
         """PrimeGenerator init"""
 
         if not igraph:
@@ -226,7 +219,7 @@ class PrimeGenerator(object):
         self.ve = VariableElimination(ve_alg, np_optimize)
 
         # store parameters
-        transfer(self, locals(), ['dmax','nmax','emax','cmax','vmax','gen_efms'])
+        transfer(self, locals(), ['dmax', 'nmax', 'emax', 'cmax', 'vmax',])
 
         # setup N and e values to be used
         self.ns = list(range(2, self.nmax+1))
@@ -250,9 +243,6 @@ class PrimeGenerator(object):
 
         # flatten structures
         self._flatten_structures()
-
-        # efms
-        self._generate_efms()
 
 
     #################
@@ -395,17 +385,6 @@ class PrimeGenerator(object):
                     self.einstrs.append(es)
                     self.einpaths.append(ep)
         self.c_specs = np.asarray(c_specs)
-
-    def _generate_efms(self):
-        self.efm_einstrs, self.efm_specs, self.efm_einpaths = [], [], []
-        if self.gen_efms:
-            for edgs,ws in zip(self.edges, self.weights):
-                einstr, efm_spec = efp2efms(EFPElem(edgs, weights=ws).edges)
-                self.efm_einstrs.append(einstr)
-                self.efm_specs.append(efm_spec)
-                self.efm_einpaths.append(einsum_path(einstr, 
-                                                     *[np.empty([4]*sum(s)) for s in efm_spec],
-                                                     optimize=self.ve.np_optimize)[0])
 
 
 ###############################################################################

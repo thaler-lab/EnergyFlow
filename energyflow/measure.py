@@ -48,10 +48,6 @@ $$z_i = E_{i}^{\\kappa},
 \\quad\\quad \\theta_{ij} = \\left(\\frac{2p_i^\\mu p_{j \\mu}}{E_i E_j}\\right)^{\\beta/2}.$$
 """
 
-# When using the `'hadrdot'` or `'ee'` measures with $\\beta=2$, the user can also append `'efm'`
-# to the measure name in order to perform the calculation in $O(M)$ with
-# [Energy Flow Moments](/docs/efm).
-
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod
@@ -203,8 +199,6 @@ class HadronicMeasure(Measure):
 
     @staticmethod
     def factory(measure):
-        if 'efm' in measure:
-            return HadronicEFMMeasure
         if 'dot' in measure:
             return HadronicDotMeasure
         return HadronicDefaultMeasure
@@ -248,8 +242,6 @@ class EEMeasure(Measure):
 
     @staticmethod
     def factory(measure):
-        if 'efm' in measure:
-            return EEEFMMeasure
         return EEDefaultMeasure
 
     def __init__(self, *args, **kwargs):
@@ -332,28 +324,6 @@ class HadronicDotMeasure(HadronicMeasure):
 
 
 ###############################################################################
-# HadronicEFMMeasure
-###############################################################################
-class HadronicEFMMeasure(HadronicMeasure):
-
-    subslicing = False
-
-    def ndarray_dim3(self, arg):
-        return self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
-
-    def ndarray_dim4(self, arg):
-        if self.epxpypz:
-            return self._k_func(pts_from_p4s(arg), arg, self.kappa)
-        else:
-            return self._k_func(arg[:,0], p4s_from_ptyphims(arg), self.kappa)
-
-    def pseudojet(self, arg):
-        pts, constituents = super(HadronicEFMMeasure, self).pseudojet(arg)
-        p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return self._k_func(pts, p4s, self.kappa)
-
-
-###############################################################################
 # EEDefaultMeasure
 ###############################################################################
 class EEDefaultMeasure(EEMeasure):
@@ -371,21 +341,3 @@ class EEDefaultMeasure(EEMeasure):
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         Es, p4s = self._k_func(Es, p4s, self.kappa)
         return Es, self._ps_dot(p4s)**self.half_beta
-
-
-###############################################################################
-# EEEFMMeasure
-###############################################################################
-class EEEFMMeasure(EEMeasure):
-
-    subslicing = True
-
-    def ndarray_dim_arb(self, arg):
-        if not self.epxpypz:
-            arg = p4s_from_ptyphims(arg)
-        return self._k_func(arg[:,0], arg, self.kappa)
-
-    def pseudojet(self, arg):
-        Es, constituents = super(EEEFMMeasure, self).pseudojet(arg)
-        p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return self._k_func(Es, p4s, self.kappa)

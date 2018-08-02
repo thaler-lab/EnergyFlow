@@ -25,18 +25,12 @@ class EFPBase(with_metaclass(ABCMeta, object)):
 
         if 'efpm' in measure:
             raise ValueError('\'efpm\' no longer supported')
-
-        self.use_efms = 'efm' in measure
+        if 'efm' in measure:
+            raise ValueError('\'efm\' no longer supported')
 
         # store measure object
         self._measure = Measure(measure, beta, kappa, normed, coords, check_input)
 
-        # store additional EFP measure object if using EFMs
-        #if self.use_efpm_hybrid:
-        #    efp_measure_type = 'hadrdot' if 'hadr' in self.measure else 'ee'
-        #    self._efp_measure = Measure(efp_measure_type, 2, kappa, normed, check_input)
-        #else:
-        #    self._efp_measure = self._measure
 
     def get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
@@ -44,13 +38,6 @@ class EFPBase(with_metaclass(ABCMeta, object)):
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
         return zs, {w: thetas**w for w in self._weight_set}
-
-    def construct_efms(self, event, zs, phats, efmset):
-        if event is not None:
-            zs, phats = self._measure.evaluate(event)
-        elif zs is None or phats is None:
-            raise TypeError('if event is None then zs and/or phats cannot also be None')
-        return efmset.construct(zs, phats)
 
     @abstractproperty
     def _weight_set(self):
@@ -127,10 +114,6 @@ class EFPBase(with_metaclass(ABCMeta, object)):
             - The answers
         """
 
-        if not sys.platform.startswith('linux') and self.use_efms:
-            m = 'batch_compute currently not implemented for EFMs on {}!'.format(sys.platform)
-            raise NotImplementedError(m)
-
         if n_jobs == -1:
             try: 
                 self.n_jobs = multiprocessing.cpu_count()
@@ -158,20 +141,14 @@ class EFPBase(with_metaclass(ABCMeta, object)):
 class EFPElem(object):
 
     # if weights are given, edges are assumed to be simple 
-    def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None, 
-                       efm_einstr=None, efm_einpath=None, efm_spec=None, M_thresh=0):
+    def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None):
 
-        transfer(self, locals(), ['einstr', 'einpath', 'k', 'M_thresh', 
-                                  'efm_einstr', 'efm_einpath', 'efm_spec'])
+        transfer(self, locals(), ['einstr', 'einpath', 'k'])
 
         self.process_edges(edges, weights)
 
         self.pow2d = 2**self.d
         self.ndk = (self.n, self.d, self.k)
-
-        self.use_efms = self.has_efms = self.efm_spec is not None
-        if self.has_efms:
-            self.efm_spec_set = frozenset(self.efm_spec)
 
     def process_edges(self, edges, weights):
 
@@ -202,25 +179,13 @@ class EFPElem(object):
         self.d = sum(self.weights)
         self.weight_set = frozenset(self.weights)
 
-    def determine_efm_compute(self, M):
-        self.use_efms = M >= self.M_thresh
-        return self.use_efms
-
-    def compute(self, zs, thetas_dict, efms_dict):
-        return self.efm_compute(efms_dict) if self.use_efms else self.efp_compute(zs, thetas_dict)
-
-    def set_timer(self):
-        self.times = []
-        self.efp_compute = timing(self, self.efp_compute)
-        self.efm_compute = timing(self, self.efm_compute)
-
-    def efp_compute(self, zs, thetas_dict):
+    def compute(self, zs, thetas_dict):
         einsum_args = [thetas_dict[w] for w in self.weights] + self.n*[zs]
         return einsum(self.einstr, *einsum_args, optimize=self.einpath)
 
-    def efm_compute(self, efms_dict):
-        einsum_args = [efms_dict[sig] for sig in self.efm_spec]
-        return einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)*self.pow2d
+    def set_timer(self):
+        self.times = []
+        self.compute = timing(self, self.compute)
 
     # properties set above:
     #     n, e, d, k, ndk, edges, simple_edges, weights, weight_set, einstr, einpath,
