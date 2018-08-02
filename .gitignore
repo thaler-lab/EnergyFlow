@@ -26,5 +26,6 @@ taco
 Moments
 Networks
 Polynomials
-./datasets
+datasets/
+!energyflow/datasets
 

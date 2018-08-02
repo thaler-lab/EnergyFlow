@@ -12,7 +12,7 @@ from six import with_metaclass
 
 from energyflow.algorithms import einsum
 from energyflow.measure import Measure
-from energyflow.utils import sysname, timing, transfer
+from energyflow.utils import timing, transfer
 
 
 ###############################################################################
@@ -127,8 +127,8 @@ class EFPBase(with_metaclass(ABCMeta, object)):
             - The answers
         """
 
-        if sysname != 'Linux' and self.use_efms:
-            m = 'batch_compute currently not implemented for EFMs on {}!'.format(sysname)
+        if not sys.platform.startswith('linux') and self.use_efms:
+            m = 'batch_compute currently not implemented for EFMs on {}!'.format(sys.platform)
             raise NotImplementedError(m)
 
         if n_jobs == -1:

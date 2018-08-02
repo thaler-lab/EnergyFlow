@@ -49,7 +49,7 @@ def test_measure_hadr_ptyphi(pts, ys, phis, beta, kappa, normed):
     M = len(pts)
     
     # compute using the energyflow package
-    hmeas = ef.Measure('hadr', beta, kappa, normed, True)
+    hmeas = ef.Measure('hadr', beta, kappa, normed, 'ptyphim', True)
     hzs, hthetas = hmeas.evaluate(np.vstack((pts,ys,phis)).T)
     
     # compute naively
@@ -73,7 +73,7 @@ def test_measure_hadr_p4s(event, beta, kappa, normed):
     phis = np.arctan2(event[:,2], event[:,1])
     
     # compute using the energyflow package
-    hmeas = ef.Measure('hadr', beta, kappa, normed, True)
+    hmeas = ef.Measure('hadr', beta, kappa, normed, 'epxpypz', True)
     hzs, hthetas = hmeas.evaluate(event)
     
     # compute naively
@@ -98,7 +98,7 @@ def test_measure_hadrdot_ptyphi(event, beta, theta_eps, kappa, normed):
     ps  = np.asarray([pT*np.asarray([np.cosh(y),np.cos(phi),np.sin(phi),np.sinh(y)]) for (pT,y,phi) in event])
    
     # compute using the energyflow package
-    hmeas = ef.Measure('hadrdot', beta, kappa, normed, True)
+    hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'ptyphim', True)
     hzs, hthetas = hmeas.evaluate(event)
         
     # compute naively
@@ -124,7 +124,7 @@ def test_measure_hadrdot_p4s(event, beta, theta_eps, kappa, normed):
     ps  = event
    
     # compute using the energyflow package
-    hmeas = ef.Measure('hadrdot', beta, kappa, normed, True)
+    hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'epxpypz', True)
     hzs, hthetas = hmeas.evaluate(event)
         
     # compute naively
@@ -148,7 +148,7 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed):
 
     Es = event[:,0]
 
-    emeas = ef.Measure('ee', beta, kappa, normed, True)
+    emeas = ef.Measure('ee', beta, kappa, normed, 'epxpypz', True)
     ezs, ethetas = emeas.evaluate(event)
 
     # compute naively

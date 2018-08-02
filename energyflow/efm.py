@@ -132,7 +132,7 @@ class EFM(object):
                 m = 'cannot perform subslicing from {} to {}'.format(self.subslicingfrom, self.sig)
                 raise ValueError(m)
 
-            self.subslice = [0]*num_low_subslices + [Ellipsis] + [0]*num_up_subslices
+            self.subslice = tuple([0]*num_low_subslices + [Ellipsis] + [0]*num_up_subslices)
             self.construct = self.subslice_construct
 
     def raise_lower(self, tensor):

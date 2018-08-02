@@ -62,7 +62,7 @@ from six.moves.urllib.error import HTTPError, URLError
 
 __all__ = ['data_split', 'get_file', 'to_categorical']
 
-def data_split(*args, train=-1, val=0.1, test=0.1, shuffle=True):
+def data_split(*args, **kwargs):
     """A function to split an arbitrary number of arrays into train, 
     validation, and test sets. If val_frac = 0, then we don't split any 
     events into the validation set. If exactly two arguments are given 
@@ -72,6 +72,12 @@ def data_split(*args, train=-1, val=0.1, test=0.1, shuffle=True):
     arguments must have the same number of samples otherwise an exception
     will be raised.
     """
+
+    # handle valid kwargs
+    train, val, test = kwargs.pop('train', -1), kwargs.pop('val', 0.1), kwargs.pop('test', 0.1)
+    shuffle = kwargs.pop('shuffle', True)
+    if len(kwargs):
+        raise TypeError('following kwargs are invalid: {}'.format(kwargs))
 
     # validity checks
     if len(args) == 0: 

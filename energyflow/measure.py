@@ -214,7 +214,7 @@ class HadronicMeasure(Measure):
         self._set_k_func()
         if self.coords is None:
             self.coords = 'ptyphim'
-        self.epxpypz = self.coords == 'epxpypz'
+        self.epxpypz = (self.coords == 'epxpypz')
 
     def array_handler(self, dim):
         if dim == 3:
@@ -286,8 +286,7 @@ class HadronicDefaultMeasure(HadronicMeasure):
     subslicing = None
 
     def __init__(self, *args, **kwargs):
-        # skip __init__ of HadronicMeasure
-        super(HadronicMeasure, self).__init__(*args, **kwargs)
+        super(HadronicDefaultMeasure, self).__init__(*args, **kwargs)
         if self.kappa == pf_marker:
             raise ValueError('particle flow not available for HadronicDefaultMeasure')
 

@@ -8,10 +8,8 @@ import time
 
 import numpy as np
 
-__all__ = ['sysname', 'default_efp_file', 'concat_specs', 
+__all__ = ['default_efp_file', 'concat_specs', 
            'iter_or_rep', 'timing', 'transfer']
-
-sysname = os.uname()[0]
 
 # get access to the data directory of the installed package and the default efp file
 ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
