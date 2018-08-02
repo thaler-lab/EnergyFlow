@@ -10,7 +10,7 @@ from energyflow.algorithms import *
 from energyflow.efm import efp2efms
 from energyflow.efpbase import EFPElem
 from energyflow.utils import concat_specs, default_efp_file, transfer
-from energyflow.utils.graph import *
+from energyflow.utils.graph_utils import *
 
 igraph = igraph_import()
 
@@ -27,7 +27,7 @@ def none2inf(x):
 ###############################################################################
 # Generator
 ###############################################################################
-class Generator:
+class Generator(object):
 
     """Generates non-isomorphic multigraphs according to provided specifications."""
 
@@ -202,7 +202,7 @@ class Generator:
 ###############################################################################
 # PrimeGenerator
 ###############################################################################
-class PrimeGenerator:
+class PrimeGenerator(object):
 
     """
     Column descriptions:
@@ -411,7 +411,7 @@ class PrimeGenerator:
 ###############################################################################
 # CompositeGenerator
 ###############################################################################
-class CompositeGenerator:
+class CompositeGenerator(object):
 
     """CompositeGenerator"""
 

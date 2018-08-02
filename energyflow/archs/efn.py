@@ -1,24 +1,28 @@
 from __future__ import absolute_import, division, print_function
 
-from keras.layers import Dense, Dropout
-from keras.models import Sequential
+from abc import abstractmethod
+
+from keras import backend as K
+from keras.layers import Dense, Dot, Dropout, Input, Lambda, TimeDistributed, Masking
+from keras.models import Model
 from keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase
 from energyflow.utils import iter_or_rep
 
-__all__ = ['EFN']
+__all__ = ['EFN', 'PFN']
+
 
 ###############################################################################
-# EFN
+# SymmetricPerParticleNN - Base class for EFN-like models
 ###############################################################################
 
-class EFN(NNBase):
+class SymmetricPerParticleNN(NNBase):
 
     def process_hps(self):
 
         # process generic NN hps
-        super(EFN, self).process_hps()
+        super(SymmetricPerParticleNN, self).process_hps()
 
         # required hyperparameters
         self.input_dim = self.hps['input_dim']
@@ -34,75 +38,114 @@ class EFN(NNBase):
         self.dense_k_inits = iter_or_rep(self.hps.get('dense_k_inits', 'he_uniform'))
 
         # regularizations
-        self.ppm_dropouts = iter_or_rep(self.hps.get('ppm_dropouts', 0))
+        #self.ppm_dropouts = iter_or_rep(self.hps.get('ppm_dropouts', 0))
         self.latent_dropout = self.hps.get('latent_dropout', 0)
         self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0))
 
         # masking
         self.mask_val = self.hps.get('mask_val', 0.)
 
+    @abstractmethod
+    def construct_input_layers(self):
+        pass
+
+    def construct_per_particle_module(self):
+
+        # a list of the per-particle layers, starting with the masking layer operating on input 0
+        self.ppm_layers = [Masking(mask_value=self.mask_val, name='mask_0')(self.input_layers[-1])]
+
+        # iterate over specified layers
+        for i,(s, act, k_init) in enumerate(zip(self.ppm_sizes, self.ppm_acts, self.ppm_k_inits)):
+
+            # define a dense layer that will be applied through time distributed
+            d_layer = Dense(s, activation=act, kernel_initializer=k_init)
+
+            # append time distributed layer to list of ppm layers
+            self.ppm_layers.append(TimeDistributed(d_layer, name='tdist_'+str(i))(self.ppm_layers[-1]))
+
+    @abstractmethod
+    def construct_latent_layer(self):
+        pass
+
+    def construct_backend_module(self):
+        
+        # a list of backend layers
+        self.backend_layers = [self.latent_layer]
+
+        # iterate over specified backend layers
+        z = zip(self.dense_sizes, self.dense_acts, self.dense_k_inits, self.dense_dropouts)
+        for i,(s, act, k_init, dropout) in enumerate(z):
+
+            # a new dense layer
+            new_layer = Dense(s, activation=act, kernel_initializer=k_init, name='dense_'+str(i))
+
+            # apply dropout if specified 
+            if dropout > 0:
+                new_layer = Dropout(dropout, name='dropout_'+str(i))(new_layer)
+
+            # apply new layer to previous and append to list
+            self.backend_layers.append(new_layer(self.backend_layers[-1]))
+
     def construct_model(self):
 
-        # common model preprocessing
-        super(EFN, self).construct_model()
+        # construct earlier parts of the model
+        self.construct_input_layers()
+        self.construct_per_particle_module()
+        self.construct_latent_layer()
+        self.construct_backend_module()
 
-    # structure
-    e_weight = hps.get('e_weight', False)
-    mask_val = hps.get('mask_val', 0.)
+        # output layer, applied to the last backend layer
+        output_layer = Dense(self.output_dim, activation=self.output_act, 
+                                              name='output')(self.backend_layers[-1])
+
+        # construct a new model
+        self._model = Model(inputs=self.input_layers, outputs=output_layer)
+
+        # compile model
+        self.compile_model()
+
+    @property
+    def input_layers(self):
+        return self._input_layers
+
+    @property
+    def latent_layer(self):
+        return self._latent_layer
 
 
-    # define input layer for events
-    input_layers = [Input(batch_shape=(None, None, input_dim), name='input_0')]
+###############################################################################
+# EFN - Energy flow network class
+###############################################################################
 
-    # mask inputs to remove all-zero particles (makes physical sense and undoes padding)
-    masked_layer = Masking(mask_value=mask_val, name='mask_0')(input_layers[0])
+class EFN(SymmetricPerParticleNN):
 
-    # define vector of dense layers to be used first
-    dense_layers_1 = [Dense(s, activation=act, name='dense_' + str(i), kernel_initializer=k_init) 
-                      for i,(s, act, k_init) in enumerate(zip(tdist_sizes, tdist_acts, tdist_k_inits))]
+    def construct_input_layers(self):
 
-    # apply TimeDistributed layers to dense layers
-    num_tdist = len(dense_layers_1)
-    if num_tdist:
-        tdist_layers = [TimeDistributed(dense_layers_1[0], name='tdist_0')(masked_layer)]
+        zs_input = Input(batch_shape=(None, None), name='zs_input')
+        phats_input = Input(batch_shape=(None, None, self.input_dim), name='phats_input')
+        self._input_layers = [zs_input, phats_input]
 
-        for i,dl in enumerate(dense_layers_1[1:]):
-            tdist_layers.append(TimeDistributed(dl, name='tdist_'+str(i+1))(tdist_layers[i]))
-    else:
-        tdist_layers = [masked_layer]
+    def construct_latent_layer(self):
 
-    # sum over all the particles
-    if e_weight:
-        input_layers.append(Input(batch_shape=(None, None), name='input_1'))
-        latent_layer = Dot(0, name='dot')([tdist_layers[-1], input_layers[1]])
-        input_layers.reverse()
-    else:
-        latent_layer = Lambda(lambda x: K.sum(x, axis=1), name='sum')(tdist_layers[-1])
+        self._latent_layer = Dot(0, name='dot')([self.input_layers[0], self.ppm_layers[-1]])
 
-    dropout_layer = Dropout(latent_dropout)(latent_layer)
+        if self.latent_dropout > 0:
+            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self.latent_layer)
 
-    # second dense layers
-    if len(dense_sizes):
-        dense_z = list(zip(dense_sizes, dense_acts, dense_k_inits))
-        dense_layers_2 = [Dense(dense_z[0][0], activation=dense_z[0][1], name='dense_0', 
-                                kernel_initializer=dense_z[0][2])(dropout_layer)]
-        for i,(s, act, k_init) in enumerate(dense_z[1:]):
-            dense_layers_2.append(Dense(s, activation=act, name='dense_'+str(i+1), 
-                                        kernel_initializer=k_init)(dense_layers_2[i]))
-    else:
-        dense_layers_2 = [latent_layer]
 
-    # define output layer
-    output_layer = Dense(output_dim, activation=output_act, name='output')(dense_layers_2[-1])
+###############################################################################
+# PFN - Particle flow network class
+###############################################################################
 
-    # define model
-    model = Model(inputs=input_layers, outputs=output_layer)
+class PFN(SymmetricPerParticleNN):
 
-    # compile models with standard choices
-    if hps.get('compile', True):
-        model.compile(loss=loss, optimizer=opt(lr=lr), metrics=hps.get('metrics', ['accuracy']))
+    def construct_input_layers(self):
 
-    if hps.get('summary', True):
-        model.summary()
-    
-    return model
+        self._input_layers = [Input(batch_shape=(None, None, self.input_dim), name='input')]
+
+    def construct_latent_layer(self):
+
+        self._latent_layer = Lambda(lambda x: K.sum(x, axis=1), name='sum')(self.ppm_layers[-1])
+
+        if self.latent_dropout > 0:
+            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self.latent_layer)

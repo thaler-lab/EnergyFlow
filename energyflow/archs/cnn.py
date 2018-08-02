@@ -48,9 +48,6 @@ class CNN(NNBase):
 
     def construct_model(self):
 
-        # common model preprocessing
-        super(CNN, self).construct_model()
-
         # fresh model
         self._model = Sequential()
 
@@ -62,44 +59,36 @@ class CNN(NNBase):
 
             # add conv2d layer to model using provided hyperparameters
             kwargs = {} if i > 0 else {'input_shape': self.input_shape}
-            self._model.add(Conv2D(num_filter, filter_size,
-                             activation=act,
-                             kernel_initializer=k_init,
-                             padding=pad,
-                             name='conv2d_' + str(i),
-                             **kwargs))
+            self.model.add(Conv2D(num_filter, filter_size, activation=act, kernel_initializer=k_init,
+                                                           padding=pad, name='conv2d_'+str(i), **kwargs))
 
             # add pooling layer if we have a non-zero pool size
             if pool_size > 0:
-                self._model.add(MaxPooling2D(pool_size=pool_size, name='max_pool_' + str(i)))
+                self.model.add(MaxPooling2D(pool_size=pool_size, name='max_pool_' + str(i)))
 
             # add dropout layer if we have a non-zero dropout rate
             if dropout > 0:
                 d_layer = SpatialDropout2D if i < self.num_spatial2d_dropout else Dropout
-                self._model.add(d_layer(dropout, name='dropout_' + str(i)))
+                self.model.add(d_layer(dropout, name='dropout_' + str(i)))
                 num_dropout += 1
 
         # flatten model for dense layers
-        self._model.add(Flatten(name='flatten'))
+        self.model.add(Flatten(name='flatten'))
 
         # iterate over dense specifications
         dense_z = zip(self.dense_sizes, self.dense_acts, self.dense_dropouts, self.dense_k_inits)
         for i,(num_dense, act, dropout, k_init) in enumerate(dense_z):
 
             # add dense layer
-            self._model.add(Dense(num_dense, activation=act, kernel_initializer=k_init, name='dense_' + str(i)))
+            self.model.add(Dense(num_dense, activation=act, kernel_initializer=k_init, name='dense_'+str(i)))
 
             # add dropout layer if dropout is nonzero
             if dropout > 0:
-                self._model.add(Dropout(dropout, name='dropout_' + str(i + num_dropout)))
+                self.model.add(Dropout(dropout, name='dropout_' + str(i + num_dropout)))
 
         # output layer
-        self._model.add(Dense(self.output_dim, activation=self.output_act, name='output'))    
+        self.model.add(Dense(self.output_dim, activation=self.output_act, name='output'))
 
-        # compile model if specified
-        if self.compile: 
-            self._model.compile(loss=self.loss, optimizer=self.opt(lr=self.lr), metrics=self.metrics)
+        # compile model
+        self.compile_model()
 
-            # print summary
-            if self.summary: 
-                self._model.summary()

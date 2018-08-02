@@ -18,7 +18,7 @@ I = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 ###############################################################################
 # VariableElimination
 ###############################################################################
-class VariableElimination:
+class VariableElimination(object):
 
     def __init__(self, ve_alg, np_optimize='greedy'):
         possible_algs = ['numpy'] + (['ef'] if igraph else [])

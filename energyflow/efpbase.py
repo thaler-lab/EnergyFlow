@@ -1,27 +1,25 @@
 """Base and helper classes for EFPs."""
 
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import Counter
 import multiprocessing
+import sys
 
 import numpy as np
-from six import add_metaclass
+from six import with_metaclass
 
 from energyflow.algorithms import einsum
 from energyflow.measure import Measure
-from energyflow.utils import py_version, sysname, timing, transfer
-
-__all__ = ['EFPBase', 'EFPElem']
+from energyflow.utils import sysname, timing, transfer
 
 
 ###############################################################################
 # EFPBase
 ###############################################################################
 
-@add_metaclass(ABCMeta)
-class EFPBase:
+class EFPBase(with_metaclass(ABCMeta, object)):
 
     def __init__(self, measure, beta, kappa, normed, coords, check_input):
 
@@ -31,7 +29,7 @@ class EFPBase:
         self.use_efms = 'efm' in measure
 
         # store measure object
-        self._measure = self._efp_measure = Measure(measure, beta, kappa, normed, coords, check_input)
+        self._measure = Measure(measure, beta, kappa, normed, coords, check_input)
 
         # store additional EFP measure object if using EFMs
         #if self.use_efpm_hybrid:
@@ -42,7 +40,7 @@ class EFPBase:
 
     def get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
-            zs, thetas = self._efp_measure.evaluate(event)
+            zs, thetas = self._measure.evaluate(event)
         elif zs is None or thetas is None:
             raise TypeError('if event is None then zs and/or thetas cannot also be None')
         return zs, {w: thetas**w for w in self._weight_set}
@@ -141,13 +139,14 @@ class EFPBase:
 
         # setup processor pool
         chunksize = max(len(events)//self.n_jobs, 1)
-        if py_version[0] == 3:
+        if sys.version_info[0] == 3:
             with multiprocessing.Pool(self.n_jobs) as pool:
                 results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
         # Pool is not a context manager in python 2
         else:
             pool = multiprocessing.Pool(self.n_jobs)
             results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
+            pool.close()
 
         return results
 
@@ -156,7 +155,7 @@ class EFPBase:
 # EFPElem
 ###############################################################################
 
-class EFPElem:
+class EFPElem(object):
 
     # if weights are given, edges are assumed to be simple 
     def __init__(self, edges, weights=None, einstr=None, einpath=None, k=None, 

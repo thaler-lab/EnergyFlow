@@ -1,20 +1,15 @@
 from __future__ import absolute_import, division, print_function
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod, abstractproperty
 
 from keras.optimizers import Adam
-from six import add_metaclass
-
-from energyflow.utils import kwargs_check
-
-__all__ = ['NNBase', 'LinearBase']
+from six import with_metaclass
 
 ###############################################################################
 # ArchBase
 ###############################################################################
 
-@add_metaclass(ABCMeta)
-class ArchBase:
+class ArchBase(with_metaclass(ABCMeta, object)):
 
     def __init__(self, *args, **kwargs):
         
@@ -36,6 +31,14 @@ class ArchBase:
 
     @abstractmethod
     def construct_model(self):
+        pass
+
+    @abstractmethod
+    def fit(self):
+        pass
+
+    @abstractproperty
+    def predict(self):
         pass
 
     @abstractproperty
@@ -67,25 +70,24 @@ class NNBase(ArchBase):
         self.compile = self.hps.get('compile', True)
         self.summary = self.hps.get('summary', True)
 
-    def construct_model(self):
-        pass
+    def compile_model(self):
 
-    @property
-    def model(self):
-        return self._model
+        # compile model if specified
+        if self.compile: 
+            self.model.compile(loss=self.loss, optimizer=self.opt(lr=self.lr), metrics=self.metrics)
 
+            # print summary
+            if self.summary: 
+                self.model.summary()
 
-###############################################################################
-# LinearBase
-###############################################################################
+    def fit(self, *args, **kwargs):
+        return self.model.fit(*args, **kwargs)
 
-class LinearBase(ArchBase):
+    def fit_generator(self, *args, **kwargs):
+        return self.model.fit_generator(*args, **kwargs)
 
-    def process_hps(self):
-        pass
-
-    def construct_model(self):
-        pass
+    def predict(self, *args, **kwargs):
+        return self.model.predict(*args, **kwargs)
 
     @property
     def model(self):

@@ -9,7 +9,7 @@ import numpy as np
 
 from energyflow.measure import flat_metric
 from energyflow.utils import timing
-from energyflow.utils.graph import *
+from energyflow.utils.graph_utils import *
 
 __all__ = ['EFM', 'EFMSet', 'efp2efms']
 
@@ -90,7 +90,7 @@ def efp2efms(graph):
 # EFM
 ###############################################################################
 
-class EFM:
+class EFM(object):
 
     """"""
 
@@ -179,7 +179,7 @@ class EFM:
 # EFMSet
 ###############################################################################
 
-class EFMSet:
+class EFMSet(object):
 
     """"""
 

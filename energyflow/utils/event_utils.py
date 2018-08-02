@@ -170,5 +170,6 @@ def mass2(events):
     """
 
     events = np.atleast_2d(events)
-    return events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1)
+    return np.squeeze(events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1))
+
     

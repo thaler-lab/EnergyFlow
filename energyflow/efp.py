@@ -22,10 +22,10 @@ import numpy as np
 
 from energyflow.algorithms import VariableElimination, einsum_path
 from energyflow.efm import EFMSet, efp2efms
-from energyflow.efpbase import *
+from energyflow.efpbase import EFPBase, EFPElem
 from energyflow.gen import Generator
 from energyflow.utils import concat_specs, default_efp_file
-from energyflow.utils.graph import graph_union
+from energyflow.utils.graph_utils import graph_union
 
 __all__ = ['EFP', 'EFPSet']
 
@@ -93,7 +93,7 @@ class EFP(EFPBase):
         """
 
         # initialize EFPBase
-        super(EFP, self).__init__(measure, beta, kappa, normed, check_input)
+        super(EFP, self).__init__(measure, beta, kappa, normed, coords, check_input)
 
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)

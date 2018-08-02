@@ -11,7 +11,7 @@ from __future__ import absolute_import, division
 
 import numpy as np
 
-from energyflow.utils.events import mass2
+from energyflow.utils.event_utils import mass2
 
 __all__ = [
     'flat_metric',
@@ -218,7 +218,7 @@ def ms_from_p4s(p4s):
 
     m2s = mass2(p4s)
     ms = np.sign(m2s)*np.sqrt(np.abs(m2s))
-    return np.squeeze(ms)
+    return ms
 
 def ptyphims_from_p4s(p4s, phi_ref=None, keep_shape=True):
     """Compute the $(p_T,y,\phi,m)$ representation of a four-vector for each Euclidean

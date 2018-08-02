@@ -57,10 +57,10 @@ from __future__ import absolute_import, division, print_function
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
-from six import add_metaclass
+from six import with_metaclass
 
 from energyflow.utils import transfer
-from energyflow.utils.particles import *
+from energyflow.utils.particle_utils import *
 
 __all__ = ['Measure']
 
@@ -91,8 +91,8 @@ def pf_func(Es, ps, kappa):
 ###############################################################################
 # Measure 
 ###############################################################################
-@add_metaclass(ABCMeta)
-class Measure:
+
+class Measure(with_metaclass(ABCMeta, object)):
     
     """Class for dealing with any kind of measure."""
 

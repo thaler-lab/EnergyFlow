@@ -36,9 +36,6 @@ class DNN(NNBase):
 
     def construct_model(self):
 
-        # common model preprocessing
-        super(DNN, self).construct_model()
-
         # fresh model
         self._model = Sequential()
 
@@ -53,19 +50,15 @@ class DNN(NNBase):
                                'bias_regularizer': l2(l2_reg)})
 
             # add dense layer
-            model.add(Dense(dim, activation=act, kernel_initializer=k_init, name='dense_' + str(i), **kwargs))
+            self.model.add(Dense(dim, activation=act, kernel_initializer=k_init, 
+                                      name='dense_'+str(i), **kwargs))
 
             # add dropout layer if nonzero
             if dropout > 0:
-                model.add(Dropout(dropout, name='dropout_' + str(i)))
+                self.model.add(Dropout(dropout, name='dropout_' + str(i)))
 
         # output layer
-        self._model.add(Dense(self.output_dim, activation=self.output_act, name='output'))    
+        self.model.add(Dense(self.output_dim, activation=self.output_act, name='output'))    
 
-        # comile model if specified
-        if self.compile: 
-            self._model.compile(loss=self.loss, optimizer=self.opt(lr=self.lr), metrics=self.metrics)
-
-            # print summary
-            if self.summary: 
-                self._model.summary()
+        # compile model
+        self.compile_model()
