@@ -2,19 +2,15 @@
 
 from __future__ import absolute_import
 
-# import submodules
+# import toplevel submodules
 from . import algorithms
-from . import utils
-
-# architectures is not imported
-
-# import individual files
 from . import efp
 from . import efpbase
 from . import gen
 from . import measure
+from . import utils
 
-# import efps, efm, gen, utils into top level module
+# import toplevel attributes
 from .efp import *
 from .gen import *
 from .measure import *

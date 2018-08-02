@@ -22,7 +22,7 @@ class DNN(NNBase):
 
         # required hyperparameters
         self.input_dim = self.hps['input_dim']
-        self.layer_dims = self.hps['layer_dims']
+        self.dense_sizes = self.hps['dense_sizes']
 
         # activations
         self.acts = iter_or_rep(self.hps.get('acts', 'relu'))
@@ -40,7 +40,7 @@ class DNN(NNBase):
         self._model = Sequential()
 
         # iterate over specified dense layers
-        z = zip(self.layer_dims, self.acts, self.dropouts, self.l2_regs, self.k_inits)
+        z = zip(self.dense_sizes, self.acts, self.dropouts, self.l2_regs, self.k_inits)
         for i,(dim, act, dropout, l2_reg, k_init) in enumerate(z):
 
             # construct variable argument dict

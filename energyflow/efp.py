@@ -109,7 +109,7 @@ class EFP(EFPBase):
     def compute(self, event=None, zs=None, thetas=None):
 
         zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
-        return self.efpelem.efp_compute(zs, thetas_dict)
+        return self.efpelem.compute(zs, thetas_dict)
 
     #===========
     # properties
@@ -360,7 +360,7 @@ class EFPSet(EFPBase):
     def compute(self, event=None, zs=None, thetas=None, batch_call=False):
         
         zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
-        results = [efpelem.efp_compute(zs, thetas_dict) for efpelem in self.efpelems]
+        results = [efpelem.compute(zs, thetas_dict) for efpelem in self.efpelems]
 
         if batch_call:
             return results

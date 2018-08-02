@@ -4,7 +4,7 @@ from keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialD
 from keras.models import Sequential
 
 from energyflow.archs.archbase import NNBase
-from energyflow.utils import iter_or_rep
+from energyflow.utils import iter_or_rep, transfer
 
 __all__ = ['CNN']
 

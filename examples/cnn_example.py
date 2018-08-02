@@ -1,11 +1,17 @@
 from __future__ import division, print_function
 
+import sys
+
 import numpy as np
 
 import energyflow as ef
-from energyflow.archs import EFN
+from energyflow.archs import CNN
 from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, to_categorical
+from energyflow.utils import data_split, pixelate, standardize, to_categorical, zero_center
+
+# set image channels as expected
+from keras import backend as K
+K.set_image_data_format('channels_first')
 
 # attempt to import sklearn
 try:
@@ -21,19 +27,30 @@ except:
     print('please install matploltib in order to make plots')
     plt = False
 
-
 ################################### SETTINGS ###################################
 
 # data controls
 num_data = 100000
 val_frac, test_frac = 0.1, 0.15
 
-# network architecture parameters
-ppm_sizes = (100, 100)
-dense_sizes = (100, 100)
+# image parameters
+R = 0.4
+img_width = 2*R
+npix = 33
+nb_chan = 2
+norm = True
+
+# required network architecture parameters
+input_shape = (nb_chan, npix, npix)
+filter_sizes = [8, 4, 4]
+num_filters = [8, 8, 8] # very small so can run on non-GPUs in reasonable time
+
+# optional network architecture parameters
+dense_sizes = [50]
+pool_sizes = 2
 
 # network training parameters
-num_epoch = 5
+num_epoch = 2
 batch_size = 100
 
 ################################################################################
@@ -44,54 +61,55 @@ X, y = qg_jets.load(num_data=num_data)
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print()
-print('Loaded quark and gluon jets')
+print('\n', 'Loaded quark and gluon jets')
 
-# ignore pid information
-X = X[:,:,:3]
+# make jet images
+images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 
+                                 charged_counts_only=True, norm=norm) for x in X])
 
-# preprocess by centering jets and normalizing pts
-for x in X:
-    mask = x[:,0] > 0
-    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
-    x[mask,1:3] -= yphi_avg
-    x[mask,0] /= x[:,0].sum()
-
-print('Finished preprocessing')
+print('Made jet images')
 
 # do train/val/test split 
-(z_train, z_val, z_test, 
- p_train, p_val, p_test,
- Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, 
-                                      val=val_frac, test=test_frac)
+(X_train, X_val, X_test,
+ Y_train, Y_val, Y_test) = data_split(images, Y, val=val_frac, test=test_frac)
 
 print('Done train/val/test split')
+
+# preprocess by zero centering images and standardizing each pixel
+X_train, X_val, X_test = standardize(*zero_center(X_train, X_val, X_test))
+
+print('Finished preprocessing')
 print('Model summary:')
 
 # build architecture
-model = EFN(input_dim=2, ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
+hps = {'input_shape': input_shape,
+       'filter_sizes': filter_sizes,
+       'num_filters': num_filters,
+       'dense_sizes': dense_sizes,
+       'pool_sizes': pool_sizes}
+cnn = CNN(hps)
 
 # train model
-model.fit([z_train, p_train], Y_train,
+cnn.fit(X_train, Y_train,
           epochs=num_epoch,
           batch_size=batch_size,
-          validation_data=([z_val, p_val], Y_val),
+          validation_data=(X_val, Y_val),
           verbose=1)
 
 # get ROC curve
-preds = model.predict([z_test, p_test], batch_size=1000)
+preds = cnn.predict(X_test, batch_size=1000)
 
 if roc_curve:
-    efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+    cnn_fp, cnn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
     auc = roc_auc_score(Y_test[:,1], preds[:,1])
     print()
-    print('EFN AUC:', auc)
+    print('CNN AUC:', auc)
     print()
 
     if plt:
 
         # get multiplicity and mass for comparison
-        masses = np.asarray([np.sqrt(ef.mass2(ef.p4s_from_ptyphis(x).sum(axis=0))) for x in X])
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
         
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
@@ -101,7 +119,7 @@ if roc_curve:
         plt.rcParams['font.family'] = 'serif'
         plt.rcParams['figure.autolayout'] = True
 
-        plt.plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
+        plt.plot(cnn_tp, 1-cnn_fp, '-', color='black', label='CNN')
         plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
         plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 

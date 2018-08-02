@@ -7,8 +7,8 @@ from energyflow.utils import get_file
 def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
 
     fpath = get_file(filename, 
-                     url='https://www.dropbox.com/s/fclsl7pukcpobsb/QG_jets.npz?dl=1',
-                     file_hash='3f27a02eab06e8b83ccc9d25638021e6e24c9361341730961f9d560dee12c257',
+                     url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
+                     file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
                      cache_dir=cache_dir)
 
     f = np.load(fpath)

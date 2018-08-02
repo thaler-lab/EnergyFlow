@@ -83,9 +83,6 @@ class NNBase(ArchBase):
     def fit(self, *args, **kwargs):
         return self.model.fit(*args, **kwargs)
 
-    def fit_generator(self, *args, **kwargs):
-        return self.model.fit_generator(*args, **kwargs)
-
     def predict(self, *args, **kwargs):
         return self.model.predict(*args, **kwargs)
 
