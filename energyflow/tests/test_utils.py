@@ -17,7 +17,7 @@ def epsilon_percent(X, Y, epsilon=10**-14):
 def test_gen_massless_phase_space(nevents, nparticles):
     events = ef.gen_massless_phase_space(nevents, nparticles)
     assert events.shape == (nevents, nparticles, 4)
-    assert epsilon_diff(ef.mass2(events), 0)
+    assert epsilon_diff(ef.ms_from_p4s(events)**2, 0, 10**-13)
 
 @pytest.mark.parametrize('nparticles', [10,100])
 @pytest.mark.parametrize('nevents', [20,200])
@@ -26,7 +26,7 @@ def test_gen_massless_phase_space(nevents, nparticles):
 def test_gen_random_events(nevents, nparticles, dim, mass):
     events = ef.gen_random_events(nevents, nparticles, dim=dim, mass=mass)
     assert events.shape == (nevents, nparticles, dim)
-    assert epsilon_diff(ef.mass2(events), mass**2)
+    assert epsilon_diff(ef.ms_from_p4s(events)**2, mass**2, 10**-13)
 
 @pytest.mark.parametrize('nparticles', [10,100])
 @pytest.mark.parametrize('nevents', [20,200])
@@ -34,7 +34,7 @@ def test_gen_random_events(nevents, nparticles, dim, mass):
 def test_gen_random_events_massless_com(nevents, nparticles, dim):
     events = ef.gen_random_events_massless_com(nevents, nparticles, dim=dim)
     assert events.shape == (nevents, nparticles, dim)
-    assert epsilon_diff(ef.mass2(events)/dim, 0, 10**-13)
+    assert epsilon_diff(ef.ms_from_p4s(events)**2/dim, 0, 10**-13)
     assert epsilon_diff(np.sum(events, axis=1), 0, 10**-13)
 
 # test measures
