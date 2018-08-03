@@ -108,8 +108,10 @@ def data_split(*args, **kwargs):
     return [arg[mask] for arg in args for mask in masks]
 
 def get_examples(which='all', path='~/.energyflow'):
+    """Pulls examples from GitHub."""
 
-    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 'dnn_example.py'}
+    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 
+                    'dnn_example.py', 'efp_example.py'}
     if which == 'all':
         examples = all_examples
     else:
@@ -216,6 +218,8 @@ pid2float_mapping = {22: 0,
                      13: 1.2, -13: 1.3}
 
 def remap_pids(events, pid_i=3):
+    """Remaps PDG id numbers to small floats."""
+
     events_shape = events.shape
     pids = events[:,:,pid_i].astype(int).reshape((events_shape[0]*events_shape[1]))
     events[:,:,pid_i] = np.asarray([pid2float_mapping.get(pid, 0) for pid in pids]).reshape(events_shape[:2])
@@ -260,6 +264,8 @@ def standardize(*args, **kwargs):
     return X
 
 def to_categorical(vector, num_classes=None):
+    """One-hot encodes class labels."""
+
     if num_classes is None:
         num_classes = np.max(vector) + 1
 
@@ -402,6 +408,7 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=65535):
 
 # the following function is closely based on the matching Keras function
 def get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=None):
+    """Pulls file from the internet."""
 
     # cache_dir = None means use default cache
     if cache_dir is None:

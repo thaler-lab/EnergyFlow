@@ -13,19 +13,20 @@
 
   <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/highlight.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
   <link href="../../css/eftheme.css" rel="stylesheet">
   
   <script>
     // Current page data
     var mkdocs_page_name = "Utils";
     var mkdocs_page_input_path = "docs/utils.md";
-    var mkdocs_page_url = "/docs/utils/";
+    var mkdocs_page_url = "/EnergyFlow/docs/utils/";
   </script>
   
-  <script src="../../js/jquery-2.1.1.min.js"></script>
-  <script src="../../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../../js/highlight.pack.js"></script> 
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -36,14 +37,14 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href="../..">
+        <a href="">
             <div class="eflogo">
                 <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
             </div>
         </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -54,7 +55,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="../..">Home</a>
+    <span class="caption-text">Home</span>
 	    </li>
           
             <li class="toctree-l1">
@@ -91,10 +92,6 @@
                 <li class="">
                     
     <a class="" href="../efp/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efm/">Energy Flow Moments</a>
                 </li>
                 <li class=" current">
                     
@@ -137,6 +134,22 @@
             <li><a class="toctree-l4" href="#gen_random_events_massless_com">gen_random_events_massless_com</a></li>
         
             <li><a class="toctree-l4" href="#mass2">mass2</a></li>
+        
+            <li><a class="toctree-l4" href="#data_split">data_split</a></li>
+        
+            <li><a class="toctree-l4" href="#get_examples">get_examples</a></li>
+        
+            <li><a class="toctree-l4" href="#get_file">get_file</a></li>
+        
+            <li><a class="toctree-l4" href="#pixelate">pixelate</a></li>
+        
+            <li><a class="toctree-l4" href="#remap_pids">remap_pids</a></li>
+        
+            <li><a class="toctree-l4" href="#standardize">standardize</a></li>
+        
+            <li><a class="toctree-l4" href="#to_categorical">to_categorical</a></li>
+        
+            <li><a class="toctree-l4" href="#zero_center">zero_center</a></li>
         
         </ul>
     
@@ -576,6 +589,118 @@ particles whose total energy and momentum are all zero.</li>
 </li>
 </ul>
 <hr />
+<p>Functions for dealing with datasets. </p>
+<p>URL handling and hashing functions copied from Keras GitHub repo. 
+The required license and copyright notice are included below.</p>
+<hr />
+<p>COPYRIGHT</p>
+<p>All contributions by Francois Chollet:
+Copyright (c) 2015 - 2018, Francois Chollet.
+All rights reserved.</p>
+<p>All contributions by Google:
+Copyright (c) 2015 - 2018, Google, Inc.
+All rights reserved.</p>
+<p>All contributions by Microsoft:
+Copyright (c) 2017 - 2018, Microsoft, Inc.
+All rights reserved.</p>
+<p>All other contributions:
+Copyright (c) 2015 - 2018, the respective contributors.
+All rights reserved.</p>
+<p>Each contributor holds copyright over their respective contributions.
+The project versioning (Git) records all such contribution source information.</p>
+<p>LICENSE</p>
+<p>The MIT License (MIT)</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
+<hr />
+<h4 id="data_split">data_split</h4>
+<pre><code class="python">energyflow.data_split(args, kwargs)
+</code></pre>
+
+<p>A function to split an arbitrary number of arrays into train, 
+validation, and test sets. If val_frac = 0, then we don't split any 
+events into the validation set. If exactly two arguments are given 
+(an "X" and "Y") then we return (X_train, [X_val], X_test, Y_train, 
+[Y_val], Y_test), otherwise i lists corresponding to the different args
+are returned with each list being [train, [val], test]. Note that all 
+arguments must have the same number of samples otherwise an exception
+will be raised.</p>
+<hr />
+<h4 id="get_examples">get_examples</h4>
+<pre><code class="python">energyflow.get_examples(which='all', path='~/.energyflow')
+</code></pre>
+
+<p>Pulls examples from GitHub.</p>
+<hr />
+<h4 id="get_file">get_file</h4>
+<pre><code class="python">energyflow.thefollowingfunctioniscloselybasedonthematchingKerasfunction
+</code></pre>
+
+<p>Pulls file from the internet.</p>
+<hr />
+<h4 id="pixelate">pixelate</h4>
+<pre><code class="python">energyflow.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, charged_counts_only=False, norm=True)
+</code></pre>
+
+<p>A function for creating a jet image from a list of particles.</p>
+<p>jet: an array containing the list of particles in a jet with each row 
+     representing a particle and the columns being (rapidity, phi, pT, 
+     pdgid), the latter not being necessary for a grayscale image.
+npix: number of pixels along one dimension of the image.
+img_width: the image will be size img_width x img_width
+nb_chan: 1 - returns a grayscale image of total pt
+         2 - returns a two-channel image with total pt and total counts
+norm: whether to normalize the pT channels to 1 according to the L1 norm</p>
+<hr />
+<h4 id="remap_pids">remap_pids</h4>
+<pre><code class="python">energyflow.remap_pids(events, pid_i=3)
+</code></pre>
+
+<p>Remaps PDG id numbers to small floats.</p>
+<hr />
+<h4 id="standardize">standardize</h4>
+<pre><code class="python">energyflow.standardize(args, kwargs)
+</code></pre>
+
+<p>Normalizes each argument by the standard deviation of the pixels in 
+arg[0]. The expected use case would be standardize(X_train, X_val, X_test).</p>
+<p>channels: which channels to zero_center. The default will lead to all
+          channels being affected.
+copy: if True, the arguments are unaffected. if False, the arguments
+      themselves may be modified
+reg: used to prevent divide by zero </p>
+<hr />
+<h4 id="to_categorical">to_categorical</h4>
+<pre><code class="python">energyflow.to_categorical(vector, num_classes=None)
+</code></pre>
+
+<p>One-hot encodes class labels.</p>
+<hr />
+<h4 id="zero_center">zero_center</h4>
+<pre><code class="python">energyflow.zero_center(args, kwargs)
+</code></pre>
+
+<p>Subtracts the mean of arg[0,channels] from the other arguments.
+Assumes that the arguments are numpy arrays. The expected use case would
+be zero_center(X_train, X_val, X_test).</p>
+<p>channels: list of which channels to zero_center. The default will lead to 
+          all channels being affected.
+copy: if True, the arguments are unaffected. if False, the arguments
+      themselves may be modified</p>
+<hr />
               
             </div>
           </div>
@@ -584,7 +709,7 @@ particles whose total energy and momentum are all zero.</li>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="../efm/" class="btn btn-neutral" title="Energy Flow Moments"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../efp/" class="btn btn-neutral" title="Energy Flow Polynomials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -612,17 +737,16 @@ particles whose total energy and momentum are all zero.</li>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../efm/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../efp/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
     </span>
 </div>
     <script>var base_url = '../..';</script>
-    <script src="../../js/theme.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-      <script src="../../js/eftheme.js"></script>
-      <script src="../../search/require.js"></script>
-      <script src="../../search/search.js"></script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="../../js/eftheme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
 
 </body>
 </html>

@@ -7,25 +7,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Documentation for EnergyFlow">
   
-  <link rel="shortcut icon" href="./img/favicon.ico">
+  <link rel="shortcut icon" href="img/favicon.ico">
   <title>Home - EnergyFlow</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="./css/highlight.css">
-  <link href="./css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="css/eftheme.css" rel="stylesheet">
   
   <script>
     // Current page data
     var mkdocs_page_name = "Home";
     var mkdocs_page_input_path = "index.md";
-    var mkdocs_page_url = "/";
+    var mkdocs_page_url = "/EnergyFlow/";
   </script>
   
-  <script src="./js/jquery-2.1.1.min.js"></script>
-  <script src="./js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -36,14 +37,14 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href=".">
+        <a href="">
             <div class="eflogo">
                 <img src="./img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
             </div>
         </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -54,7 +55,7 @@
           
             <li class="toctree-l1 current">
 		
-    <a class="current" href=".">Home</a>
+    <span class="caption-text">Home</span>
     <ul class="subnav">
             
     <li class="toctree-l2"><a href="#welcome-to-energyflow">Welcome to EnergyFlow</a></li>
@@ -106,10 +107,6 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="docs/utils/">Utils</a>
                 </li>
     </ul>
@@ -152,8 +149,8 @@
               
                 <h1 id="welcome-to-energyflow">Welcome to EnergyFlow</h1>
 <p>EnergyFlow is a Python package for computing Energy Flow Polynomials (EFPs), a collection of jet substructure observables which form a complete, linear basis of IRC-safe observables. The source code can be found on <a href="https://github.com/pkomiske/EnergyFlow">GitHub</a>.</p>
-<p>The current version is <code>0.9.2</code>. We recommend that you use the most up-to-date version as things may change quickly. As of version <code>0.7.0</code>, tests have been written covering the majority of the EFP code.</p>
-<p>Get started by <a href="./installation">installing EnergyFlow</a> and <a href="./tutorial">checking out the demo</a>!</p>
+<p>The current version is <code>0.10.2</code>. We recommend that you use the most up-to-date version as things may change quickly. As of version <code>0.7.0</code>, tests have been written covering the majority of the EFP code.</p>
+<p>Get started by <a href="installation">installing EnergyFlow</a> and <a href="tutorial">checking out the demo</a>!</p>
 <h3 id="references">References</h3>
 <p>[1] P.T. Komiske, E.M. Metodiev, and J. Thaler, <em>Energy Flow Polynomials: A complete linear basis for jet substructure</em>, <em><a href="https://doi.org/10.1007/JHEP04(2018)013">JHEP <strong>04</strong> (2018) 013</a></em> [<a href="https://arxiv.org/abs/1712.07124">1712.07124</a>].</p>
               
@@ -198,16 +195,15 @@
     </span>
 </div>
     <script>var base_url = '.';</script>
-    <script src="./js/theme.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-      <script src="./js/eftheme.js"></script>
-      <script src="./search/require.js"></script>
-      <script src="./search/search.js"></script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="js/eftheme.js" defer></script>
+      <script src="search/main.js" defer></script>
 
 </body>
 </html>
 
 <!--
-MkDocs version : 0.17.5
-Build Date UTC : 2018-07-31 15:35:58
+MkDocs version : 1.0
+Build Date UTC : 2018-08-03 14:56:17
 -->

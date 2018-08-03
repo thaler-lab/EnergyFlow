@@ -83,6 +83,7 @@ class Generator(object):
             self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
                                          self.ve_alg, self.np_optimize)
             self.cols = self.pr_gen.cols
+            self._set_col_inds()
 
             # store lists of important quantities
             transfer(self, self.pr_gen, self._prime_attrs())
@@ -119,6 +120,8 @@ class Generator(object):
             for attr in (self._prime_attrs()):
                 setattr(self, attr, [x for x,m in zip(file[attr],mask) if m])
             self.c_specs = c_specs[mask]
+
+
 
         # setup generator of disconnected graphs
         self._set_comp_dmaxs(comp_dmaxs)

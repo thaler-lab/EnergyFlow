@@ -13,12 +13,13 @@
 
   <link rel="stylesheet" href="/EnergyFlow/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="/EnergyFlow/css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="/EnergyFlow/css/highlight.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
   <link href="/EnergyFlow/css/eftheme.css" rel="stylesheet">
   
-  <script src="/EnergyFlow/js/jquery-2.1.1.min.js"></script>
-  <script src="/EnergyFlow/js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="/EnergyFlow/js/highlight.pack.js"></script> 
+  <script src="/EnergyFlow/js/jquery-2.1.1.min.js" defer></script>
+  <script src="/EnergyFlow/js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
   
 </head>
 
@@ -29,10 +30,10 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href="/EnergyFlow/" class="icon icon-home"> EnergyFlow</a>
+        <a href="/EnergyFlow/." class="icon icon-home"> EnergyFlow</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="/EnergyFlow/search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
       </div>
@@ -43,7 +44,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href="/EnergyFlow/">Home</a>
+    <span class="caption-text">Home</span>
 	    </li>
           
             <li class="toctree-l1">
@@ -83,10 +84,6 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="/EnergyFlow/docs/efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="/EnergyFlow/docs/utils/">Utils</a>
                 </li>
     </ul>
@@ -102,7 +99,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="/EnergyFlow/">EnergyFlow</a>
+        <a href="/EnergyFlow/.">EnergyFlow</a>
       </nav>
 
       
@@ -110,7 +107,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="/EnergyFlow/">Docs</a> &raquo;</li>
+    <li><a href="/EnergyFlow/.">Docs</a> &raquo;</li>
     
     
     <li class="wy-breadcrumbs-aside">
@@ -160,11 +157,10 @@
     </span>
 </div>
     <script>var base_url = '/EnergyFlow';</script>
-    <script src="/EnergyFlow/js/theme.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-      <script src="/EnergyFlow/js/eftheme.js"></script>
-      <script src="/EnergyFlow/search/require.js"></script>
-      <script src="/EnergyFlow/search/search.js"></script>
+    <script src="/EnergyFlow/js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="/EnergyFlow/js/eftheme.js" defer></script>
+      <script src="/EnergyFlow/search/main.js" defer></script>
 
 </body>
 </html>
