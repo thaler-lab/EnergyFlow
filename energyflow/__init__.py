@@ -21,4 +21,4 @@ __all__ = (gen.__all__ +
            measure.__all__ + 
            utils.__all__)
 
-__version__ = '0.10.0'
+__version__ = '0.10.1'

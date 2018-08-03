@@ -30,3 +30,13 @@ class LinearClassifier(ArchBase):
             self._model = LogisticRegression(**self.LR_hps)
         else:
             raise ValueError('linclass_type can only be lda or lr')
+
+    def fit(self, *args, **kwargs):
+        return self.model.fit(*args, **kwargs)
+
+    def predict(self, *args, **kwargs):
+        return self.model.predict_proba(*args, **kwargs)
+
+    @property
+    def model(self):
+        return self._model

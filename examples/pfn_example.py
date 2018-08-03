@@ -1,4 +1,4 @@
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
@@ -70,17 +70,17 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-model = PFN(input_dim=X.shape[-1], ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
+pfn = PFN(input_dim=X.shape[-1], ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
 
 # train model
-model.fit(X_train, Y_train,
+pfn.fit(X_train, Y_train,
           epochs=num_epoch,
           batch_size=batch_size,
           validation_data=(X_val, Y_val),
           verbose=1)
 
 # get ROC curve
-preds = model.predict(X_test, batch_size=1000)
+preds = pfn.predict(X_test, batch_size=1000)
 
 if roc_curve:
     pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])

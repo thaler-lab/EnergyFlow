@@ -1,4 +1,4 @@
-from __future__ import division, print_function
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
@@ -55,7 +55,7 @@ rocs = []
 for i,num_nsub in enumerate(num_nsubs):
 
     # build architecture
-    model = DNN(input_dim=num_nsub, dense_sizes=dense_sizes, summary=(i==0))
+    dnn = DNN(input_dim=num_nsub, dense_sizes=dense_sizes, summary=(i==0))
 
     # do train/val/test split 
     (X_train, X_val, X_test,
@@ -64,14 +64,14 @@ for i,num_nsub in enumerate(num_nsubs):
     print('Done train/val/test split')
 
     # train model
-    model.fit(X_train, Y_train,
+    dnn.fit(X_train, Y_train,
               epochs=num_epoch,
               batch_size=batch_size,
               validation_data=(X_val, Y_val),
               verbose=1)
 
     # get ROC curve
-    preds = model.predict(X_test, batch_size=1000)
+    preds = dnn.predict(X_test, batch_size=1000)
 
     if roc_curve:
         rocs.append(roc_curve(Y_test[:,1], preds[:,1]))

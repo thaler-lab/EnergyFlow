@@ -75,7 +75,7 @@ def data_split(*args, **kwargs):
     """
 
     # handle valid kwargs
-    train, val, test = kwargs.pop('train', -1), kwargs.pop('val', 0.1), kwargs.pop('test', 0.1)
+    train, val, test = kwargs.pop('train', -1), kwargs.pop('val', 0.0), kwargs.pop('test', 0.1)
     shuffle = kwargs.pop('shuffle', True)
     if len(kwargs):
         raise TypeError('following kwargs are invalid: {}'.format(kwargs))

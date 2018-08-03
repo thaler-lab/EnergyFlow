@@ -4,7 +4,7 @@ import numpy as np
 
 from energyflow.utils import get_file
 
-def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
+def load(num_data=-1, filename='QG_jets.npz', cache_dir=None):
 
     fpath = get_file(filename, 
                      url='https://www.dropbox.com/s/fclsl7pukcpobsb/QG_jets.npz?dl=1',
