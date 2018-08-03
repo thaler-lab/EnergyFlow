@@ -14,6 +14,8 @@ __all__ = ['CNN']
 
 class CNN(NNBase):
 
+    """CNN docstring."""
+
     def process_hps(self):
 
         # process generic NN hps

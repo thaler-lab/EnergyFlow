@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  
+  <meta name="author" content="Patrick T. Komiske III">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Measures - EnergyFlow</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
@@ -37,7 +37,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href="">
+        <a href="../..">
             <div class="eflogo">
                 <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
             </div>
@@ -99,12 +99,6 @@
 
     <li class="toctree-l3"><a href="#measure">Measure</a></li>
     
-        <ul>
-        
-            <li><a class="toctree-l4" href="#evaluate">evaluate</a></li>
-        
-        </ul>
-    
 
     </ul>
                 </li>
@@ -122,7 +116,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../archs.md">Architectures</a>
+    <a class="" href="../archs/">Architectures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../datasets/">Datasets</a>
                 </li>
     </ul>
 	    </li>
@@ -206,51 +204,10 @@ of the normalized particle four-momenta are used.</p>
 </p>
 <hr />
 <h3 id="measure">Measure</h3>
+<pre><code class="python">energyflow.Measure(args, kwargs)
+</code></pre>
+
 <p>Class for dealing with any kind of measure.</p>
-<pre><code class="python">energyflow.Measure(measure, beta=1, kappa=1, normed=True, coords=None, check_input=True)
-</code></pre>
-
-<p>Processes inputs according to the measure choice.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li>
-<p><strong>measure</strong> : <em>string</em></p>
-<ul>
-<li>The string specifying the energy and angular measures to use.</li>
-</ul>
-</li>
-<li>
-<p><strong>beta</strong> : <em>float</em> or 'pf'</p>
-<ul>
-<li>The angular weighting exponent $\beta$. Must be positive.</li>
-</ul>
-</li>
-<li>
-<p><strong>kappa</strong> : <em>float</em></p>
-<ul>
-<li>If a number, the energy weighting exponent $\kappa$. If <code>'pf'</code>, use $\kappa=v$
- where $v$ is the valency of the vertex. <code>'pf'</code> can be used with measure except <code>'hadr'</code>.
- Only IRC-safe for <code>kappa=1</code>.</li>
-</ul>
-</li>
-<li>
-<p><strong>normed</strong> : bool</p>
-<ul>
-<li>Whether or not to use normalized energies</li>
-</ul>
-</li>
-<li>
-<p><strong>check_input</strong> : bool</p>
-<ul>
-<li>Whether to check the type of input each time or assume the first input type.</li>
-</ul>
-</li>
-</ul>
-<h4 id="evaluate">evaluate</h4>
-<pre><code class="python">evaluate(arg)
-</code></pre>
-
-<p>Evaluate</p>
 <hr />
               
             </div>

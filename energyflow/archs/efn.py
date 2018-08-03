@@ -119,6 +119,8 @@ class SymmetricPerParticleNN(NNBase):
 
 class EFN(SymmetricPerParticleNN):
 
+    """EFN docstring."""
+
     def construct_input_layers(self):
 
         zs_input = Input(batch_shape=(None, None), name='zs_input')
@@ -138,6 +140,8 @@ class EFN(SymmetricPerParticleNN):
 ###############################################################################
 
 class PFN(SymmetricPerParticleNN):
+
+    """PFN docstring."""
 
     def construct_input_layers(self):
 

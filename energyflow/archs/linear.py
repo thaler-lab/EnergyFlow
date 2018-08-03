@@ -9,6 +9,8 @@ __all__ = ['LinearClassifier']
 
 class LinearClassifier(ArchBase):
 
+    """LinearClassifier docstring."""
+
     def process_hps(self):
 
         # which type of linear model we're using

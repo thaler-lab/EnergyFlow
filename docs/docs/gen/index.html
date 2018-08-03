@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  
+  <meta name="author" content="Patrick T. Komiske III">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Generation - EnergyFlow</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
@@ -37,7 +37,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href="">
+        <a href="../..">
             <div class="eflogo">
                 <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
             </div>
@@ -92,12 +92,6 @@
             
     <li class="toctree-l3"><a href="#generator">Generator</a></li>
     
-        <ul>
-        
-            <li><a class="toctree-l4" href="#save">save</a></li>
-        
-        </ul>
-    
 
     </ul>
                 </li>
@@ -111,7 +105,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../archs.md">Architectures</a>
+    <a class="" href="../archs/">Architectures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../datasets/">Datasets</a>
                 </li>
     </ul>
 	    </li>
@@ -158,82 +156,10 @@
                 <p>Implementation of EFP Generator class.</p>
 <hr />
 <h3 id="generator">Generator</h3>
+<pre><code class="python">energyflow.Generator
+</code></pre>
+
 <p>Generates non-isomorphic multigraphs according to provided specifications.</p>
-<pre><code class="python">energyflow.Generator(dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None, filename=None, ve_alg='numpy', np_optimize='greedy', verbose=False)
-</code></pre>
-
-<p>Doing a fresh generation of connected multigraphs (<code>filename=None</code>) requires
-that <code>igraph</code> be installed.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>dmax</strong> : <em>int</em><ul>
-<li>The maximum number of edges of the generated connected graphs.</li>
-</ul>
-</li>
-<li><strong>nmax</strong> : <em>int</em><ul>
-<li>The maximum number of vertices of the generated connected graphs.</li>
-</ul>
-</li>
-<li><strong>emax</strong> : <em>int</em><ul>
-<li>The maximum number of edges of the generated connected simple graphs.</li>
-</ul>
-</li>
-<li><strong>cmax</strong> : <em>int</em><ul>
-<li>The maximum VE complexity $\chi$ of the generated connected graphs.</li>
-</ul>
-</li>
-<li><strong>vmax</strong> : <em>int</em><ul>
-<li>The maximum valency of the generated connected graphs.</li>
-</ul>
-</li>
-<li><strong>comp_dmaxs</strong> : {<em>dict</em>, <em>int</em>}<ul>
-<li>If an integer, the maximum number of edges of the generated disconnected 
-graphs. If a dictionary, the keys are numbers of vertices and the values are
-the maximum number of edges of the generated disconnected graphs with that
-number of vertices.</li>
-</ul>
-</li>
-<li><strong>filename</strong> : <em>str</em><ul>
-<li>If <code>None</code>, do a complete generation from scratch. If set to a string, 
-read in connected graphs from the file given, restrict them according to 
-the various 'max' parameters, and do a fresh disconnected generation. The special
-value <code>filename='default'</code> means to read in graphs from the default file. This
-is useful when various disconnected graph parameters are to be varied since the 
-generation of large simple graphs is the most computationlly intensive part.</li>
-</ul>
-</li>
-<li><strong>ve_alg</strong> : {<code>'numpy'</code>, <code>'ef'</code>}<ul>
-<li>Which variable elimination algorithm to use.</li>
-</ul>
-</li>
-<li><strong>np_optimize</strong> : {<code>True</code>, <code>False</code>, <code>'greedy'</code>, <code>'optimal'</code>}<ul>
-<li>When <code>ve_alg='numpy'</code> this is the <code>optimize</code> keyword
-of <code>numpy.einsum_path</code>.</li>
-</ul>
-</li>
-<li><strong>verbose</strong> : <em>bool</em><ul>
-<li>A flag to control printing.</li>
-</ul>
-</li>
-</ul>
-<h4 id="save">save</h4>
-<pre><code class="python">save(filename)
-</code></pre>
-
-<p>Save the current generator to file.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>filename</strong> : <em>str</em><ul>
-<li>The path to save the file.</li>
-</ul>
-</li>
-</ul>
-<h5 id="specs">specs</h5>
-<pre><code class="python">specs
-</code></pre>
-
-<p>An array of EFP specifications. Each row represents an EFP 
-and the columns represent the quantities indicated by <code>cols</code>.</p>
 <hr />
               
             </div>

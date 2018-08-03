@@ -5,26 +5,26 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Documentation for EnergyFlow">
+  
   <meta name="author" content="Patrick T. Komiske III">
-  <link rel="shortcut icon" href="img/favicon.ico">
-  <title>Home - EnergyFlow</title>
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Architectures - EnergyFlow</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="css/eftheme.css" rel="stylesheet">
+  <link href="../../css/eftheme.css" rel="stylesheet">
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Home";
-    var mkdocs_page_input_path = "index.md";
-    var mkdocs_page_url = "/EnergyFlow/";
+    var mkdocs_page_name = "Architectures";
+    var mkdocs_page_input_path = "docs/archs.md";
+    var mkdocs_page_url = "/EnergyFlow/docs/archs/";
   </script>
   
-  <script src="js/jquery-2.1.1.min.js" defer></script>
-  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
@@ -37,13 +37,13 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href=".">
+        <a href="../..">
             <div class="eflogo">
-                <img src="./img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
             </div>
         </a>
         <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
@@ -53,21 +53,9 @@
 	<ul class="current">
 	  
           
-            <li class="toctree-l1 current">
+            <li class="toctree-l1">
 		
     <span class="caption-text">Home</span>
-    <ul class="subnav">
-            
-    <li class="toctree-l2"><a href="#welcome-to-energyflow">Welcome to EnergyFlow</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l3" href="#references">References</a></li>
-        
-        </ul>
-    
-
-    </ul>
 	    </li>
           
             <li class="toctree-l1">
@@ -76,15 +64,15 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="installation/">Installation</a>
+    <a class="" href="../../installation/">Installation</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="tutorial/">Tutorial</a>
+    <a class="" href="../../tutorial/">Tutorial</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="faq/">FAQ</a>
+    <a class="" href="../../faq/">FAQ</a>
                 </li>
     </ul>
 	    </li>
@@ -95,27 +83,45 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="docs/measure/">Measures</a>
+    <a class="" href="../measure/">Measures</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/gen/">Generation</a>
+    <a class="" href="../gen/">Generation</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/efp/">Energy Flow Polynomials</a>
+    <a class="" href="../efp/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/utils/">Utils</a>
+    <a class="" href="../utils/">Utils</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">Architectures</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#cnn">CNN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#dnn">DNN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#efn">EFN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#pfn">PFN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#linearclassifier">LinearClassifier</a></li>
+    
+
+    </ul>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/archs/">Architectures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="docs/datasets/">Datasets</a>
+    <a class="" href="../datasets/">Datasets</a>
                 </li>
     </ul>
 	    </li>
@@ -130,7 +136,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href=".">EnergyFlow</a>
+        <a href="../..">EnergyFlow</a>
       </nav>
 
       
@@ -138,14 +144,18 @@
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".">Docs</a> &raquo;</li>
+    <li><a href="../..">Docs</a> &raquo;</li>
     
       
+        
+          <li>Documentation &raquo;</li>
+        
+      
     
-    <li>Home</li>
+    <li>Architectures</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/index.md"
+        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/archs.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -155,12 +165,38 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="welcome-to-energyflow">Welcome to EnergyFlow</h1>
-<p>EnergyFlow is a Python package for computing Energy Flow Polynomials (EFPs), a collection of jet substructure observables which form a complete, linear basis of IRC-safe observables. The source code can be found on <a href="https://github.com/pkomiske/EnergyFlow">GitHub</a>.</p>
-<p>The current version is <code>0.10.2</code>. We recommend that you use the most up-to-date version as things may change quickly. As of version <code>0.7.0</code>, tests have been written covering the majority of the EFP code.</p>
-<p>Get started by <a href="installation">installing EnergyFlow</a> and <a href="tutorial">checking out the demo</a>!</p>
-<h3 id="references">References</h3>
-<p>[1] P.T. Komiske, E.M. Metodiev, and J. Thaler, <em>Energy Flow Polynomials: A complete linear basis for jet substructure</em>, <em><a href="https://doi.org/10.1007/JHEP04(2018)013">JHEP <strong>04</strong> (2018) 013</a></em> [<a href="https://arxiv.org/abs/1712.07124">1712.07124</a>].</p>
+                <p>Test.</p>
+<hr />
+<h3 id="cnn">CNN</h3>
+<pre><code class="python">energyflow.CNN(args, kwargs)
+</code></pre>
+
+<p>CNN docstring.</p>
+<hr />
+<h3 id="dnn">DNN</h3>
+<pre><code class="python">energyflow.DNN(args, kwargs)
+</code></pre>
+
+<p>DNN docstring.</p>
+<hr />
+<h3 id="efn">EFN</h3>
+<pre><code class="python">energyflow.EFN(args, kwargs)
+</code></pre>
+
+<p>EFN docstring.</p>
+<hr />
+<h3 id="pfn">PFN</h3>
+<pre><code class="python">energyflow.PFN(args, kwargs)
+</code></pre>
+
+<p>PFN docstring.</p>
+<hr />
+<h3 id="linearclassifier">LinearClassifier</h3>
+<pre><code class="python">energyflow.LinearClassifier(args, kwargs)
+</code></pre>
+
+<p>LinearClassifier docstring.</p>
+<hr />
               
             </div>
           </div>
@@ -168,8 +204,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../datasets/" class="btn btn-neutral float-right" title="Datasets">Next <span class="icon icon-circle-arrow-right"></span></a>
       
+      
+        <a href="../utils/" class="btn btn-neutral" title="Utils"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -197,21 +235,18 @@
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
+        <span><a href="../utils/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-        <span style="margin-left: 15px"><a href="installation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+        <span style="margin-left: 15px"><a href="../datasets/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script>var base_url = '.';</script>
-    <script src="js/theme.js" defer></script>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
-      <script src="js/eftheme.js" defer></script>
-      <script src="search/main.js" defer></script>
+      <script src="../../js/eftheme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
 
 </body>
 </html>
-
-<!--
-MkDocs version : 1.0
-Build Date UTC : 2018-08-03 18:17:30
--->

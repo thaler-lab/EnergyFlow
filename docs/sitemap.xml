@@ -41,8 +41,13 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc></loc>
-     
+     <loc>https://pkomiske.github.io/EnergyFlow/docs/archs/</loc>
+     <lastmod>2018-08-03</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://pkomiske.github.io/EnergyFlow/docs/datasets/</loc>
+     <lastmod>2018-08-03</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

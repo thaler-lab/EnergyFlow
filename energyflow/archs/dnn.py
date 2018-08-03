@@ -15,6 +15,8 @@ __all__ = ['DNN']
 
 class DNN(NNBase):
 
+    """DNN docstring."""
+
     def process_hps(self):
 
         # process generic NN hps

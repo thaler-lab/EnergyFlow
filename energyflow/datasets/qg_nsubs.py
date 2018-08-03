@@ -1,10 +1,16 @@
+"""###QG_nsubs"""
+
 from __future__ import absolute_import
 
 import numpy as np
 
 from energyflow.utils import _get_file
 
+__all__ = ['load']
+
 def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
+
+    """load docstring."""
 
     fpath = _get_file(filename, 
                       url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
