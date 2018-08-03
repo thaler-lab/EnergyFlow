@@ -1,5 +1,4 @@
-"""
-### Test Event Generation
+"""### Random Event Generation
 
 Functions to generate random sets of four-vectors. Includes an implementation
 of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
@@ -14,10 +13,9 @@ import os
 import numpy as np
 
 __all__ = [
-    'gen_massless_phase_space',
     'gen_random_events',
     'gen_random_events_massless_com',
-    'mass2'
+    'gen_massless_phase_space'
 ]
 
 ###############################################################################
@@ -154,22 +152,4 @@ def gen_random_events_massless_com(nevents, nparticles, dim=4):
     factors = events_1_tot[:,0]/events_2_tot[:,0]
 
     return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
-
-def mass2(events):
-    """Compute the squared masses of every particle in events with any-dimensional energy-momentum vectors.
-
-    **Arguments**
-
-    - **events** : _numpy.ndarray_
-        - Events as an (`nevents`, `M`, `dim`) array of dim-vectors `[p0, p1, ..., pdim-1]` for each particle.
-
-    **Returns**
-
-    - _numpy.ndarray_
-        - An (`nevents`, `M`) array of calculated particle masses.
-    """
-
-    events = np.atleast_2d(events)
-    return np.squeeze(events[...,0]**2 - np.sum(events[...,1:]**2, axis=-1))
-
     

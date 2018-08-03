@@ -1,5 +1,4 @@
-"""
-### Particle Tools
+"""### Particle Tools
 
 Tools to compute particle kinematic quantities from four-vectors,
 such as transverse momentum $p_T$, rapidity $y$, and azimuthal angle
@@ -11,18 +10,16 @@ from __future__ import absolute_import, division
 
 import numpy as np
 
-from energyflow.utils.event_utils import mass2
-
 __all__ = [
-    'flat_metric',
-    'p4s_from_ptyphims',
-    'p4s_from_ptyphis',
+    'ptyphims_from_p4s',
     'pts_from_p4s',
     'ys_from_p4s',
-    'phi_fix',
     'phis_from_p4s',
     'ms_from_p4s',
-    'ptyphims_from_p4s'
+    'p4s_from_ptyphims',
+    'p4s_from_ptyphis',
+    'phi_fix',
+    'flat_metric',
 ]
 
 ###############################################################################
@@ -169,7 +166,6 @@ def phi_fix(phis, phi_ref, copy=False):
     new_phis[diff < -np.pi] += twopi
     return new_phis
 
-
 def phis_from_p4s(p4s, phi_ref=None):
     """Calculate the azimuthal angles of a collection of four-vectors. If `phi_ref` is 
     not `None`, then `phi_fix` is called using this value. Otherwise, 
@@ -216,9 +212,10 @@ def ms_from_p4s(p4s):
         particle was given as input, a single float is returned.
     """
 
-    m2s = mass2(p4s)
+    p4s = np.atleast_2d(p4s)
+    m2s = np.squeeze(p4s[...,0]**2 - np.sum(p4s[...,1:]**2, axis=-1))
     ms = np.sign(m2s)*np.sqrt(np.abs(m2s))
-    return ms
+    return np.squeeze(ms)
 
 def ptyphims_from_p4s(p4s, phi_ref=None, keep_shape=True):
     """Compute the $(p_T,y,\phi,m)$ representation of a four-vector for each Euclidean

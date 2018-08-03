@@ -1,7 +1,11 @@
+# standard library imports
 from __future__ import absolute_import, division, print_function
+import sys
 
+# standard numerical library imports
 import numpy as np
 
+# energyflow imports
 import energyflow as ef
 from energyflow.archs import DNN
 from energyflow.datasets import qg_nsubs
@@ -20,7 +24,6 @@ try:
 except:
     print('please install matploltib in order to make plots')
     plt = False
-
 
 ################################### SETTINGS ###################################
 
@@ -51,6 +54,7 @@ print()
 print('Loaded quark and gluon jets')
 print('Model summary:')
 
+# train models with different numbers of nsubs as input
 rocs = []
 for i,num_nsub in enumerate(num_nsubs):
 
@@ -70,30 +74,39 @@ for i,num_nsub in enumerate(num_nsubs):
               validation_data=(X_val, Y_val),
               verbose=1)
 
-    # get ROC curve
+    # get predictions on test data
     preds = dnn.predict(X_test, batch_size=1000)
 
+    # get ROC curve if we have sklearn
     if roc_curve:
         rocs.append(roc_curve(Y_test[:,1], preds[:,1]))
+
+        # get area under the ROC curve
         auc = roc_auc_score(Y_test[:,1], preds[:,1])
         print()
         print('{} nsubs DNN AUC:'.format(num_nsub), auc)
         print()
 
+# make ROC curve plot if we have matplotlib
 if plt:
 
+    # some nicer plot settings 
     plt.rcParams['figure.figsize'] = (4,4)
     plt.rcParams['font.family'] = 'serif'
     plt.rcParams['figure.autolayout'] = True
 
-    for i in range(len(num_nsubs)):
+    # iterate over the ROC curves and plot them
+    for i in range(len(rocs)):
         plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], label='DNN: {} N-subs'.format(num_nsubs[i]))
 
+    # axes labels
     plt.xlabel('Quark Jet Efficiency')
     plt.ylabel('Gluon Jet Rejection')
 
+    # axes limits
     plt.xlim(0, 1)
     plt.ylim(0, 1)
 
+    # make legend and show plot
     plt.legend(loc='lower left', frameon=False)
     plt.show()

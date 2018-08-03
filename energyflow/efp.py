@@ -1,5 +1,4 @@
-"""
-Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
+"""Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
 multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
 observables.
 
@@ -183,7 +182,7 @@ class EFPSet(EFPBase):
     """A class that holds a collection of EFPs and computes their values on events."""
 
     # EFPSet(*args, filename=None, measure='hadrdot', beta=1, kappa=1, normed=True, 
-    #        check_input=True, verbose=False)
+    #        coords='ptyphim', check_input=True, verbose=False)
     def __init__(self, *args, **kwargs):
         """
         EFPSet can be initialized in one of three ways (in order of precedence):

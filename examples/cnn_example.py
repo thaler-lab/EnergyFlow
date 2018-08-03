@@ -1,9 +1,11 @@
+# standard library imports
 from __future__ import absolute_import, division, print_function
-
 import sys
 
+# standard numerical library imports
 import numpy as np
 
+# energyflow imports
 import energyflow as ef
 from energyflow.archs import CNN
 from energyflow.datasets import qg_jets
@@ -67,7 +69,7 @@ print('\n', 'Loaded quark and gluon jets')
 images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 
                                  charged_counts_only=True, norm=norm) for x in X])
 
-print('Made jet images')
+print('Done making jet images')
 
 # do train/val/test split 
 (X_train, X_val, X_test,
@@ -96,38 +98,46 @@ cnn.fit(X_train, Y_train,
           validation_data=(X_val, Y_val),
           verbose=1)
 
-# get ROC curve
+# get predictions on test data
 preds = cnn.predict(X_test, batch_size=1000)
 
+# get ROC curve if we have sklearn
 if roc_curve:
     cnn_fp, cnn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+
+    # get area under the ROC curve
     auc = roc_auc_score(Y_test[:,1], preds[:,1])
     print()
     print('CNN AUC:', auc)
     print()
 
+    # make ROC curve plot if we have matplotlib
     if plt:
 
         # get multiplicity and mass for comparison
         masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
+        # some nicer plot settings 
         plt.rcParams['figure.figsize'] = (4,4)
         plt.rcParams['font.family'] = 'serif'
         plt.rcParams['figure.autolayout'] = True
 
+        # plot the ROC curves
         plt.plot(cnn_tp, 1-cnn_fp, '-', color='black', label='CNN')
         plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
         plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
+        # axes labels
         plt.xlabel('Quark Jet Efficiency')
         plt.ylabel('Gluon Jet Rejection')
 
+        # axes limits
         plt.xlim(0, 1)
         plt.ylim(0, 1)
 
+        # make legend and show plot
         plt.legend(loc='lower left', frameon=False)
         plt.show()

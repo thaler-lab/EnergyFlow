@@ -1,52 +1,10 @@
-"""Functions for dealing with datasets. 
+"""### Data Tools
+
+Functions for dealing with datasets. 
 
 URL handling and hashing functions copied from Keras GitHub repo. 
-The required license and copyright notice are included below.
-
--------------------------------------------------------------------------------
-
-COPYRIGHT
-
-All contributions by Francois Chollet:
-Copyright (c) 2015 - 2018, Francois Chollet.
-All rights reserved.
-
-All contributions by Google:
-Copyright (c) 2015 - 2018, Google, Inc.
-All rights reserved.
-
-All contributions by Microsoft:
-Copyright (c) 2017 - 2018, Microsoft, Inc.
-All rights reserved.
-
-All other contributions:
-Copyright (c) 2015 - 2018, the respective contributors.
-All rights reserved.
-
-Each contributor holds copyright over their respective contributions.
-The project versioning (Git) records all such contribution source information.
-
-LICENSE
-
-The MIT License (MIT)
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The required license and copyright notice are provided in LICENSE
+which is distributed with this software package.
 """
 
 from __future__ import absolute_import, division, print_function
@@ -60,8 +18,14 @@ import numpy as np
 
 from six.moves.urllib.error import HTTPError, URLError
 
-__all__ = ['data_split', 'get_examples', 'get_file', 'pixelate', 'remap_pids', 
-           'standardize', 'to_categorical', 'zero_center']
+__all__ = ['get_examples', 
+           'data_split', 
+           'to_categorical',
+           'pixelate',
+           'standardize',
+           'zero_center',
+           'remap_pids',
+           '_get_file']
 
 def data_split(*args, **kwargs):
     """A function to split an arbitrary number of arrays into train, 
@@ -121,10 +85,10 @@ def get_examples(which='all', path='~/.energyflow'):
 
     base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
     for example in examples:
-        fpath = get_file(example, 
-                 url=base_url+example,
-                 cache_dir=os.path.expanduser(path),
-                 cache_subdir='examples')
+        fpath = _get_file(example, 
+                          url=base_url+example,
+                          cache_dir=os.path.expanduser(path),
+                          cache_subdir='examples')
 
 # PDGid to isCharged dictionary
 pid2abschg_mapping = {22: 0,             # photon
@@ -407,7 +371,7 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=65535):
 # end code copied from Keras
 
 # the following function is closely based on the matching Keras function
-def get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=None):
+def _get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=None):
     """Pulls file from the internet."""
 
     # cache_dir = None means use default cache

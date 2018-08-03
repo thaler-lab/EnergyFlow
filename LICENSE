@@ -21,9 +21,7 @@ which parts of EnergyFlow make direct use of code from these libraries.
 --------------------------------------------------------------------------
 
 energyflow/algorithms/einsumfunc.py is a custom replacement for NumPy's 
-einsumfunc.py. It has exactly the same functionality but includes a 
-flag for turning off BLAS usage completely, which is useful for dealing
-with small tensors. The core file was taken from the master branch of 
+einsumfunc.py. The core file was taken from the master branch of 
 the NumPy repo on GitHub on 07/31/2018. The commit number is 
 1cedbfbcd84f7131e347ca39a8908ce05eaf3fe9. The required copyright notice 
 is provided below.

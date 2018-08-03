@@ -1,7 +1,11 @@
+# standard library imports
 from __future__ import absolute_import, division, print_function
+import sys
 
+# standard numerical library imports
 import numpy as np
 
+# energyflow imports
 import energyflow as ef
 from energyflow.archs import EFN
 from energyflow.datasets import qg_jets
@@ -20,7 +24,6 @@ try:
 except:
     print('please install matploltib in order to make plots')
     plt = False
-
 
 ################################### SETTINGS ###################################
 
@@ -41,14 +44,14 @@ batch_size = 100
 # load data
 X, y = qg_jets.load(num_data=num_data)
 
+# ignore pid information
+X = X[:,:,:3]
+
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
 print()
 print('Loaded quark and gluon jets')
-
-# ignore pid information
-X = X[:,:,:3]
 
 # preprocess by centering jets and normalizing pts
 for x in X:
@@ -78,38 +81,46 @@ efn.fit([z_train, p_train], Y_train,
           validation_data=([z_val, p_val], Y_val),
           verbose=1)
 
-# get ROC curve
+# get predictions on test data
 preds = efn.predict([z_test, p_test], batch_size=1000)
 
+get ROC curve if we have sklearn
 if roc_curve:
     efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+
+    # get area under the ROC curve
     auc = roc_auc_score(Y_test[:,1], preds[:,1])
     print()
     print('EFN AUC:', auc)
     print()
 
+    # make ROC curve plot if we have matplotlib
     if plt:
 
         # get multiplicity and mass for comparison
         masses = np.asarray([np.sqrt(ef.mass2(ef.p4s_from_ptyphis(x).sum(axis=0))) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
+        # some nicer plot settings 
         plt.rcParams['figure.figsize'] = (4,4)
         plt.rcParams['font.family'] = 'serif'
         plt.rcParams['figure.autolayout'] = True
 
+        # plot the ROC curves
         plt.plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
         plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
         plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
+        # axes labels
         plt.xlabel('Quark Jet Efficiency')
         plt.ylabel('Gluon Jet Rejection')
 
+        # axes limits
         plt.xlim(0, 1)
         plt.ylim(0, 1)
 
+        # make legend and show plot
         plt.legend(loc='lower left', frameon=False)
         plt.show()
