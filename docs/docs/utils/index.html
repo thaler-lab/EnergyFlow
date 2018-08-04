@@ -533,54 +533,163 @@ non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <cod
 </ul>
 <hr />
 <h4 id="to_categorical">to_categorical</h4>
-<pre><code class="python">energyflow.utils.to_categorical(vector, num_classes=None)
+<pre><code class="python">energyflow.utils.to_categorical(labels, num_classes=None)
 </code></pre>
 
 <p>One-hot encodes class labels.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>labels</strong> : <em>1-d numpy.ndarray</em><ul>
+<li>Labels in the range <code>[0,num_classes)</code>.</li>
+</ul>
+</li>
+<li><strong>num_classes</strong> : {<em>int</em>, <code>None</code>}<ul>
+<li>The total number of classes. If <code>None</code>, taken to be the 
+maximum label plus one.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>2-d numpy.ndarray</em><ul>
+<li>The one-hot encoded labels.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="pixelate">pixelate</h4>
-<pre><code class="python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, charged_counts_only=False, norm=True)
+<pre><code class="python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
 </code></pre>
 
-<p>A function for creating a jet image from a list of particles.</p>
-<p>jet: an array containing the list of particles in a jet with each row 
-     representing a particle and the columns being (rapidity, phi, pT, 
-     pdgid), the latter not being necessary for a grayscale image.
-npix: number of pixels along one dimension of the image.
-img_width: the image will be size img_width x img_width
-nb_chan: 1 - returns a grayscale image of total pt
-         2 - returns a two-channel image with total pt and total counts
-norm: whether to normalize the pT channels to 1 according to the L1 norm</p>
+<p>A function for creating a jet image from an array of particles.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>jet</strong> : <em>numpy.ndarray</em><ul>
+<li>An array of particles where each particle is of the form 
+[<code>pt</code>,<code>y</code>,<code>phi</code>,<code>pid</code>] where the particle id column is only 
+used if <code>nb_chan=2</code> and <code>charged_counts_only=True</code>.</li>
+</ul>
+</li>
+<li><strong>npix</strong> : <em>int</em><ul>
+<li>The number of pixels on one edge of the jet image, which is
+taken to be a square.</li>
+</ul>
+</li>
+<li><strong>img_width</strong> : <em>float</em><ul>
+<li>The size of one edge of the jet image in the rapidity-azimuth
+plane.</li>
+</ul>
+</li>
+<li><strong>nb_chan</strong> : {<code>1</code>, <code>2</code>}<ul>
+<li>The number of channels in the jet image. If <code>1</code>, then only a
+$p_T$ channel is constructed (grayscale). If <code>2</code>, then both a 
+$p_T$ channel and a count channel are formed (color).</li>
+</ul>
+</li>
+<li><strong>norm</strong> : <em>bool</em><ul>
+<li>Whether to normalize the $p_T$ pixels to sum to <code>1</code>.</li>
+</ul>
+</li>
+<li><strong>charged_counts_only</strong> : <em>bool</em><ul>
+<li>If making a count channel, whether to only include charged 
+particles. Requires that <code>pid</code> information be given.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>3-d numpy.ndarray</em><ul>
+<li>The jet image as a <code>(nb_chan, npix, npix)</code> array.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="standardize">standardize</h4>
-<pre><code class="python">energyflow.utils.standardize(args, kwargs)
+<pre><code class="python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
 </code></pre>
 
-<p>Normalizes each argument by the standard deviation of the pixels in 
-arg[0]. The expected use case would be standardize(X_train, X_val, X_test).</p>
-<p>channels: which channels to zero_center. The default will lead to all
-          channels being affected.
-copy: if True, the arguments are unaffected. if False, the arguments
-      themselves may be modified
-reg: used to prevent divide by zero </p>
+<p>Normalizes each argument by the standard deviation of the pixels
+in arg[0]. The expected use case would be <code>standardize(X_train, X_val, 
+X_test)</code>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of datasets, each required to have
+the same shape in all but the first axis.</li>
+</ul>
+</li>
+<li><strong>channels</strong> : <em>int</em><ul>
+<li>A list of which channels (assumed to be the second axis)
+to standardize. <code>None</code> is interpretted to mean every channel.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input arrays before modifying them.</li>
+</ul>
+</li>
+<li><strong>reg</strong> : <em>float</em><ul>
+<li>Small parameter used to avoid dividing by zero. It's important
+that this be kept consistent for images used with a given model.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> <ul>
+<li>A list of the now-standardized arguments.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="zero_center">zero_center</h4>
 <pre><code class="python">energyflow.utils.zero_center(args, kwargs)
 </code></pre>
 
-<p>Subtracts the mean of arg[0,channels] from the other arguments.
-Assumes that the arguments are numpy arrays. The expected use case would
-be zero_center(X_train, X_val, X_test).</p>
-<p>channels: list of which channels to zero_center. The default will lead to 
-          all channels being affected.
-copy: if True, the arguments are unaffected. if False, the arguments
-      themselves may be modified</p>
+<p>Subtracts the mean of arg[0] from the arguments. The expected 
+use case would be <code>standardize(X_train, X_val, X_test)</code>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of datasets, each required to have
+the same shape in all but the first axis.</li>
+</ul>
+</li>
+<li><strong>channels</strong> : <em>int</em><ul>
+<li>A list of which channels (assumed to be the second axis)
+to zero center. <code>None</code> is interpretted to mean every channel.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input arrays before modifying them.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> <ul>
+<li>A list of the zero-centered arguments.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="remap_pids">remap_pids</h4>
 <pre><code class="python">energyflow.utils.remap_pids(events, pid_i=3)
 </code></pre>
 
-<p>Remaps PDG id numbers to small floats.</p>
+<p>Remaps PDG id numbers to small floats for use in a neural network.
+`events are modified in place and nothing is returned.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>events</strong> : <em>3-d numpy.ndarray</em><ul>
+<li>The events as an array of arrays of particles.</li>
+</ul>
+</li>
+<li><strong>pid_i</strong> : <em>int</em><ul>
+<li>The index corresponding to pid information along the last 
+axis of <code>events</code>.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h3 id="random-events">Random Events</h3>
 <p>Functions to generate random sets of four-vectors. Includes an implementation

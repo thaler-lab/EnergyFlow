@@ -138,6 +138,36 @@ def data_split(*args, **kwargs):
     # return list of new datasets
     return [arg[mask] for arg in args for mask in masks]
 
+def to_categorical(labels, num_classes=None):
+    """One-hot encodes class labels.
+
+    **Arguments**
+
+    - **labels** : _1-d numpy.ndarray_
+        - Labels in the range `[0,num_classes)`.
+    - **num_classes** : {_int_, `None`}
+        - The total number of classes. If `None`, taken to be the 
+        maximum label plus one.
+
+    **Returns**
+
+    - _2-d numpy.ndarray_
+        - The one-hot encoded labels.
+    """
+
+    # get num_classes from max label if None
+    if num_classes is None:
+        num_classes = np.max(labels) + 1
+
+    y = np.asarray(labels, dtype=int)
+    n = y.shape[0]
+    categorical = np.zeros((n, num_classes))
+
+    # index into array and set appropriate values to 1
+    categorical[np.arange(n), y] = 1
+
+    return categorical
+
 # PDGid to isCharged dictionary
 pid2abschg_mapping = {22: 0,             # photon
                       211: 1, -211: 1,   # pi+-
@@ -148,17 +178,35 @@ pid2abschg_mapping = {22: 0,             # photon
                       11: 1, -11: 1,     # electron, positron
                       13: 1, -13: 1}     # muon, anti-muon
 
-def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, charged_counts_only=False, norm=True):
-    """A function for creating a jet image from a list of particles.
+def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False):
+    """A function for creating a jet image from an array of particles.
 
-    jet: an array containing the list of particles in a jet with each row 
-         representing a particle and the columns being (rapidity, phi, pT, 
-         pdgid), the latter not being necessary for a grayscale image.
-    npix: number of pixels along one dimension of the image.
-    img_width: the image will be size img_width x img_width
-    nb_chan: 1 - returns a grayscale image of total pt
-             2 - returns a two-channel image with total pt and total counts
-    norm: whether to normalize the pT channels to 1 according to the L1 norm
+    **Arguments**
+
+    - **jet** : _numpy.ndarray_
+        - An array of particles where each particle is of the form 
+        [`pt`,`y`,`phi`,`pid`] where the particle id column is only 
+        used if `nb_chan=2` and `charged_counts_only=True`.
+    - **npix** : _int_
+        - The number of pixels on one edge of the jet image, which is
+        taken to be a square.
+    - **img_width** : _float_
+        - The size of one edge of the jet image in the rapidity-azimuth
+        plane.
+    - **nb_chan** : {`1`, `2`}
+        - The number of channels in the jet image. If `1`, then only a
+        $p_T$ channel is constructed (grayscale). If `2`, then both a 
+        $p_T$ channel and a count channel are formed (color).
+    - **norm** : _bool_
+        - Whether to normalize the $p_T$ pixels to sum to `1`.
+    - **charged_counts_only** : _bool_
+        - If making a count channel, whether to only include charged 
+        particles. Requires that `pid` information be given.
+
+    **Returns**
+
+    - _3-d numpy.ndarray_
+        - The jet image as a `(nb_chan, npix, npix)` array.
     """
 
     # set columns
@@ -230,21 +278,46 @@ pid2float_mapping = {22: 0,
                      13: 1.2, -13: 1.3}
 
 def remap_pids(events, pid_i=3):
-    """Remaps PDG id numbers to small floats."""
+    """Remaps PDG id numbers to small floats for use in a neural network.
+    `events are modified in place and nothing is returned.
+
+    **Arguments**
+
+    - **events** : _3-d numpy.ndarray_
+        - The events as an array of arrays of particles.
+    - **pid_i** : _int_
+        - The index corresponding to pid information along the last 
+        axis of `events`.
+    """
 
     events_shape = events.shape
     pids = events[:,:,pid_i].astype(int).reshape((events_shape[0]*events_shape[1]))
     events[:,:,pid_i] = np.asarray([pid2float_mapping.get(pid, 0) for pid in pids]).reshape(events_shape[:2])
 
+# standardize(*args, channels=None, copy=False, reg=10**-10)
 def standardize(*args, **kwargs):
-    """ Normalizes each argument by the standard deviation of the pixels in 
-    arg[0]. The expected use case would be standardize(X_train, X_val, X_test).
+    """Normalizes each argument by the standard deviation of the pixels
+    in arg[0]. The expected use case would be `standardize(X_train, X_val, 
+    X_test)`.
 
-    channels: which channels to zero_center. The default will lead to all
-              channels being affected.
-    copy: if True, the arguments are unaffected. if False, the arguments
-          themselves may be modified
-    reg: used to prevent divide by zero 
+    **Arguments**
+
+    - ***args** : arbitrary _numpy.ndarray_ datasets
+        - An arbitrary number of datasets, each required to have
+        the same shape in all but the first axis.
+    - **channels** : _int_
+        - A list of which channels (assumed to be the second axis)
+        to standardize. `None` is interpretted to mean every channel.
+    - **copy** : _bool_
+        - Whether or not to copy the input arrays before modifying them.
+    - **reg** : _float_
+        - Small parameter used to avoid dividing by zero. It's important
+        that this be kept consistent for images used with a given model.
+
+    **Returns**
+
+    - _list_ 
+        - A list of the now-standardized arguments.
     """
 
     channels = kwargs.pop('channels', [])
@@ -257,7 +330,7 @@ def standardize(*args, **kwargs):
     assert len(args) > 0
 
     # treat channels properly
-    if len(channels)==0: 
+    if channels is None: 
         channels = np.arange(args[0].shape[1])
 
     # compute stds
@@ -275,30 +348,30 @@ def standardize(*args, **kwargs):
             x[:,chan] /= stds[chan]
     return X
 
-def to_categorical(vector, num_classes=None):
-    """One-hot encodes class labels."""
 
-    if num_classes is None:
-        num_classes = np.max(vector) + 1
-
-    y = np.asarray(vector, dtype=int)
-    n = y.shape[0]
-    categorical = np.zeros((n, num_classes))
-    categorical[np.arange(n), y] = 1
-    return categorical
 
 def zero_center(*args, **kwargs):
-    """ Subtracts the mean of arg[0,channels] from the other arguments.
-    Assumes that the arguments are numpy arrays. The expected use case would
-    be zero_center(X_train, X_val, X_test).
+    """Subtracts the mean of arg[0] from the arguments. The expected 
+    use case would be `standardize(X_train, X_val, X_test)`.
 
-    channels: list of which channels to zero_center. The default will lead to 
-              all channels being affected.
-    copy: if True, the arguments are unaffected. if False, the arguments
-          themselves may be modified
+    **Arguments**
+
+    - ***args** : arbitrary _numpy.ndarray_ datasets
+        - An arbitrary number of datasets, each required to have
+        the same shape in all but the first axis.
+    - **channels** : _int_
+        - A list of which channels (assumed to be the second axis)
+        to zero center. `None` is interpretted to mean every channel.
+    - **copy** : _bool_
+        - Whether or not to copy the input arrays before modifying them.
+
+    **Returns**
+
+    - _list_ 
+        - A list of the zero-centered arguments.
     """
 
-    channels = kwargs.pop('channels', [])
+    channels = kwargs.pop('channels', None)
     copy = kwargs.pop('copy', False)
 
     if len(kwargs):
@@ -307,7 +380,7 @@ def zero_center(*args, **kwargs):
     assert len(args) > 0
 
     # treat channels properly
-    if len(channels)==0: 
+    if channels is None: 
         channels = np.arange(args[0].shape[1])
 
     # compute mean of the first argument
