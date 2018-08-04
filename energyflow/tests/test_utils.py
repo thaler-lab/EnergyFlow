@@ -114,7 +114,7 @@ def test_measure_hadrdot_ptyphi(event, beta, theta_eps, kappa, normed):
 @pytest.mark.measure
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, .5, 1, 'pf'])
-@pytest.mark.parametrize('beta,theta_eps', [(1, 5.5), (2,12), (np.pi, 11)])
+@pytest.mark.parametrize('beta,theta_eps', [(1, 5.5), (2,12), (np.pi, 10)])
 @pytest.mark.parametrize('event', [2*np.random.rand(15,4)-1 for i in range(3)])
 def test_measure_hadrdot_p4s(event, beta, theta_eps, kappa, normed):
     if normed and kappa == 'pf':
@@ -140,7 +140,7 @@ def test_measure_hadrdot_p4s(event, beta, theta_eps, kappa, normed):
 @pytest.mark.measure
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, .5, 1, 'pf'])
-@pytest.mark.parametrize('beta,theta_eps', [(1, 6), (2,12), (np.pi, 11)])
+@pytest.mark.parametrize('beta,theta_eps', [(1, 6), (2,12), (np.pi, 10)])
 @pytest.mark.parametrize('event', [2*np.random.rand(15,dim) for dim in [4,6] for i in range(2)])
 def test_measure_ee(event, beta, theta_eps, kappa, normed):
     if kappa == 'pf' and normed:
