@@ -26,11 +26,25 @@ __all__ = ['get_examples',
            'remap_pids',
            '_get_file']
 
-def get_examples(which='all', path='~/.energyflow'):
-    """Pulls examples from GitHub."""
+def get_examples(path='~/.energyflow', which='all', overwrite=False):
+    """Pulls examples from GitHub.
 
+    **Arguments**
+
+    - **path** : _str_
+        - The destination for the downloaded files.
+    - **which** : {_list_, `'all'`}
+        - List of examples to download, or the string `'all'` in which 
+        case all the available examples are downloaded.
+    - **overwrite** : _bool_
+        - Whether to overwrite existing files or not.
+    """
+
+    # all current examples 
     all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 
                     'dnn_example.py', 'efp_example.py'}
+
+    # process which examples are selected
     if which == 'all':
         examples = all_examples
     else:
@@ -39,21 +53,55 @@ def get_examples(which='all', path='~/.energyflow'):
         examples = all_examples.intersection(which)
 
     base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
-    for example in examples:
-        fpath = _get_file(example, 
-                          url=base_url+example,
-                          cache_dir=os.path.expanduser(path),
-                          cache_subdir='examples')
+    cache_dir = os.path.expanduser(path)
 
+    # get each example
+    for example in examples:
+
+        # remove file if necessary
+        file_path = os.path.join(cache_dir, 'examples', example)
+        if overwrite and os.path.exists(file_path):
+            os.remove(file_path)
+
+        fpath = _get_file(example, url=base_url+example, 
+                                   cache_dir=cache_dir, cache_subdir='examples')
+
+# data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 def data_split(*args, **kwargs):
-    """A function to split an arbitrary number of arrays into train, 
-    validation, and test sets. If val_frac = 0, then we don't split any 
-    events into the validation set. If exactly two arguments are given 
-    (an "X" and "Y") then we return (X_train, [X_val], X_test, Y_train, 
-    [Y_val], Y_test), otherwise i lists corresponding to the different args
-    are returned with each list being [train, [val], test]. Note that all 
-    arguments must have the same number of samples otherwise an exception
-    will be raised.
+    """A function to split a dataset into train, test, and optionally 
+    validation datasets.
+
+    **Arguments**
+
+    - ***args** : arbitrary _numpy.ndarray_ datasets
+        - An arbitrary number of datasets, each required to have
+        the same number of elements, as numpy arrays.
+    - **train** : {_int_, _float_}
+        - If a float, the fraction of elements to include in the training
+        set. If an integer, the number of elements to include in the
+        training set. The value `-1` is special and means include the
+        remaining part of the dataset in the training dataset after
+        the test and (optionally) val parts have been removed
+    - **val** : {_int_, _float_}
+        - If a float, the fraction of elements to include in the validation
+        set. If an integer, the number of elements to include in the
+        validation set. The value `0` is special and means do not form
+        a validation set.
+    - **test** : {_int_, _float_}
+        - If a float, the fraction of elements to include in the test
+        set. If an integer, the number of elements to include in the
+        test set.
+    - **shuffle** : _bool_
+        - A flag to control whether the dataset is shuffle prior to 
+        being split into parts.
+
+    **Returns**
+
+    - _list_
+        - A list of the split datasets in train, [val], test order. If 
+        datasets `X`, `Y`, and `Z` were given as `args` (and assuming a
+        non-zero `val`), then [`X_train`, `X_val`, `X_test`, `Y_train`, 
+        `Y_val`, `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned.
     """
 
     # handle valid kwargs
@@ -66,6 +114,7 @@ def data_split(*args, **kwargs):
     if len(args) == 0: 
         raise RuntimeError('Need to pass at least one argument to data_split')
 
+    # check for consistent length
     n_samples = len(args[0])
     for arg in args[1:]: 
         assert len(arg) == n_samples, 'args to data_split have different length'

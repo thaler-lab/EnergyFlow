@@ -460,23 +460,77 @@ The required license and copyright notice are provided in LICENSE
 which is distributed with this software package.</p>
 <hr />
 <h4 id="get_examples">get_examples</h4>
-<pre><code class="python">energyflow.utils.get_examples(which='all', path='~/.energyflow')
+<pre><code class="python">energyflow.utils.get_examples(path='~/.energyflow', which='all', overwrite=False)
 </code></pre>
 
 <p>Pulls examples from GitHub.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>path</strong> : <em>str</em><ul>
+<li>The destination for the downloaded files.</li>
+</ul>
+</li>
+<li><strong>which</strong> : {<em>list</em>, <code>'all'</code>}<ul>
+<li>List of examples to download, or the string <code>'all'</code> in which 
+case all the available examples are downloaded.</li>
+</ul>
+</li>
+<li><strong>overwrite</strong> : <em>bool</em><ul>
+<li>Whether to overwrite existing files or not.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="data_split">data_split</h4>
-<pre><code class="python">energyflow.utils.data_split(args, kwargs)
+<pre><code class="python">energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 </code></pre>
 
-<p>A function to split an arbitrary number of arrays into train, 
-validation, and test sets. If val_frac = 0, then we don't split any 
-events into the validation set. If exactly two arguments are given 
-(an "X" and "Y") then we return (X_train, [X_val], X_test, Y_train, 
-[Y_val], Y_test), otherwise i lists corresponding to the different args
-are returned with each list being [train, [val], test]. Note that all 
-arguments must have the same number of samples otherwise an exception
-will be raised.</p>
+<p>A function to split a dataset into train, test, and optionally 
+validation datasets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of datasets, each required to have
+the same number of elements, as numpy arrays.</li>
+</ul>
+</li>
+<li><strong>train</strong> : {<em>int</em>, <em>float</em>}<ul>
+<li>If a float, the fraction of elements to include in the training
+set. If an integer, the number of elements to include in the
+training set. The value <code>-1</code> is special and means include the
+remaining part of the dataset in the training dataset after
+the test and (optionally) val parts have been removed</li>
+</ul>
+</li>
+<li><strong>val</strong> : {<em>int</em>, <em>float</em>}<ul>
+<li>If a float, the fraction of elements to include in the validation
+set. If an integer, the number of elements to include in the
+validation set. The value <code>0</code> is special and means do not form
+a validation set.</li>
+</ul>
+</li>
+<li><strong>test</strong> : {<em>int</em>, <em>float</em>}<ul>
+<li>If a float, the fraction of elements to include in the test
+set. If an integer, the number of elements to include in the
+test set.</li>
+</ul>
+</li>
+<li><strong>shuffle</strong> : <em>bool</em><ul>
+<li>A flag to control whether the dataset is shuffle prior to 
+being split into parts.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em><ul>
+<li>A list of the split datasets in train, [val], test order. If 
+datasets <code>X</code>, <code>Y</code>, and <code>Z</code> were given as <code>args</code> (and assuming a
+non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <code>X_test</code>, <code>Y_train</code>, 
+<code>Y_val</code>, <code>Y_test</code>, <code>Z_train</code>, <code>Z_val</code>, <code>Z_test</code>] will be returned.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="to_categorical">to_categorical</h4>
 <pre><code class="python">energyflow.utils.to_categorical(vector, num_classes=None)
