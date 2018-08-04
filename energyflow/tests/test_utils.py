@@ -32,7 +32,7 @@ def test_gen_random_events(nevents, nparticles, dim, mass):
 @pytest.mark.parametrize('nevents', [20,200])
 @pytest.mark.parametrize('dim', [3,4,8])
 def test_gen_random_events_mcom(nevents, nparticles, dim):
-    events = ef.gen_random_events_massless_com(nevents, nparticles, dim=dim)
+    events = ef.gen_random_events_mcom(nevents, nparticles, dim=dim)
     assert events.shape == (nevents, nparticles, dim)
     assert epsilon_diff(ef.ms_from_p4s(events)**2/dim, 0, 10**-12)
     assert epsilon_diff(np.sum(events, axis=1), 0, 10**-12)
