@@ -28,6 +28,16 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-122962541-1', 'pkomiske.github.io/EnergyFlow');
+      ga('send', 'pageview');
+  </script>
+  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -69,6 +79,10 @@
                 <li class="">
                     
     <a class="" href="../../tutorial/">Tutorial</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../examples/">Examples</a>
                 </li>
                 <li class="">
                     
@@ -204,8 +218,9 @@ and angular measure depend on the collider context and are discussed at length i
 <li>Edges of the EFP graph specified by pairs of vertices.</li>
 </ul>
 </li>
-<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
-<li>See <a href="/docs/measure">Measures</a> for additional info.</li>
+<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'ee'</code>}<ul>
+<li>The choice of measure. See <a href="/docs/measure">Measures</a> 
+for additional info.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
@@ -220,6 +235,11 @@ If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
 <li>Controls normalization of the energies in the measure.</li>
+</ul>
+</li>
+<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
+<li>Controls which coordinates are assumed for the input. See 
+<a href="/docs/measure">Measures</a> for additional info.</li>
 </ul>
 </li>
 <li><strong>check_input</strong> : <em>bool</em><ul>
@@ -241,33 +261,29 @@ of <code>numpy.einsum_path</code>.</li>
 <pre><code class="python">compute(event=None, zs=None, thetas=None)
 </code></pre>
 
-<p>Computes the value(s) of the EFP(s) on a single event.</p>
+<p>Computes the value of the EFP on a single event.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>event</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The event as an array of <code>[E,px,py,pz]</code> or <code>[pT,y,phi]</code> (if hadronic).</li>
+<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The event as an array of particles in the coordinates specified
+by <code>coords</code>.</li>
 </ul>
 </li>
-<li><strong>zs</strong> : 1-dim array_like<ul>
+<li><strong>zs</strong> : 1-d array_like<ul>
 <li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
 of the energies of an event.</li>
 </ul>
 </li>
-<li><strong>thetas</strong> : 2-dim array_like<ul>
+<li><strong>thetas</strong> : 2-d array_like<ul>
 <li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
 of the pairwise angles of an event.</li>
-</ul>
-</li>
-<li><strong>ps</strong> : <em>numpy.ndarray</em><ul>
-<li>If present, used in place of the dim-vectors returned by the measure
-when using EFMs.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
-<li>The answers</li>
+<li><em>float</em><ul>
+<li>The EFP value.</li>
 </ul>
 </li>
 </ul>
@@ -275,15 +291,15 @@ when using EFMs.</li>
 <pre><code class="python">batch_compute(events, n_jobs=-1)
 </code></pre>
 
-<p>Computes the value(s) of the EFP(s) on several events.</p>
+<p>Computes the value of the EFP on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The events as an array of arrays of <code>[E,px,py,pz]</code> or <code>[pT,y,phi]</code> 
-(if hadronic).</li>
+<li>The events as an array of arrays of particles in coordinates
+matching those anticipated by <code>coords</code>.</li>
 </ul>
 </li>
-<li><strong>n_jobs</strong> : int<ul>
+<li><strong>n_jobs</strong> : <em>int</em> <ul>
 <li>The number of worker processes to use. A value of <code>-1</code> will attempt
 to use as many processes as there are CPUs on the machine.</li>
 </ul>
@@ -291,8 +307,8 @@ to use as many processes as there are CPUs on the machine.</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
-<li>The answers</li>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>A vector of the EFP value for each event.</li>
 </ul>
 </li>
 </ul>
@@ -381,36 +397,32 @@ the first input type.</li>
 </li>
 </ul>
 <h4 id="compute_1">compute</h4>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, ps=None)
+<pre><code class="python">compute(event=None, zs=None, thetas=None)
 </code></pre>
 
-<p>Computes the value(s) of the EFP(s) on a single event.</p>
+<p>Computes the values of the stored EFPs on a single event.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>event</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The event as an array of <code>[E,px,py,pz]</code> or <code>[pT,y,phi]</code> (if hadronic).</li>
+<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The event as an array of particles in the coordinates specified
+by <code>coords</code>.</li>
 </ul>
 </li>
-<li><strong>zs</strong> : 1-dim array_like<ul>
+<li><strong>zs</strong> : 1-d array_like<ul>
 <li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
 of the energies of an event.</li>
 </ul>
 </li>
-<li><strong>thetas</strong> : 2-dim array_like<ul>
+<li><strong>thetas</strong> : 2-d array_like<ul>
 <li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
 of the pairwise angles of an event.</li>
-</ul>
-</li>
-<li><strong>ps</strong> : <em>numpy.ndarray</em><ul>
-<li>If present, used in place of the dim-vectors returned by the measure
-when using EFMs.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
-<li>The answers</li>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>A vector of the EFP values.</li>
 </ul>
 </li>
 </ul>
@@ -418,15 +430,15 @@ when using EFMs.</li>
 <pre><code class="python">batch_compute(events, n_jobs=-1)
 </code></pre>
 
-<p>Computes the value(s) of the EFP(s) on several events.</p>
+<p>Computes the value of the stored EFPs on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The events as an array of arrays of <code>[E,px,py,pz]</code> or <code>[pT,y,phi]</code> 
-(if hadronic).</li>
+<li>The events as an array of arrays of particles in coordinates
+matching those anticipated by <code>coords</code>.</li>
 </ul>
 </li>
-<li><strong>n_jobs</strong> : int<ul>
+<li><strong>n_jobs</strong> : <em>int</em> <ul>
 <li>The number of worker processes to use. A value of <code>-1</code> will attempt
 to use as many processes as there are CPUs on the machine.</li>
 </ul>
@@ -434,8 +446,8 @@ to use as many processes as there are CPUs on the machine.</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
-<li>The answers</li>
+<li><em>2-d numpy.ndarray</em><ul>
+<li>An array of the EFP values for each event.</li>
 </ul>
 </li>
 </ul>
@@ -490,7 +502,7 @@ is useful when the value is a variable that changes
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
+<li><em>1-d numpy.ndarray</em><ul>
 <li>A boolean array of length the number of EFPs stored by this object. </li>
 </ul>
 </li>
@@ -534,7 +546,7 @@ the index of a particular graph.</li>
 <li>The list of edges corresponding to the specified graph</li>
 </ul>
 </li>
-<li><em>numpy.ndarray</em>, otherwise<ul>
+<li><em>1-d numpy.ndarray</em>, otherwise<ul>
 <li>An array of graphs (as lists of edges) matching the specifications.</li>
 </ul>
 </li>
@@ -558,7 +570,7 @@ the index of particular simple graph.</li>
 <li>The list of edges corresponding to the specified simple graph</li>
 </ul>
 </li>
-<li><em>numpy.ndarray</em>, otherwise<ul>
+<li><em>1-d numpy.ndarray</em>, otherwise<ul>
 <li>An array of simple graphs (as lists of edges) matching the specifications.</li>
 </ul>
 </li>

@@ -28,6 +28,16 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-122962541-1', 'pkomiske.github.io/EnergyFlow');
+      ga('send', 'pageview');
+  </script>
+  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -69,6 +79,10 @@
                 <li class="">
                     
     <a class="" href="../tutorial/">Tutorial</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../examples/">Examples</a>
                 </li>
                 <li class=" current">
                     
@@ -194,8 +208,8 @@
 </code></pre>
 
 <h4 id="why-python-instead-of-c">Why Python instead of C++?</h4>
-<p>Computing the energy flow polynomials requires a function such as NumPy's <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.einsum.html">einsum</a> that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use.</p>
-<p><a href="http://www.numpy.org">NumPy</a> is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the energy flow polynomials. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and features such as SSE instructions.</p>
+<p>Computing the energy flow polynomials requires a function such as NumPy's <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.einsum.html">einsum</a> that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use (though if one were to attempt this the <a href="http://tensor-compiler.org/">tensor algebra compiler</a> seems like a promising tool).</p>
+<p><a href="http://www.numpy.org">NumPy</a> is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the energy flow polynomials. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and low-level features such as SSE instructions.</p>
 <h4 id="can-i-contribute-to-the-code">Can I contribute to the code?</h4>
 <p>All of our code is open source and hosted on <a href="https://www.github.com/pkomiske/EnergyFlow/">GitHub</a>. We welcome additional contributors, and if you are interested in getting involved please contact us directly. Contact information is included in the relevant Energy Flow papers and our GitHub repository.</p>
 <h4 id="how-do-i-report-an-issue">How do I report an issue?</h4>
@@ -212,7 +226,7 @@
         <a href="../docs/measure/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../tutorial/" class="btn btn-neutral" title="Tutorial"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../examples/" class="btn btn-neutral" title="Examples"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -240,7 +254,7 @@
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../tutorial/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../examples/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../docs/measure/" style="color: #fcfcfc">Next &raquo;</a></span>

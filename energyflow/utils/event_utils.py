@@ -1,11 +1,10 @@
-"""### Random Event Generation
+"""### Random Events
 
 Functions to generate random sets of four-vectors. Includes an implementation
 of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
 sampling uniform M-body massless phase space. Also includes other functions for
 various random, non-center of momentum, and non-uniform sampling.
 """
-
 from __future__ import absolute_import
 
 import os
@@ -18,9 +17,72 @@ __all__ = [
     'gen_massless_phase_space'
 ]
 
-###############################################################################
-# event functions
-###############################################################################
+def gen_random_events(nevents, nparticles, dim=4, mass=0):
+    """Generate random events with a given number of particles of a given mass
+    in a given spacetime dimension. The energy-momentum vectors have spatial
+    components drawn randomly from [-1,+1]. These events are not guaranteed
+    to uniformly sample phase space.
+
+    **Arguments**
+
+    - **nevents** : _int_
+        - Number of events to generate.
+    - **nparticles** : _int_
+        - Number of particles in each event.
+    - **dim** : _int_
+        - Number of spacetime dimensions.
+    - **mass** : _float_
+        - Mass of the particles to generate.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` particles
+        with mass given by `mass`.
+    """
+
+    spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
+    energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
+    events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
+    return np.squeeze(events)
+
+def gen_random_events_massless_com(nevents, nparticles, dim=4):
+    """Generate random events with a given number of massless particles
+    in a given spacetime dimension. The total energy and momentum are made to sum to zero
+    by making about half of the particles incoming. These events are not guaranteed
+    to uniformly sample phase space.
+
+    **Arguments**
+
+    - **nevents** : _int_
+        - Number of events to generate.
+    - **nparticles** : _int_
+        - Number of particles in each event.
+    - **dim** : _int_
+        - Number of spacetime dimensions.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` massless
+        particles whose total energy and momentum are all zero.
+    """
+
+    events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
+    events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
+    
+    events_1_sp_com = np.concatenate((events_1_sp, -np.sum(events_1_sp, axis=1)[:,np.newaxis]), axis=1)
+    events_2_sp_com = np.concatenate((events_2_sp, -np.sum(events_2_sp, axis=1)[:,np.newaxis]), axis=1)
+
+    events_1_tup = (np.sqrt(np.sum(events_1_sp_com**2, axis=-1))[:,:,np.newaxis], events_1_sp_com)
+    events_2_tup = (np.sqrt(np.sum(events_2_sp_com**2, axis=-1))[:,:,np.newaxis], events_2_sp_com)
+    events_1 = np.concatenate(events_1_tup, axis=-1)
+    events_2 = np.concatenate(events_2_tup, axis=-1)
+
+    events_1_tot, events_2_tot = np.sum(events_1, axis=1), np.sum(events_2, axis=1)
+    factors = events_1_tot[:,0]/events_2_tot[:,0]
+
+    return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
 
 def gen_massless_phase_space(nevents, nparticles, energy=1):
     """Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm
@@ -30,10 +92,8 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
 
     - **nevents** : _int_
         - Number of events to generate.
-
     - **nparticles** : _int_
         - Number of particles in each event.
-
     - **energy** : _float_
         - Total center of mass energy of each event.
 
@@ -77,79 +137,3 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
                                               bs*qs[:,:,0,np.newaxis] + 
                                               As*bdotq[:,:,np.newaxis]*bs)
     return np.squeeze(ps)
-
-
-def gen_random_events(nevents, nparticles, dim=4, mass=0):
-    """Generate random events with a given number of particles of a given mass
-    in a given spacetime dimension. The energy-momentum vectors have spatial
-    components drawn randomly from [-1,+1]. These events are not guaranteed
-    to uniformly sample phase space.
-
-    
-    **Arguments**
-
-    - **nevents** : _int_
-        - Number of events to generate.
-
-    - **nparticles** : _int_
-        - Number of particles in each event.
-
-    - **dim** : _int_
-        - Number of spacetime dimensions.
-
-    - **mass** : _float_
-        - Mass of the particles to generate.
-
-    **Returns**
-
-    - _numpy.ndarray_
-        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` particles
-        with mass given by `mass`.
-    """
-
-    spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
-    energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
-    events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
-    return np.squeeze(events)
-
-def gen_random_events_massless_com(nevents, nparticles, dim=4):
-    """Generate random events with a given number of massless particles
-    in a given spacetime dimension. The total energy and momentum are made to sum to zero
-    by making about half of the particles incoming. These events are not guaranteed
-    to uniformly sample phase space.
-
-    
-    **Arguments**
-
-    - **nevents** : _int_
-        - Number of events to generate.
-
-    - **nparticles** : _int_
-        - Number of particles in each event.
-
-    - **dim** : _int_
-        - Number of spacetime dimensions.
-
-    **Returns**
-
-    - _numpy.ndarray_
-        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` massless
-        particles whose total energy and momentum are all zero.
-    """
-
-    events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
-    events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
-    
-    events_1_sp_com = np.concatenate((events_1_sp, -np.sum(events_1_sp, axis=1)[:,np.newaxis]), axis=1)
-    events_2_sp_com = np.concatenate((events_2_sp, -np.sum(events_2_sp, axis=1)[:,np.newaxis]), axis=1)
-
-    events_1_tup = (np.sqrt(np.sum(events_1_sp_com**2, axis=-1))[:,:,np.newaxis], events_1_sp_com)
-    events_2_tup = (np.sqrt(np.sum(events_2_sp_com**2, axis=-1))[:,:,np.newaxis], events_2_sp_com)
-    events_1 = np.concatenate(events_1_tup, axis=-1)
-    events_2 = np.concatenate(events_2_tup, axis=-1)
-
-    events_1_tot, events_2_tot = np.sum(events_1, axis=1), np.sum(events_2, axis=1)
-    factors = events_1_tot[:,0]/events_2_tot[:,0]
-
-    return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
-    

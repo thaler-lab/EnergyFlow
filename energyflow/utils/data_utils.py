@@ -6,7 +6,6 @@ URL handling and hashing functions copied from Keras GitHub repo.
 The required license and copyright notice are provided in LICENSE
 which is distributed with this software package.
 """
-
 from __future__ import absolute_import, division, print_function
 
 from contextlib import closing
@@ -26,6 +25,25 @@ __all__ = ['get_examples',
            'zero_center',
            'remap_pids',
            '_get_file']
+
+def get_examples(which='all', path='~/.energyflow'):
+    """Pulls examples from GitHub."""
+
+    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 
+                    'dnn_example.py', 'efp_example.py'}
+    if which == 'all':
+        examples = all_examples
+    else:
+        if not isinstance(which, (tuple, list)):
+            which = [which]
+        examples = all_examples.intersection(which)
+
+    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
+    for example in examples:
+        fpath = _get_file(example, 
+                          url=base_url+example,
+                          cache_dir=os.path.expanduser(path),
+                          cache_subdir='examples')
 
 def data_split(*args, **kwargs):
     """A function to split an arbitrary number of arrays into train, 
@@ -70,25 +88,6 @@ def data_split(*args, **kwargs):
 
     # return list of new datasets
     return [arg[mask] for arg in args for mask in masks]
-
-def get_examples(which='all', path='~/.energyflow'):
-    """Pulls examples from GitHub."""
-
-    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 
-                    'dnn_example.py', 'efp_example.py'}
-    if which == 'all':
-        examples = all_examples
-    else:
-        if not isinstance(which, (tuple, list)):
-            which = [which]
-        examples = all_examples.intersection(which)
-
-    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
-    for example in examples:
-        fpath = _get_file(example, 
-                          url=base_url+example,
-                          cache_dir=os.path.expanduser(path),
-                          cache_subdir='examples')
 
 # PDGid to isCharged dictionary
 pid2abschg_mapping = {22: 0,             # photon

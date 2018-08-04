@@ -1,5 +1,4 @@
 """Implementation of EFP Generator class."""
-
 from __future__ import absolute_import, division, print_function
 
 from collections import Counter
@@ -15,13 +14,11 @@ igraph = igraph_import()
 
 __all__ = ['Generator']
 
-
 ###############################################################################
 # Generator helpers
 ###############################################################################
 def none2inf(x):
     return np.inf if x is None else x
-
 
 ###############################################################################
 # Generator
@@ -32,8 +29,7 @@ class Generator(object):
 
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
                        filename=None, ve_alg='numpy', np_optimize='greedy', verbose=False):
-        """
-        Doing a fresh generation of connected multigraphs (`filename=None`) requires
+        """Doing a fresh generation of connected multigraphs (`filename=None`) requires
         that `igraph` be installed.
 
         **Arguments**
@@ -194,14 +190,12 @@ class Generator(object):
             self._specs = concat_specs(self.c_specs, self.disc_specs)
         return self._specs
 
-
 ###############################################################################
 # PrimeGenerator
 ###############################################################################
 class PrimeGenerator(object):
 
-    """
-    Column descriptions:
+    """Column descriptions:
     n - number of vertices in graph
     e - number of edges in (underlying) simple graph
     d - number of edges in multigraph
@@ -214,7 +208,7 @@ class PrimeGenerator(object):
     cols = ['n','e','d','v','k','c','p','h']
 
     def __init__(self, dmax, nmax, emax, cmax, vmax, ve_alg, np_optimize):
-        """PrimeGenerator init"""
+        """PrimeGenerator __init__."""
 
         if not igraph:
             raise NotImplementedError('cannot use PrimeGenerator without igraph')
@@ -388,7 +382,6 @@ class PrimeGenerator(object):
                     self.einstrs.append(es)
                     self.einpaths.append(ep)
         self.c_specs = np.asarray(c_specs)
-
 
 ###############################################################################
 # CompositeGenerator

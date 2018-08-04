@@ -14,11 +14,9 @@ from energyflow.algorithms import einsum
 from energyflow.measure import Measure
 from energyflow.utils import timing, transfer
 
-
 ###############################################################################
 # EFPBase
 ###############################################################################
-
 class EFPBase(with_metaclass(ABCMeta, object)):
 
     def __init__(self, measure, beta, kappa, normed, coords, check_input):
@@ -30,7 +28,6 @@ class EFPBase(with_metaclass(ABCMeta, object)):
 
         # store measure object
         self._measure = Measure(measure, beta, kappa, normed, coords, check_input)
-
 
     def get_zs_thetas_dict(self, event, zs, thetas):
         if event is not None:
@@ -72,46 +69,24 @@ class EFPBase(with_metaclass(ABCMeta, object)):
 
     @abstractmethod
     def compute(self, *args, **kwargs):
-        """Computes the value(s) of the EFP(s) on a single event.
-
-        **Arguments**
-
-        - **event** : array_like or `fastjet.PseudoJet`
-            - The event as an array of `[E,px,py,pz]` or `[pT,y,phi]` (if hadronic).
-        - **zs** : 1-dim array_like
-            - If present, `thetas` must also be present, and `zs` is used in place 
-            of the energies of an event.
-        - **thetas** : 2-dim array_like
-            - If present, `zs` must also be present, and `thetas` is used in place 
-            of the pairwise angles of an event.
-        - **ps** : _numpy.ndarray_
-            - If present, used in place of the dim-vectors returned by the measure
-            when using EFMs.
-
-        **Returns**
-
-        - _numpy.ndarray_
-            - The answers
-        """
-
         pass
 
     def batch_compute(self, events, n_jobs=-1):
-        """Computes the value(s) of the EFP(s) on several events.
+        """Computes the value of the EFP on several events.
 
         **Arguments**
 
         - **events** : array_like or `fastjet.PseudoJet`
-            - The events as an array of arrays of `[E,px,py,pz]` or `[pT,y,phi]` 
-            (if hadronic).
-        - **n_jobs** : int
+            - The events as an array of arrays of particles in coordinates
+            matching those anticipated by `coords`.
+        - **n_jobs** : _int_ 
             - The number of worker processes to use. A value of `-1` will attempt
             to use as many processes as there are CPUs on the machine.
 
         **Returns**
 
-        - _numpy.ndarray_
-            - The answers
+        - _1-d numpy.ndarray_
+            - A vector of the EFP value for each event.
         """
 
         if n_jobs == -1:
@@ -133,11 +108,9 @@ class EFPBase(with_metaclass(ABCMeta, object)):
 
         return results
 
-
 ###############################################################################
 # EFPElem
 ###############################################################################
-
 class EFPElem(object):
 
     # if weights are given, edges are assumed to be simple 

@@ -32,6 +32,10 @@ a:visited {
     color: #2980B9;
 }
 
+a:visited code {
+    color: #2980B9;
+}
+
 .wy-nav-top {
     background: var(--mit-red);
 }

@@ -4,27 +4,27 @@
 The appropriate notions of energy and angle depend on the collider context. Typically, one wants
 to work with observables that respect the appropriate Lorentz subgroup for the collision type
 of interest. EnergyFlow is capable of handling two broad classes of measures: $e^+e^-$ and
-hadronic, which are selected using the `measure` keyword argument (default is `'hadrdot'`).
+hadronic, which are selected using the required `measure` argument.
 For substructure applications, it is often convenient to normalize the energies so that
 $\\sum_iz_i=1$. The `normed` keyword argument is provided to control normalization of the
 energies (default is `True`).
 
 Each measure comes with a parameter $\\beta>0$ which controls the relative weighting between
 smaller and larger anglular structures. This can be set using the `beta` keyword argument
-(default is `2`). There is also a $\\kappa$ parameter to control the relative weighting
+(default is `1`). There is also a $\\kappa$ parameter to control the relative weighting
 between soft and hard energies. This can be set using the `kappa` keyword argument
 (default is `1`). Only `kappa=1` yields collinear-safe observables.
 
 Beyond the measures implemented here, the user can implement their own custom measure by
-passing $\\{z_i\\}$ and $\\{\\theta_{ij}\\}$ in directly to the EFP classes.
+passing in $\\{z_i\\}$ and $\\{\\theta_{ij}\\}$ directly to the EFP classes.
 
 #### Hadronic Measures
 
 For hadronic collisions, observables are typically desired to be invariant under boosts along
 the beam direction and rotations about the beam direction. Thus, particle transverse momentum
-$p_T$ and rapidity-azimuth coordinates $(y,\\phi)$ are often used.
+$p_T$ and rapidity-azimuth coordinates $(y,\\phi)$ are used.
 
-There are two hadronic measures implemented in EnergyFlow: `'hadr'` and `'hadrdot'` (the default).
+There are two hadronic measures implemented in EnergyFlow: `'hadr'` and `'hadrdot'`.
 These are listed explicitly below.
 
 `'hadr'`:
@@ -37,17 +37,16 @@ $$z_i=p_{T,i}^{\\kappa},\\quad\\quad \\theta_{ij}=\\left(\\frac{2p^\\mu_ip_{j\\m
 #### *e+e-* Measures
 
 For $e^+e^-$ collisions, observables are typically desired to be invariant under the full
-group of reotations about the interaction point. Since the center of momentum energy is known,
+group of rotations about the interaction point. Since the center of momentum energy is known,
 the particle energy $E$ is typically used. For the angular measure, pairwise Lorentz contractions
 of the normalized particle four-momenta are used.
 
-There is one $e^+e^-$ measure implemented in the EnergyFlow framework.
+There is one $e^+e^-$ measure implemented.
 
 `'ee'`:
 $$z_i = E_{i}^{\\kappa},
 \\quad\\quad \\theta_{ij} = \\left(\\frac{2p_i^\\mu p_{j \\mu}}{E_i E_j}\\right)^{\\beta/2}.$$
 """
-
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod
@@ -83,11 +82,9 @@ def kappa_func(Es, ps, kappa):
 def pf_func(Es, ps, kappa):
     return np.ones(Es.shape), ps
 
-
 ###############################################################################
 # Measure 
 ###############################################################################
-
 class Measure(with_metaclass(ABCMeta, object)):
     
     """Class for dealing with any kind of measure."""
@@ -110,18 +107,19 @@ class Measure(with_metaclass(ABCMeta, object)):
 
         - **measure** : _string_
             - The string specifying the energy and angular measures to use.
-
-        - **beta** : _float_ or 'pf'
+        - **beta** : _float_
             - The angular weighting exponent $\\beta$. Must be positive.
-
-        - **kappa** : _float_
-            - If a number, the energy weighting exponent $\\kappa$. If `'pf'`, use $\\kappa=v$
-             where $v$ is the valency of the vertex. `'pf'` can be used with measure except `'hadr'`.
-             Only IRC-safe for `kappa=1`.
-
+        - **kappa** : {_float_, `'pf'`}
+            - If a number, the energy weighting exponent $\\kappa$. If `'pf'`, 
+            use $\\kappa=v$ where $v$ is the valency of the vertex. `'pf'` 
+            cannot be used with measure `'hadr'`. Only IRC-safe for `kappa=1`.
         - **normed** : bool
-            - Whether or not to use normalized energies
-        
+            - Whether or not to use normalized energies.
+        - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
+            - Controls which coordinates are assumed for the input. If `'ptyphim'`, the 
+            fourth column (the masses) is optional and massless particles are assumed
+            if it is not present. If `None`, coords with be `'ptyphim'` if using a 
+            hadronic measure and `'epxpypz'` if using the e+e- measaure.
         - **check_input** : bool
             - Whether to check the type of input each time or assume the first input type.
         """
@@ -138,7 +136,19 @@ class Measure(with_metaclass(ABCMeta, object)):
         self.need_meas_func = True
 
     def evaluate(self, arg):
-        """ Evaluate
+        """Evaluate the measure on a set of particles.
+
+        **Arguments**
+
+        - **arg** : _2-d numpy.ndarray_
+            - A two-dimensional array of the particles with each row being a 
+            particle and the columns specified by the `coords` attribute.
+
+        **Returns**
+
+        - (_ 1-d numpy.ndarray_, _2-d numpy.ndarray_)
+            - (`zs`, `thetas`) where `zs` is a vector of the energy fractions for 
+            each particle and `thetas` is the distance matrix between the particles.
         """
 
         # check type only if needed
@@ -191,7 +201,6 @@ class Measure(with_metaclass(ABCMeta, object)):
             self.subslicing = False
             self._k_func = pf_func
 
-
 ###############################################################################
 # HadronicMeasure
 ###############################################################################
@@ -234,7 +243,6 @@ class HadronicMeasure(Measure):
         pts = np.asarray([c.pt() for c in constituents])
         return pts, constituents
 
-
 ###############################################################################
 # EEMeasure
 ###############################################################################
@@ -269,7 +277,6 @@ class EEMeasure(Measure):
         Es = np.asarray([c.e() for c in constituents])
         return Es, constituents
 
-
 ###############################################################################
 # HadronicDefaultMeasure
 ###############################################################################
@@ -296,7 +303,6 @@ class HadronicDefaultMeasure(HadronicMeasure):
         thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])
         return pts**self.kappa, thetas**self.beta
 
-
 ###############################################################################
 # HadronicDotMeasure
 ###############################################################################
@@ -321,7 +327,6 @@ class HadronicDotMeasure(HadronicMeasure):
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         pts, p4s = self._k_func(pts, p4s, self.kappa)
         return pts, self._ps_dot(p4s)**self.half_beta
-
 
 ###############################################################################
 # EEDefaultMeasure

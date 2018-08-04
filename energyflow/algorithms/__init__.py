@@ -1,5 +1,4 @@
 """Algorithms for EnergyFlow."""
-
 from __future__ import absolute_import
 
 from . import einsumfunc

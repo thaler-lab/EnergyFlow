@@ -28,6 +28,16 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-122962541-1', 'pkomiske.github.io/EnergyFlow');
+      ga('send', 'pageview');
+  </script>
+  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -69,6 +79,10 @@
                 <li class="">
                     
     <a class="" href="../../tutorial/">Tutorial</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../examples/">Examples</a>
                 </li>
                 <li class="">
                     
@@ -174,22 +188,22 @@
 <p>The appropriate notions of energy and angle depend on the collider context. Typically, one wants
 to work with observables that respect the appropriate Lorentz subgroup for the collision type
 of interest. EnergyFlow is capable of handling two broad classes of measures: $e^+e^-$ and
-hadronic, which are selected using the <code>measure</code> keyword argument (default is <code>'hadrdot'</code>).
+hadronic, which are selected using the required <code>measure</code> argument.
 For substructure applications, it is often convenient to normalize the energies so that
 $\sum_iz_i=1$. The <code>normed</code> keyword argument is provided to control normalization of the
 energies (default is <code>True</code>).</p>
 <p>Each measure comes with a parameter $\beta&gt;0$ which controls the relative weighting between
 smaller and larger anglular structures. This can be set using the <code>beta</code> keyword argument
-(default is <code>2</code>). There is also a $\kappa$ parameter to control the relative weighting
+(default is <code>1</code>). There is also a $\kappa$ parameter to control the relative weighting
 between soft and hard energies. This can be set using the <code>kappa</code> keyword argument
 (default is <code>1</code>). Only <code>kappa=1</code> yields collinear-safe observables.</p>
 <p>Beyond the measures implemented here, the user can implement their own custom measure by
-passing ${z_i}$ and ${\theta_{ij}}$ in directly to the EFP classes.</p>
+passing in ${z_i}$ and ${\theta_{ij}}$ directly to the EFP classes.</p>
 <h4 id="hadronic-measures">Hadronic Measures</h4>
 <p>For hadronic collisions, observables are typically desired to be invariant under boosts along
 the beam direction and rotations about the beam direction. Thus, particle transverse momentum
-$p_T$ and rapidity-azimuth coordinates $(y,\phi)$ are often used.</p>
-<p>There are two hadronic measures implemented in EnergyFlow: <code>'hadr'</code> and <code>'hadrdot'</code> (the default).
+$p_T$ and rapidity-azimuth coordinates $(y,\phi)$ are used.</p>
+<p>There are two hadronic measures implemented in EnergyFlow: <code>'hadr'</code> and <code>'hadrdot'</code>.
 These are listed explicitly below.</p>
 <p><code>'hadr'</code>:
 <script type="math/tex; mode=display">z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + \Delta\phi_{ij}^2)^{\beta/2}.</script>
@@ -200,10 +214,10 @@ These are listed explicitly below.</p>
 </p>
 <h4 id="ee-measures"><em>e+e-</em> Measures</h4>
 <p>For $e^+e^-$ collisions, observables are typically desired to be invariant under the full
-group of reotations about the interaction point. Since the center of momentum energy is known,
+group of rotations about the interaction point. Since the center of momentum energy is known,
 the particle energy $E$ is typically used. For the angular measure, pairwise Lorentz contractions
 of the normalized particle four-momenta are used.</p>
-<p>There is one $e^+e^-$ measure implemented in the EnergyFlow framework.</p>
+<p>There is one $e^+e^-$ measure implemented.</p>
 <p><code>'ee'</code>:
 <script type="math/tex; mode=display">z_i = E_{i}^{\kappa},
 \quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}{E_i E_j}\right)^{\beta/2}.</script>
@@ -217,35 +231,32 @@ of the normalized particle four-momenta are used.</p>
 <p>Processes inputs according to the measure choice.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>measure</strong> : <em>string</em></p>
-<ul>
+<li><strong>measure</strong> : <em>string</em><ul>
 <li>The string specifying the energy and angular measures to use.</li>
 </ul>
 </li>
-<li>
-<p><strong>beta</strong> : <em>float</em> or 'pf'</p>
-<ul>
+<li><strong>beta</strong> : <em>float</em><ul>
 <li>The angular weighting exponent $\beta$. Must be positive.</li>
 </ul>
 </li>
-<li>
-<p><strong>kappa</strong> : <em>float</em></p>
-<ul>
-<li>If a number, the energy weighting exponent $\kappa$. If <code>'pf'</code>, use $\kappa=v$
- where $v$ is the valency of the vertex. <code>'pf'</code> can be used with measure except <code>'hadr'</code>.
- Only IRC-safe for <code>kappa=1</code>.</li>
+<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
+<li>If a number, the energy weighting exponent $\kappa$. If <code>'pf'</code>, 
+use $\kappa=v$ where $v$ is the valency of the vertex. <code>'pf'</code> 
+cannot be used with measure <code>'hadr'</code>. Only IRC-safe for <code>kappa=1</code>.</li>
 </ul>
 </li>
-<li>
-<p><strong>normed</strong> : bool</p>
-<ul>
-<li>Whether or not to use normalized energies</li>
+<li><strong>normed</strong> : bool<ul>
+<li>Whether or not to use normalized energies.</li>
 </ul>
 </li>
-<li>
-<p><strong>check_input</strong> : bool</p>
-<ul>
+<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
+<li>Controls which coordinates are assumed for the input. If <code>'ptyphim'</code>, the 
+fourth column (the masses) is optional and massless particles are assumed
+if it is not present. If <code>None</code>, coords with be <code>'ptyphim'</code> if using a 
+hadronic measure and <code>'epxpypz'</code> if using the e+e- measaure.</li>
+</ul>
+</li>
+<li><strong>check_input</strong> : bool<ul>
 <li>Whether to check the type of input each time or assume the first input type.</li>
 </ul>
 </li>
@@ -254,7 +265,23 @@ of the normalized particle four-momenta are used.</p>
 <pre><code class="python">evaluate(arg)
 </code></pre>
 
-<p>Evaluate</p>
+<p>Evaluate the measure on a set of particles.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>arg</strong> : <em>2-d numpy.ndarray</em><ul>
+<li>A two-dimensional array of the particles with each row being a 
+particle and the columns specified by the <code>coords</code> attribute.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(<em> 1-d numpy.ndarray</em>, <em>2-d numpy.ndarray</em>)<ul>
+<li>(<code>zs</code>, <code>thetas</code>) where <code>zs</code> is a vector of the energy fractions for 
+each particle and <code>thetas</code> is the distance matrix between the particles.</li>
+</ul>
+</li>
+</ul>
 <hr />
               
             </div>

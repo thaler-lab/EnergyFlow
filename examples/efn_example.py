@@ -1,3 +1,14 @@
+"""An example involving Energy Flow Networks (EFNs), which are to
+appear soon in a paper by P. T. Komiske, E. M. Metodiev, and J. Thaler. 
+See [this talk](https://indico.cern.ch/event/649482/contributions/
+2993313/attachments/1689067/2717141/PTK_BOOST2018_compressed.pdf) 
+for a brief overview of the EFN architecture. The [`EFN`](/docs/
+archs/#EFN) class is used to construct the network architecture.
+The output of the example is a plot of the ROC curves obtained by
+the EFN as well as the jet mass and constituent multiplicity 
+observables.
+"""
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 import sys
@@ -84,7 +95,7 @@ efn.fit([z_train, p_train], Y_train,
 # get predictions on test data
 preds = efn.predict([z_test, p_test], batch_size=1000)
 
-get ROC curve if we have sklearn
+# get ROC curve if we have sklearn
 if roc_curve:
     efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
 
@@ -98,7 +109,7 @@ if roc_curve:
     if plt:
 
         # get multiplicity and mass for comparison
-        masses = np.asarray([np.sqrt(ef.mass2(ef.p4s_from_ptyphis(x).sum(axis=0))) for x in X])
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)

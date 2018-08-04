@@ -51,11 +51,9 @@ def kwargs_check(name, kwargs, allowed=[]):
 
 _sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 
-
 ###############################################################################
 # EFP
 ###############################################################################
-
 class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
@@ -67,8 +65,9 @@ class EFP(EFPBase):
 
         - **edges** : _list_
             - Edges of the EFP graph specified by pairs of vertices.
-        - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
-            - See [Measures](/docs/measure) for additional info.
+        - **measure** : {`'hadr'`, `'hadrdot'`, `'ee'`}
+            - The choice of measure. See [Measures](/docs/measure) 
+            for additional info.
         - **beta** : _float_
             - The parameter $\\beta$ appearing in the measure.
             Must be greater than zero.
@@ -77,6 +76,9 @@ class EFP(EFPBase):
             If `'pf'`, use $\\kappa=v-1$ where $v$ is the valency of the vertex.
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
+        - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
+            - Controls which coordinates are assumed for the input. See 
+            [Measures](/docs/measure) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume
             the first input type.
@@ -105,7 +107,26 @@ class EFP(EFPBase):
     #===============
 
     # compute(event=None, zs=None, thetas=None)
-    def compute(self, event=None, zs=None, thetas=None):
+    def compute(self, event=None, zs=None, thetas=None, batch_call=None):
+        """Computes the value of the EFP on a single event.
+
+        **Arguments**
+
+        - **event** : 2-d array_like or `fastjet.PseudoJet`
+            - The event as an array of particles in the coordinates specified
+            by `coords`.
+        - **zs** : 1-d array_like
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
+        - **thetas** : 2-d array_like
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+
+        **Returns**
+
+        - _float_
+            - The EFP value.
+        """
 
         zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
         return self.efpelem.compute(zs, thetas_dict)
@@ -172,11 +193,9 @@ class EFP(EFPBase):
         else:
             return None
 
-
 ###############################################################################
 # EFPSet
 ###############################################################################
-
 class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on events."""
@@ -355,8 +374,27 @@ class EFPSet(EFPBase):
 
         return np.squeeze(np.concatenate((X, results), axis=1))
 
-    # compute(event=None, zs=None, thetas=None, ps=None)
+    # compute(event=None, zs=None, thetas=None)
     def compute(self, event=None, zs=None, thetas=None, batch_call=False):
+        """Computes the values of the stored EFPs on a single event.
+
+        **Arguments**
+
+        - **event** : 2-d array_like or `fastjet.PseudoJet`
+            - The event as an array of particles in the coordinates specified
+            by `coords`.
+        - **zs** : 1-d array_like
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
+        - **thetas** : 2-d array_like
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+
+        **Returns**
+
+        - _1-d numpy.ndarray_
+            - A vector of the EFP values.
+        """
         
         zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
         results = [efpelem.compute(zs, thetas_dict) for efpelem in self.efpelems]
@@ -367,6 +405,22 @@ class EFPSet(EFPBase):
             return self.calc_disc(results)
 
     def batch_compute(self, events, n_jobs=-1):
+        """Computes the value of the stored EFPs on several events.
+
+        **Arguments**
+
+        - **events** : array_like or `fastjet.PseudoJet`
+            - The events as an array of arrays of particles in coordinates
+            matching those anticipated by `coords`.
+        - **n_jobs** : _int_ 
+            - The number of worker processes to use. A value of `-1` will attempt
+            to use as many processes as there are CPUs on the machine.
+
+        **Returns**
+
+        - _2-d numpy.ndarray_
+            - An array of the EFP values for each event.
+        """
 
         return self.calc_disc(super(EFPSet, self).batch_compute(events, n_jobs))
 
@@ -392,7 +446,7 @@ class EFPSet(EFPBase):
 
         **Returns**
 
-        - _numpy.ndarray_
+        - _1-d numpy.ndarray_
             - A boolean array of length the number of EFPs stored by this object. 
         """
 
@@ -475,7 +529,7 @@ class EFPSet(EFPBase):
 
         - _list_, if single integer argument is given
             - The list of edges corresponding to the specified graph
-        - _numpy.ndarray_, otherwise
+        - _1-d numpy.ndarray_, otherwise
             - An array of graphs (as lists of edges) matching the specifications.
         """
 
@@ -504,7 +558,7 @@ class EFPSet(EFPBase):
 
         - _list_, if single integer argument is given
             - The list of edges corresponding to the specified simple graph
-        - _numpy.ndarray_, otherwise
+        - _1-d numpy.ndarray_, otherwise
             - An array of simple graphs (as lists of edges) matching the specifications.
         """
 

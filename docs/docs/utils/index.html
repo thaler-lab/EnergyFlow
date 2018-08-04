@@ -28,6 +28,16 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-122962541-1', 'pkomiske.github.io/EnergyFlow');
+      ga('send', 'pageview');
+  </script>
+  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -69,6 +79,10 @@
                 <li class="">
                     
     <a class="" href="../../tutorial/">Tutorial</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../examples/">Examples</a>
                 </li>
                 <li class="">
                     
@@ -144,7 +158,7 @@
         </ul>
     
 
-    <li class="toctree-l3"><a href="#random-event-generation">Random Event Generation</a></li>
+    <li class="toctree-l3"><a href="#random-events">Random Events</a></li>
     
         <ul>
         
@@ -212,8 +226,7 @@
                 <h3 id="particle-tools">Particle Tools</h3>
 <p>Tools to compute particle kinematic quantities from four-vectors,
 such as transverse momentum $p_T$, rapidity $y$, and azimuthal angle
-$\phi$. Also includes functions for converting between Euclidean 
-four-momenta and $(p_T,y,\phi,[m])$.</p>
+$\phi$, and vice versa.</p>
 <hr />
 <h4 id="ptyphims_from_p4s">ptyphims_from_p4s</h4>
 <pre><code class="python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None, keep_shape=True)
@@ -224,22 +237,16 @@ four-vector given as input. All-zero four-vectors are removed unless <code>keep_
 is <code>True</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em></p>
-<ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 A single particle as a one-dimensional array or list is also accepted.</li>
 </ul>
 </li>
-<li>
-<p><strong>phi_ref</strong> : <em>float</em></p>
-<ul>
+<li><strong>phi_ref</strong> : <em>float</em><ul>
 <li>A reference value used so that all phis will be within $\pm\pi$ of thie value.</li>
 </ul>
 </li>
-<li>
-<p><strong>keep_shape</strong> : <em>bool</em></p>
-<ul>
+<li><strong>keep_shape</strong> : <em>bool</em><ul>
 <li>Flag to determine if all-zero four-vectors will be retained. This is useful for
 keeping the shape of an array.</li>
 </ul>
@@ -248,7 +255,7 @@ keeping the shape of an array.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An array of size <code>(M, 4)</code> consisting of the transverse momentum, rapidity,
+<li>An array of size <code>(M,4)</code> consisting of the transverse momentum, rapidity,
 azimuthal angle, and mass of each particle. If a single particle was given as 
 input, a one-dimensional array is returned.</li>
 </ul>
@@ -263,7 +270,7 @@ input, a one-dimensional array is returned.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 A single particle as a one-dimensional array or list is also accepted.</li>
 </ul>
 </li>
@@ -285,7 +292,7 @@ If a single particle was given as input, a single float is returned.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 A single particle as a one-dimensional array or list is also accepted.</li>
 </ul>
 </li>
@@ -308,16 +315,12 @@ not <code>None</code>, then <code>phi_fix</code> is called using this value. Oth
 the angles are chosen to be in the inverval $[0,2\pi]$.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em></p>
-<ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 A single particle as a one-dimensional array or list is also accepted.</li>
 </ul>
 </li>
-<li>
-<p><strong>phi_ref</strong> : <em>float</em></p>
-<ul>
+<li><strong>phi_ref</strong> : <em>float</em><ul>
 <li>See </li>
 </ul>
 </li>
@@ -339,7 +342,7 @@ If a single particle was given as input, a single float is returned.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 A single particle as a one-dimensional array or list is also accepted.</li>
 </ul>
 </li>
@@ -362,8 +365,8 @@ and (optionally) mass for each input.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An array with shape <code>(M, 4)</code> of <code>[pT, y, phi, m]</code> for each particle. An array with 
-shape <code>(M, 3)</code> is also accepted where the masses are taken to be zero. A single 
+<li>An array with shape <code>(M,4)</code> of <code>[pT, y, phi, m]</code> for each particle. An array with 
+shape <code>(M,3)</code> is also accepted where the masses are taken to be zero. A single 
 particle is also accepted.</li>
 </ul>
 </li>
@@ -371,7 +374,7 @@ particle is also accepted.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 If a single particle was given as input, a single four-vector will be returned.</li>
 </ul>
 </li>
@@ -386,7 +389,7 @@ Particles are taken to be massless.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An array with shape <code>(M, 3)</code> of <code>[pT, y, phi]</code> for each particle. A single 
+<li>An array with shape <code>(M,3)</code> of <code>[pT, y, phi]</code> for each particle. A single 
 particle is also accepted.</li>
 </ul>
 </li>
@@ -394,7 +397,7 @@ particle is also accepted.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An event as an <code>(M, 4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E, px, py, pz]</code> for each particle.
 If a single particle was given as input, a single four-vector will be returned.</li>
 </ul>
 </li>
@@ -408,21 +411,15 @@ If a single particle was given as input, a single four-vector will be returned.<
 It is assumed that all starting phi values are within $2\pi$ of <code>phi_ref</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>phis</strong> : <em>numpy.ndarray</em> or <em>list</em></p>
-<ul>
+<li><strong>phis</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
 <li>One-dimensional array of phi values.</li>
 </ul>
 </li>
-<li>
-<p><strong>phi_ref</strong> : <em>float</em></p>
-<ul>
+<li><strong>phi_ref</strong> : <em>float</em><ul>
 <li>A reference value used so that all phis will be within $\pm\pi$ of this value.</li>
 </ul>
 </li>
-<li>
-<p><strong>copy</strong> : <em>bool</em></p>
-<ul>
+<li><strong>copy</strong> : <em>bool</em><ul>
 <li>Determines if <code>phis</code> are copied or not. If <code>False</code> then <code>phis</code> may be 
 modified in place.</li>
 </ul>
@@ -450,7 +447,7 @@ modified in place.</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
+<li><em>1-d numpy.ndarray</em><ul>
 <li>A <code>dim</code>-length, one-dimensional (not matrix) array equal to <code>[+1, -1, ..., -1]</code></li>
 </ul>
 </li>
@@ -532,7 +529,7 @@ copy: if True, the arguments are unaffected. if False, the arguments
 <p>Remaps PDG id numbers to small floats.</p>
 <hr />
 <hr />
-<h3 id="random-event-generation">Random Event Generation</h3>
+<h3 id="random-events">Random Events</h3>
 <p>Functions to generate random sets of four-vectors. Includes an implementation
 of the <a href="https://doi.org/10.1016/0010-4655(86)90119-0">RAMBO</a> algorithm for
 sampling uniform M-body massless phase space. Also includes other functions for
@@ -548,27 +545,19 @@ components drawn randomly from [-1,+1]. These events are not guaranteed
 to uniformly sample phase space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>nevents</strong> : <em>int</em></p>
-<ul>
+<li><strong>nevents</strong> : <em>int</em><ul>
 <li>Number of events to generate.</li>
 </ul>
 </li>
-<li>
-<p><strong>nparticles</strong> : <em>int</em></p>
-<ul>
+<li><strong>nparticles</strong> : <em>int</em><ul>
 <li>Number of particles in each event.</li>
 </ul>
 </li>
-<li>
-<p><strong>dim</strong> : <em>int</em></p>
-<ul>
+<li><strong>dim</strong> : <em>int</em><ul>
 <li>Number of spacetime dimensions.</li>
 </ul>
 </li>
-<li>
-<p><strong>mass</strong> : <em>float</em></p>
-<ul>
+<li><strong>mass</strong> : <em>float</em><ul>
 <li>Mass of the particles to generate.</li>
 </ul>
 </li>
@@ -592,21 +581,15 @@ by making about half of the particles incoming. These events are not guaranteed
 to uniformly sample phase space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>nevents</strong> : <em>int</em></p>
-<ul>
+<li><strong>nevents</strong> : <em>int</em><ul>
 <li>Number of events to generate.</li>
 </ul>
 </li>
-<li>
-<p><strong>nparticles</strong> : <em>int</em></p>
-<ul>
+<li><strong>nparticles</strong> : <em>int</em><ul>
 <li>Number of particles in each event.</li>
 </ul>
 </li>
-<li>
-<p><strong>dim</strong> : <em>int</em></p>
-<ul>
+<li><strong>dim</strong> : <em>int</em><ul>
 <li>Number of spacetime dimensions.</li>
 </ul>
 </li>
@@ -628,21 +611,15 @@ particles whose total energy and momentum are all zero.</li>
 for uniformly sampling massless M-body phase space for any center of mass energies.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li>
-<p><strong>nevents</strong> : <em>int</em></p>
-<ul>
+<li><strong>nevents</strong> : <em>int</em><ul>
 <li>Number of events to generate.</li>
 </ul>
 </li>
-<li>
-<p><strong>nparticles</strong> : <em>int</em></p>
-<ul>
+<li><strong>nparticles</strong> : <em>int</em><ul>
 <li>Number of particles in each event.</li>
 </ul>
 </li>
-<li>
-<p><strong>energy</strong> : <em>float</em></p>
-<ul>
+<li><strong>energy</strong> : <em>float</em><ul>
 <li>Total center of mass energy of each event.</li>
 </ul>
 </li>

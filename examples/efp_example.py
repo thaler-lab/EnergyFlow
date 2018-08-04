@@ -1,3 +1,13 @@
+"""An example involving Energy Flow Polynomials (EFPs) and a linear
+classifier (Fisher's Linear Discriminant by default). First, the 
+[`EFPSet`](/docs/efp/#EFPSet) class is used to compute the EFPs
+up to the specified `dmax`, the default being `dmax=5`. Then linear
+classifiers are trained for different numbers of EFPs as input, 
+determined by taking all EFPs up to degree `d` with `d` from `1` 
+to `dmax`. The output of the example is a plot of the ROC curves
+for the classifiers with different numbers of EFP inputs.
+"""
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 import sys
@@ -9,7 +19,7 @@ import numpy as np
 import energyflow as ef
 from energyflow.archs import LinearClassifier
 from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, to_categorical
+from energyflow.utils import data_split, standardize, to_categorical
 
 # attempt to import sklearn
 try:
@@ -28,13 +38,13 @@ except:
 ################################### SETTINGS ###################################
 
 # data controls
-num_data = 15000
+num_data = 20000
 test_frac = 0.2
 
 # efp parameters
 dmax = 5
 measure = 'hadr'
-beta = 1
+beta = 0.5
 
 # plotting
 colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
@@ -94,7 +104,8 @@ if plt:
 
     # iterate over the ROC curves and plot them
     for i,d in enumerate(range(1, dmax+1)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], label='LDA: d <= {} EFPs'.format(d))
+        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                                label='LDA: d <= {} EFPs'.format(d))
 
     # axes labels
     plt.xlabel('Quark Jet Efficiency')

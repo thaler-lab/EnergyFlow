@@ -2,10 +2,8 @@
 
 Tools to compute particle kinematic quantities from four-vectors,
 such as transverse momentum $p_T$, rapidity $y$, and azimuthal angle
-$\phi$. Also includes functions for converting between Euclidean 
-four-momenta and $(p_T,y,\phi,[m])$.
+$\phi$, and vice versa.
 """
-
 from __future__ import absolute_import, division
 
 import numpy as np
@@ -22,81 +20,44 @@ __all__ = [
     'flat_metric',
 ]
 
-###############################################################################
-# particle functions
-###############################################################################
+def ptyphims_from_p4s(p4s, phi_ref=None, keep_shape=True):
+    """Compute the $(p_T,y,\phi,m)$ representation of a four-vector for each Euclidean
+    four-vector given as input. All-zero four-vectors are removed unless `keep_shape` 
+    is `True`.
 
-long_metric = np.array([1.] + [-1.]*100)
-def flat_metric(dim):
-    """The Minkowski metric in `dim` spacetime dimensions in the mostly-minus convention.
-    
     **Arguments**
 
-    - **dim** : _int_
-        - The number of spacetime dimensions (thought to be four in our universe).
+    - **p4s** : _numpy.ndarray_ or _list_
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        A single particle as a one-dimensional array or list is also accepted.
+    - **phi_ref** : _float_
+        - A reference value used so that all phis will be within $\pm\pi$ of thie value.
+    - **keep_shape** : _bool_
+        - Flag to determine if all-zero four-vectors will be retained. This is useful for
+        keeping the shape of an array.
 
     **Returns**
 
     - _numpy.ndarray_
-        - A `dim`-length, one-dimensional (not matrix) array equal to `[+1, -1, ..., -1]`
+        - An array of size `(M,4)` consisting of the transverse momentum, rapidity,
+        azimuthal angle, and mass of each particle. If a single particle was given as 
+        input, a one-dimensional array is returned.
     """
 
-    if dim <= 101:
-        return long_metric[:dim]
-    return np.asarray([1.] + [-1.]*(dim-1))
+    p4s_arr = np.atleast_2d(p4s)
+    pts = pts_from_p4s(p4s_arr)
+    mask = np.atleast_1d(pts > 0.)
+    ys = ys_from_p4s(p4s_arr[mask])
+    phis = phis_from_p4s(p4s_arr[mask], phi_ref=phi_ref)
+    ms = ms_from_p4s(p4s_arr[mask])
+    ptyphims = np.vstack((np.atleast_1d(pts)[mask], ys, phis, ms)).T
 
-def p4s_from_ptyphims(ptyphims):
-    """Calculate Euclidean four-vectors from transverse momentum, rapidity, azimuthal angle,
-    and (optionally) mass for each input.
-    
-    **Arguments**
+    if keep_shape:
+        num_zeros = len(p4s_arr) - np.count_nonzero(mask)
+        if num_zeros > 0:
+            ptyphims = np.vstack((ptyphims, np.zeros((num_zeros, 4))))
 
-    - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M, 4)` of `[pT, y, phi, m]` for each particle. An array with 
-        shape `(M, 3)` is also accepted where the masses are taken to be zero. A single 
-        particle is also accepted.
-
-    **Returns**
-
-    - _numpy.ndarray_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
-        If a single particle was given as input, a single four-vector will be returned.
-    """
-
-    # ensure a two-dimensional array
-    ptyphims = np.atleast_2d(ptyphims)
-
-    # handle case of no masses
-    if ptyphims.shape[1] == 3:
-        return p4s_from_ptyphis(ptyphims)
-
-    # handle regular case
-    pts, ys, phis, ms = [ptyphims[:,i] for i in range(4)]
-    Ets = np.sqrt(pts**2 + ms**2)
-    p4s = np.vstack([Ets*np.cosh(ys), pts*np.cos(phis), pts*np.sin(phis), Ets*np.sinh(ys)]).T
-    return np.squeeze(p4s)
-
-def p4s_from_ptyphis(ptyphis):
-    """Calculate Euclidean four-vectors from transverse momentum, rapidity, and azimuthal angle.
-    Particles are taken to be massless.
-    
-    **Arguments**
-
-    - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M, 3)` of `[pT, y, phi]` for each particle. A single 
-        particle is also accepted.
-
-    **Returns**
-
-    - _numpy.ndarray_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
-        If a single particle was given as input, a single four-vector will be returned.
-    """
-
-    ptyphis = np.atleast_2d(ptyphis)
-    pts, ys, phis = ptyphis[:,0], ptyphis[:,1], ptyphis[:,2]
-    p4s = (pts*np.vstack([np.cosh(ys), np.cos(phis), np.sin(phis), np.sinh(ys)])).T
-    return np.squeeze(p4s)
+    return np.squeeze(ptyphims)
 
 def pts_from_p4s(p4s):
     """Calculate the transverse momenta of a collection of four-vectors
@@ -104,7 +65,7 @@ def pts_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
 
     **Returns**
@@ -123,7 +84,7 @@ def ys_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
 
     **Returns**
@@ -136,36 +97,6 @@ def ys_from_p4s(p4s):
     ys = 0.5*np.log((p4s[...,0] + p4s[...,3])/(p4s[...,0] - p4s[...,3]))
     return np.squeeze(ys)
 
-twopi = 2*np.pi
-def phi_fix(phis, phi_ref, copy=False):
-    """A function to ensure that all phi values are within $\pi$ of `phi_ref`. 
-    It is assumed that all starting phi values are within $2\pi$ of `phi_ref`.
-
-    **Arguments**
-
-    - **phis** : _numpy.ndarray_ or _list_
-        - One-dimensional array of phi values.
-
-    - **phi_ref** : _float_
-        - A reference value used so that all phis will be within $\pm\pi$ of this value.
-
-    - **copy** : _bool_
-        - Determines if `phis` are copied or not. If `False` then `phis` may be 
-        modified in place.
-
-    **Returns**
-
-    - _numpy.ndarray_
-        - An array of the fixed phi values.
-    """
-
-    phis = np.asarray(phis)
-    diff = phis - phi_ref
-    new_phis = np.copy(phis) if copy else phis
-    new_phis[diff > np.pi] -= twopi
-    new_phis[diff < -np.pi] += twopi
-    return new_phis
-
 def phis_from_p4s(p4s, phi_ref=None):
     """Calculate the azimuthal angles of a collection of four-vectors. If `phi_ref` is 
     not `None`, then `phi_fix` is called using this value. Otherwise, 
@@ -174,9 +105,8 @@ def phis_from_p4s(p4s, phi_ref=None):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
-
     - **phi_ref** : _float_
         - See 
 
@@ -202,7 +132,7 @@ def ms_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
 
     **Returns**
@@ -217,43 +147,102 @@ def ms_from_p4s(p4s):
     ms = np.sign(m2s)*np.sqrt(np.abs(m2s))
     return np.squeeze(ms)
 
-def ptyphims_from_p4s(p4s, phi_ref=None, keep_shape=True):
-    """Compute the $(p_T,y,\phi,m)$ representation of a four-vector for each Euclidean
-    four-vector given as input. All-zero four-vectors are removed unless `keep_shape` 
-    is `True`.
-
+def p4s_from_ptyphims(ptyphims):
+    """Calculate Euclidean four-vectors from transverse momentum, rapidity, azimuthal angle,
+    and (optionally) mass for each input.
+    
     **Arguments**
 
-    - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M, 4)` array of four-vectors `[E, px, py, pz]` for each particle.
-        A single particle as a one-dimensional array or list is also accepted.
-
-    - **phi_ref** : _float_
-        - A reference value used so that all phis will be within $\pm\pi$ of thie value.
-
-    - **keep_shape** : _bool_
-        - Flag to determine if all-zero four-vectors will be retained. This is useful for
-        keeping the shape of an array.
+    - **ptyphims** : _numpy.ndarray_ or _list_
+        - An array with shape `(M,4)` of `[pT, y, phi, m]` for each particle. An array with 
+        shape `(M,3)` is also accepted where the masses are taken to be zero. A single 
+        particle is also accepted.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An array of size `(M, 4)` consisting of the transverse momentum, rapidity,
-        azimuthal angle, and mass of each particle. If a single particle was given as 
-        input, a one-dimensional array is returned.
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        If a single particle was given as input, a single four-vector will be returned.
     """
 
-    p4s_arr = np.atleast_2d(p4s)
-    pts = pts_from_p4s(p4s_arr)
-    mask = np.atleast_1d(pts > 0.)
-    ys = ys_from_p4s(p4s_arr[mask])
-    phis = phis_from_p4s(p4s_arr[mask], phi_ref=phi_ref)
-    ms = ms_from_p4s(p4s_arr[mask])
-    ptyphims = np.vstack((np.atleast_1d(pts)[mask], ys, phis, ms)).T
+    # ensure a two-dimensional array
+    ptyphims = np.atleast_2d(ptyphims)
 
-    if keep_shape:
-        num_zeros = len(p4s_arr) - np.count_nonzero(mask)
-        if num_zeros > 0:
-            ptyphims = np.vstack((ptyphims, np.zeros((num_zeros, 4))))
+    # handle case of no masses
+    if ptyphims.shape[1] == 3:
+        return p4s_from_ptyphis(ptyphims)
 
-    return np.squeeze(ptyphims)
+    # handle regular case
+    pts, ys, phis, ms = [ptyphims[:,i] for i in range(4)]
+    Ets = np.sqrt(pts**2 + ms**2)
+    p4s = np.vstack([Ets*np.cosh(ys), pts*np.cos(phis), pts*np.sin(phis), Ets*np.sinh(ys)]).T
+    return np.squeeze(p4s)
+
+def p4s_from_ptyphis(ptyphis):
+    """Calculate Euclidean four-vectors from transverse momentum, rapidity, and azimuthal angle.
+    Particles are taken to be massless.
+    
+    **Arguments**
+
+    - **ptyphims** : _numpy.ndarray_ or _list_
+        - An array with shape `(M,3)` of `[pT, y, phi]` for each particle. A single 
+        particle is also accepted.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        If a single particle was given as input, a single four-vector will be returned.
+    """
+
+    ptyphis = np.atleast_2d(ptyphis)
+    pts, ys, phis = ptyphis[:,0], ptyphis[:,1], ptyphis[:,2]
+    p4s = (pts*np.vstack([np.cosh(ys), np.cos(phis), np.sin(phis), np.sinh(ys)])).T
+    return np.squeeze(p4s)
+
+twopi = 2*np.pi
+def phi_fix(phis, phi_ref, copy=False):
+    """A function to ensure that all phi values are within $\pi$ of `phi_ref`. 
+    It is assumed that all starting phi values are within $2\pi$ of `phi_ref`.
+
+    **Arguments**
+
+    - **phis** : _numpy.ndarray_ or _list_
+        - One-dimensional array of phi values.
+    - **phi_ref** : _float_
+        - A reference value used so that all phis will be within $\pm\pi$ of this value.
+    - **copy** : _bool_
+        - Determines if `phis` are copied or not. If `False` then `phis` may be 
+        modified in place.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of the fixed phi values.
+    """
+
+    phis = np.asarray(phis)
+    diff = phis - phi_ref
+    new_phis = np.copy(phis) if copy else phis
+    new_phis[diff > np.pi] -= twopi
+    new_phis[diff < -np.pi] += twopi
+    return new_phis
+
+long_metric = np.array([1.] + [-1.]*100)
+def flat_metric(dim):
+    """The Minkowski metric in `dim` spacetime dimensions in the mostly-minus convention.
+    
+    **Arguments**
+
+    - **dim** : _int_
+        - The number of spacetime dimensions (thought to be four in our universe).
+
+    **Returns**
+
+    - _1-d numpy.ndarray_
+        - A `dim`-length, one-dimensional (not matrix) array equal to `[+1, -1, ..., -1]`
+    """
+
+    if dim <= 101:
+        return long_metric[:dim]
+    return np.asarray([1.] + [-1.]*(dim-1))

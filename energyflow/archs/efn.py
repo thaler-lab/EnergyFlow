@@ -12,11 +12,9 @@ from energyflow.utils import iter_or_rep
 
 __all__ = ['EFN', 'PFN']
 
-
 ###############################################################################
 # SymmetricPerParticleNN - Base class for EFN-like models
 ###############################################################################
-
 class SymmetricPerParticleNN(NNBase):
 
     def process_hps(self):

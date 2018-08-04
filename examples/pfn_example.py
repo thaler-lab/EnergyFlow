@@ -1,3 +1,11 @@
+"""An example involving Particle Flow Networks (PFNs), cousins of
+the [EFNs](#efn_example.py), which are to appear. The [`PFN`](/docs/
+archs/#PFN) class is used to construct the network architecture.
+The output of the example is a plot of the ROC curves obtained by
+the PFN as well as the jet mass and constituent multiplicity 
+observables.
+"""
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 import sys
@@ -100,7 +108,7 @@ if roc_curve:
     if plt:
 
         # get multiplicity and mass for comparison
-        masses = np.asarray([np.sqrt(ef.mass2(ef.p4s_from_ptyphis(x).sum(axis=0))) for x in X])
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)

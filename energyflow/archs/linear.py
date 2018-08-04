@@ -7,6 +7,9 @@ from energyflow.archs.archbase import ArchBase
 
 __all__ = ['LinearClassifier']
 
+###############################################################################
+# LinearClassifier
+###############################################################################
 class LinearClassifier(ArchBase):
 
     """LinearClassifier docstring."""

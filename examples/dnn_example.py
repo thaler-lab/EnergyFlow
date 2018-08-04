@@ -1,3 +1,14 @@
+"""An example involving deep, fully-connected neural networks (DNNs).
+The [`DNN`](/docs/archs/#DNN) class is used to construct the network 
+architecture.
+
+The inputs are taken to be the $N$-subjettiness observables as specified
+as part of the phase space basis from [1704.08249](https://arxiv.org
+/abs/1704.08249), cut off at some total number of observables. The
+output of the example is a plot showing the ROC curves obtained from
+training the DNN on different numbers of $N$-subjettiness observables.
+"""
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 import sys
@@ -97,7 +108,8 @@ if plt:
 
     # iterate over the ROC curves and plot them
     for i in range(len(rocs)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], label='DNN: {} N-subs'.format(num_nsubs[i]))
+        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                                label='DNN: {} N-subs'.format(num_nsubs[i]))
 
     # axes labels
     plt.xlabel('Quark Jet Efficiency')

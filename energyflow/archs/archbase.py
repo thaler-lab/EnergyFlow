@@ -8,7 +8,6 @@ from six import with_metaclass
 ###############################################################################
 # ArchBase
 ###############################################################################
-
 class ArchBase(with_metaclass(ABCMeta, object)):
 
     def __init__(self, *args, **kwargs):
@@ -45,11 +44,9 @@ class ArchBase(with_metaclass(ABCMeta, object)):
     def model(self):
         pass
 
-
 ###############################################################################
 # NNBase
 ###############################################################################
-
 class NNBase(ArchBase):        
 
     def process_hps(self):

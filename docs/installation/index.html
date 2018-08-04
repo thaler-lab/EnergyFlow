@@ -28,6 +28,16 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-122962541-1', 'pkomiske.github.io/EnergyFlow');
+      ga('send', 'pageview');
+  </script>
+  
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -84,6 +94,10 @@
                 <li class="">
                     
     <a class="" href="../tutorial/">Tutorial</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../examples/">Examples</a>
                 </li>
                 <li class="">
                     
@@ -167,7 +181,7 @@
 <h3 id="install-with-pip-recommended">Install with <code>pip</code> (recommended)</h3>
 <p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
 <h3 id="bleeding-edge-install">Bleeding edge install</h3>
-<p>EnergyFlow is <a href="https://github.com/pkomiske/EnergyFlow/">hosted on GitHub</a> and can be installed by cloning the repository and running <code>python setup.py install</code>.</p>
+<p>EnergyFlow is <a href="https://github.com/pkomiske/EnergyFlow/">hosted on GitHub</a> and can be installed by cloning the repository and running <code>python setup.py install</code>. This is not generally recommend as the master branch may contain unstable features.</p>
 <h3 id="igraph">iGraph</h3>
 <p>EnergyFlow relies on <a href="http://igraph.org/redirect.html">iGraph</a> for generation of multigraphs. This is not required if using the provided graphs suits your needs. If you wish to generate your own graphs, make sure that iGraph is importable.</p>
 <h3 id="numpy">NumPy</h3>
