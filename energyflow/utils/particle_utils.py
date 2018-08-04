@@ -21,14 +21,14 @@ __all__ = [
 ]
 
 def ptyphims_from_p4s(p4s, phi_ref=None, keep_shape=True):
-    """Compute the $(p_T,y,\phi,m)$ representation of a four-vector for each Euclidean
+    """Compute the `[pt,y,phi,m]` representation of a four-vector for each Euclidean
     four-vector given as input. All-zero four-vectors are removed unless `keep_shape` 
     is `True`.
 
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
     - **phi_ref** : _float_
         - A reference value used so that all phis will be within $\pm\pi$ of thie value.
@@ -65,7 +65,7 @@ def pts_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
 
     **Returns**
@@ -84,7 +84,7 @@ def ys_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
 
     **Returns**
@@ -105,7 +105,7 @@ def phis_from_p4s(p4s, phi_ref=None):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
     - **phi_ref** : _float_
         - See 
@@ -132,7 +132,7 @@ def ms_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
 
     **Returns**
@@ -154,14 +154,14 @@ def p4s_from_ptyphims(ptyphims):
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M,4)` of `[pT, y, phi, m]` for each particle. An array with 
+        - An array with shape `(M,4)` of `[pT,y,phi,m]` for each particle. An array with 
         shape `(M,3)` is also accepted where the masses are taken to be zero. A single 
         particle is also accepted.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         If a single particle was given as input, a single four-vector will be returned.
     """
 
@@ -185,13 +185,13 @@ def p4s_from_ptyphis(ptyphis):
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M,3)` of `[pT, y, phi]` for each particle. A single 
+        - An array with shape `(M,3)` of `[pT,y,phi]` for each particle. A single 
         particle is also accepted.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An event as an `(M,4)` array of four-vectors `[E, px, py, pz]` for each particle.
+        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         If a single particle was given as input, a single four-vector will be returned.
     """
 
@@ -240,7 +240,7 @@ def flat_metric(dim):
     **Returns**
 
     - _1-d numpy.ndarray_
-        - A `dim`-length, one-dimensional (not matrix) array equal to `[+1, -1, ..., -1]`
+        - A `dim`-length, one-dimensional (not matrix) array equal to `[+1,-1,...,-1]`
     """
 
     if dim <= 101:

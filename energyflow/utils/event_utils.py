@@ -13,7 +13,7 @@ import numpy as np
 
 __all__ = [
     'gen_random_events',
-    'gen_random_events_massless_com',
+    'gen_random_events_mcom',
     'gen_massless_phase_space'
 ]
 
@@ -46,7 +46,7 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
     events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
     return np.squeeze(events)
 
-def gen_random_events_massless_com(nevents, nparticles, dim=4):
+def gen_random_events_mcom(nevents, nparticles, dim=4):
     """Generate random events with a given number of massless particles
     in a given spacetime dimension. The total energy and momentum are made to sum to zero
     by making about half of the particles incoming. These events are not guaranteed

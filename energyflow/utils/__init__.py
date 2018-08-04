@@ -1,3 +1,5 @@
+"""Utility functions for various purposes relating to the uses of EnergyFlow."""
+
 from __future__ import absolute_import
 
 from . import event_utils
