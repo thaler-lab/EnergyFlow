@@ -31,10 +31,6 @@ from energyflow.archs import CNN
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, pixelate, standardize, to_categorical, zero_center
 
-# set image channels as expected
-from keras import backend as K
-K.set_image_data_format('channels_first')
-
 # attempt to import sklearn
 try:
     from sklearn.metrics import roc_auc_score, roc_curve

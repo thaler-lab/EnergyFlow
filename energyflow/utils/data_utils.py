@@ -1,10 +1,8 @@
 """### Data Tools
 
-Functions for dealing with datasets. 
-
-URL handling and hashing functions copied from Keras GitHub repo. 
-The required license and copyright notice are provided in LICENSE
-which is distributed with this software package.
+Functions for dealing with datasets. These are not importable from
+the top level `energyflow` module, but must instead be imported 
+from `energyflow.utils`.
 """
 from __future__ import absolute_import, division, print_function
 
@@ -14,17 +12,17 @@ import os
 import sys
 
 import numpy as np
-
 from six.moves.urllib.error import HTTPError, URLError
 
-__all__ = ['get_examples', 
-           'data_split', 
-           'to_categorical',
-           'pixelate',
-           'standardize',
-           'zero_center',
-           'remap_pids',
-           '_get_file']
+__all__ = [
+    'get_examples', 
+    'data_split', 
+    'to_categorical',
+    'pixelate',
+    'standardize',
+    'zero_center',
+    'remap_pids'
+]
 
 def get_examples(path='~/.energyflow', which='all', overwrite=False):
     """Pulls examples from GitHub.
@@ -347,8 +345,6 @@ def standardize(*args, **kwargs):
         for chan in channels: 
             x[:,chan] /= stds[chan]
     return X
-
-
 
 def zero_center(*args, **kwargs):
     """Subtracts the mean of arg[0] from the arguments. The expected 

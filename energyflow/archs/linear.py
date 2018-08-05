@@ -12,9 +12,34 @@ __all__ = ['LinearClassifier']
 ###############################################################################
 class LinearClassifier(ArchBase):
 
-    """LinearClassifier docstring."""
+    """Linear classifier that can be either Fisher's linear discriminant
+    or logistic regression. Relies on the [scikit-learn](https://scikit-learn.org/)
+    implementations of these classifiers."""
 
+    # LinearClassifier(*args, **kwargs)
     def process_hps(self):
+        """See [`ArchBase`](#ArchBase) for how to pass in hyperparameters.
+
+        **Default Hyperparameters**
+
+        - **linclass_type**=`'lda'` : {`'lda'`, `'lr'`}
+            - Controls which type of linear classifier is used. `'lda'`
+            corresponds to [`LinearDisciminantAnalysis`](http://scikit-
+            learn.org/stable/modules/generated/sklearn.discriminant_analysis.
+            LinearDiscriminantAnalysis.html) and `'lr'` to [`Logistic
+            Regression`](http://scikit-learn.org/stable/modules/generated/
+            sklearn.linear_model.LogisticRegression.html). If using `'lr'`
+            all arguments are passed on directly to the scikit-learn
+            class.
+
+        **LDA Hyperparameters**
+
+        - **solver**=`'svd'` : {`'svd'`, `'lsqr'`, `'eigen'`}
+            - Which LDA solver to use.
+        - **tol**=`'tol'` : _float_
+            - Threshold used for rank estimation. Notably not a
+            convergence parameter.
+        """
 
         # which type of linear model we're using
         self.linclass_type = self.hps.get('linclass_type', 'lda')

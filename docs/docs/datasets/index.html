@@ -183,20 +183,87 @@
             <div class="section">
               
                 <h3 id="qg_jets">QG_jets</h3>
+<p>A dataset consisting of 100k quark and gluon jets generated with Pythia 8.230.
+The dataset contains two members: <code>'X'</code> which is a numpy array of the jets that
+has shape <code>(100000,139,4)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
+labels (quark=<code>1</code> and gluon=<code>0</code>). The jets are padded with zero-particles in order
+to make a contiguous array. The particles are given as <code>(pt,y,phi,pid)</code> values 
+where <code>pid</code> is the particle's <a href="http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf">PDG id</a>.</p>
 <hr />
 <h4 id="load">load</h4>
-<pre><code class="python">energyflow.load(num_data=-1, filename='QG_jets.npz', cache_dir=None)
+<pre><code class="python">energyflow.datasets.load(num_data=-1, filename='QG_jets.npz', cache_dir=None)
 </code></pre>
 
-<p>load docstring.</p>
+<p>Loads the dataset. The first time this is called, it will automatically
+download the dataset. Future calls will attempt to use the cached dataset 
+prior to redownloading.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>num_data</strong> : <em>int</em><ul>
+<li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
+</ul>
+</li>
+<li><strong>filename</strong> : <em>str</em><ul>
+<li>The filename where to store/look for the file.</li>
+</ul>
+</li>
+<li><strong>cache_dir</strong> : <em>str</em><ul>
+<li>The directory where to store/look for the file.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>3-d numpy.ndarray</em>, _1-d numpy.ndarray<ul>
+<li>The <code>X</code> and <code>y</code> components of the dataset as specified above.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h3 id="qg_nsubs">QG_nsubs</h3>
+<p>A dataset consisting of 45 $N$-subjettiness observables for 100k quark 
+and gluon jets generated with Pythia 8.230. Following <a href="https:
+//arxiv.org/abs/1704.08249">1704.08249</a>, the observables are in the following order:
+<script type="math/tex; mode=display">
+\{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
+\tau_2^{(\beta=0.5)},\tau_2^{(\beta=1.0)},\tau_2^{(\beta=2.0)},
+\ldots,
+\tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.
+</script>
+</p>
+<p>The dataset contains two members: <code>'X'</code> which is a numpy array of the nsubs that
+has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
+labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h4 id="load_1">load</h4>
-<pre><code class="python">energyflow.load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None)
+<pre><code class="python">energyflow.datasets.load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None)
 </code></pre>
 
-<p>load docstring.</p>
+<p>Loads the dataset. The first time this is called, it will automatically
+download the dataset. Future calls will attempt to use the cached dataset 
+prior to redownloading.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>num_data</strong> : <em>int</em><ul>
+<li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
+</ul>
+</li>
+<li><strong>filename</strong> : <em>str</em><ul>
+<li>The filename where to store/look for the file.</li>
+</ul>
+</li>
+<li><strong>cache_dir</strong> : <em>str</em><ul>
+<li>The directory where to store/look for the file.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>3-d numpy.ndarray</em>, _1-d numpy.ndarray<ul>
+<li>The <code>X</code> and <code>y</code> components of the dataset as specified above.</li>
+</ul>
+</li>
+</ul>
 <hr />
               
             </div>

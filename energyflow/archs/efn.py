@@ -17,7 +17,54 @@ __all__ = ['EFN', 'PFN']
 ###############################################################################
 class SymmetricPerParticleNN(NNBase):
 
+    # EFN(*args, **kwargs)
     def process_hps(self):
+        """See [`ArchBase`](#ArchBase) for how to pass in hyperparameters.
+
+        **Required EFN Hyperparameters**
+
+        - **input_dim** : _int_
+            - The number of features for each particle.
+        - **ppm_sizes** : {_tuple_, _list_} of _int_
+            - The sizes of the dense layers in the per-particle frontend
+            module. The last element will be the number of latent 
+            observables that the model defines.
+        - **dense_sizes** : {_tuple_, _list_} of _int_
+            - The sizes of the dense layers in the backend module.
+
+        **Default EFN Hyperparameters**
+
+        - **ppm_acts**=`'relu'` : {_tuple_, _list_} of _str_
+            - Activation functions(s) for the dense layers in the 
+            per-particle frontend module. A single string will apply 
+            the same activation to all layers. See the [Keras activations 
+            docs](https://keras.io/activations/) for more detail.
+        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_
+            - Activation functions(s) for the dense layers in the 
+            backend module. A single string will apply  the same activation 
+            to all layers.
+        - **ppm_k_inits**=`''he_uniform' : {_tuple_, _list_} of _str_
+            - Kernel initializers for the dense layers in the per-particle
+            frontend module. A single string will apply the same initializer 
+            to all layers. See the [Keras initializer docs](https://
+            keras.io/initializers/) for more detail.
+        - **dense_k_inits**=`''he_uniform' : {_tuple_, _list_} of _str_
+            - Kernel initializers for the dense layers in the backend 
+            module. A single string will apply the same initializer 
+            to all layers.
+        - **latent_dropout**=`0` : _float_
+            - Dropout rates for the summation layer that defines the
+            value of the latent observables on the inputs. See the [Keras
+            Dropout layer](https://keras.io/layers/core/#dropout) for more 
+            detail.
+        - **dense_dropouts**=`0` : {_tuple_, _list_} of _float_
+            - Dropout rates for the dense layers in the backend module. 
+            A single float will apply the same dropout rate to all dense layers.
+        - **mask_val**=`0` : _float_
+            - The value for which particles with all features set equal to
+            this value will be ignored. See the [Keras Masking layer](https://
+            keras.io/layers/core/#masking) for more detail.
+        """
 
         # process generic NN hps
         super(SymmetricPerParticleNN, self).process_hps()
@@ -117,7 +164,7 @@ class SymmetricPerParticleNN(NNBase):
 
 class EFN(SymmetricPerParticleNN):
 
-    """EFN docstring."""
+    """Energy Flow Neural Network architecture."""
 
     def construct_input_layers(self):
 
@@ -139,9 +186,12 @@ class EFN(SymmetricPerParticleNN):
 
 class PFN(SymmetricPerParticleNN):
 
-    """PFN docstring."""
+    """Particle Flow Neural Network architecture. Accepts the same 
+    hperparameters as the [`EFN`](#EFN)."""
 
+    # PFN(*args, **kwargs)
     def construct_input_layers(self):
+        """""" # need this for autogen docs
 
         self._input_layers = [Input(batch_shape=(None, None, self.input_dim), name='input')]
 

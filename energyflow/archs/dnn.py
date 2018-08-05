@@ -14,9 +14,41 @@ __all__ = ['DNN']
 ###############################################################################
 class DNN(NNBase):
 
-    """DNN docstring."""
+    """Dense Neural Network architecture."""
 
+    # DNN(*args, **kwargs)
     def process_hps(self):
+        """See [`ArchBase`](#ArchBase) for how to pass in hyperparameters.
+
+        **Required DNN Hyperparameters**
+
+        - **input_dim** : _int_
+            - The number of inputs to the model.
+        - **dense_sizes** : {_tuple_, _list_} of _int_
+            - The number of nodes in the dense layers of the model.
+
+        **Default DNN Hyperparameters**
+
+        - **acts**=`'relu'` : {_tuple_, _list_} of _str_
+            - Activation functions(s) for the dense layers. A single string 
+            will apply the same activation to all layers. See the
+            [Keras activations docs](https://keras.io/activations/) for 
+            more detail.
+        - **k_inits**=`''he_uniform' : {_tuple_, _list_} of _str_
+            - Kernel initializers for the dense layers. A single string 
+            will apply the same initializer to all layers. See the
+            [Keras initializer docs](https://keras.io/initializers/) for 
+            more detail.
+        - **dropouts**=`0` : {_tuple_, _list_} of _float_
+            - Dropout rates for the dense layers. A single float will
+            apply the same dropout rate to all layers. See the [Keras
+            Dropout layer](https://keras.io/layers/core/#dropout) for more 
+            detail.
+        - **l2_regs**=`0` : {_tuple_, _list_} of _float_
+            - $L_2$-regulatization strength for both the weights and biases
+            of the dense layers. A single float will apply the same
+            $L_2$-regulatization to all layers.
+        """
 
         # process generic NN hps
         super(DNN, self).process_hps()

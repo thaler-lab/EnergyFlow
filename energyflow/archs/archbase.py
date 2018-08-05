@@ -1,3 +1,11 @@
+"""EnergyFlow contains a few model architectures for ease of using
+common models that frequently appear in the intersection of the 
+particle physics and ML worlds. Since these architectures are not
+used by the core EnergyFlow code, and require the external 
+[Keras](https://keras.io) and [scikit-learn](http://scikit-learn.org/)
+libraries, they are not imported by default but must be explicitly 
+imported, e.g. `from energyflow.archs import *`.
+"""
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
@@ -5,12 +13,38 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from keras.optimizers import Adam
 from six import with_metaclass
 
+__all__ = [
+    'ArchBase',
+    'NNBase'
+]
+
 ###############################################################################
 # ArchBase
 ###############################################################################
 class ArchBase(with_metaclass(ABCMeta, object)):
 
+    """Base class for all architectures contained in EnergyFlow. The mechanism of
+    specifying hyperparameters for all architectures is described here. Methods
+    common to all architectures are documented here. Note that this class cannot
+    be instantiated directly as it is an abstract base class.
+    """
+
+    # ArchBase(*args, **kwargs)
     def __init__(self, *args, **kwargs):
+        """Accepts arbitrary arguments. Positional arguments (if present) are
+        dictionaries of hyperparameters, keyword arguments (if present) are 
+        hyperparameters directly. Keyword hyperparameters take precedence over
+        positional hyperparameter dictionaries.
+
+        **Arguments**
+
+        - ***args** : arbitrary positional arguments
+            - Each argument is a dictionary containing hyperparameter (name, value)
+            pairs.
+        - ***kwargs** : arbitrary keyword arguments
+            - Hyperparameters as keyword arguments. Takes precedence over the 
+            positional arguments.
+        """
         
         # store all options
         self.hps = {}
@@ -32,16 +66,50 @@ class ArchBase(with_metaclass(ABCMeta, object)):
     def construct_model(self):
         pass
 
+    # fit(X_train, Y_train)
     @abstractmethod
     def fit(self):
+        """Train the model by fitting the provided training dataset and labels.
+        Transparently calls the `fit()` method of the underlying model.
+
+        **Arguments**
+
+        - **X_train** : _numpy.ndarray_
+            - The training dataset as an array of features for each sample.
+        - **Y_train** : _numpy.ndarray_
+            - The labels for the training dataset. May need to be one-hot encoded
+            depending on the requirements of the underlying model (typically Keras
+            models will use one-hot encoding whereas the linear model does not.)
+
+        **Returns**
+
+        - Whatever the underlying model's `fit()` returns.
+        """
+
         pass
 
-    @abstractproperty
+    # predict(X_test)
+    @abstractmethod
     def predict(self):
+        """Evaluate the model on a dataset. 
+
+        **Arguments**
+
+        - **X_test** : _numpy.ndarray_
+            - The dataset to evaluate the model on.
+
+        **Returns**
+
+        - _numpy.ndarray_
+            - The value of the model on the input dataset.
+        """
+
         pass
 
     @abstractproperty
     def model(self):
+        """The underlying model held by this architecture."""
+
         pass
 
 ###############################################################################
@@ -50,6 +118,28 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 class NNBase(ArchBase):        
 
     def process_hps(self):
+        """**Default NN Hyperparameters**
+
+        - **loss**=`'categorical_crossentropy'` : _str_
+            - The loss function to use for the model. See the [Keras
+            loss function docs](https://keras.io/losses/) for available
+            loss functions.
+        - **lr**=`0.001` : _float_
+            - The learning rate for the model.
+        - **opt**=`Adam` : Keras optimizer
+            - [A Keras optimizer](https://keras.io/optimizers/).
+        - **output_dim**=`2` : _int_
+            - The output dimension of the model.
+        - **output_act**=`'softmax'` : _str_
+            - Activation function to apply to the output.
+        - **metrics**=`['accuracy']` : _list_ of _str_
+            - The [Keras metrics](https://keras.io/metrics/) to apply
+            to the model.
+        - **compile**=`True` : _bool_
+            - Whether the model should be compiled or not.
+        - **summary**=`True` : _bool_
+            - Whether a summary should be printed or not.
+        """
 
         # optimization
         self.loss = self.hps.get('loss', 'categorical_crossentropy')
