@@ -1,5 +1,5 @@
 """An example involving Particle Flow Networks (PFNs), cousins of
-the [EFNs](#efn_example.py), which are to appear. The [`PFN`](/docs/
+the [EFNs](#efn_example.py), which are to appear. The [`PFN`](../docs/
 archs/#PFN) class is used to construct the network architecture.
 The output of the example is a plot of the ROC curves obtained by
 the PFN as well as the jet mass and constituent multiplicity 

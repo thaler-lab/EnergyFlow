@@ -1,15 +1,15 @@
 """An example involving jet images and convolutional neural networks (CNNs).
-The [`CNN`](/docs/archs/#CNN) class is used to provide a network architecture
+The [`CNN`](../docs/archs/#cnn) class is used to provide a network architecture
 based on that described in [1612.01551](https://arxiv.org/abs/1612.01551). 
 
-Jet images are constructed using the [`pixelate`](/docs/utils/#pixelate) 
+Jet images are constructed using the [`pixelate`](../docs/utils/#pixelate) 
 function and can be either one-channel (grayscale), meaning that only 
 $p_T$ information is used, or two-channel (color), meaning that $p_T$
 information and local charged particle counts are used. The images are
 preprocessed by subtracting the average image in the training set and
 dividing by the per-pixel standard deviations, using the 
-[`zero_center`](/docs/utils/#zero_center) and 
-[`standardize`](/docs/utils/#standardize) functions, respectively. 
+[`zero_center`](../docs/utils/#zero_center) and 
+[`standardize`](../docs/utils/#standardize) functions, respectively. 
 The output of the example is a plot of the ROC curves of the CNN 
 as well as the jet mass and constituent multiplicity observables.
 

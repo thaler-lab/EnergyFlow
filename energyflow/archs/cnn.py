@@ -17,7 +17,7 @@ class CNN(NNBase):
 
     # CNN(*args, **kwargs)
     def process_hps(self):
-        """See [`ArchBase`](#ArchBase) for how to pass in hyperparameters.
+        """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
         **Required CNN Hyperparameters**
 

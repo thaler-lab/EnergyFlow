@@ -8,7 +8,7 @@ $$\\text{EFP}_G=\\sum_{i_1=1}^M\\cdots\\sum_{i_N=1}^Mz_{i_1}\\cdots z_{i_N}
 where $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure 
 of the angular separation between particles $i$ and $j$. The specific choices for energy 
 and angular measure depend on the collider context and are discussed at length in the 
-[Measures](/docs/measure) section.
+[Measures](docs/measure) section.
 """
 
 from __future__ import absolute_import, division, print_function

@@ -1,6 +1,6 @@
 """An example involving Energy Flow Polynomials (EFPs) and a linear
 classifier (Fisher's Linear Discriminant by default). First, the 
-[`EFPSet`](/docs/efp/#EFPSet) class is used to compute the EFPs
+[`EFPSet`](../docs/efp/#efpset) class is used to compute the EFPs
 up to the specified `dmax`, the default being `dmax=5`. Then linear
 classifiers are trained for different numbers of EFPs as input, 
 determined by taking all EFPs up to degree `d` with `d` from `1` 
