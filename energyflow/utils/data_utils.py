@@ -25,7 +25,8 @@ __all__ = [
 ]
 
 def get_examples(path='~/.energyflow', which='all', overwrite=False):
-    """Pulls examples from GitHub.
+    """Pulls examples from GitHub. To ensure availability of all examples
+    update EnergyFlow to the latest version.
 
     **Arguments**
 
@@ -39,8 +40,13 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
     """
 
     # all current examples 
-    all_examples = {'efn_example.py', 'pfn_example.py', 'cnn_example.py', 
-                    'dnn_example.py', 'efp_example.py'}
+    all_examples = {
+        'efn_example.py',
+        'pfn_example.py',
+        'cnn_example.py',
+        'dnn_example.py',
+        'efp_example.py',
+    }
 
     # process which examples are selected
     if which == 'all':
@@ -54,6 +60,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
     cache_dir = os.path.expanduser(path)
 
     # get each example
+    files = []
     for example in examples:
 
         # remove file if necessary
@@ -61,8 +68,16 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
         if overwrite and os.path.exists(file_path):
             os.remove(file_path)
 
-        fpath = _get_file(example, url=base_url+example, 
-                                   cache_dir=cache_dir, cache_subdir='examples')
+        files.append(_get_file(example, url=base_url+example, 
+                                        cache_dir=cache_dir, cache_subdir='examples'))
+
+    # print summary
+    print()
+    print('Summary of examples:')
+    for f in files:
+        path, fname = os.path.split(f)
+        print(fname, 'exists at', path)
+    print()
 
 # data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 def data_split(*args, **kwargs):
@@ -266,18 +281,18 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
     return jet_image
 
 # PDGid to small float dictionary
-pid2float_mapping = {22: 0, 
-                     211: .1, -211: .2, 
-                     321: .3, -321: .4, 
-                     130: .5, 
-                     2112: .6, -2112: .7, 
-                     2212: .8, -2212: .9, 
-                     11: 1.0, -11: 1.1, 
+pid2float_mapping = {22: 0,
+                     211: .1, -211: .2,
+                     321: .3, -321: .4,
+                     130: .5,
+                     2112: .6, -2112: .7,
+                     2212: .8, -2212: .9,
+                     11: 1.0, -11: 1.1,
                      13: 1.2, -13: 1.3}
 
 def remap_pids(events, pid_i=3):
     """Remaps PDG id numbers to small floats for use in a neural network.
-    `events are modified in place and nothing is returned.
+    `events` are modified in place and nothing is returned.
 
     **Arguments**
 

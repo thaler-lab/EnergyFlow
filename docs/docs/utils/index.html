@@ -462,7 +462,8 @@ from <code>energyflow.utils</code>.</p>
 <pre><code class="python">energyflow.utils.get_examples(path='~/.energyflow', which='all', overwrite=False)
 </code></pre>
 
-<p>Pulls examples from GitHub.</p>
+<p>Pulls examples from GitHub. To ensure availability of all examples
+update EnergyFlow to the latest version.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>path</strong> : <em>str</em><ul>
@@ -676,7 +677,7 @@ to zero center. <code>None</code> is interpretted to mean every channel.</li>
 </code></pre>
 
 <p>Remaps PDG id numbers to small floats for use in a neural network.
-`events are modified in place and nothing is returned.</p>
+<code>events</code> are modified in place and nothing is returned.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>events</strong> : <em>3-d numpy.ndarray</em><ul>
