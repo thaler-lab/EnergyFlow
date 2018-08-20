@@ -66,7 +66,7 @@ class ArchBase(with_metaclass(ABCMeta, object)):
     def construct_model(self):
         pass
 
-    # fit(X_train, Y_train)
+    # fit(X_train, Y_train, **kwargs)
     @abstractmethod
     def fit(self):
         """Train the model by fitting the provided training dataset and labels.
@@ -80,6 +80,10 @@ class ArchBase(with_metaclass(ABCMeta, object)):
             - The labels for the training dataset. May need to be one-hot encoded
             depending on the requirements of the underlying model (typically Keras
             models will use one-hot encoding whereas the linear model does not.)
+        - **kwargs** : _dict_
+            - Keyword arguments passed on to the Keras method of the same name.
+            See the [Keras model docs](https://keras.io/models/model/#fit) for
+            details on available parameters.
 
         **Returns**
 
@@ -88,7 +92,7 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 
         pass
 
-    # predict(X_test)
+    # predict(X_test, **kwargs)
     @abstractmethod
     def predict(self):
         """Evaluate the model on a dataset. 
@@ -97,6 +101,10 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 
         - **X_test** : _numpy.ndarray_
             - The dataset to evaluate the model on.
+        - **kwargs** : _dict_
+            - Keyword arguments passed on to the Keras method of the same name.
+            See the [Keras model docs](https://keras.io/models/model/#fit) for
+            details on available parameters.
 
         **Returns**
 
