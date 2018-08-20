@@ -34,7 +34,7 @@ class DNN(NNBase):
             will apply the same activation to all layers. See the
             [Keras activations docs](https://keras.io/activations/) for 
             more detail.
-        - **k_inits**=`''he_uniform' : {_tuple_, _list_} of _str_
+        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers. A single string 
             will apply the same initializer to all layers. See the
             [Keras initializer docs](https://keras.io/initializers/) for 

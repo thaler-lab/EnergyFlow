@@ -43,12 +43,12 @@ class SymmetricPerParticleNN(NNBase):
             - Activation functions(s) for the dense layers in the 
             backend module. A single string will apply  the same activation 
             to all layers.
-        - **ppm_k_inits**=`''he_uniform' : {_tuple_, _list_} of _str_
+        - **ppm_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the per-particle
             frontend module. A single string will apply the same initializer 
             to all layers. See the [Keras initializer docs](https://
             keras.io/initializers/) for more detail.
-        - **dense_k_inits**=`''he_uniform' : {_tuple_, _list_} of _str_
+        - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the backend 
             module. A single string will apply the same initializer 
             to all layers.
