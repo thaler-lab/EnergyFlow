@@ -65,7 +65,7 @@
           
             <li class="toctree-l1">
 		
-    <span class="caption-text">Home</span>
+    <a class="" href="../..">Home</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -288,7 +288,7 @@ details on available parameters.</li>
 <pre><code class="python">energyflow.archs.CNN(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#ArchBase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
 <p><strong>Required CNN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_shape</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
@@ -416,7 +416,7 @@ to the model.</li>
 <pre><code class="python">energyflow.archs.DNN(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#ArchBase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
 <p><strong>Required DNN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
@@ -437,7 +437,7 @@ will apply the same activation to all layers. See the
 more detail.</li>
 </ul>
 </li>
-<li><strong>k_inits</strong>=`''he_uniform' : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Kernel initializers for the dense layers. A single string 
 will apply the same initializer to all layers. See the
 <a href="https://keras.io/initializers/">Keras initializer docs</a> for 
@@ -501,7 +501,7 @@ to the model.</li>
 <pre><code class="python">energyflow.archs.EFN(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#ArchBase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
 <p><strong>Required EFN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
@@ -534,14 +534,14 @@ backend module. A single string will apply  the same activation
 to all layers.</li>
 </ul>
 </li>
-<li><strong>ppm_k_inits</strong>=`''he_uniform' : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>ppm_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Kernel initializers for the dense layers in the per-particle
 frontend module. A single string will apply the same initializer 
 to all layers. See the <a href="https://
 keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_k_inits</strong>=`''he_uniform' : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Kernel initializers for the dense layers in the backend 
 module. A single string will apply the same initializer 
 to all layers.</li>
@@ -618,7 +618,7 @@ implementations of these classifiers.</p>
 <pre><code class="python">energyflow.archs.LinearClassifier(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#ArchBase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
 <p><strong>Default Hyperparameters</strong></p>
 <ul>
 <li><strong>linclass_type</strong>=<code>'lda'</code> : {<code>'lda'</code>, <code>'lr'</code>}<ul>

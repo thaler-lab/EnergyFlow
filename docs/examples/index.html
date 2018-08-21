@@ -65,7 +65,7 @@
           
             <li class="toctree-l1">
 		
-    <span class="caption-text">Home</span>
+    <a class="" href="..">Home</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -188,7 +188,7 @@
 <h3 id="efp_examplepy">efp_example.py</h3>
 <p>An example involving Energy Flow Polynomials (EFPs) and a linear
 classifier (Fisher's Linear Discriminant by default). First, the 
-<a href="/docs/efp/#EFPSet"><code>EFPSet</code></a> class is used to compute the EFPs
+<a href="../docs/efp/#efpset"><code>EFPSet</code></a> class is used to compute the EFPs
 up to the specified <code>dmax</code>, the default being <code>dmax=5</code>. Then linear
 classifiers are trained for different numbers of EFPs as input, 
 determined by taking all EFPs up to degree <code>d</code> with <code>d</code> from <code>1</code> 
@@ -196,7 +196,6 @@ to <code>dmax</code>. The output of the example is a plot of the ROC curves
 for the classifiers with different numbers of EFP inputs.</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np
@@ -312,14 +311,13 @@ if plt:
 appear soon in a paper by P. T. Komiske, E. M. Metodiev, and J. Thaler. 
 See <a href="https://indico.cern.ch/event/649482/contributions/
 2993313/attachments/1689067/2717141/PTK_BOOST2018_compressed.pdf">this talk</a> 
-for a brief overview of the EFN architecture. The <a href="/docs/
-archs/#EFN"><code>EFN</code></a> class is used to construct the network architecture.
+for a brief overview of the EFN architecture. The <a href="../docs/
+archs/#efn"><code>EFN</code></a> class is used to construct the network architecture.
 The output of the example is a plot of the ROC curves obtained by
 the EFN as well as the jet mass and constituent multiplicity 
 observables.</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np
@@ -448,14 +446,13 @@ if roc_curve:
 
 <h3 id="pfn_examplepy">pfn_example.py</h3>
 <p>An example involving Particle Flow Networks (PFNs), cousins of
-the <a href="#efn_example.py">EFNs</a>, which are to appear. The <a href="/docs/
-archs/#PFN"><code>PFN</code></a> class is used to construct the network architecture.
+the <a href="#efn_examplepy">EFNs</a>, which are to appear. The <a href="../docs/
+archs/#pfn"><code>PFN</code></a> class is used to construct the network architecture.
 The output of the example is a plot of the ROC curves obtained by
 the PFN as well as the jet mass and constituent multiplicity 
 observables.</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np
@@ -586,7 +583,7 @@ if roc_curve:
 
 <h3 id="dnn_examplepy">dnn_example.py</h3>
 <p>An example involving deep, fully-connected neural networks (DNNs).
-The <a href="/docs/archs/#DNN"><code>DNN</code></a> class is used to construct the network 
+The <a href="../docs/archs/#dnn"><code>DNN</code></a> class is used to construct the network 
 architecture.</p>
 <p>The inputs are taken to be the $N$-subjettiness observables as specified
 as part of the phase space basis from <a href="https://arxiv.org
@@ -595,7 +592,6 @@ output of the example is a plot showing the ROC curves obtained from
 training the DNN on different numbers of $N$-subjettiness observables.</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np
@@ -711,16 +707,16 @@ if plt:
 
 <h3 id="cnn_examplepy">cnn_example.py</h3>
 <p>An example involving jet images and convolutional neural networks (CNNs).
-The <a href="/docs/archs/#CNN"><code>CNN</code></a> class is used to provide a network architecture
+The <a href="../docs/archs/#cnn"><code>CNN</code></a> class is used to provide a network architecture
 based on that described in <a href="https://arxiv.org/abs/1612.01551">1612.01551</a>. </p>
-<p>Jet images are constructed using the <a href="/docs/utils/#pixelate"><code>pixelate</code></a> 
+<p>Jet images are constructed using the <a href="../docs/utils/#pixelate"><code>pixelate</code></a> 
 function and can be either one-channel (grayscale), meaning that only 
 $p_T$ information is used, or two-channel (color), meaning that $p_T$
 information and local charged particle counts are used. The images are
 preprocessed by subtracting the average image in the training set and
 dividing by the per-pixel standard deviations, using the 
-<a href="/docs/utils/#zero_center"><code>zero_center</code></a> and 
-<a href="/docs/utils/#standardize"><code>standardize</code></a> functions, respectively. 
+<a href="../docs/utils/#zero_center"><code>zero_center</code></a> and 
+<a href="../docs/utils/#standardize"><code>standardize</code></a> functions, respectively. 
 The output of the example is a plot of the ROC curves of the CNN 
 as well as the jet mass and constituent multiplicity observables.</p>
 <p>Note that the number of epochs is quite small because it is quite time
@@ -728,7 +724,6 @@ consuming to train a CNN without a GPU (which will speed up this example
 immensely).</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np
