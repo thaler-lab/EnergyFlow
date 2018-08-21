@@ -135,7 +135,7 @@ class NNBase(ArchBase):
         - **lr**=`0.001` : _float_
             - The learning rate for the model.
         - **opt**=`Adam` : Keras optimizer
-            - [A Keras optimizer](https://keras.io/optimizers/).
+            - A [Keras optimizer](https://keras.io/optimizers/).
         - **output_dim**=`2` : _int_
             - The output dimension of the model.
         - **output_act**=`'softmax'` : _str_
