@@ -1,5 +1,5 @@
 """An example involving deep, fully-connected neural networks (DNNs).
-The [`DNN`](/docs/archs/#DNN) class is used to construct the network 
+The [`DNN`](../docs/archs/#dnn) class is used to construct the network 
 architecture.
 
 The inputs are taken to be the $N$-subjettiness observables as specified
@@ -11,7 +11,6 @@ training the DNN on different numbers of $N$-subjettiness observables.
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np

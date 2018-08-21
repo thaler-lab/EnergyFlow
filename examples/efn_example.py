@@ -2,8 +2,8 @@
 appear soon in a paper by P. T. Komiske, E. M. Metodiev, and J. Thaler. 
 See [this talk](https://indico.cern.ch/event/649482/contributions/
 2993313/attachments/1689067/2717141/PTK_BOOST2018_compressed.pdf) 
-for a brief overview of the EFN architecture. The [`EFN`](/docs/
-archs/#EFN) class is used to construct the network architecture.
+for a brief overview of the EFN architecture. The [`EFN`](../docs/
+archs/#efn) class is used to construct the network architecture.
 The output of the example is a plot of the ROC curves obtained by
 the EFN as well as the jet mass and constituent multiplicity 
 observables.
@@ -11,7 +11,6 @@ observables.
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
-import sys
 
 # standard numerical library imports
 import numpy as np

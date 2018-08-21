@@ -8,7 +8,7 @@ $$\\text{EFP}_G=\\sum_{i_1=1}^M\\cdots\\sum_{i_N=1}^Mz_{i_1}\\cdots z_{i_N}
 where $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure 
 of the angular separation between particles $i$ and $j$. The specific choices for energy 
 and angular measure depend on the collider context and are discussed at length in the 
-[Measures](/docs/measure) section.
+[Measures](../measure) section.
 """
 
 from __future__ import absolute_import, division, print_function
@@ -31,12 +31,14 @@ __all__ = ['EFP', 'EFPSet']
 # EFP helpers
 ###############################################################################
 
-comp_map = {'>':  '__gt__', 
-            '<':  '__lt__', 
-            '>=': '__ge__', 
-            '<=': '__le__',
-            '==': '__eq__', 
-            '!=': '__ne__'}
+comp_map = {
+    '>':  '__gt__', 
+    '<':  '__lt__', 
+    '>=': '__ge__', 
+    '<=': '__le__',
+    '==': '__eq__', 
+    '!=': '__ne__'
+}
 
 # applies comprison comp of obj on val
 def explicit_comp(obj, comp, val):
@@ -66,7 +68,7 @@ class EFP(EFPBase):
         - **edges** : _list_
             - Edges of the EFP graph specified by pairs of vertices.
         - **measure** : {`'hadr'`, `'hadrdot'`, `'ee'`}
-            - The choice of measure. See [Measures](/docs/measure) 
+            - The choice of measure. See [Measures](../measure) 
             for additional info.
         - **beta** : _float_
             - The parameter $\\beta$ appearing in the measure.
@@ -78,7 +80,7 @@ class EFP(EFPBase):
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
-            [Measures](/docs/measure) for additional info.
+            [Measures](../measure) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume
             the first input type.
@@ -214,7 +216,7 @@ class EFPSet(EFPBase):
         with a custom `Generator`.
 
         To control which EFPs are included, `EFPSet` accepts an arbitrary
-        number of specifications (see `sel`) and only EFPs meeting each
+        number of specifications (see [`sel`](#sel)) and only EFPs meeting each
         specification are included in the set.
 
         **Arguments**
@@ -227,7 +229,7 @@ class EFPSet(EFPBase):
             - Path to a `.npz` file which has been saved by a valid
             `energyflow.Generator`.
         - **measure** : {`'hadr'`, `'hadr-dot'`, `'ee'`}
-            - See [Measures](/intro/measures) for additional info.
+            - See [Measures](../measures) for additional info.
         - **beta** : _float_
             - The parameter $\\beta$ appearing in the measure.
             Must be greater than zero.
@@ -324,7 +326,6 @@ class EFPSet(EFPBase):
                 print('Current Stored EFPs:')
                 self.print_stats(lws=2)
 
-
     #================
     # PRIVATE METHODS
     #================
@@ -335,7 +336,6 @@ class EFPSet(EFPBase):
     def _make_graphs(self, connected_graphs):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
         return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
-
 
     #===============
     # PUBLIC METHODS
@@ -590,7 +590,6 @@ class EFPSet(EFPBase):
     def get_times(self):
         efp_times = np.asarray([elem.times for elem in self.efpelems])
         return efp_times
-
 
     #===========
     # properties

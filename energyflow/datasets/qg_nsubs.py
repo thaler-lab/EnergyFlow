@@ -38,7 +38,7 @@ def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
 
     **Returns**
 
-    - _3-d numpy.ndarray_, _1-d numpy.ndarray
+    - _3-d numpy.ndarray_, _1-d numpy.ndarray_
         - The `X` and `y` components of the dataset as specified above.
     """
 
