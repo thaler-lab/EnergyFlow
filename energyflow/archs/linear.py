@@ -36,7 +36,7 @@ class LinearClassifier(ArchBase):
 
         - **solver**=`'svd'` : {`'svd'`, `'lsqr'`, `'eigen'`}
             - Which LDA solver to use.
-        - **tol**=`'tol'` : _float_
+        - **tol**=`1e-10` : _float_
             - Threshold used for rank estimation. Notably not a
             convergence parameter.
         """

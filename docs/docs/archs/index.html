@@ -224,7 +224,7 @@ positional arguments.</li>
 </li>
 </ul>
 <h4 id="fit">fit</h4>
-<pre><code class="python">fit(X_train, Y_train)
+<pre><code class="python">fit(X_train, Y_train, **kwargs)
 </code></pre>
 
 <p>Train the model by fitting the provided training dataset and labels.
@@ -241,13 +241,19 @@ depending on the requirements of the underlying model (typically Keras
 models will use one-hot encoding whereas the linear model does not.)</li>
 </ul>
 </li>
+<li><strong>kwargs</strong> : <em>dict</em><ul>
+<li>Keyword arguments passed on to the Keras method of the same name.
+See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
+details on available parameters.</li>
+</ul>
+</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li>Whatever the underlying model's <code>fit()</code> returns.</li>
 </ul>
 <h4 id="predict">predict</h4>
-<pre><code class="python">predict(X_test)
+<pre><code class="python">predict(X_test, **kwargs)
 </code></pre>
 
 <p>Evaluate the model on a dataset. </p>
@@ -255,6 +261,12 @@ models will use one-hot encoding whereas the linear model does not.)</li>
 <ul>
 <li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
 <li>The dataset to evaluate the model on.</li>
+</ul>
+</li>
+<li><strong>kwargs</strong> : <em>dict</em><ul>
+<li>Keyword arguments passed on to the Keras method of the same name.
+See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
+details on available parameters.</li>
 </ul>
 </li>
 </ul>
@@ -374,7 +386,7 @@ loss functions.</li>
 </ul>
 </li>
 <li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li><a href="https://keras.io/optimizers/">A Keras optimizer</a>.</li>
+<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
 </ul>
 </li>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
@@ -459,7 +471,7 @@ loss functions.</li>
 </ul>
 </li>
 <li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li><a href="https://keras.io/optimizers/">A Keras optimizer</a>.</li>
+<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
 </ul>
 </li>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
@@ -567,7 +579,7 @@ loss functions.</li>
 </ul>
 </li>
 <li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li><a href="https://keras.io/optimizers/">A Keras optimizer</a>.</li>
+<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
 </ul>
 </li>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
@@ -627,7 +639,7 @@ class.</li>
 <li>Which LDA solver to use.</li>
 </ul>
 </li>
-<li><strong>tol</strong>=<code>'tol'</code> : <em>float</em><ul>
+<li><strong>tol</strong>=<code>1e-10</code> : <em>float</em><ul>
 <li>Threshold used for rank estimation. Notably not a
 convergence parameter.</li>
 </ul>
