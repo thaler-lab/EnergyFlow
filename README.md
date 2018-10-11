@@ -17,4 +17,7 @@ pip install energyflow
 The documentation is maintained at [https://energyflow.network](https://energyflow.network).
 
 ##### References
-[1] P.T. Komiske, E.M. Metodiev, and J. Thaler, _Energy Flow Polynomials: A complete linear basis for jet substructure_, _[JHEP __04__ (2018) 013](https://doi.org/10.1007/JHEP04(2018)013)_ [[1712.07124](https://arxiv.org/abs/1712.07124)].
+
+[1] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Polynomials: A complete linear basis for jet substructure_, _[JHEP __04__ (2018) 013](https://doi.org/10.1007/JHEP04(2018)013)_ [[1712.07124](https://arxiv.org/abs/1712.07124)].
+
+[2] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Networks: Deep Sets for Particle Jets_, to appear soon.
