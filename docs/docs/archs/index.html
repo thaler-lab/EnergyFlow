@@ -224,7 +224,7 @@ positional arguments.</li>
 </li>
 </ul>
 <h4 id="fit">fit</h4>
-<pre><code class="python">fit(X_train, Y_train, **kwargs)
+<pre><code class="python">fit(X_train, Y_train)
 </code></pre>
 
 <p>Train the model by fitting the provided training dataset and labels.
@@ -241,19 +241,13 @@ depending on the requirements of the underlying model (typically Keras
 models will use one-hot encoding whereas the linear model does not.)</li>
 </ul>
 </li>
-<li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the Keras method of the same name.
-See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
-details on available parameters.</li>
-</ul>
-</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li>Whatever the underlying model's <code>fit()</code> returns.</li>
 </ul>
 <h4 id="predict">predict</h4>
-<pre><code class="python">predict(X_test, **kwargs)
+<pre><code class="python">predict(X_test)
 </code></pre>
 
 <p>Evaluate the model on a dataset. </p>
@@ -261,12 +255,6 @@ details on available parameters.</li>
 <ul>
 <li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
 <li>The dataset to evaluate the model on.</li>
-</ul>
-</li>
-<li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the Keras method of the same name.
-See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
-details on available parameters.</li>
 </ul>
 </li>
 </ul>
@@ -386,7 +374,7 @@ loss functions.</li>
 </ul>
 </li>
 <li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
+<li><a href="https://keras.io/optimizers/">A Keras optimizer</a>.</li>
 </ul>
 </li>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
@@ -437,7 +425,7 @@ will apply the same activation to all layers. See the
 more detail.</li>
 </ul>
 </li>
-<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>k_inits</strong>=`''he_uniform' : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Kernel initializers for the dense layers. A single string 
 will apply the same initializer to all layers. See the
 <a href="https://keras.io/initializers/">Keras initializer docs</a> for 
@@ -471,7 +459,7 @@ loss functions.</li>
 </ul>
 </li>
 <li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
+<li><a href="https://keras.io/optimizers/">A Keras optimizer</a>.</li>
 </ul>
 </li>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
@@ -534,14 +522,14 @@ backend module. A single string will apply  the same activation
 to all layers.</li>
 </ul>
 </li>
-<li><strong>ppm_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>ppm_k_inits</strong>=`''he_uniform' : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Kernel initializers for the dense layers in the per-particle
 frontend module. A single string will apply the same initializer 
 to all layers. See the <a href="https://
 keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>dense_k_inits</strong>=`''he_uniform' : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Kernel initializers for the dense layers in the backend 
 module. A single string will apply the same initializer 
 to all layers.</li>
@@ -579,7 +567,7 @@ loss functions.</li>
 </ul>
 </li>
 <li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
+<li><a href="https://keras.io/optimizers/">A Keras optimizer</a>.</li>
 </ul>
 </li>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
@@ -639,7 +627,7 @@ class.</li>
 <li>Which LDA solver to use.</li>
 </ul>
 </li>
-<li><strong>tol</strong>=<code>1e-10</code> : <em>float</em><ul>
+<li><strong>tol</strong>=<code>'tol'</code> : <em>float</em><ul>
 <li>Threshold used for rank estimation. Notably not a
 convergence parameter.</li>
 </ul>

@@ -23,7 +23,8 @@ setup(
                     'examples': ['keras', 'tensorflow', 'scikit-learn', 'matplotlib']},
     setup_requires=pytest_runner,
     tests_require=['pytest'],
-    keywords=['physics', 'jets', 'energy flow', 'correlator', 'multigraph', 'polynomial', 'EFP'],
+    keywords=['physics', 'jets', 'energy flow', 'correlator', 'multigraph', 'polynomial', 
+              'EFP', 'EFN', 'PFN', 'Energy Flow Network', 'Particle Flow Network', 'architecture'],
     packages=find_packages(),
     package_data={'': ['data/*']}
 )
