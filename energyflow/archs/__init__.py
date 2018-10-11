@@ -16,7 +16,7 @@ try:
     __all__ += cnn.__all__ + dnn.__all__ + efn.__all__
 
 except ImportError as e:
-    warnings.warn('could not import some architectures - ' + e.msg)
+    warnings.warn('could not import some architectures - ' + str(e))
 
 # requires sklearn
 try:
@@ -26,4 +26,4 @@ try:
     __all__ += linear.__all__
 
 except ImportError as e:
-    warnings.warn('could not import some architectures - ' + e.msg)
+    warnings.warn('could not import some architectures - ' + str(e))

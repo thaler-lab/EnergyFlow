@@ -53,12 +53,15 @@ def kwargs_check(name, kwargs, allowed=[]):
 
 _sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 
+
 ###############################################################################
 # EFP
 ###############################################################################
 class EFP(EFPBase):
 
-    """A class for representing and computing a single EFP."""
+    """A class for representing and computing a single EFP. Note that all
+    keyword arguments are stored as properties of the `EFP` instance.
+    """
 
     def __init__(self, edges, measure='hadrdot', beta=1, kappa=1, normed=True, coords=None, 
                               check_input=True, ve_alg='numpy', np_optimize='greedy'):
@@ -156,6 +159,18 @@ class EFP(EFPBase):
         return self.efpelem.einpath
 
     @property
+    def ve_alg(self):
+        """The ve_alg keyword argument that initialized this EFP instance."""
+
+        return self.ve.ve_alg
+
+    @property
+    def np_optimize(self):
+        """The np_optimize keyword argument that initialized this EFP instance."""
+
+        return self.ve.np_optimize
+
+    @property
     def graph(self):
         """Graph of this EFP represented by a list of edges."""
 
@@ -195,12 +210,15 @@ class EFP(EFPBase):
         else:
             return None
 
+
 ###############################################################################
 # EFPSet
 ###############################################################################
 class EFPSet(EFPBase):
 
-    """A class that holds a collection of EFPs and computes their values on events."""
+    """A class that holds a collection of EFPs and computes their values on events.
+    Note that all keyword arguments are stored as properties of the `EFPSet` instance.
+    """
 
     # EFPSet(*args, filename=None, measure='hadrdot', beta=1, kappa=1, normed=True, 
     #        coords='ptyphim', check_input=True, verbose=False)

@@ -57,12 +57,12 @@ class EFPBase(with_metaclass(ABCMeta, object)):
         return self._measure.normed
 
     @property
-    def check_input(self):
-        return self._measure.check_input
+    def coords(self):
+        return self._measure.coords
 
     @property
-    def subslicing(self):
-        return self._measure.subslicing
+    def check_input(self):
+        return self._measure.check_input
 
     def _batch_compute_func(self, event):
         return self.compute(event, batch_call=True)
