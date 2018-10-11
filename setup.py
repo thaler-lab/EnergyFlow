@@ -15,7 +15,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Patrick T. Komiske III',
     author_email='pkomiske@mit.edu',
-    url='https://pkomiske.github.io/EnergyFlow',
+    url='https://energyflow.network',
     project_urls={'GitHub': 'https://github.com/pkomiske/EnergyFlow'},
     license='GPL-3.0',
     install_requires=['numpy>=1.14.0', 'six>=1.10.0'],
