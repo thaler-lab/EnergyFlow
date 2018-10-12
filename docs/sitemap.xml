@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/installation/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/installation/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/tutorial/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/tutorial/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/examples/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/examples/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/faq/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/faq/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/measure/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/docs/measure/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/gen/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/docs/gen/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/efp/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/docs/efp/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/utils/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/docs/archs/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/archs/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/docs/utils/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://pkomiske.github.io/EnergyFlow/docs/datasets/</loc>
-     <lastmod>2018-10-11</lastmod>
+     <loc>https://energyflow.network/docs/datasets/</loc>
+     <lastmod>2018-10-12</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>

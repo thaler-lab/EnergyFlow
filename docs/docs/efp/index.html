@@ -20,7 +20,7 @@
     // Current page data
     var mkdocs_page_name = "Energy Flow Polynomials";
     var mkdocs_page_input_path = "docs/efp.md";
-    var mkdocs_page_url = "/EnergyFlow/docs/efp/";
+    var mkdocs_page_url = "/docs/efp/";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
@@ -34,7 +34,7 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-122962541-1', 'pkomiske.github.io/EnergyFlow');
+      ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
   
@@ -144,11 +144,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../utils/">Utils</a>
+    <a class="" href="../archs/">Architectures</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../archs/">Architectures</a>
+    <a class="" href="../utils/">Utils</a>
                 </li>
                 <li class="">
                     
@@ -208,7 +208,8 @@ and angular measure depend on the collider context and are discussed at length i
 <a href="../measure">Measures</a> section.</p>
 <hr />
 <h3 id="efp">EFP</h3>
-<p>A class for representing and computing a single EFP.</p>
+<p>A class for representing and computing a single EFP. Note that all
+keyword arguments are stored as properties of the <code>EFP</code> instance.</p>
 <pre><code class="python">energyflow.EFP(edges, measure='hadrdot', beta=1, kappa=1, normed=True, coords=None, check_input=True, ve_alg='numpy', np_optimize='greedy')
 </code></pre>
 
@@ -339,7 +340,8 @@ represented by a list of edges.</p>
 
 <p>VE complexity $\chi$ of this EFP.</p>
 <h3 id="efpset">EFPSet</h3>
-<p>A class that holds a collection of EFPs and computes their values on events.</p>
+<p>A class that holds a collection of EFPs and computes their values on events.
+Note that all keyword arguments are stored as properties of the <code>EFPSet</code> instance.</p>
 <pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadrdot', beta=1, kappa=1, normed=True, coords='ptyphim', check_input=True, verbose=False)
 </code></pre>
 
@@ -609,7 +611,7 @@ Those of primary interest are listed below.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../utils/" class="btn btn-neutral float-right" title="Utils">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../archs/" class="btn btn-neutral float-right" title="Architectures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../gen/" class="btn btn-neutral" title="Generation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -643,7 +645,7 @@ Those of primary interest are listed below.</p>
         <span><a href="../gen/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../utils/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../archs/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
