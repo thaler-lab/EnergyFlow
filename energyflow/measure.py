@@ -119,7 +119,7 @@ class Measure(with_metaclass(ABCMeta, object)):
             - Controls which coordinates are assumed for the input. If `'ptyphim'`, the 
             fourth column (the masses) is optional and massless particles are assumed
             if it is not present. If `None`, coords with be `'ptyphim'` if using a 
-            hadronic measure and `'epxpypz'` if using the e+e- measaure.
+            hadronic measure and `'epxpypz'` if using the e+e- measure.
         - **check_input** : bool
             - Whether to check the type of input each time or assume the first input type.
         """

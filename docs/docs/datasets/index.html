@@ -86,7 +86,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../faq/">FAQ</a>
+    <a class="" href="../../faqs/">FAQ</a>
                 </li>
     </ul>
 	    </li>
@@ -97,7 +97,7 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../measure/">Measures</a>
+    <a class="" href="../measures/">Measures</a>
                 </li>
                 <li class="">
                     
@@ -105,7 +105,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../efp/">Energy Flow Polynomials</a>
+    <a class="" href="../efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -183,28 +183,28 @@
             <div class="section">
               
                 <h3 id="qg_jets">QG_jets</h3>
-<p>A dataset consisting of 100k quark and gluon jets generated with Pythia 8.230.
-The dataset contains two members: <code>'X'</code> which is a numpy array of the jets that
-has shape <code>(100000,139,4)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
-labels (quark=<code>1</code> and gluon=<code>0</code>). The jets are padded with zero-particles in order
-to make a contiguous array. The particles are given as <code>(pt,y,phi,pid)</code> values 
-where <code>pid</code> is the particle's <a href="http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf">PDG id</a>.</p>
+<p>A dataset consisting of up to 2 million total quark and gluon jets generated with Pythia 8.230.
+In order to avoid downloading an unnecessary number of samples, the dataset is contained in twenty
+files with 100k quark and gluon jets each and only the requisite number of files are downloaded
+at a time. </p>
+<p>The dataset consists of two components: <code>X</code> is a three-dimensional numpy array of the jets that
+has shape <code>(num_data, max_num_particles, 4)</code> and <code>'y'</code> is a numpy array of quark/gluon labels 
+(quark=<code>1</code> and gluon=<code>0</code>). The jets are padded with zero-particles in order to make a contiguous 
+array. The particles are given as <code>(pt,y,phi,pid)</code> values where <code>pid</code> is the particle's 
+<a href="http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf">PDG id</a>.</p>
 <hr />
 <h4 id="load">load</h4>
-<pre><code class="python">energyflow.datasets.load(num_data=-1, filename='QG_jets.npz', cache_dir=None)
+<pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, cache_dir=None)
 </code></pre>
 
-<p>Loads the dataset. The first time this is called, it will automatically
-download the dataset. Future calls will attempt to use the cached dataset 
-prior to redownloading.</p>
+<p>Loads samples from the dataset (which in total is contained in twenty files). 
+Any file that is needed that has not been cached will be automatically downloaded.
+Downloading a file causes it to be cached for later use. Basic checksums are
+performed.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>num_data</strong> : <em>int</em><ul>
 <li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
-</ul>
-</li>
-<li><strong>filename</strong> : <em>str</em><ul>
-<li>The filename where to store/look for the file.</li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
@@ -236,7 +236,7 @@ has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array o
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h4 id="load_1">load</h4>
-<pre><code class="python">energyflow.datasets.load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None)
+<pre><code class="python">energyflow.datasets.qg_nsubs.load(num_data=-1, cache_dir=None)
 </code></pre>
 
 <p>Loads the dataset. The first time this is called, it will automatically
@@ -246,10 +246,6 @@ prior to redownloading.</p>
 <ul>
 <li><strong>num_data</strong> : <em>int</em><ul>
 <li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
-</ul>
-</li>
-<li><strong>filename</strong> : <em>str</em><ul>
-<li>The filename where to store/look for the file.</li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>

@@ -14,6 +14,7 @@ The dataset contains two members: `'X'` which is a numpy array of the nsubs that
 has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon 
 labels (quark=`1` and gluon=`0`).
 """
+
 from __future__ import absolute_import
 
 import numpy as np
@@ -22,7 +23,7 @@ from energyflow.utils.data_utils import _get_file
 
 __all__ = ['load']
 
-def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
+def load(num_data=-1, cache_dir=None):
     """Loads the dataset. The first time this is called, it will automatically
     download the dataset. Future calls will attempt to use the cached dataset 
     prior to redownloading.
@@ -31,8 +32,6 @@ def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
 
     - **num_data** : _int_
         - The number of events to return. A value of `-1` means read in all events.
-    - **filename** : _str_
-        - The filename where to store/look for the file.
     - **cache_dir** : _str_
         - The directory where to store/look for the file.
 
@@ -42,7 +41,7 @@ def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
         - The `X` and `y` components of the dataset as specified above.
     """
 
-    fpath = _get_file(filename, 
+    fpath = _get_file('QG_nsubs.npz', 
                       url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
                       file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
                       cache_dir=cache_dir)
@@ -55,3 +54,4 @@ def load(num_data=-1, filename='QG_nsubs.npz', cache_dir=None):
         X, y = X[:num_data], y[:num_data]
 
     return X, y
+    

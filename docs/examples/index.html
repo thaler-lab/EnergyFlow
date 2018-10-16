@@ -104,7 +104,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../faq/">FAQ</a>
+    <a class="" href="../faqs/">FAQ</a>
                 </li>
     </ul>
 	    </li>
@@ -115,7 +115,7 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../docs/measure/">Measures</a>
+    <a class="" href="../docs/measures/">Measures</a>
                 </li>
                 <li class="">
                     
@@ -123,7 +123,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../docs/efp/">Energy Flow Polynomials</a>
+    <a class="" href="../docs/efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -314,7 +314,7 @@ if roc_curve:
     if plt:
 
         # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
@@ -576,7 +576,7 @@ if roc_curve:
     if plt:
 
         # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
@@ -834,7 +834,7 @@ if roc_curve:
     if plt:
 
         # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphis(x).sum(axis=0)) for x in X])
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
         mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
@@ -869,7 +869,7 @@ if roc_curve:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../faq/" class="btn btn-neutral float-right" title="FAQ">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../faqs/" class="btn btn-neutral float-right" title="FAQ">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../tutorial/" class="btn btn-neutral" title="Tutorial"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -903,7 +903,7 @@ if roc_curve:
         <span><a href="../tutorial/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../faq/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../faqs/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
