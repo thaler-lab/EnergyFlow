@@ -78,7 +78,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../tutorial/">Tutorial</a>
+    <a class="" href="../../demo/">Demo</a>
                 </li>
                 <li class="">
                     
@@ -86,7 +86,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../faqs/">FAQ</a>
+    <a class="" href="../../faqs/">FAQs</a>
                 </li>
     </ul>
 	    </li>
@@ -97,14 +97,6 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Generation</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="../efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class=" current">
@@ -112,6 +104,27 @@
     <a class="current" href="./">Architectures</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#efn">EFN</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#eval_filters">eval_filters</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#pfn">PFN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#cnn">CNN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#dnn">DNN</a></li>
+    
+
+    <li class="toctree-l3"><a href="#linearclassifier">LinearClassifier</a></li>
+    
+
     <li class="toctree-l3"><a href="#archbase">ArchBase</a></li>
     
         <ul>
@@ -123,22 +136,15 @@
         </ul>
     
 
-    <li class="toctree-l3"><a href="#cnn">CNN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#dnn">DNN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#efn">EFN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#pfn">PFN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#linearclassifier">LinearClassifier</a></li>
-    
-
     </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../measures/">Measures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../gen/">Generation</a>
                 </li>
                 <li class="">
                     
@@ -190,99 +196,142 @@
           <div role="main">
             <div class="section">
               
-                <p>EnergyFlow contains a few model architectures for ease of using
-common models that frequently appear in the intersection of the 
-particle physics and ML worlds. Since these architectures are not
+                <p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs)
+are model architectures designed for learning from collider events
+as unordered, variable-length sets of particles. Both EFNs and PFNs are
+parameterized by a learnable per-particle function $\Phi$ and latent space function $F$.</p>
+<p>An EFN takes the following form:
+<script type="math/tex; mode=display">\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)</script>
+where $z_i$ is a measure of the energy of particle $i$, such as $z_i = p_{T,i}$, and $\hat p_i$ is a measure 
+of the angular information of particle $i$, such as $\hat p_i = (y_i,\phi_i)$.
+Any infrared- and collinear-safe observable can be parameterized in this form.</p>
+<p>A PFN takes the following form:
+<script type="math/tex; mode=display">\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)</script>
+where $p_i$ is the information of particle $i$, such as its four-momentum, charge, or flavor.
+Any observable can be parameterized in this form.
+See the <a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional discussion.</p>
+<p>Since these architectures are not
 used by the core EnergyFlow code, and require the external 
 <a href="https://keras.io">Keras</a> and <a href="http://scikit-learn.org/">scikit-learn</a>
 libraries, they are not imported by default but must be explicitly 
-imported, e.g. <code>from energyflow.archs import *</code>.</p>
+imported, e.g. <code>from energyflow.archs import *</code>.
+EnergyFlow also contains several additional model architectures for ease of using
+common models that frequently appear in the intersection of 
+particle physics and machine learning. </p>
 <hr />
-<h3 id="archbase">ArchBase</h3>
-<p>Base class for all architectures contained in EnergyFlow. The mechanism of
-specifying hyperparameters for all architectures is described here. Methods
-common to all architectures are documented here. Note that this class cannot
-be instantiated directly as it is an abstract base class.</p>
-<pre><code class="python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
+<h3 id="efn">EFN</h3>
+<p>Energy Flow Network (EFN) architecture.</p>
+<pre><code class="python">energyflow.archs.EFN(*args, **kwargs)
 </code></pre>
 
-<p>Accepts arbitrary arguments. Positional arguments (if present) are
-dictionaries of hyperparameters, keyword arguments (if present) are 
-hyperparameters directly. Keyword hyperparameters take precedence over
-positional hyperparameter dictionaries.</p>
-<p><strong>Arguments</strong></p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p><strong>Required EFN Hyperparameters</strong></p>
 <ul>
-<li><strong>*args</strong> : arbitrary positional arguments<ul>
-<li>Each argument is a dictionary containing hyperparameter (name, value)
-pairs.</li>
+<li><strong>input_dim</strong> : <em>int</em><ul>
+<li>The number of features for each particle.</li>
 </ul>
 </li>
-<li><strong>*kwargs</strong> : arbitrary keyword arguments<ul>
-<li>Hyperparameters as keyword arguments. Takes precedence over the 
-positional arguments.</li>
+<li><strong>ppm_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li>The sizes of the dense layers in the per-particle frontend
+module $\Phi$. The last element will be the number of latent 
+observables that the model defines.</li>
+</ul>
+</li>
+<li><strong>dense_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li>The sizes of the dense layers in the backend module $F$.</li>
 </ul>
 </li>
 </ul>
-<h4 id="fit">fit</h4>
-<pre><code class="python">fit(X_train, Y_train, **kwargs)
+<p><strong>Default EFN Hyperparameters</strong></p>
+<ul>
+<li><strong>ppm_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li>Activation functions(s) for the dense layers in the 
+per-particle frontend module $\Phi$. A single string will apply 
+the same activation to all layers. See the <a href="https://keras.io/activations/">Keras activations 
+docs</a> for more detail.</li>
+</ul>
+</li>
+<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li>Activation functions(s) for the dense layers in the 
+backend module $F$. A single string will apply  the same activation 
+to all layers.</li>
+</ul>
+</li>
+<li><strong>ppm_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li>Kernel initializers for the dense layers in the per-particle
+frontend module $\Phi$. A single string will apply the same initializer 
+to all layers. See the <a href="https://
+keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
+</ul>
+</li>
+<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li>Kernel initializers for the dense layers in the backend 
+module $F$. A single string will apply the same initializer 
+to all layers.</li>
+</ul>
+</li>
+<li><strong>latent_dropout</strong>=<code>0</code> : <em>float</em><ul>
+<li>Dropout rates for the summation layer that defines the
+value of the latent observables on the inputs. See the <a href="https://keras.io/layers/core/#dropout">Keras
+Dropout layer</a> for more 
+detail.</li>
+</ul>
+</li>
+<li><strong>dense_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
+<li>Dropout rates for the dense layers in the backend module $F$. 
+A single float will apply the same dropout rate to all dense layers.</li>
+</ul>
+</li>
+<li><strong>mask_val</strong>=<code>0</code> : <em>float</em><ul>
+<li>The value for which particles with all features set equal to
+this value will be ignored. See the <a href="https://
+keras.io/layers/core/#masking">Keras Masking layer</a> for more detail.</li>
+</ul>
+</li>
+</ul>
+<h4 id="eval_filters">eval_filters</h4>
+<pre><code class="python">eval_filters(patch, n=100, prune=True)
 </code></pre>
 
-<p>Train the model by fitting the provided training dataset and labels.
-Transparently calls the <code>fit()</code> method of the underlying model.</p>
+<p>Evaluates the latent space filters of this model on a patch of the 
+two-dimensional geometric input space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>X_train</strong> : <em>numpy.ndarray</em><ul>
-<li>The training dataset as an array of features for each sample.</li>
+<li><strong>patch</strong> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
+<li>Specifies the patch of the geometric input space to be evaluated.
+A list of length 4 is interpretted as <code>[xmin, ymin, xmax, ymax]</code>.
+Passing a single float <code>R</code> is equivalent to <code>[-R,-R,R,R]</code>.</li>
 </ul>
 </li>
-<li><strong>Y_train</strong> : <em>numpy.ndarray</em><ul>
-<li>The labels for the training dataset. May need to be one-hot encoded
-depending on the requirements of the underlying model (typically Keras
-models will use one-hot encoding whereas the linear model does not.)</li>
+<li><strong>n</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li>The number of grid points on which to evaluate the filters. A list 
+of length 2 is interpretted as <code>[nx, ny]</code> where <code>nx</code> is the number of
+points along the x (or first) dimension and <code>ny</code> is the number of points
+along the y (or second) dimension.</li>
 </ul>
 </li>
-<li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the Keras method of the same name.
-See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
-details on available parameters.</li>
+<li><strong>prune</strong> : <em>bool</em><ul>
+<li>Whether to remove filters that are all zero (which happens sometimes
+due to dying ReLUs).</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li>Whatever the underlying model's <code>fit()</code> returns.</li>
+<li>(<em>numpy.ndarray</em>, <em>numpy.ndarray</em>, <em>numpy.ndarray</em>)<ul>
+<li>Returns three arrays, <code>(X, Y, Z)</code>, where <code>X</code> and <code>Y</code> have shape <code>(nx, ny)</code> 
+and are arrays of the values of the geometric inputs in the specified patch.
+<code>Z</code> has shape <code>(num_filters, nx, ny)</code> and is the value of the different
+filters at each point.</li>
 </ul>
-<h4 id="predict">predict</h4>
-<pre><code class="python">predict(X_test, **kwargs)
+</li>
+</ul>
+<h3 id="pfn">PFN</h3>
+<p>Particle Flow Network (PFN) architecture. Accepts the same 
+hperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
+<pre><code class="python">energyflow.archs.PFN(*args, **kwargs)
 </code></pre>
 
-<p>Evaluate the model on a dataset. </p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
-<li>The dataset to evaluate the model on.</li>
-</ul>
-</li>
-<li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the Keras method of the same name.
-See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
-details on available parameters.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>The value of the model on the input dataset.</li>
-</ul>
-</li>
-</ul>
-<h5 id="model">model</h5>
-<pre><code class="python">model
-</code></pre>
-
-<p>The underlying model held by this architecture.</p>
-<hr />
 <h3 id="cnn">CNN</h3>
 <p>Convolutional Neural Network architecture.</p>
 <pre><code class="python">energyflow.archs.CNN(*args, **kwargs)
@@ -373,44 +422,6 @@ for more detail.</li>
 </ul>
 </li>
 </ul>
-<p><strong>Default NN Hyperparameters</strong></p>
-<ul>
-<li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras
-loss function docs</a> for available
-loss functions.</li>
-</ul>
-</li>
-<li><strong>lr</strong>=<code>0.001</code> : <em>float</em><ul>
-<li>The learning rate for the model.</li>
-</ul>
-</li>
-<li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
-</ul>
-</li>
-<li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
-<li>The output dimension of the model.</li>
-</ul>
-</li>
-<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em><ul>
-<li>Activation function to apply to the output.</li>
-</ul>
-</li>
-<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
-<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply
-to the model.</li>
-</ul>
-</li>
-<li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether the model should be compiled or not.</li>
-</ul>
-</li>
-<li><strong>summary</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether a summary should be printed or not.</li>
-</ul>
-</li>
-</ul>
 <h3 id="dnn">DNN</h3>
 <p>Dense Neural Network architecture.</p>
 <pre><code class="python">energyflow.archs.DNN(*args, **kwargs)
@@ -458,158 +469,6 @@ $L_2$-regulatization to all layers.</li>
 </ul>
 </li>
 </ul>
-<p><strong>Default NN Hyperparameters</strong></p>
-<ul>
-<li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras
-loss function docs</a> for available
-loss functions.</li>
-</ul>
-</li>
-<li><strong>lr</strong>=<code>0.001</code> : <em>float</em><ul>
-<li>The learning rate for the model.</li>
-</ul>
-</li>
-<li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
-</ul>
-</li>
-<li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
-<li>The output dimension of the model.</li>
-</ul>
-</li>
-<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em><ul>
-<li>Activation function to apply to the output.</li>
-</ul>
-</li>
-<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
-<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply
-to the model.</li>
-</ul>
-</li>
-<li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether the model should be compiled or not.</li>
-</ul>
-</li>
-<li><strong>summary</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether a summary should be printed or not.</li>
-</ul>
-</li>
-</ul>
-<h3 id="efn">EFN</h3>
-<p>Energy Flow Neural Network architecture.</p>
-<pre><code class="python">energyflow.archs.EFN(*args, **kwargs)
-</code></pre>
-
-<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
-<p><strong>Required EFN Hyperparameters</strong></p>
-<ul>
-<li><strong>input_dim</strong> : <em>int</em><ul>
-<li>The number of features for each particle.</li>
-</ul>
-</li>
-<li><strong>ppm_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The sizes of the dense layers in the per-particle frontend
-module. The last element will be the number of latent 
-observables that the model defines.</li>
-</ul>
-</li>
-<li><strong>dense_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The sizes of the dense layers in the backend module.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Default EFN Hyperparameters</strong></p>
-<ul>
-<li><strong>ppm_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
-<li>Activation functions(s) for the dense layers in the 
-per-particle frontend module. A single string will apply 
-the same activation to all layers. See the <a href="https://keras.io/activations/">Keras activations 
-docs</a> for more detail.</li>
-</ul>
-</li>
-<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
-<li>Activation functions(s) for the dense layers in the 
-backend module. A single string will apply  the same activation 
-to all layers.</li>
-</ul>
-</li>
-<li><strong>ppm_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
-<li>Kernel initializers for the dense layers in the per-particle
-frontend module. A single string will apply the same initializer 
-to all layers. See the <a href="https://
-keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
-</ul>
-</li>
-<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
-<li>Kernel initializers for the dense layers in the backend 
-module. A single string will apply the same initializer 
-to all layers.</li>
-</ul>
-</li>
-<li><strong>latent_dropout</strong>=<code>0</code> : <em>float</em><ul>
-<li>Dropout rates for the summation layer that defines the
-value of the latent observables on the inputs. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
-detail.</li>
-</ul>
-</li>
-<li><strong>dense_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>Dropout rates for the dense layers in the backend module. 
-A single float will apply the same dropout rate to all dense layers.</li>
-</ul>
-</li>
-<li><strong>mask_val</strong>=<code>0</code> : <em>float</em><ul>
-<li>The value for which particles with all features set equal to
-this value will be ignored. See the <a href="https://
-keras.io/layers/core/#masking">Keras Masking layer</a> for more detail.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Default NN Hyperparameters</strong></p>
-<ul>
-<li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras
-loss function docs</a> for available
-loss functions.</li>
-</ul>
-</li>
-<li><strong>lr</strong>=<code>0.001</code> : <em>float</em><ul>
-<li>The learning rate for the model.</li>
-</ul>
-</li>
-<li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
-</ul>
-</li>
-<li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
-<li>The output dimension of the model.</li>
-</ul>
-</li>
-<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em><ul>
-<li>Activation function to apply to the output.</li>
-</ul>
-</li>
-<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
-<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply
-to the model.</li>
-</ul>
-</li>
-<li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether the model should be compiled or not.</li>
-</ul>
-</li>
-<li><strong>summary</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether a summary should be printed or not.</li>
-</ul>
-</li>
-</ul>
-<h3 id="pfn">PFN</h3>
-<p>Particle Flow Neural Network architecture. Accepts the same 
-hperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
-<pre><code class="python">energyflow.archs.PFN(*args, **kwargs)
-</code></pre>
-
 <hr />
 <h3 id="linearclassifier">LinearClassifier</h3>
 <p>Linear classifier that can be either Fisher's linear discriminant
@@ -645,6 +504,131 @@ convergence parameter.</li>
 </ul>
 </li>
 </ul>
+<hr />
+<h3 id="archbase">ArchBase</h3>
+<p>Base class for all architectures contained in EnergyFlow. The mechanism of
+specifying hyperparameters for all architectures is described here. Methods
+common to all architectures are documented here. Note that this class cannot
+be instantiated directly as it is an abstract base class.</p>
+<pre><code class="python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
+</code></pre>
+
+<p>Accepts arbitrary arguments. Positional arguments (if present) are
+dictionaries of hyperparameters, keyword arguments (if present) are 
+hyperparameters directly. Keyword hyperparameters take precedence over
+positional hyperparameter dictionaries.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary positional arguments<ul>
+<li>Each argument is a dictionary containing hyperparameter (name, value)
+pairs.</li>
+</ul>
+</li>
+<li><strong>*kwargs</strong> : arbitrary keyword arguments<ul>
+<li>Hyperparameters as keyword arguments. Takes precedence over the 
+positional arguments.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Default NN Hyperparameters</strong></p>
+<p>Common hyperparameters that apply to all architectures except 
+for <a href="#linearclassifier"><code>LinearClassifier</code></a>.</p>
+<ul>
+<li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
+<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras
+loss function docs</a> for available
+loss functions.</li>
+</ul>
+</li>
+<li><strong>lr</strong>=<code>0.001</code> : <em>float</em><ul>
+<li>The learning rate for the model.</li>
+</ul>
+</li>
+<li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
+<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
+</ul>
+</li>
+<li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
+<li>The output dimension of the model.</li>
+</ul>
+</li>
+<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em><ul>
+<li>Activation function to apply to the output.</li>
+</ul>
+</li>
+<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
+<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply
+to the model.</li>
+</ul>
+</li>
+<li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether the model should be compiled or not.</li>
+</ul>
+</li>
+<li><strong>summary</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether a summary should be printed or not.</li>
+</ul>
+</li>
+</ul>
+<h4 id="fit">fit</h4>
+<pre><code class="python">fit(X_train, Y_train, **kwargs)
+</code></pre>
+
+<p>Train the model by fitting the provided training dataset and labels.
+Transparently calls the <code>fit()</code> method of the underlying model.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>X_train</strong> : <em>numpy.ndarray</em><ul>
+<li>The training dataset as an array of features for each sample.</li>
+</ul>
+</li>
+<li><strong>Y_train</strong> : <em>numpy.ndarray</em><ul>
+<li>The labels for the training dataset. May need to be one-hot encoded
+depending on the requirements of the underlying model (typically Keras
+models will use one-hot encoding whereas the linear model does not.)</li>
+</ul>
+</li>
+<li><strong>kwargs</strong> : <em>dict</em><ul>
+<li>Keyword arguments passed on to the Keras method of the same name.
+See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
+details on available parameters.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>Whatever the underlying model's <code>fit()</code> returns.</li>
+</ul>
+<h4 id="predict">predict</h4>
+<pre><code class="python">predict(X_test, **kwargs)
+</code></pre>
+
+<p>Evaluate the model on a dataset. </p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
+<li>The dataset to evaluate the model on.</li>
+</ul>
+</li>
+<li><strong>kwargs</strong> : <em>dict</em><ul>
+<li>Keyword arguments passed on to the Keras method of the same name.
+See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
+details on available parameters.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The value of the model on the input dataset.</li>
+</ul>
+</li>
+</ul>
+<h5 id="model">model</h5>
+<pre><code class="python">model
+</code></pre>
+
+<p>The underlying model held by this architecture.</p>
               
             </div>
           </div>
@@ -652,7 +636,7 @@ convergence parameter.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../utils/" class="btn btn-neutral float-right" title="Utils">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../measures/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../efps/" class="btn btn-neutral" title="Energy Flow Polynomials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -686,7 +670,7 @@ convergence parameter.</li>
         <span><a href="../efps/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../utils/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../measures/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

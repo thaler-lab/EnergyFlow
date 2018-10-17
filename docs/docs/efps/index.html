@@ -78,7 +78,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../tutorial/">Tutorial</a>
+    <a class="" href="../../demo/">Demo</a>
                 </li>
                 <li class="">
                     
@@ -86,7 +86,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../../faqs/">FAQ</a>
+    <a class="" href="../../faqs/">FAQs</a>
                 </li>
     </ul>
 	    </li>
@@ -95,14 +95,6 @@
 		
     <span class="caption-text">Documentation</span>
     <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Generation</a>
-                </li>
                 <li class=" current">
                     
     <a class="current" href="./">Energy Flow Polynomials</a>
@@ -145,6 +137,14 @@
                 <li class="">
                     
     <a class="" href="../archs/">Architectures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../measures/">Measures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../gen/">Generation</a>
                 </li>
                 <li class="">
                     
@@ -199,18 +199,18 @@
                 <p>Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
 multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
 observables.</p>
-<p>An EFP index by a multigraph $G$ takes the following form:
+<p>An EFP, indexed by a multigraph $G$, takes the following form:
 <script type="math/tex; mode=display">\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
 \prod_{(k,\ell)\in G}\theta_{i_ki_\ell}</script>
 where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a measure 
-of the angular separation between particles $i$ and $j$. The specific choices for energy 
-and angular measure depend on the collider context and are discussed at length in the 
-<a href="../measure">Measures</a> section.</p>
+of the angular separation between particles $i$ and $j$. The specific choices for "energy"
+and "angular" measure depend on the collider context and are discussed in the 
+<a href="../measures">Measures</a> section.</p>
 <hr />
 <h3 id="efp">EFP</h3>
 <p>A class for representing and computing a single EFP. Note that all
 keyword arguments are stored as properties of the <code>EFP</code> instance.</p>
-<pre><code class="python">energyflow.EFP(edges, measure='hadrdot', beta=1, kappa=1, normed=True, coords=None, check_input=True, ve_alg='numpy', np_optimize='greedy')
+<pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=True, coords=None, check_input=True, np_optimize='greedy')
 </code></pre>
 
 <p><strong>Arguments</strong></p>
@@ -220,7 +220,7 @@ keyword arguments are stored as properties of the <code>EFP</code> instance.</p>
 </ul>
 </li>
 <li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'ee'</code>}<ul>
-<li>The choice of measure. See <a href="../measure">Measures</a> 
+<li>The choice of measure. See <a href="../measures">Measures</a> 
 for additional info.</li>
 </ul>
 </li>
@@ -240,7 +240,7 @@ If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</
 </li>
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
 <li>Controls which coordinates are assumed for the input. See 
-<a href="../measure">Measures</a> for additional info.</li>
+<a href="../measures">Measures</a> for additional info.</li>
 </ul>
 </li>
 <li><strong>check_input</strong> : <em>bool</em><ul>
@@ -248,13 +248,8 @@ If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</
 the first input type.</li>
 </ul>
 </li>
-<li><strong>ve_alg</strong> : {<code>'numpy'</code>, <code>'ef'</code>}<ul>
-<li>Which variable elimination algorithm to use.</li>
-</ul>
-</li>
 <li><strong>np_optimize</strong> : {<code>True</code>, <code>False</code>, <code>'greedy'</code>, <code>'optimal'</code>}<ul>
-<li>When <code>ve_alg='numpy'</code> this is the <code>optimize</code> keyword
-of <code>numpy.einsum_path</code>.</li>
+<li>The <code>optimize</code> keyword of <code>numpy.einsum_path</code>.</li>
 </ul>
 </li>
 </ul>
@@ -342,12 +337,12 @@ represented by a list of edges.</p>
 <h3 id="efpset">EFPSet</h3>
 <p>A class that holds a collection of EFPs and computes their values on events.
 Note that all keyword arguments are stored as properties of the <code>EFPSet</code> instance.</p>
-<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadrdot', beta=1, kappa=1, normed=True, coords='ptyphim', check_input=True, verbose=False)
+<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=True, coords='ptyphim', check_input=True, verbose=False)
 </code></pre>
 
 <p>EFPSet can be initialized in one of three ways (in order of precedence):</p>
 <ol>
-<li><strong>Default</strong> - Use the EFPs that come installed with the
+<li><strong>Default</strong> - Use the ($d\le10$) EFPs that come installed with the
 <code>EnergFlow</code> package.</li>
 <li><strong>Generator</strong> - Pass in a custom <code>Generator</code> object as the
 first positional argument.</li>
@@ -614,7 +609,7 @@ Those of primary interest are listed below.</p>
         <a href="../archs/" class="btn btn-neutral float-right" title="Architectures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../gen/" class="btn btn-neutral" title="Generation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../faqs/" class="btn btn-neutral" title="FAQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -642,7 +637,7 @@ Those of primary interest are listed below.</p>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../gen/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../../faqs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../archs/" style="color: #fcfcfc">Next &raquo;</a></span>

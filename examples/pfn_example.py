@@ -1,9 +1,9 @@
-"""An example involving Particle Flow Networks (PFNs), cousins of
-the [EFNs](#efn_examplepy), which are to appear. The [`PFN`](../docs/
-archs/#pfn) class is used to construct the network architecture.
-The output of the example is a plot of the ROC curves obtained by
-the PFN as well as the jet mass and constituent multiplicity 
-observables.
+"""An example involving Particle Flow Networks (PFNs), which were 
+introduced in [1810.05165](https://arxiv.org/abs/1810.05165). The 
+[`PFN`](../docs/archs/#pfn) class is used to construct the 
+network architecture. The output of the example is a plot of the 
+ROC curves obtained by the PFN as well as the jet mass and 
+constituent multiplicity observables.
 """
 
 # standard library imports
@@ -34,28 +34,26 @@ except:
 
 ################################### SETTINGS ###################################
 
-# data controls
-num_data = 100000
-val_frac, test_frac = 0.1, 0.15
+# data controls, can go up to 2000000 for full dataset
+train, val, test = 75000, 10000, 15000
 use_pids = True
 
 # network architecture parameters
-ppm_sizes = (100, 100)
-dense_sizes = (100, 100)
+ppm_sizes = (100, 100, 128)
+dense_sizes = (100, 100, 100)
 
 # network training parameters
 num_epoch = 5
-batch_size = 100
+batch_size = 500
 
 ################################################################################
 
 # load data
-X, y = qg_jets.load(num_data=num_data)
+X, y = qg_jets.load(train + val + test)
 
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print()
 print('Loaded quark and gluon jets')
 
 # preprocess by centering jets and normalizing pts
@@ -75,7 +73,7 @@ print('Finished preprocessing')
 
 # do train/val/test split 
 (X_train, X_val, X_test,
- Y_train, Y_val, Y_test) = data_split(X, Y, val=val_frac, test=test_frac)
+ Y_train, Y_val, Y_test) = data_split(X, Y, val=val, test=test)
 
 print('Done train/val/test split')
 print('Model summary:')

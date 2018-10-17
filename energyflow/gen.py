@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from collections import Counter
 import itertools
+
 import numpy as np
 
 from energyflow.algorithms import *
@@ -28,7 +29,7 @@ class Generator(object):
     """Generates non-isomorphic multigraphs according to provided specifications."""
 
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
-                       filename=None, ve_alg='numpy', np_optimize='greedy', verbose=False):
+                       filename=None, np_optimize='greedy', verbose=False):
         """Doing a fresh generation of connected multigraphs (`filename=None`) requires
         that `igraph` be installed.
 
@@ -56,11 +57,8 @@ class Generator(object):
             value `filename='default'` means to read in graphs from the default file. This
             is useful when various disconnected graph parameters are to be varied since the 
             generation of large simple graphs is the most computationlly intensive part.
-        - **ve_alg** : {`'numpy'`, `'ef'`}
-            - Which variable elimination algorithm to use.
         - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
-            - When `ve_alg='numpy'` this is the `optimize` keyword
-            of `numpy.einsum_path`.
+            - The `optimize` keyword of `numpy.einsum_path`.
         - **verbose** : _bool_
             - A flag to control printing.
         """
@@ -72,12 +70,11 @@ class Generator(object):
             self._set_maxs(dmax, nmax, emax, cmax, vmax)
 
             # set options
-            self.ve_alg = ve_alg
             self.np_optimize = np_optimize
 
             # get prime generator instance
             self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
-                                         self.ve_alg, self.np_optimize)
+                                         self.np_optimize)
             self.cols = self.pr_gen.cols
             self._set_col_inds()
 
@@ -109,7 +106,6 @@ class Generator(object):
                     (c_specs[:,self.v_ind] <= self.vmax))
 
             # set ve options
-            self.ve_alg = file['ve_alg']
             self.np_optimize = file['np_optimize']
 
             # get lists of important quantities
@@ -177,7 +173,7 @@ class Generator(object):
         """
         
         arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
-                    'cols', 've_alg', 'np_optimize'])
+                    'cols', 'np_optimize'])
         arrs |= self._prime_attrs() | self._comp_attrs()
         np.savez(filename, **{arr: getattr(self, arr) for arr in arrs})
 
@@ -207,19 +203,19 @@ class PrimeGenerator(object):
     """
     cols = ['n','e','d','v','k','c','p','h']
 
-    def __init__(self, dmax, nmax, emax, cmax, vmax, ve_alg, np_optimize):
+    def __init__(self, dmax, nmax, emax, cmax, vmax, np_optimize):
         """PrimeGenerator __init__."""
 
         if not igraph:
             raise NotImplementedError('cannot use PrimeGenerator without igraph')
         
-        self.ve = VariableElimination(ve_alg, np_optimize)
+        self.ve = VariableElimination(np_optimize)
 
         # store parameters
         transfer(self, locals(), ['dmax', 'nmax', 'emax', 'cmax', 'vmax',])
 
         # setup N and e values to be used
-        self.ns = list(range(2, self.nmax+1))
+        self.ns = list(range(1, self.nmax+1))
         self.emaxs = {n: min(self.emax, int(n/2*(n-1))) for n in self.ns}
         self.esbyn = {n: list(range(n-1, self.emaxs[n]+1)) for n in self.ns}
 
@@ -251,10 +247,10 @@ class PrimeGenerator(object):
 
         self.base_edges = {n: list(itertools.combinations(range(n), 2)) for n in self.ns}
 
-        if 2 in self.ns:
-            self._add_if_new(igraph.Graph.Full(2, directed=False), (2,1))
+        if self.nmax >= 1:
+            self._add_if_new(igraph.Graph.Full(1, directed=False), (1,0))
 
-        # iterate over all combinations of n>2 and d
+        # iterate over all combinations of n>1 and d
         for n in self.ns[1:]:
             for e in self.esbyn[n]:
 
@@ -294,16 +290,15 @@ class PrimeGenerator(object):
 
         # check that ve complexity for this graph is valid
         new_edges = new_graph.get_edgelist()
-        self.ve.run(new_edges, ne[0])
-        if self.ve.chi > self.cmax: 
+        einstr, einpath, chi = self.ve.einspecs(new_edges, ne[0])
+        if chi > self.cmax: 
             return
         
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
         self.edges_d[ne].append(new_edges)
-        self.chis_d[ne].append(self.ve.chi)
+        self.chis_d[ne].append(chi)
 
-        einstr, einpath = self.ve.einspecs()
         self.einstrs_d[ne].append(einstr)
         self.einpaths_d[ne].append(einpath)
 
@@ -316,20 +311,20 @@ class PrimeGenerator(object):
     # generates non-isomorphic graph weights subject to constraints
     def _generate_weights(self):
 
-        # take care of the n=2 case:
+        # take care of the n=2 case
         if (2,1) in self.weights_d:
             self.weights_d[(2,1)].append([(d,) for d in range(1, self.dmaxs[(2,1)]+1)])
 
         # get ordered integer partitions of d of length e for relevant values
         parts = {}
-        for n in self.ns[1:]:
+        for n in self.ns[2:]:
             for e in self.esbyn[n]:
                 for d in range(e, self.dmaxs[(n,e)]+1):
                     if (d,e) not in parts:
                         parts[(d,e)] = list(int_partition_ordered(d, e))
 
         # iterate over the rest of ns
-        for n in self.ns[1:]:
+        for n in self.ns[2:]:
 
             # iterate over es for which there are simple graphs
             for e in self.esbyn[n]:
@@ -364,6 +359,14 @@ class PrimeGenerator(object):
     def _flatten_structures(self):
         c_specs, self.edges, self.weights, self.einstrs, self.einpaths = [], [], [], [], []
         ks = {}
+
+        # handle n=1 case specially
+        c_specs.append([1,0,0,0,0,1,1,0])
+        self.edges.append(())
+        self.weights.append(())
+        self.einstrs.append(self.einstrs_d[(1,0)][0])
+        self.einpaths.append(self.einpaths_d[(1,0)][0])
+
         for ne in sorted(self.edges_d.keys()):
             n, e = ne
             z = zip(self.edges_d[ne], self.weights_d[ne], self.chis_d[ne],

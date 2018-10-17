@@ -1,5 +1,4 @@
 """Base and helper classes for EFPs."""
-
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
@@ -128,7 +127,9 @@ class EFPElem(object):
         # deal with arbitrary vertex labels
         vertex_set = frozenset(v for edge in edges for v in edge)
         vertices = {v: i for i,v in enumerate(vertex_set)}
-        self.n = len(vertex_set)
+        
+        # determine number of vertices, empty edges are interpretted as graph with one vertex
+        self.n = len(vertices) if len(vertices) > 0 else 1
 
         # construct new edges with remapped vertices
         self.edges = [tuple(vertices[v] for v in sorted(edge)) for edge in edges]

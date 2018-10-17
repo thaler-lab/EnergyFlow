@@ -6,6 +6,7 @@ from keras import backend as K
 from keras.layers import Dense, Dot, Dropout, Input, Lambda, TimeDistributed, Masking
 from keras.models import Model
 from keras.regularizers import l2
+import numpy as np
 
 from energyflow.archs.archbase import NNBase
 from energyflow.utils import iter_or_rep
@@ -27,30 +28,30 @@ class SymmetricPerParticleNN(NNBase):
             - The number of features for each particle.
         - **ppm_sizes** : {_tuple_, _list_} of _int_
             - The sizes of the dense layers in the per-particle frontend
-            module. The last element will be the number of latent 
+            module $\\Phi$. The last element will be the number of latent 
             observables that the model defines.
         - **dense_sizes** : {_tuple_, _list_} of _int_
-            - The sizes of the dense layers in the backend module.
+            - The sizes of the dense layers in the backend module $F$.
 
         **Default EFN Hyperparameters**
 
         - **ppm_acts**=`'relu'` : {_tuple_, _list_} of _str_
             - Activation functions(s) for the dense layers in the 
-            per-particle frontend module. A single string will apply 
+            per-particle frontend module $\\Phi$. A single string will apply 
             the same activation to all layers. See the [Keras activations 
             docs](https://keras.io/activations/) for more detail.
         - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_
             - Activation functions(s) for the dense layers in the 
-            backend module. A single string will apply  the same activation 
+            backend module $F$. A single string will apply  the same activation 
             to all layers.
         - **ppm_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the per-particle
-            frontend module. A single string will apply the same initializer 
+            frontend module $\\Phi$. A single string will apply the same initializer 
             to all layers. See the [Keras initializer docs](https://
             keras.io/initializers/) for more detail.
         - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the backend 
-            module. A single string will apply the same initializer 
+            module $F$. A single string will apply the same initializer 
             to all layers.
         - **latent_dropout**=`0` : _float_
             - Dropout rates for the summation layer that defines the
@@ -58,7 +59,7 @@ class SymmetricPerParticleNN(NNBase):
             Dropout layer](https://keras.io/layers/core/#dropout) for more 
             detail.
         - **dense_dropouts**=`0` : {_tuple_, _list_} of _float_
-            - Dropout rates for the dense layers in the backend module. 
+            - Dropout rates for the dense layers in the backend module $F$. 
             A single float will apply the same dropout rate to all dense layers.
         - **mask_val**=`0` : _float_
             - The value for which particles with all features set equal to
@@ -164,7 +165,7 @@ class SymmetricPerParticleNN(NNBase):
 
 class EFN(SymmetricPerParticleNN):
 
-    """Energy Flow Neural Network architecture."""
+    """Energy Flow Network (EFN) architecture."""
 
     def construct_input_layers(self):
 
@@ -177,7 +178,68 @@ class EFN(SymmetricPerParticleNN):
         self._latent_layer = Dot(0, name='dot')([self.input_layers[0], self.ppm_layers[-1]])
 
         if self.latent_dropout > 0:
-            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self.latent_layer)
+            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self._latent_layer)
+
+    # eval_filters(patch, n=100, prune=True)
+    def eval_filters(self, patch, n=100, prune=True):
+        """Evaluates the latent space filters of this model on a patch of the 
+        two-dimensional geometric input space.
+
+        **Arguments**
+
+        - **patch** : {_tuple_, _list_} of _float_
+            - Specifies the patch of the geometric input space to be evaluated.
+            A list of length 4 is interpretted as `[xmin, ymin, xmax, ymax]`.
+            Passing a single float `R` is equivalent to `[-R,-R,R,R]`.
+        - **n** : {_tuple_, _list_} of _int_
+            - The number of grid points on which to evaluate the filters. A list 
+            of length 2 is interpretted as `[nx, ny]` where `nx` is the number of
+            points along the x (or first) dimension and `ny` is the number of points
+            along the y (or second) dimension.
+        - **prune** : _bool_
+            - Whether to remove filters that are all zero (which happens sometimes
+            due to dying ReLUs).
+
+        **Returns**
+
+        - (_numpy.ndarray_, _numpy.ndarray_, _numpy.ndarray_)
+            - Returns three arrays, `(X, Y, Z)`, where `X` and `Y` have shape `(nx, ny)` 
+            and are arrays of the values of the geometric inputs in the specified patch.
+            `Z` has shape `(num_filters, nx, ny)` and is the value of the different
+            filters at each point.
+        """
+
+        # determine patch of xy space to evaluate filters on
+        if isinstance(patch, (float, int)):
+            if patch > 0:
+                xmin, ymin, xmax, ymax = -patch, -patch, patch, patch
+            else:
+                ValueError('patch must be positive when passing as a single number.')
+        else:
+            xmin, ymin, xmax, ymax = patch
+
+        # determine number of pixels in each dimension
+        if isinstance(n, int):
+            nx = ny = n
+        else:
+            nx, ny = n
+
+        # construct grid of inputs
+        xs, ys = np.linspace(xmin, xmax, nx), np.linspace(ymin, ymax, ny)
+        X, Y = np.meshgrid(xs, ys, indexing='ij')
+        XY = np.asarray([X, Y]).reshape((2, nx*ny)).T
+
+        # construct function 
+        kf = K.function([self.input_layers[1]], [self.ppm_layers[-1]])
+
+        # evaluate function
+        Z = kf([[XY]])[0][0].reshape(nx, ny, self.ppm_sizes[-1]).transpose((2,0,1))
+
+        # prune filters that are off
+        if prune:
+            return X, Y, Z[[not (z == 0).all() for z in Z]]
+        
+        return X, Y, Z
 
 
 ###############################################################################
@@ -186,7 +248,7 @@ class EFN(SymmetricPerParticleNN):
 
 class PFN(SymmetricPerParticleNN):
 
-    """Particle Flow Neural Network architecture. Accepts the same 
+    """Particle Flow Network (PFN) architecture. Accepts the same 
     hperparameters as the [`EFN`](#EFN)."""
 
     # PFN(*args, **kwargs)
@@ -200,4 +262,4 @@ class PFN(SymmetricPerParticleNN):
         self._latent_layer = Lambda(lambda x: K.sum(x, axis=1), name='sum')(self.ppm_layers[-1])
 
         if self.latent_dropout > 0:
-            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self.latent_layer)
+            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self._latent_layer)

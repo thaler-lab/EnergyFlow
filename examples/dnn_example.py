@@ -60,7 +60,6 @@ X, y = qg_nsubs.load(num_data=num_data)
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print()
 print('Loaded quark and gluon jets')
 print('Model summary:')
 

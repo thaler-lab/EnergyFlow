@@ -1,5 +1,4 @@
 """This. Is. EnergyFlow."""
-
 from __future__ import absolute_import
 
 # import toplevel submodules

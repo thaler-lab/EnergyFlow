@@ -1,17 +1,34 @@
-"""###QG_jets
+"""### Quark and Gluon Jets
 
-A dataset consisting of up to 2 million total quark and gluon jets generated with Pythia 8.230.
-In order to avoid downloading an unnecessary number of samples, the dataset is contained in twenty
-files with 100k quark and gluon jets each and only the requisite number of files are downloaded
-at a time. 
+A dataset consisting of up to 2 million total quark and gluon jets generated with PYTHIA 8.226.
+To avoid downloading unnecessary samples, the dataset is contained in twenty
+files with 100k jets each, and only the required files are downloaded.
+These samples are used in [1810.05165](https://arxiv.org/abs/1810.05165).
+Splitting the data into 1.6M/200k/200k train/validation/test sets is recommended for standardized comparisons.
 
-The dataset consists of two components: `X` is a three-dimensional numpy array of the jets that
-has shape `(num_data, max_num_particles, 4)` and `'y'` is a numpy array of quark/gluon labels 
-(quark=`1` and gluon=`0`). The jets are padded with zero-particles in order to make a contiguous 
-array. The particles are given as `(pt,y,phi,pid)` values where `pid` is the particle's 
+The dataset `qg_jets` consists of two components:
+
+* `X` : a three-dimensional numpy array of the jets with shape `(num_data, max_num_particles, 4)`
+* `y` : a numpy array of quark/gluon jet labels 
+(quark=`1` and gluon=`0`).
+
+The jets are padded with zero-particles in order to make a contiguous 
+array. The particles are given as `(pt,y,phi,pid)` values, where `pid` is the particle's 
 [PDG id](http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf).
-"""
 
+
+The samples are $Z(\\to\\nu\\bar\\nu)+g$ and $Z(\\to\\nu\\bar\\nu)+(u,d,s)$
+ events generated with PYTHIA for $pp$ collisions at $\sqrt{s}=14$ TeV using the `WeakBosonAndParton:qqbar2gmZg` 
+ and `WeakBosonAndParton:qg2gmZq` processes, ignoring the photon contribution and requiring
+ the $Z$ to decay invisibly to neutrinos.
+Hadronization and multiple parton interactions (i.e. underlying event) are turned on
+ and the default tunings and shower parameters are used.
+Final state non-neutrino particles are clustered into $R=0.4$ anti-$k_T$ jets
+ using FASTJET 3.3.0.
+Jets with transverse momentum $p_T\in[500,550]$ GeV and rapidity $|y|<2.0$ are kept.
+Particles are ensured to have $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity issues).
+No detector simulation is performed.
+"""
 from __future__ import absolute_import
 
 import warnings

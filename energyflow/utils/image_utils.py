@@ -1,8 +1,8 @@
 """### Image Tools
 
-Functions for dealing with images. These are not importable from
-the top level `energyflow` module, but must instead be imported 
-from `energyflow.utils`.
+Functions for dealing with image representations of events. These are 
+not importable from the top level `energyflow` module, but must 
+instead be imported from `energyflow.utils`.
 """
 from __future__ import absolute_import, division, print_function
 

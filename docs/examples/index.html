@@ -78,33 +78,33 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../tutorial/">Tutorial</a>
+    <a class="" href="../demo/">Demo</a>
                 </li>
                 <li class=" current">
                     
     <a class="current" href="./">Examples</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#efp_examplepy">efp_example.py</a></li>
+    
+
+    <li class="toctree-l3"><a href="#efn_examplepy">efn_example.py</a></li>
+    
+
+    <li class="toctree-l3"><a href="#pfn_examplepy">pfn_example.py</a></li>
+    
+
     <li class="toctree-l3"><a href="#cnn_examplepy">cnn_example.py</a></li>
     
 
     <li class="toctree-l3"><a href="#dnn_examplepy">dnn_example.py</a></li>
     
 
-    <li class="toctree-l3"><a href="#efn_examplepy">efn_example.py</a></li>
-    
-
-    <li class="toctree-l3"><a href="#efp_examplepy">efp_example.py</a></li>
-    
-
-    <li class="toctree-l3"><a href="#pfn_examplepy">pfn_example.py</a></li>
-    
-
     </ul>
                 </li>
                 <li class="">
                     
-    <a class="" href="../faqs/">FAQ</a>
+    <a class="" href="../faqs/">FAQs</a>
                 </li>
     </ul>
 	    </li>
@@ -115,19 +115,19 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../docs/measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/gen/">Generation</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="../docs/efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
     <a class="" href="../docs/archs/">Architectures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../docs/measures/">Measures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../docs/gen/">Generation</a>
                 </li>
                 <li class="">
                     
@@ -185,6 +185,419 @@
 </code></pre>
 
 <p>See the <a href="../docs/utils/#get_examples"><code>get_examples</code></a> function for more detailed information.</p>
+<h3 id="efp_examplepy">efp_example.py</h3>
+<p>An example involving Energy Flow Polynomials (EFPs) and a linear
+classifier (Fisher's Linear Discriminant by default). First, the 
+<a href="../docs/efp/#efpset"><code>EFPSet</code></a> class is used to compute the EFPs
+up to the specified <code>dmax</code>, the default being <code>dmax=5</code>. Then linear
+classifiers are trained for different numbers of EFPs as input, 
+determined by taking all EFPs up to degree <code>d</code> with <code>d</code> from <code>1</code> 
+to <code>dmax</code>. The output of the example is a plot of the ROC curves
+for the classifiers with different numbers of EFP inputs.</p>
+<pre><code class="python"># standard library imports
+from __future__ import absolute_import, division, print_function
+
+# standard numerical library imports
+import numpy as np
+
+# energyflow imports
+import energyflow as ef
+from energyflow.archs import LinearClassifier
+from energyflow.datasets import qg_jets
+from energyflow.utils import data_split, standardize, to_categorical
+
+# attempt to import sklearn
+try:
+    from sklearn.metrics import roc_auc_score, roc_curve
+except:
+    print('please install scikit-learn in order to make ROC curves')
+    roc_curve = False
+
+# attempt to import matplotlib
+try:
+    import matplotlib.pyplot as plt
+except:
+    print('please install matploltib in order to make plots')
+    plt = False
+
+################################### SETTINGS ###################################
+
+# data controls
+num_data = 20000
+test_frac = 0.2
+
+# efp parameters
+dmax = 5
+measure = 'hadr'
+beta = 0.5
+
+# plotting
+colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
+
+################################################################################
+
+# load data
+X, y = qg_jets.load(num_data)
+
+print('Loaded quark and gluon jets')
+
+# calculate EFPs
+print('Calculating d &lt;= {} EFPs for {} jets... '.format(dmax, num_data), end='')
+efpset = ef.EFPSet(('d&lt;=', dmax), measure='hadr', beta=beta)
+masked_X = [x[x[:,0] &gt; 0] for x in X]
+X = efpset.batch_compute(masked_X)
+print('Done')
+
+# train models with different numbers of EFPs as input
+rocs = []
+for d in range(1, dmax+1):
+
+    # build architecture
+    model = LinearClassifier(linclass_type='lda')
+
+    # select EFPs with degree &lt;= d
+    X_d = X[:,efpset.sel(('d&lt;=', d))]
+
+    # do train/val/test split 
+    (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
+    print('Done train/val/test split')
+
+    # train model
+    model.fit(X_train, y_train)
+
+    # get predictions on test data
+    preds = model.predict(X_test)
+
+    # get ROC curve if we have sklearn
+    if roc_curve:
+        rocs.append(roc_curve(y_test, preds[:,1]))
+
+        # get area under the ROC curve
+        auc = roc_auc_score(y_test, preds[:,1])
+        print()
+        print('EFPs d &lt;= {} AUC:'.format(d), auc)
+        print()
+
+# make ROC curve plot if we have matplotlib
+if plt:
+
+    # some nicer plot settings 
+    plt.rcParams['figure.figsize'] = (4,4)
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['figure.autolayout'] = True
+
+    # iterate over the ROC curves and plot them
+    for i,d in enumerate(range(1, dmax+1)):
+        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                                label='LDA: d &lt;= {} EFPs'.format(d))
+
+    # axes labels
+    plt.xlabel('Quark Jet Efficiency')
+    plt.ylabel('Gluon Jet Rejection')
+
+    # axes limits
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    # make legend and show plot
+    plt.legend(loc='lower left', frameon=False)
+    plt.show()
+
+</code></pre>
+
+<h3 id="efn_examplepy">efn_example.py</h3>
+<p>An example involving Energy Flow Networks (EFNs), which were introduced 
+in <a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. The <a href="../docs/
+archs/#efn"><code>EFN</code></a> class is used to construct the network architecture.
+The output of the example is a plot of the ROC curves obtained by
+the EFN as well as the jet mass and constituent multiplicity 
+observables.</p>
+<pre><code class="python"># standard library imports
+from __future__ import absolute_import, division, print_function
+
+# standard numerical library imports
+import numpy as np
+
+# energyflow imports
+import energyflow as ef
+from energyflow.archs import EFN
+from energyflow.datasets import qg_jets
+from energyflow.utils import data_split, to_categorical
+
+# attempt to import sklearn
+try:
+    from sklearn.metrics import roc_auc_score, roc_curve
+except:
+    print('please install scikit-learn in order to make ROC curves')
+    roc_curve = False
+
+# attempt to import matplotlib
+try:
+    import matplotlib.pyplot as plt
+except:
+    print('please install matploltib in order to make plots')
+    plt = False
+
+################################### SETTINGS ###################################
+
+# data controls, can go up to 2000000 total for full dataset
+train, val, test = 75000, 10000, 15000
+
+# network architecture parameters
+ppm_sizes = (100, 100, 128)
+dense_sizes = (100, 100, 100)
+
+# network training parameters
+num_epoch = 5
+batch_size = 500
+
+################################################################################
+
+# load data
+X, y = qg_jets.load(train + val + test)
+
+# ignore pid information
+X = X[:,:,:3]
+
+# convert labels to categorical
+Y = to_categorical(y, num_classes=2)
+
+print('Loaded quark and gluon jets')
+
+# preprocess by centering jets and normalizing pts
+for x in X:
+    mask = x[:,0] &gt; 0
+    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
+    x[mask,1:3] -= yphi_avg
+    x[mask,0] /= x[:,0].sum()
+
+print('Finished preprocessing')
+
+# do train/val/test split 
+(z_train, z_val, z_test, 
+ p_train, p_val, p_test,
+ Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, val=val, test=test)
+
+print('Done train/val/test split')
+print('Model summary:')
+
+# build architecture
+efn = EFN(input_dim=2, ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
+
+# train model
+efn.fit([z_train, p_train], Y_train,
+          epochs=num_epoch,
+          batch_size=batch_size,
+          validation_data=([z_val, p_val], Y_val),
+          verbose=1)
+
+# get predictions on test data
+preds = efn.predict([z_test, p_test], batch_size=1000)
+
+# get ROC curve if we have sklearn
+if roc_curve:
+    efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+
+    # get area under the ROC curve
+    auc = roc_auc_score(Y_test[:,1], preds[:,1])
+    print()
+    print('EFN AUC:', auc)
+    print()
+
+    # make ROC curve and filter plot if we have matplotlib
+    if plt:
+
+        # some nicer plot settings 
+        plt.rcParams['font.family'] = 'serif'
+        plt.rcParams['figure.autolayout'] = True
+
+        fig, axes = plt.subplots(1, 2, figsize=(8,4))
+
+        ######################### ROC Curve Plot #########################
+
+        # get multiplicity and mass for comparison
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
+        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
+        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
+        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
+
+        # plot the ROC curves
+        axes[0].plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
+        axes[0].plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+        axes[0].plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+
+        # axes labels
+        axes[0].set_xlabel('Quark Jet Efficiency')
+        axes[0].set_ylabel('Gluon Jet Rejection')
+
+        # axes limits
+        axes[0].set_xlim(0, 1)
+        axes[0].set_ylim(0, 1)
+
+        # make legend and show plot
+        axes[0].legend(loc='lower left', frameon=False)
+
+        ######################### Filter Plot #########################
+
+        # plot settings
+        R, n = 0.4, 100
+        colors = ['Reds', 'Oranges', 'Greens', 'Blues', 'Purples', 'Greys']
+        grads = np.linspace(0.45, 0.55, 4)
+
+        # evaluate filters
+        X, Y, Z = efn.eval_filters(R, n=n)
+
+        # plot filters
+        for i,z in enumerate(Z):
+            axes[1].contourf(X, Y, z/np.max(z), grads, cmap=colors[i%len(colors)])
+
+        axes[1].set_xticks(np.linspace(-R, R, 5))
+        axes[1].set_yticks(np.linspace(-R, R, 5))
+        axes[1].set_xticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
+        axes[1].set_yticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
+        axes[1].set_xlabel('Translated Rapidity y')
+        axes[1].set_ylabel('Translated Azimuthal Angle phi')
+        axes[1].set_title('Energy Flow Network Latent Space', fontdict={'fontsize': 10})
+
+        plt.show()
+
+</code></pre>
+
+<h3 id="pfn_examplepy">pfn_example.py</h3>
+<p>An example involving Particle Flow Networks (PFNs), which were 
+introduced in <a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. The 
+<a href="../docs/archs/#pfn"><code>PFN</code></a> class is used to construct the 
+network architecture. The output of the example is a plot of the 
+ROC curves obtained by the PFN as well as the jet mass and 
+constituent multiplicity observables.</p>
+<pre><code class="python"># standard library imports
+from __future__ import absolute_import, division, print_function
+
+# standard numerical library imports
+import numpy as np
+
+# energyflow imports
+import energyflow as ef
+from energyflow.archs import PFN
+from energyflow.datasets import qg_jets
+from energyflow.utils import data_split, remap_pids, to_categorical
+
+# attempt to import sklearn
+try:
+    from sklearn.metrics import roc_auc_score, roc_curve
+except:
+    print('please install scikit-learn in order to make ROC curves')
+    roc_curve = False
+
+# attempt to import matplotlib
+try:
+    import matplotlib.pyplot as plt
+except:
+    print('please install matploltib in order to make plots')
+    plt = False
+
+################################### SETTINGS ###################################
+
+# data controls, can go up to 2000000 for full dataset
+train, val, test = 75000, 10000, 15000
+use_pids = True
+
+# network architecture parameters
+ppm_sizes = (100, 100, 128)
+dense_sizes = (100, 100, 100)
+
+# network training parameters
+num_epoch = 5
+batch_size = 500
+
+################################################################################
+
+# load data
+X, y = qg_jets.load(train + val + test)
+
+# convert labels to categorical
+Y = to_categorical(y, num_classes=2)
+
+print('Loaded quark and gluon jets')
+
+# preprocess by centering jets and normalizing pts
+for x in X:
+    mask = x[:,0] &gt; 0
+    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
+    x[mask,1:3] -= yphi_avg
+    x[mask,0] /= x[:,0].sum()
+
+# handle particle id channel
+if use_pids:
+    remap_pids(X, pid_i=3)
+else:
+    X = X[:,:,:3]
+
+print('Finished preprocessing')
+
+# do train/val/test split 
+(X_train, X_val, X_test,
+ Y_train, Y_val, Y_test) = data_split(X, Y, val=val, test=test)
+
+print('Done train/val/test split')
+print('Model summary:')
+
+# build architecture
+pfn = PFN(input_dim=X.shape[-1], ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
+
+# train model
+pfn.fit(X_train, Y_train,
+          epochs=num_epoch,
+          batch_size=batch_size,
+          validation_data=(X_val, Y_val),
+          verbose=1)
+
+# get predictions on test data
+preds = pfn.predict(X_test, batch_size=1000)
+
+# get ROC curve if we have sklearn
+if roc_curve:
+    pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+
+    # get area under the ROC curve
+    auc = roc_auc_score(Y_test[:,1], preds[:,1])
+    print()
+    print('PFN AUC:', auc)
+    print()
+
+    # make ROC curve plot if we have matplotlib
+    if plt:
+
+        # get multiplicity and mass for comparison
+        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
+        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
+        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
+        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
+
+        # some nicer plot settings 
+        plt.rcParams['figure.figsize'] = (4,4)
+        plt.rcParams['font.family'] = 'serif'
+        plt.rcParams['figure.autolayout'] = True
+
+        # plot the ROC curves
+        plt.plot(pfn_tp, 1-pfn_fp, '-', color='black', label='PFN')
+        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+
+        # axes labels
+        plt.xlabel('Quark Jet Efficiency')
+        plt.ylabel('Gluon Jet Rejection')
+
+        # axes limits
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+
+        # make legend and show plot
+        plt.legend(loc='lower left', frameon=False)
+        plt.show()
+
+</code></pre>
+
 <h3 id="cnn_examplepy">cnn_example.py</h3>
 <p>An example involving jet images and convolutional neural networks (CNNs).
 The <a href="../docs/archs/#cnn"><code>CNN</code></a> class is used to provide a network architecture
@@ -262,7 +675,7 @@ X, y = qg_jets.load(num_data=num_data)
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print('\n', 'Loaded quark and gluon jets')
+print('Loaded quark and gluon jets')
 
 # make jet images
 images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 
@@ -403,7 +816,6 @@ X, y = qg_nsubs.load(num_data=num_data)
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print()
 print('Loaded quark and gluon jets')
 print('Model summary:')
 
@@ -466,402 +878,6 @@ if plt:
     plt.show()
 
 </code></pre>
-
-<h3 id="efn_examplepy">efn_example.py</h3>
-<p>An example involving Energy Flow Networks (EFNs), which are to
-appear soon in a paper by P. T. Komiske, E. M. Metodiev, and J. Thaler. 
-See <a href="https://indico.cern.ch/event/649482/contributions/
-2993313/attachments/1689067/2717141/PTK_BOOST2018_compressed.pdf">this talk</a> 
-for a brief overview of the EFN architecture. The <a href="../docs/
-archs/#efn"><code>EFN</code></a> class is used to construct the network architecture.
-The output of the example is a plot of the ROC curves obtained by
-the EFN as well as the jet mass and constituent multiplicity 
-observables.</p>
-<pre><code class="python"># standard library imports
-from __future__ import absolute_import, division, print_function
-
-# standard numerical library imports
-import numpy as np
-
-# energyflow imports
-import energyflow as ef
-from energyflow.archs import EFN
-from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, to_categorical
-
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
-
-################################### SETTINGS ###################################
-
-# data controls
-num_data = 100000
-val_frac, test_frac = 0.1, 0.15
-
-# network architecture parameters
-ppm_sizes = (100, 100)
-dense_sizes = (100, 100)
-
-# network training parameters
-num_epoch = 5
-batch_size = 100
-
-################################################################################
-
-# load data
-X, y = qg_jets.load(num_data=num_data)
-
-# ignore pid information
-X = X[:,:,:3]
-
-# convert labels to categorical
-Y = to_categorical(y, num_classes=2)
-
-print()
-print('Loaded quark and gluon jets')
-
-# preprocess by centering jets and normalizing pts
-for x in X:
-    mask = x[:,0] &gt; 0
-    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
-    x[mask,1:3] -= yphi_avg
-    x[mask,0] /= x[:,0].sum()
-
-print('Finished preprocessing')
-
-# do train/val/test split 
-(z_train, z_val, z_test, 
- p_train, p_val, p_test,
- Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, 
-                                      val=val_frac, test=test_frac)
-
-print('Done train/val/test split')
-print('Model summary:')
-
-# build architecture
-efn = EFN(input_dim=2, ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
-
-# train model
-efn.fit([z_train, p_train], Y_train,
-          epochs=num_epoch,
-          batch_size=batch_size,
-          validation_data=([z_val, p_val], Y_val),
-          verbose=1)
-
-# get predictions on test data
-preds = efn.predict([z_test, p_test], batch_size=1000)
-
-# get ROC curve if we have sklearn
-if roc_curve:
-    efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
-
-    # get area under the ROC curve
-    auc = roc_auc_score(Y_test[:,1], preds[:,1])
-    print()
-    print('EFN AUC:', auc)
-    print()
-
-    # make ROC curve plot if we have matplotlib
-    if plt:
-
-        # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
-        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
-        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
-
-        # some nicer plot settings 
-        plt.rcParams['figure.figsize'] = (4,4)
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
-
-        # plot the ROC curves
-        plt.plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
-        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
-
-        # axes labels
-        plt.xlabel('Quark Jet Efficiency')
-        plt.ylabel('Gluon Jet Rejection')
-
-        # axes limits
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-
-        # make legend and show plot
-        plt.legend(loc='lower left', frameon=False)
-        plt.show()
-
-</code></pre>
-
-<h3 id="efp_examplepy">efp_example.py</h3>
-<p>An example involving Energy Flow Polynomials (EFPs) and a linear
-classifier (Fisher's Linear Discriminant by default). First, the 
-<a href="../docs/efp/#efpset"><code>EFPSet</code></a> class is used to compute the EFPs
-up to the specified <code>dmax</code>, the default being <code>dmax=5</code>. Then linear
-classifiers are trained for different numbers of EFPs as input, 
-determined by taking all EFPs up to degree <code>d</code> with <code>d</code> from <code>1</code> 
-to <code>dmax</code>. The output of the example is a plot of the ROC curves
-for the classifiers with different numbers of EFP inputs.</p>
-<pre><code class="python"># standard library imports
-from __future__ import absolute_import, division, print_function
-
-# standard numerical library imports
-import numpy as np
-
-# energyflow imports
-import energyflow as ef
-from energyflow.archs import LinearClassifier
-from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, standardize, to_categorical
-
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
-
-################################### SETTINGS ###################################
-
-# data controls
-num_data = 20000
-test_frac = 0.2
-
-# efp parameters
-dmax = 5
-measure = 'hadr'
-beta = 0.5
-
-# plotting
-colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
-
-################################################################################
-
-# load data
-X, y = qg_jets.load(num_data)
-
-print()
-print('Loaded quark and gluon jets')
-
-# calculate EFPs
-print('Calculating d &lt;= {} EFPs for {} jets... '.format(dmax, num_data), end='')
-efpset = ef.EFPSet(('d&lt;=', dmax), measure='hadr', beta=beta)
-masked_X = [x[x[:,0] &gt; 0] for x in X]
-X = efpset.batch_compute(masked_X)
-print('Done')
-
-# train models with different numbers of EFPs as input
-rocs = []
-for d in range(1, dmax+1):
-
-    # build architecture
-    model = LinearClassifier(linclass_type='lda')
-
-    # select EFPs with degree &lt;= d
-    X_d = X[:,efpset.sel(('d&lt;=', d))]
-
-    # do train/val/test split 
-    (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
-    print('Done train/val/test split')
-
-    # train model
-    model.fit(X_train, y_train)
-
-    # get predictions on test data
-    preds = model.predict(X_test)
-
-    # get ROC curve if we have sklearn
-    if roc_curve:
-        rocs.append(roc_curve(y_test, preds[:,1]))
-
-        # get area under the ROC curve
-        auc = roc_auc_score(y_test, preds[:,1])
-        print()
-        print('EFPs d &lt;= {} AUC:'.format(d), auc)
-        print()
-
-# make ROC curve plot if we have matplotlib
-if plt:
-
-    # some nicer plot settings 
-    plt.rcParams['figure.figsize'] = (4,4)
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['figure.autolayout'] = True
-
-    # iterate over the ROC curves and plot them
-    for i,d in enumerate(range(1, dmax+1)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
-                                                label='LDA: d &lt;= {} EFPs'.format(d))
-
-    # axes labels
-    plt.xlabel('Quark Jet Efficiency')
-    plt.ylabel('Gluon Jet Rejection')
-
-    # axes limits
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-
-    # make legend and show plot
-    plt.legend(loc='lower left', frameon=False)
-    plt.show()
-
-</code></pre>
-
-<h3 id="pfn_examplepy">pfn_example.py</h3>
-<p>An example involving Particle Flow Networks (PFNs), cousins of
-the <a href="#efn_examplepy">EFNs</a>, which are to appear. The <a href="../docs/
-archs/#pfn"><code>PFN</code></a> class is used to construct the network architecture.
-The output of the example is a plot of the ROC curves obtained by
-the PFN as well as the jet mass and constituent multiplicity 
-observables.</p>
-<pre><code class="python"># standard library imports
-from __future__ import absolute_import, division, print_function
-
-# standard numerical library imports
-import numpy as np
-
-# energyflow imports
-import energyflow as ef
-from energyflow.archs import PFN
-from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, remap_pids, to_categorical
-
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
-
-################################### SETTINGS ###################################
-
-# data controls
-num_data = 100000
-val_frac, test_frac = 0.1, 0.15
-use_pids = True
-
-# network architecture parameters
-ppm_sizes = (100, 100)
-dense_sizes = (100, 100)
-
-# network training parameters
-num_epoch = 5
-batch_size = 100
-
-################################################################################
-
-# load data
-X, y = qg_jets.load(num_data=num_data)
-
-# convert labels to categorical
-Y = to_categorical(y, num_classes=2)
-
-print()
-print('Loaded quark and gluon jets')
-
-# preprocess by centering jets and normalizing pts
-for x in X:
-    mask = x[:,0] &gt; 0
-    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
-    x[mask,1:3] -= yphi_avg
-    x[mask,0] /= x[:,0].sum()
-
-# handle particle id channel
-if use_pids:
-    remap_pids(X, pid_i=3)
-else:
-    X = X[:,:,:3]
-
-print('Finished preprocessing')
-
-# do train/val/test split 
-(X_train, X_val, X_test,
- Y_train, Y_val, Y_test) = data_split(X, Y, val=val_frac, test=test_frac)
-
-print('Done train/val/test split')
-print('Model summary:')
-
-# build architecture
-pfn = PFN(input_dim=X.shape[-1], ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
-
-# train model
-pfn.fit(X_train, Y_train,
-          epochs=num_epoch,
-          batch_size=batch_size,
-          validation_data=(X_val, Y_val),
-          verbose=1)
-
-# get predictions on test data
-preds = pfn.predict(X_test, batch_size=1000)
-
-# get ROC curve if we have sklearn
-if roc_curve:
-    pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
-
-    # get area under the ROC curve
-    auc = roc_auc_score(Y_test[:,1], preds[:,1])
-    print()
-    print('PFN AUC:', auc)
-    print()
-
-    # make ROC curve plot if we have matplotlib
-    if plt:
-
-        # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
-        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
-        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
-
-        # some nicer plot settings 
-        plt.rcParams['figure.figsize'] = (4,4)
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
-
-        # plot the ROC curves
-        plt.plot(pfn_tp, 1-pfn_fp, '-', color='black', label='PFN')
-        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
-
-        # axes labels
-        plt.xlabel('Quark Jet Efficiency')
-        plt.ylabel('Gluon Jet Rejection')
-
-        # axes limits
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-
-        # make legend and show plot
-        plt.legend(loc='lower left', frameon=False)
-        plt.show()
-
-</code></pre>
               
             </div>
           </div>
@@ -869,10 +885,10 @@ if roc_curve:
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../faqs/" class="btn btn-neutral float-right" title="FAQ">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../faqs/" class="btn btn-neutral float-right" title="FAQs">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../tutorial/" class="btn btn-neutral" title="Tutorial"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../demo/" class="btn btn-neutral" title="Demo"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -900,7 +916,7 @@ if roc_curve:
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../tutorial/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../demo/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../faqs/" style="color: #fcfcfc">Next &raquo;</a></span>

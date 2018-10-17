@@ -50,6 +50,7 @@ $$z_i = E_{i}^{\\kappa},
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod
+import warnings
 
 import numpy as np
 from six import with_metaclass
@@ -197,6 +198,8 @@ class Measure(with_metaclass(ABCMeta, object)):
     def _set_k_func(self):
         self._k_func = kappa_func
         if self.kappa == pf_marker:
+            if self.normed:
+                warnings.warn('Normalization not supported when kappa={}.'.format(pf_marker))
             self.normed = False
             self._k_func = pf_func
 
@@ -308,7 +311,7 @@ class HadronicDotMeasure(HadronicMeasure):
     metric = flat_metric(4)
 
     def ndarray_dim3(self, arg):
-        pts, p4s = self._k_func(arg[:,0], p4s_from_ptyphis(arg), self.kappa)
+        pts, p4s = self._k_func(arg[:,0], p4s_from_ptyphims(arg), self.kappa)
         return pts, self._ps_dot(p4s)**self.half_beta
 
     def ndarray_dim4(self, arg):

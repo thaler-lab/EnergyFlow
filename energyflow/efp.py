@@ -2,15 +2,14 @@
 multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
 observables.
 
-An EFP index by a multigraph $G$ takes the following form:
+An EFP, indexed by a multigraph $G$, takes the following form:
 $$\\text{EFP}_G=\\sum_{i_1=1}^M\\cdots\\sum_{i_N=1}^Mz_{i_1}\\cdots z_{i_N}
 \\prod_{(k,\\ell)\\in G}\\theta_{i_ki_\\ell}$$
 where $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure 
-of the angular separation between particles $i$ and $j$. The specific choices for energy 
-and angular measure depend on the collider context and are discussed at length in the 
-[Measures](../measure) section.
+of the angular separation between particles $i$ and $j$. The specific choices for "energy"
+and "angular" measure depend on the collider context and are discussed in the 
+[Measures](../measures) section.
 """
-
 from __future__ import absolute_import, division, print_function
 
 from  itertools import chain, repeat
@@ -63,15 +62,15 @@ class EFP(EFPBase):
     keyword arguments are stored as properties of the `EFP` instance.
     """
 
-    def __init__(self, edges, measure='hadrdot', beta=1, kappa=1, normed=True, coords=None, 
-                              check_input=True, ve_alg='numpy', np_optimize='greedy'):
+    def __init__(self, edges, measure='hadr', beta=1, kappa=1, normed=True, coords=None, 
+                              check_input=True, np_optimize='greedy'):
         """
         **Arguments**
 
         - **edges** : _list_
             - Edges of the EFP graph specified by pairs of vertices.
         - **measure** : {`'hadr'`, `'hadrdot'`, `'ee'`}
-            - The choice of measure. See [Measures](../measure) 
+            - The choice of measure. See [Measures](../measures) 
             for additional info.
         - **beta** : _float_
             - The parameter $\\beta$ appearing in the measure.
@@ -83,15 +82,12 @@ class EFP(EFPBase):
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
-            [Measures](../measure) for additional info.
+            [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume
             the first input type.
-        - **ve_alg** : {`'numpy'`, `'ef'`}
-            - Which variable elimination algorithm to use.
         - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
-            - When `ve_alg='numpy'` this is the `optimize` keyword
-            of `numpy.einsum_path`.
+            - The `optimize` keyword of `numpy.einsum_path`.
         """
 
         # initialize EFPBase
@@ -99,13 +95,13 @@ class EFP(EFPBase):
 
         # store these edges as an EFPElem
         self.efpelem = EFPElem(edges)
+        self._np_optimize = np_optimize
 
         # setup ve for standard efp compute
-        self.ve = VariableElimination(ve_alg, np_optimize)
-        self.ve.run(self.simple_graph, self.n)
+        (self.efpelem.einstr, 
+         self.efpelem.einpath, 
+         self.chi) = VariableElimination(np_optimize).einspecs(self.simple_graph, self.n)
 
-        # store values in efpelem
-        self.efpelem.einstr, self.efpelem.einpath = self.ve.einspecs()
             
     #===============
     # public methods
@@ -159,16 +155,10 @@ class EFP(EFPBase):
         return self.efpelem.einpath
 
     @property
-    def ve_alg(self):
-        """The ve_alg keyword argument that initialized this EFP instance."""
-
-        return self.ve.ve_alg
-
-    @property
     def np_optimize(self):
         """The np_optimize keyword argument that initialized this EFP instance."""
 
-        return self.ve.np_optimize
+        return self._np_optimize
 
     @property
     def graph(self):
@@ -205,10 +195,7 @@ class EFP(EFPBase):
     def c(self):
         """VE complexity $\\chi$ of this EFP."""
 
-        if hasattr(self.ve, 'chi'):
-            return self.ve.chi
-        else:
-            return None
+        return self.chi
 
 
 ###############################################################################
@@ -220,13 +207,13 @@ class EFPSet(EFPBase):
     Note that all keyword arguments are stored as properties of the `EFPSet` instance.
     """
 
-    # EFPSet(*args, filename=None, measure='hadrdot', beta=1, kappa=1, normed=True, 
+    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=True, 
     #        coords='ptyphim', check_input=True, verbose=False)
     def __init__(self, *args, **kwargs):
         """
         EFPSet can be initialized in one of three ways (in order of precedence):
 
-        1. **Default** - Use the EFPs that come installed with the
+        1. **Default** - Use the ($d\le10$) EFPs that come installed with the
         `EnergFlow` package.
         2. **Generator** - Pass in a custom `Generator` object as the
         first positional argument.
@@ -264,7 +251,7 @@ class EFPSet(EFPBase):
         """
 
         default_kwargs = {'filename': None,
-                          'measure': 'hadrdot',
+                          'measure': 'hadr',
                           'beta': 1,
                           'kappa': 1,
                           'normed': True,
@@ -286,11 +273,10 @@ class EFPSet(EFPBase):
         super(EFPSet, self).__init__(*[kwargs[k] for k in measure_kwargs])
 
         # handle different methods of initialization
-        maxs = ['nmax','emax','dmax','cmax','vmax','comp_dmaxs']
-        elemvs = ['edges','weights','einstrs','einpaths']
+        maxs = ['nmax', 'emax', 'dmax', 'cmax', 'vmax', 'comp_dmaxs']
+        elemvs = ['edges', 'weights', 'einstrs', 'einpaths']
         if len(args) >= 1 and isinstance(args[0], Generator):
-            constructor_attrs = maxs + elemvs + ['cols','gen_efms', 'c_specs',
-                                                 'disc_specs','disc_formulae']
+            constructor_attrs = maxs + elemvs + ['cols', 'c_specs', 'disc_specs', 'disc_formulae']
             gen = {attr: getattr(args[0], attr) for attr in constructor_attrs}
             args = args[1:]
         elif self.filename is not None:

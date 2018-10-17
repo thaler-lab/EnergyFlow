@@ -1,11 +1,3 @@
-"""EnergyFlow contains a few model architectures for ease of using
-common models that frequently appear in the intersection of the 
-particle physics and ML worlds. Since these architectures are not
-used by the core EnergyFlow code, and require the external 
-[Keras](https://keras.io) and [scikit-learn](http://scikit-learn.org/)
-libraries, they are not imported by default but must be explicitly 
-imported, e.g. `from energyflow.archs import *`.
-"""
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
@@ -127,6 +119,9 @@ class NNBase(ArchBase):
 
     def process_hps(self):
         """**Default NN Hyperparameters**
+
+        Common hyperparameters that apply to all architectures except 
+        for [`LinearClassifier`](#linearclassifier).
 
         - **loss**=`'categorical_crossentropy'` : _str_
             - The loss function to use for the model. See the [Keras

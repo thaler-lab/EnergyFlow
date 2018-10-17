@@ -78,7 +78,7 @@ X, y = qg_jets.load(num_data=num_data)
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print('\n', 'Loaded quark and gluon jets')
+print('Loaded quark and gluon jets')
 
 # make jet images
 images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 

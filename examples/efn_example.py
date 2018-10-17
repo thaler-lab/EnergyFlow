@@ -1,8 +1,5 @@
-"""An example involving Energy Flow Networks (EFNs), which are to
-appear soon in a paper by P. T. Komiske, E. M. Metodiev, and J. Thaler. 
-See [this talk](https://indico.cern.ch/event/649482/contributions/
-2993313/attachments/1689067/2717141/PTK_BOOST2018_compressed.pdf) 
-for a brief overview of the EFN architecture. The [`EFN`](../docs/
+"""An example involving Energy Flow Networks (EFNs), which were introduced 
+in [1810.05165](https://arxiv.org/abs/1810.05165). The [`EFN`](../docs/
 archs/#efn) class is used to construct the network architecture.
 The output of the example is a plot of the ROC curves obtained by
 the EFN as well as the jet mass and constituent multiplicity 
@@ -37,22 +34,21 @@ except:
 
 ################################### SETTINGS ###################################
 
-# data controls
-num_data = 100000
-val_frac, test_frac = 0.1, 0.15
+# data controls, can go up to 2000000 total for full dataset
+train, val, test = 75000, 10000, 15000
 
 # network architecture parameters
-ppm_sizes = (100, 100)
-dense_sizes = (100, 100)
+ppm_sizes = (100, 100, 128)
+dense_sizes = (100, 100, 100)
 
 # network training parameters
 num_epoch = 5
-batch_size = 100
+batch_size = 500
 
 ################################################################################
 
 # load data
-X, y = qg_jets.load(num_data=num_data)
+X, y = qg_jets.load(train + val + test)
 
 # ignore pid information
 X = X[:,:,:3]
@@ -60,7 +56,6 @@ X = X[:,:,:3]
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
 
-print()
 print('Loaded quark and gluon jets')
 
 # preprocess by centering jets and normalizing pts
@@ -75,8 +70,7 @@ print('Finished preprocessing')
 # do train/val/test split 
 (z_train, z_val, z_test, 
  p_train, p_val, p_test,
- Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, 
-                                      val=val_frac, test=test_frac)
+ Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, val=val, test=test)
 
 print('Done train/val/test split')
 print('Model summary:')
@@ -104,8 +98,16 @@ if roc_curve:
     print('EFN AUC:', auc)
     print()
 
-    # make ROC curve plot if we have matplotlib
+    # make ROC curve and filter plot if we have matplotlib
     if plt:
+
+        # some nicer plot settings 
+        plt.rcParams['font.family'] = 'serif'
+        plt.rcParams['figure.autolayout'] = True
+
+        fig, axes = plt.subplots(1, 2, figsize=(8,4))
+
+        ######################### ROC Curve Plot #########################
 
         # get multiplicity and mass for comparison
         masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
@@ -113,24 +115,42 @@ if roc_curve:
         mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
         mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-        # some nicer plot settings 
-        plt.rcParams['figure.figsize'] = (4,4)
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
-
         # plot the ROC curves
-        plt.plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
-        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+        axes[0].plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
+        axes[0].plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+        axes[0].plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
         # axes labels
-        plt.xlabel('Quark Jet Efficiency')
-        plt.ylabel('Gluon Jet Rejection')
+        axes[0].set_xlabel('Quark Jet Efficiency')
+        axes[0].set_ylabel('Gluon Jet Rejection')
 
         # axes limits
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
+        axes[0].set_xlim(0, 1)
+        axes[0].set_ylim(0, 1)
 
         # make legend and show plot
-        plt.legend(loc='lower left', frameon=False)
+        axes[0].legend(loc='lower left', frameon=False)
+
+        ######################### Filter Plot #########################
+
+        # plot settings
+        R, n = 0.4, 100
+        colors = ['Reds', 'Oranges', 'Greens', 'Blues', 'Purples', 'Greys']
+        grads = np.linspace(0.45, 0.55, 4)
+
+        # evaluate filters
+        X, Y, Z = efn.eval_filters(R, n=n)
+
+        # plot filters
+        for i,z in enumerate(Z):
+            axes[1].contourf(X, Y, z/np.max(z), grads, cmap=colors[i%len(colors)])
+        
+        axes[1].set_xticks(np.linspace(-R, R, 5))
+        axes[1].set_yticks(np.linspace(-R, R, 5))
+        axes[1].set_xticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
+        axes[1].set_yticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
+        axes[1].set_xlabel('Translated Rapidity y')
+        axes[1].set_ylabel('Translated Azimuthal Angle phi')
+        axes[1].set_title('Energy Flow Network Latent Space', fontdict={'fontsize': 10})
+    
         plt.show()

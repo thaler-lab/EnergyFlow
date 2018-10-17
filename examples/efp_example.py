@@ -53,7 +53,6 @@ colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
 # load data
 X, y = qg_jets.load(num_data)
 
-print()
 print('Loaded quark and gluon jets')
 
 # calculate EFPs
