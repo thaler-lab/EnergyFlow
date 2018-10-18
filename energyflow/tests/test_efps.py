@@ -75,8 +75,8 @@ nogood = pytest.mark.xfail(raises=NotImplementedError) if sys.platform.startswit
 def test_batch_compute_vs_compute(measure, beta, kappa, normed):
     if measure == 'hadr' and kappa == 'pf':
         pytest.skip('hadr does not do pf')
-    if 'efm' in measure and beta != 2:
-        pytest.skip('only test efm when beta=2')
+    if kappa == 'pf' and normed:
+        pytest.skip('normed not supported with kappa=pf')
     events = ef.gen_random_events(10, 15)
     s = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
     r_batch = s.batch_compute(events)
@@ -96,8 +96,8 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
     # handle cases we want to skip
     if measure == 'hadr' and kappa == 'pf':
         pytest.skip('hadr does not do pf')
-    if 'efm' in measure and beta != 2:
-        pytest.skip('only test efm when beta=2')
+    if kappa == 'pf' and normed:
+        pytest.skip('normed not supported with kappa=pf')
     s1 = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
     efps = [ef.EFP(g, measure=measure, beta=beta, kappa=kappa, normed=normed) for g in s1.graphs()]
     r1 = s1.compute(event)

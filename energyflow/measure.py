@@ -199,7 +199,7 @@ class Measure(with_metaclass(ABCMeta, object)):
         self._k_func = kappa_func
         if self.kappa == pf_marker:
             if self.normed:
-                warnings.warn('Normalization not supported when kappa={}.'.format(pf_marker))
+                warnings.warn('Normalization not supported when kappa=\'' + pf_marker + '\'.')
             self.normed = False
             self._k_func = pf_func
 
