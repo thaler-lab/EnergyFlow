@@ -5,12 +5,12 @@ import pytest
 
 import energyflow as ef
 
-table2a = {'prime': [0,1,2,5,12,33,103,333,1183,4442,17576],
-           'comp': [0,1,3,8,23,66,212,686,2389,8682,33160]}
+table2a = {'prime': [1,1,2,5,12,33,103,333,1183,4442,17576],
+           'all': [1,1,3,8,23,66,212,686,2389,8682,33160]}
 
 table2b = [
 [0,0,0,0,0,0,0,0,0,0,0],
-[0,0,0,0,0,0,0,0,0,0,0],
+[1,0,0,0,0,0,0,0,0,0,0],
 [0,1,1,1,1,1,1,1,1,1,1],
 [0,0,1,2,3,4,6,7,9,11,13],
 [0,0,0,2,5,11,22,37,61,95,141],
@@ -34,14 +34,14 @@ g_10_default = ef.Generator(dmax=10, filename='default')
 sp = g_10_default.specs
 c_sp = g_10_default.c_specs
 def test_table2a():
-    for d in range(1,8+1):
+    for d in range(11):
         num_prime = np.count_nonzero(c_sp[:,g_10_default.d_ind] == d)
         num_comp = np.count_nonzero(sp[:,g_10_default.d_ind] == d)
         assert num_prime == table2a['prime'][d]
-        assert num_comp == table2a['comp'][d]
+        assert num_comp == table2a['all'][d]
 
 def test_table2b():
-    for d in range(8+1):
+    for d in range(11):
         dmask = c_sp[:,g_10_default.d_ind] == d
         for n in range(g_10_default.nmax+1):
             nmask = c_sp[:,g_10_default.n_ind] == n
