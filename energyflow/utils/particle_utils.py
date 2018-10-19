@@ -64,7 +64,7 @@ def ptyphims_from_p4s(p4s, phi_ref=None, keep_allzeros=True):
     # keep the all-zero particles
     if keep_allzeros:
         particles[nonzero_mask] = ptyphims
-        return np.zqueeze(particles)
+        return np.squeeze(particles)
 
     # return just the ptyphims for the non-zero particles
     return np.squeeze(ptyphims)
