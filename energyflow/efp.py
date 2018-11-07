@@ -243,8 +243,11 @@ class EFPSet(EFPBase):
             If `'pf'`, use $\\kappa=v-1$ where $v$ is the valency of the vertex.
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
-        - **check_type** : _bool_
-            - Whether to check the type of the input each time or use
+        - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
+            - Controls which coordinates are assumed for the input. See 
+            [Measures](../measures) for additional info.
+        - **check_input** : _bool_
+            - Whether to check the type of the input each time or assume
             the first input type.
         - **verbose** : _bool_
             - Controls printed output when initializing EFPSet.
