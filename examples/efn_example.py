@@ -14,6 +14,7 @@ import numpy as np
 
 # energyflow imports
 import energyflow as ef
+import keras
 from energyflow.archs import EFN
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, to_categorical
