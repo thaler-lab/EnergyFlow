@@ -1,5 +1,6 @@
 # EnergyFlow
 ![alt-text](https://travis-ci.org/pkomiske/EnergyFlow.svg?branch=master "Travis-CI Build Status")
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pkomiske/EnergyFlow/master?filepath=EnergyFlow%20Demo.ipynb)
 
 EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) defined in Ref. [1] and implements Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) defined in Ref. [2].
 
