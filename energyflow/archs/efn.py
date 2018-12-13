@@ -249,7 +249,7 @@ class EFN(SymmetricPerParticleNN):
 class PFN(SymmetricPerParticleNN):
 
     """Particle Flow Network (PFN) architecture. Accepts the same 
-    hperparameters as the [`EFN`](#EFN)."""
+    hyperparameters as the [`EFN`](#EFN)."""
 
     # PFN(*args, **kwargs)
     def construct_input_layers(self):
