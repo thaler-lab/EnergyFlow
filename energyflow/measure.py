@@ -259,7 +259,7 @@ class EEMeasure(Measure):
         self._set_k_func()
         if self.coords is None:
             self.coords = 'epxpypz'
-        self.epxpypz = self.coords == 'epxpypz'
+        self.epxpypz = (self.coords == 'epxpypz')
 
     def array_handler(self, dim):
         if dim < 2:

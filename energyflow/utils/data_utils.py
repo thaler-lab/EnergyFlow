@@ -169,7 +169,7 @@ def to_categorical(labels, num_classes=None):
 
     # get num_classes from max label if None
     if num_classes is None:
-        num_classes = np.max(labels) + 1
+        num_classes = np.int(np.max(labels)) + 1
 
     y = np.asarray(labels, dtype=int)
     n = y.shape[0]
