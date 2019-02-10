@@ -10,7 +10,7 @@ import numpy as np
 
 __all__ = [
     'default_efp_file', 
-    'concat_specs', 
+    'concat_specs',
     'iter_or_rep', 
     'timing', 
     'transfer'

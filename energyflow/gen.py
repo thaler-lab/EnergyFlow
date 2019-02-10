@@ -11,7 +11,7 @@ from energyflow.efpbase import EFPElem
 from energyflow.utils import concat_specs, default_efp_file, transfer
 from energyflow.utils.graph_utils import *
 
-igraph = igraph_import()
+igraph = import_igraph()
 
 __all__ = ['Generator']
 

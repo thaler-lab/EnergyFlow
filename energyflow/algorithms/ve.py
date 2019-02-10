@@ -6,9 +6,6 @@ import itertools
 import numpy as np
 
 from energyflow.algorithms.einsumfunc import einsum_path
-from energyflow.utils import igraph_import
-
-igraph = igraph_import()
 
 __all__ = ['VariableElimination']
 

@@ -5,7 +5,7 @@ from collections import Counter
 import itertools
 
 __all__ = [
-    'igraph_import', 
+    'import_igraph', 
     'get_valency_structure',
     'graph_union', 
     'num_valency_ones',
@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 # determine if igraph can be imported, returns either the igraph module or false
-def igraph_import():
+def import_igraph():
     try:
         import igraph
     except:
