@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>EMD - EnergyFlow</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="../../css/eftheme.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "EMD";
+    var mkdocs_page_input_path = "docs/emd.md";
+    var mkdocs_page_url = "/docs/emd/";
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+  <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-122962541-1', 'energyflow.network');
+      ga('send', 'pageview');
+  </script>
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="../..">
+            <div class="eflogo">
+                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+            </div>
+        </a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Getting Started</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../../installation/">Installation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../demo/">Demo</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../examples/">Examples</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../../faqs/">FAQs</a>
+                </li>
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <span class="caption-text">Documentation</span>
+    <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../efps/">Energy Flow Polynomials</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../archs/">Architectures</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">EMD</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#emd">emd</a></li>
+    
+
+    <li class="toctree-l3"><a href="#pairwise_emds">pairwise_emds</a></li>
+    
+
+    </ul>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../measures/">Measures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../gen/">Generation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../utils/">Utils</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../datasets/">Datasets</a>
+                </li>
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">EnergyFlow</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Documentation &raquo;</li>
+        
+      
+    
+    <li>EMD</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/emd.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p>The Energy Mover's Distance (EMD), also known as the Earth Mover's Distance,
+is a metric between particle collider events introduced in <a href="https:
+//arxiv.org/abs/1902.02346">1902.02346</a>. This submodule contains convenient functions for 
+computing EMDs between individual events and collections of events. The core
+of the computation is done using the <a href="https:
+//pot.readthedocs.io">Python Optimal Transport (POT)</a> library, which must be installed in order to use this
+submodule.</p>
+<p>From Eq. 1 in <a href="https://arxiv.org/abs/1902.02346">1902.02346</a>, the EMD between
+two events is the minimum ''work'' required to rearrange one event $\mathcal E$
+into the other $\mathcal E'$ by movements of energy $f_{ij}$ from particle $i$ 
+in one event to particle $j$ in the other:
+<script type="math/tex; mode=display">
+\text{EMD} = \min_{\{f_{ij}\}}\sum_{ij}f_{ij}\frac{\theta_{ij}}{R} + 
+\left|\sum_iE_i-\sum_jE'_j\right|,\\
+f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E'_j, \quad 
+\sum_{ij}f_{ij}=E_\text{min},
+</script>
+where $E_i,\,E'<em>j$ are the energies of the particles in the two events, 
+$\theta</em>{ij}$ is an angular distance between particles, and 
+$E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE'_j\right)$ is the smaller of the 
+two total energies. In a hadronic context, transverse momenta are used 
+instead of energies.</p>
+<hr />
+<h3 id="emd">emd</h3>
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False)
+</code></pre>
+
+<p>Compute the EMD between two events.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ev0</strong> : <em>numpy.ndarray</em><ul>
+<li>The first event, given as a two-dimensional array.</li>
+</ul>
+</li>
+<li><strong>ev1</strong> : <em>numpy.ndarray</em><ul>
+<li>The other event, same format as <strong>ev0</strong>.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The R parameter in Eq. 1 that controls the relative importance of
+the two terms. Must be greater than or equal to half of the maximum
+ground distance in the space in order for the EMD to be a valid metric.</li>
+</ul>
+</li>
+<li><strong>norm</strong> : <em>bool</em><ul>
+<li>Whether or not to normalize the pT values of the events prior to 
+computing the EMD.</li>
+</ul>
+</li>
+<li><strong>return_flow</strong> : <em>bool</em><ul>
+<li>Whether or not to return the flow matrix describing the optimal 
+transport found during the computation of the EMD. Note that since
+the second term in Eq. 1 is implemented by including an additional 
+particle in the event with lesser total pT, this will be reflected 
+in the flow matrix.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>float</em><ul>
+<li>The EMD value.</li>
+</ul>
+</li>
+<li>[<em>numpy.ndarray</em>]<ul>
+<li>The flow matrix found while solving for the EMD. The <code>(i,j)</code>th 
+entry is the amount of <code>pT</code> that flows between particle i in <code>ev0</code>
+and particle j in <code>ev1</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="pairwise_emds">pairwise_emds</h3>
+<pre><code class="python">energyflow.emd.pairwise_emds(X0, X1=None, R=1.0, norm=False, n_jobs=None, verbose=0, print_every=1000000, chunksize=10000)
+</code></pre>
+
+<p>Compute the EMD between collections of events. This can be used to
+ compute EMDs between all pairs of events in a set or between events in
+ two difference sets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>X0</strong> : <em>list</em><ul>
+<li>Iterable collection of events. Each event is assumed to be an
+ <code>(M,1+d)</code> array of particles, where <code>M</code> is the multiplicity and
+ <code>d</code> is the dimension of the ground space in which to compute
+ euclidean distances between particles. The zeroth column is
+ assumed to be the energies (or equivalently, the transverse
+ momenta) of the particles. For typical hadron collider applications, 
+ each particle will be of the form <code>(pT,y,phi)</code> where <code>y</code> is the 
+ rapidity and <code>phi</code> is the azimuthal angle.</li>
+</ul>
+</li>
+<li><strong>X1</strong> : <em>list</em> or <code>None</code><ul>
+<li>Iterable collection of events in the same format as <code>X0</code>, 
+ or <code>None</code>. If the latter, the pairwise distances between events
+ in <code>X0</code> will be computed and the returned matrix will be symmetric.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The R parameter in Eq. 1 that controls the relative importance of
+ the two terms. Must be greater than or equal to half of the maximum
+ ground distance in the space in order for the EMD to be a valid metric.</li>
+</ul>
+</li>
+<li><strong>norm</strong> : <em>bool</em><ul>
+<li>Whether or not to normalize the pT values of the events prior to 
+ computing the EMD.</li>
+</ul>
+</li>
+<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
+<li>The number of worker processes to use. A value of <code>None</code> will use 
+ as many processes as there are CPUs on the machine.</li>
+</ul>
+</li>
+<li><strong>verbose</strong> : <em>int</em><ul>
+<li>Controls the verbosity level. A value greater than <code>0</code> will print
+ the progress of the computation at intervals specified by <code>print_every</code>.</li>
+</ul>
+</li>
+<li><strong>print_every</strong> : <em>int</em><ul>
+<li>The number of computations to do in between printing the progress.
+ Even if the verbosity level is zero, this still plays a role in 
+ determining when the worker processes report the results back to the
+ main process.</li>
+</ul>
+</li>
+<li><strong>chunksize</strong> : <em>int</em><ul>
+<li>The size of chunks distributed to the worker processes. It is
+ recommended to not make this value too small, and it should typically
+ not be larger than <code>print_every</code>/<code>cpu_count</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The EMD values as a two-dimensional array. If <code>X1</code> was <code>None</code>, then 
+ the shape will be <code>(len(X0), len(X0))</code> and the array will be symmetric,
+ otherwise it will have shape <code>(len(X0), len(X1))</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../measures/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../archs/" class="btn btn-neutral" title="Architectures"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../archs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../measures/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="../../js/eftheme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+
+</body>
+</html>

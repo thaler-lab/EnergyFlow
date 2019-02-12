@@ -77,13 +77,7 @@
     <a class="current" href="./">Installation</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#install-with-pip-recommended">Install with pip (recommended)</a></li>
-    
-
-    <li class="toctree-l3"><a href="#bleeding-edge-install">Bleeding edge install</a></li>
-    
-
-    <li class="toctree-l3"><a href="#igraph">iGraph</a></li>
+    <li class="toctree-l3"><a href="#install-via-pip">Install via pip</a></li>
     
 
     <li class="toctree-l3"><a href="#numpy">NumPy</a></li>
@@ -117,6 +111,10 @@
                 <li class="">
                     
     <a class="" href="../docs/archs/">Architectures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../docs/emd/">EMD</a>
                 </li>
                 <li class="">
                     
@@ -176,16 +174,17 @@
           <div role="main">
             <div class="section">
               
-                <p>The EnergyFlow package is written in pure Python and depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3.</p>
-<p>The EnergyFlow package is designed to work with Python 2.7, 3.5, 3.6, and 3.7. These can be installed from <a href="https://www.python.org/downloads/">here</a>. The latest stable version of Python 3 is highly recommended.</p>
-<h3 id="install-with-pip-recommended">Install with <code>pip</code> (recommended)</h3>
+                <p>The EnergyFlow package is written in pure Python and the core depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3. The extra features require additional packages as specified below:</p>
+<ul>
+<li>Architectures: <a href="https://keras.io">Keras</a>, <a href="https://scikit-learn.org">scikit-learn</a>.</li>
+<li>Generation: <a href="http://igraph.org/redirect.html">iGraph</a></li>
+<li>EMD: <a href="https://pot.readthedocs.io/en/stable">Python Optimal Transport (POT)</a>.</li>
+</ul>
+<p>The EnergyFlow package is designed to work with Python 2.7, 3.5, 3.6, and 3.7. These can be installed from <a href="https://www.python.org/downloads/">here</a>. A recent version of Python 3 is highly recommended, ideally 3.6 or higher.</p>
+<h3 id="install-via-pip">Install via <code>pip</code></h3>
 <p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
-<h3 id="bleeding-edge-install">Bleeding edge install</h3>
-<p>EnergyFlow is <a href="https://github.com/pkomiske/EnergyFlow/">hosted on GitHub</a> and can be installed by cloning the repository and running <code>python setup.py install</code>. This is not generally recommend as the master branch may contain unstable features.</p>
-<h3 id="igraph">iGraph</h3>
-<p>EnergyFlow relies on <a href="http://igraph.org/redirect.html">iGraph</a> for generation of multigraphs. This is not required if using the provided graphs suits your needs. If you wish to generate your own graphs, make sure that iGraph is importable.</p>
 <h3 id="numpy">NumPy</h3>
-<p>Since EnergyFlow relies on <code>numpy.einsum</code> to do most of the computational heavy lifting, newer versions of NumPy may provide changes/speedups in performance if <code>einsum</code> changes. NumPy <code>1.14.0</code> changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. This means that computations are faster on larger tensors but may be slower on smaller tensors. EnergyFlow currently uses only <code>c_einsum</code> because it was found to be substantially faster for typical pp-jet applications.</p>
+<p>As of version <code>0.8.2</code>, EnergyFlow has used a modified version of <code>numpy.einsum</code> to do the heavy lifting for the computation of EFPs. NumPy 1.14.0 changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. It was found that the multi-process approach used by <a href="../docs/efps/#batch_compute_1"><code>batch_compute</code></a> is typically much faster when using the inherently single-threaded <code>c_einsum</code> versus <code>tensordot</code>, which can call BLAS. Hence the custom version of <code>einsum</code> shipped with EnergyFlow disables all calls to <code>tensordot</code> and uses only <code>c_einsum</code>.</p>
               
             </div>
           </div>

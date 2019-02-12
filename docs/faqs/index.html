@@ -125,6 +125,10 @@
                 </li>
                 <li class="">
                     
+    <a class="" href="../docs/emd/">EMD</a>
+                </li>
+                <li class="">
+                    
     <a class="" href="../docs/measures/">Measures</a>
                 </li>
                 <li class="">
@@ -191,10 +195,11 @@
 </ul>
 <hr />
 <h4 id="how-do-i-cite-the-energyflow-package">How do I cite the EnergyFlow package?</h4>
-<p>Please cite the relevant Energy Flow papers if they or this package help your research. Here are the BibTeX entries to use:</p>
+<p>Please cite the relevant papers if they or this package help your research. Here are the BibTeX entries to use:</p>
 <pre><code>@article{Komiske:2017aww,
       author         = &quot;Komiske, Patrick T. and Metodiev, Eric M. and Thaler, Jesse&quot;,
-      title          = &quot;{Energy Flow Polynomials: A complete linear basis for jet substructure}&quot;,
+      title          = &quot;{Energy Flow Polynomials: A complete linear basis for jet 
+                         substructure}&quot;,
       journal        = &quot;JHEP&quot;,
       volume         = &quot;04&quot;,
       year           = &quot;2018&quot;,
@@ -207,26 +212,40 @@
 }
 
 @article{Komiske:2018cqr,
-      author         = &quot;Komiske, Patrick T. and Metodiev, Eric M. and Thaler,
-                        Jesse&quot;,
+      author         = &quot;Komiske, Patrick T. and Metodiev, Eric M. and Thaler, Jesse&quot;,
       title          = &quot;{Energy Flow Networks: Deep Sets for Particle Jets}&quot;,
-      year           = &quot;2018&quot;,
+      journal        = &quot;JHEP&quot;,
+      volume         = &quot;01&quot;,
+      year           = &quot;2019&quot;,
+      pages          = &quot;121&quot;,
+      doi            = &quot;10.1007/JHEP01(2019)121&quot;,
       eprint         = &quot;1810.05165&quot;,
       archivePrefix  = &quot;arXiv&quot;,
       primaryClass   = &quot;hep-ph&quot;,
-      reportNumber   = &quot;MIT-CTP 5064&quot;,
+      reportNumber   = &quot;MIT-CTP 5064&quot;
+}
+
+@article{Komiske:2019fks,
+      author         = &quot;Komiske, Patrick T. and Metodiev, Eric M. and Thaler, Jesse&quot;,
+      title          = &quot;{The Metric Space of Collider Events}&quot;,
+      year           = &quot;2019&quot;,
+      eprint         = &quot;1902.02346&quot;,
+      archivePrefix  = &quot;arXiv&quot;,
+      primaryClass   = &quot;hep-ph&quot;,
+      reportNumber   = &quot;MIT-CTP 5102&quot;
 }
 </code></pre>
 
 <h4 id="why-python-instead-of-c">Why Python instead of C++?</h4>
-<p>Computing the energy flow polynomials requires a function such as NumPy's <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.einsum.html">einsum</a> that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use (though if one were to attempt this the <a href="http://tensor-compiler.org/">tensor algebra compiler</a> seems like a promising tool).</p>
-<p><a href="http://www.numpy.org">NumPy</a> is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the energy flow polynomials. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and low-level features such as SSE instructions.</p>
+<p>Computing the EFPs requires a function such as NumPy's <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.einsum.html">einsum</a> that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use (though if one were to attempt this the <a href="http://tensor-compiler.org/">tensor algebra compiler</a> seems like a promising tool).</p>
+<p><a href="http://www.numpy.org">NumPy</a> is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the EFPs. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and low-level features such as SSE/AVX instructions.</p>
+<p>Beyond just computing EFPs, EnergyFlow makes use of other libraries written in python including <a href="https://keras.io/">Keras</a> and <a href="https://scikit-learn.org/">scikit-learn</a> for the architecture implementations, <a href="https://pot.readthedocs.io/en/stable/">POT</a> and <a href="https://www.scipy.org/">SciPy</a> for EMD computations, and <a href="https://matplotlib.org/index.html">matplotlib</a> for the examples.</p>
 <h4 id="can-i-contribute-to-the-code">Can I contribute to the code?</h4>
 <p>All of our code is open source and hosted on <a href="https://www.github.com/pkomiske/EnergyFlow/">GitHub</a>. We welcome additional contributors, and if you are interested in getting involved please contact us directly. Contact information is included in the relevant Energy Flow papers and our GitHub repository.</p>
 <h4 id="how-do-i-report-an-issue">How do I report an issue?</h4>
-<p>Please let us know of any issues you encounter as soon as possible by creating an <a href="https://github.com/pkomiske/EnergyFlow/issues">Issue</a> on the EnergyFlow GitHub repository. </p>
+<p>Please let us know of any issues you encounter as soon as possible by creating a GitHub <a href="https://github.com/pkomiske/EnergyFlow">Issue</a>.</p>
 <h4 id="where-can-i-get-graph-image-files">Where can I get graph image files?</h4>
-<p>Image files for all connected multigraphs with up to 7 edges in the energy flow polynomial style are available as pdf files <a href="https://github.com/pkomiske/EnergyFlow/tree/images/graphs">here</a>. You are free to use them with the proper attribution.</p>
+<p>Image files for all connected multigraphs with up to 7 edges in the EFP style are available as PDF files <a href="https://github.com/pkomiske/EnergyFlow/tree/images/graphs">here</a>. You are free to use them with the proper attribution.</p>
               
             </div>
           </div>
