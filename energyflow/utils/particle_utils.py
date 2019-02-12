@@ -1,4 +1,4 @@
-"""### Particle Tools
+r"""### Particle Tools
 
 Tools to compute particle kinematic quantities from four-vectors,
 such as transverse momentum $p_T$, rapidity $y$, and azimuthal angle
@@ -23,7 +23,7 @@ __all__ = [
 ]
 
 def ptyphims_from_p4s(p4s, phi_ref=None, keep_allzeros=True):
-    """Compute the `[pt,y,phi,m]` representation of a four-vector for each Euclidean
+    r"""Compute the `[pt,y,phi,m]` representation of a four-vector for each Euclidean
     four-vector given as input. All-zero four-vectors are removed unless `keep_shape` 
     is `True`.
 
@@ -125,7 +125,7 @@ def phis_from_p4s(p4s, phi_ref=None):
 
     **Returns**
 
-    - _numpy.ndarray_ or _list_
+    - _numpy.ndarray_
         - An `M`-length array consisting of the azimuthal angle of each particle.
         If a single particle was given as input, a single float is returned.
     """
@@ -200,15 +200,15 @@ def p4s_from_ptyphis(ptyphis):
     for equivalent functionality.
     """
 
-    warnings.warn(('This function is deprecated and will be removed in version 1.0. ' +
-                   'Use p4s_from_ptyphims for equivalent functionality.'))
+    warnings.warn('This function is deprecated and will be removed in version 1.0. ' 
+                  'Use p4s_from_ptyphims for equivalent functionality.')
 
     return p4s_from_ptyphims(ptyphis)
 
 
 twopi = 2*np.pi
 def phi_fix(phis, phi_ref, copy=False):
-    """A function to ensure that all phi values are within $\pi$ of `phi_ref`. 
+    r"""A function to ensure that all phi values are within $\pi$ of `phi_ref`. 
     It is assumed that all starting phi values are within $2\pi$ of `phi_ref`.
 
     **Arguments**

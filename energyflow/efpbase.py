@@ -70,7 +70,7 @@ class EFPBase(with_metaclass(ABCMeta, object)):
     def compute(self, *args, **kwargs):
         pass
 
-    def batch_compute(self, events, n_jobs=-1):
+    def batch_compute(self, events, n_jobs=None, chunksize=10000):
         """Computes the value of the EFP on several events.
 
         **Arguments**
@@ -78,9 +78,12 @@ class EFPBase(with_metaclass(ABCMeta, object)):
         - **events** : array_like or `fastjet.PseudoJet`
             - The events as an array of arrays of particles in coordinates
             matching those anticipated by `coords`.
-        - **n_jobs** : _int_ 
-            - The number of worker processes to use. A value of `-1` will attempt
-            to use as many processes as there are CPUs on the machine.
+        - **n_jobs** : _int_ or `None`
+            - The number of worker processes to use. A value of `None` will
+            use as many processes as there are CPUs on the machine.
+        - **chunksize** : _int_
+            - The size of chunks distributed to the worker processes. It
+            is recommended to not make this value too small.
 
         **Returns**
 
@@ -88,20 +91,13 @@ class EFPBase(with_metaclass(ABCMeta, object)):
             - A vector of the EFP value for each event.
         """
 
-        if n_jobs == -1:
-            try: 
-                self.n_jobs = multiprocessing.cpu_count()
-            except:
-                self.n_jobs = 4 # choose reasonable value
-
         # setup processor pool
-        chunksize = max(len(events)//self.n_jobs, 1)
         if sys.version_info[0] == 3:
-            with multiprocessing.Pool(self.n_jobs) as pool:
+            with multiprocessing.Pool(n_jobs) as pool:
                 results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
         # Pool is not a context manager in python 2
         else:
-            pool = multiprocessing.Pool(self.n_jobs)
+            pool = multiprocessing.Pool(n_jobs)
             results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
             pool.close()
 

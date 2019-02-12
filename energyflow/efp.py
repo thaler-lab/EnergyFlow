@@ -1,11 +1,11 @@
-"""Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
+r"""The Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
 multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
 observables.
 
 An EFP, indexed by a multigraph $G$, takes the following form:
-$$\\text{EFP}_G=\\sum_{i_1=1}^M\\cdots\\sum_{i_N=1}^Mz_{i_1}\\cdots z_{i_N}
-\\prod_{(k,\\ell)\\in G}\\theta_{i_ki_\\ell}$$
-where $z_i$ is a measure of the energy of particle $i$ and $\\theta_{ij}$ is a measure 
+$$\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
+\prod_{(k,\ell)\in G}\theta_{i_ki_\ell}$$
+where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a measure 
 of the angular separation between particles $i$ and $j$. The specific choices for "energy"
 and "angular" measure depend on the collider context and are discussed in the 
 [Measures](../measures) section.
@@ -50,7 +50,7 @@ def kwargs_check(name, kwargs, allowed=[]):
             continue
         raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
 
-_sel_re = re.compile('(\w+)(<|>|==|!=|<=|>=)(\d+)$')
+_sel_re = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 
 
 ###############################################################################
@@ -210,8 +210,7 @@ class EFPSet(EFPBase):
     # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=True, 
     #        coords='ptyphim', check_input=True, verbose=False)
     def __init__(self, *args, **kwargs):
-        """
-        EFPSet can be initialized in one of three ways (in order of precedence):
+        r"""EFPSet can be initialized in one of three ways (in order of precedence):
 
         1. **Default** - Use the ($d\le10$) EFPs that come installed with the
         `EnergFlow` package.

@@ -1,4 +1,4 @@
-"""This. Is. EnergyFlow."""
+"""The EnergyFlow package."""
 from __future__ import absolute_import
 
 # import toplevel submodules
@@ -20,4 +20,4 @@ __all__ = (gen.__all__ +
            measure.__all__ + 
            utils.__all__)
 
-__version__ = '0.10.5'
+__version__ = '0.11.0'

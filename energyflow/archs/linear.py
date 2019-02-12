@@ -36,7 +36,7 @@ class LinearClassifier(ArchBase):
 
         - **solver**=`'svd'` : {`'svd'`, `'lsqr'`, `'eigen'`}
             - Which LDA solver to use.
-        - **tol**=`1e-10` : _float_
+        - **tol**=`1e-12` : _float_
             - Threshold used for rank estimation. Notably not a
             convergence parameter.
         """
@@ -46,7 +46,7 @@ class LinearClassifier(ArchBase):
 
         # LDA hyperparameters
         self.solver = self.hps.get('solver', 'svd')
-        self.tol = self.hps.get('tol', 10**-10)
+        self.tol = self.hps.get('tol', 10**-12)
 
         # logistic regression hyperparameter dictionary
         self.LR_hps = self.hps.get('LR_hps', {})

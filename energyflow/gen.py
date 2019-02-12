@@ -30,7 +30,7 @@ class Generator(object):
 
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
                        filename=None, np_optimize='greedy', verbose=False):
-        """Doing a fresh generation of connected multigraphs (`filename=None`) requires
+        r"""Doing a fresh generation of connected multigraphs (`filename=None`) requires
         that `igraph` be installed.
 
         **Arguments**
@@ -42,7 +42,7 @@ class Generator(object):
         - **emax** : _int_
             - The maximum number of edges of the generated connected simple graphs.
         - **cmax** : _int_
-            - The maximum VE complexity $\\chi$ of the generated connected graphs.
+            - The maximum VE complexity $\chi$ of the generated connected graphs.
         - **vmax** : _int_
             - The maximum valency of the generated connected graphs.
         - **comp_dmaxs** : {_dict_, _int_}

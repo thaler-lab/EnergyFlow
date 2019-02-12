@@ -1,5 +1,4 @@
-r"""
-Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs)
+r"""Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs)
 are model architectures designed for learning from collider events
 as unordered, variable-length sets of particles. Both EFNs and PFNs are
 parameterized by a learnable per-particle function $\Phi$ and latent space function $F$.
