@@ -12,13 +12,13 @@ into the other $\mathcal E'$ by movements of energy $f_{ij}$ from particle $i$
 in one event to particle $j$ in the other:
 $$
 \text{EMD} = \min_{\{f_{ij}\}}\sum_{ij}f_{ij}\frac{\theta_{ij}}{R} + 
-\left|\sum_iE_i-\sum_jE'_j\right|,\\
-f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E'_j, \quad 
+\left|\sum_iE_i-\sum_jE^\prime_j\right|,\\
+f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E^\prime_j, \quad 
 \sum_{ij}f_{ij}=E_\text{min},
 $$
-where $E_i,\,E'_j$ are the energies of the particles in the two events, 
+where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
 $\theta_{ij}$ is an angular distance between particles, and 
-$E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE'_j\right)$ is the smaller of the 
+$E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE^\prime_j\right)$ is the smaller of the 
 two total energies. In a hadronic context, transverse momenta are used 
 instead of energies.
 """
@@ -54,13 +54,21 @@ if ot:
         **Arguments**
 
         - **ev0** : _numpy.ndarray_
-            - The first event, given as a two-dimensional array.
+            - The first event, given as a two-dimensional array. The event is 
+            assumed to be an `(M,1+d)` array of particles, where `M` is the 
+            multiplicity and `d` is the dimension of the ground space in which
+            to compute euclidean distances between particles. The zeroth column 
+            is assumed to be the energies (or equivalently, the transverse
+            momenta) of the particles. For typical hadron collider jet 
+            applications, each particle will be of the form `(pT,y,phi)` where 
+            `y` is the rapidity and `phi` is the azimuthal angle.
         - **ev1** : _numpy.ndarray_
             - The other event, same format as **ev0**.
         - **R** : _float_
-            - The R parameter in Eq. 1 that controls the relative importance of
-            the two terms. Must be greater than or equal to half of the maximum
-            ground distance in the space in order for the EMD to be a valid metric.
+            - The R parameter in the EMD definition that controls the relative 
+            importance of the two terms. Must be greater than or equal to half 
+            of the maximum ground distance in the space in order for the EMD 
+            to be a valid metric.
         - **norm** : _bool_
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
@@ -75,7 +83,7 @@ if ot:
 
         - _float_
             - The EMD value.
-        - [_numpy.ndarray_]
+        - [_numpy.ndarray_], optional
             - The flow matrix found while solving for the EMD. The `(i,j)`th 
             entry is the amount of `pT` that flows between particle i in `ev0`
             and particle j in `ev1`.
@@ -95,9 +103,8 @@ if ot:
             pTs1 /= pT1
             thetas = _cdist_euclidean(coords0, coords1)/R
 
+        # implement the EMD in Eq. 1 of the paper by adding an appropriate extra particle
         else:
-
-            # implement the EMD in Eq. 1 of the paper by adding an appropriate extra particle
             pTdiff = pT1 - pT0
             if pTdiff > 0:
                 pTs0 = np.concatenate((pTs0, pTdiff))
@@ -185,9 +192,10 @@ if ot:
             or `None`. If the latter, the pairwise distances between events
             in `X0` will be computed and the returned matrix will be symmetric.
        - **R** : _float_
-            - The R parameter in Eq. 1 that controls the relative importance of
-            the two terms. Must be greater than or equal to half of the maximum
-            ground distance in the space in order for the EMD to be a valid metric.
+            - The R parameter in the EMD definition that controls the relative 
+            importance of the two terms. Must be greater than or equal to half 
+            of the maximum ground distance in the space in order for the EMD 
+            to be a valid metric.
         - **norm** : _bool_
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
