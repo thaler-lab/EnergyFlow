@@ -26,6 +26,7 @@ from __future__ import absolute_import, division, print_function
 
 import itertools
 import multiprocessing
+import sys
 import time
 import warnings
 
@@ -287,6 +288,10 @@ if ot:
                     if verbose >= 1:
                         args = (end, end/npairs*100, time.time() - start)
                         print('  Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
+
+            #pool = multiprocessing.Pool(n_jobs)
+            #results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
+            #pool.close()
 
         # run EMDs in this process
         elif n_jobs == 1:
