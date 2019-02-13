@@ -8,7 +8,7 @@ python:
   - "3.7-dev"
   - "3.8-dev"
 install:
-  - pip install pot
+  - pip install cython pot
   - pip install .
 script: 
   - python setup.py test -v
