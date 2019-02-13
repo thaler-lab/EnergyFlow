@@ -190,8 +190,8 @@ if ot:
             - Iterable collection of events. Each event is assumed to be an 
             `(M,1+gdim)` array of particles, where `M` is the multiplicity and 
             `gdim` is the dimension of the ground space in which to compute
-            euclidean distances between particles (as specified by the `gdim`
-            keyword argument. The zeroth column is assumed to be the energies
+            euclidean distances between particles (specified by the `gdim`
+            keyword argument). The zeroth column is assumed to be the energies
             (or equivalently, the transverse momenta) of the particles. For
             typical hadron collider jet applications, each particle will be of
             the form `(pT,y,phi)` where  `y` is the rapidity and `phi` is the
