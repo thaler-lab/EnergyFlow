@@ -1,0 +1,15 @@
+Version 0.11.0:
+- Added EMD submodule for EMD computations.
+- Began the CHANGELOG ;)
+
+Version 0.10.0:
+- Added architectures submodule including EFNs, PFNs, CNNs, DNNs, and Linear models.
+
+Version 0.8.2:
+- Switch to using customized einsumfunc.py borrowed from NumPy that avoids calls to BLAS (which are suboptimal when trivially parallelizing computations).
+
+Version 0.7.0:
+- Added tests for EFP code.
+
+Previous versions:
+- Rapid development of EFP code
