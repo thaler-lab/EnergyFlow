@@ -88,7 +88,7 @@ QG_jets_hashes = [
 num_per_file = 100000
 max_num_files = len(QG_jets_urls)
 
-def load(num_data=100000, cache_dir=None):
+def load(num_data=100000, pad=True, cache_dir=None):
     """Loads samples from the dataset (which in total is contained in twenty files). 
     Any file that is needed that has not been cached will be automatically downloaded.
     Downloading a file causes it to be cached for later use. Basic checksums are
@@ -98,6 +98,8 @@ def load(num_data=100000, cache_dir=None):
 
     - **num_data** : _int_
         - The number of events to return. A value of `-1` means read in all events.
+    - **pad** : _bool_
+        - Whether to pad the events with zeros to make them the same length.
     - **cache_dir** : _str_
         - The directory where to store/look for the file.
 
@@ -128,9 +130,12 @@ def load(num_data=100000, cache_dir=None):
         ys.append(f['y'])
         f.close()
 
-    max_len_axis1 = max([X.shape[1] for X in Xs])
+    if pad:
+        max_len_axis1 = max([X.shape[1] for X in Xs])
+        X = np.vstack([_pad_events_axis1(x, max_len_axis1) for x in Xs])
+    else:
+        X = np.asarray([x[x[:,0]>0] for X in Xs for x in X])
 
-    X = np.vstack([_pad_events_axis1(x, max_len_axis1) for x in Xs])
     y = np.concatenate(ys)
 
     if num_data > -1:

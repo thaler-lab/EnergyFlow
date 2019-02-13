@@ -70,7 +70,7 @@ class EFPBase(with_metaclass(ABCMeta, object)):
     def compute(self, *args, **kwargs):
         pass
 
-    def batch_compute(self, events, n_jobs=None, chunksize=10000):
+    def batch_compute(self, events, n_jobs=None):
         """Computes the value of the EFP on several events.
 
         **Arguments**
@@ -81,9 +81,6 @@ class EFPBase(with_metaclass(ABCMeta, object)):
         - **n_jobs** : _int_ or `None`
             - The number of worker processes to use. A value of `None` will
             use as many processes as there are CPUs on the machine.
-        - **chunksize** : _int_
-            - The size of chunks distributed to the worker processes. It
-            is recommended to not make this value too small.
 
         **Returns**
 
@@ -91,10 +88,15 @@ class EFPBase(with_metaclass(ABCMeta, object)):
             - A vector of the EFP value for each event.
         """
 
+        if n_jobs is None:
+            n_jobs = multiprocessing.cpu_count() or 1
+        chunksize = max(1, len(events)//n_jobs)
+
         # setup processor pool
         if sys.version_info[0] == 3:
             with multiprocessing.Pool(n_jobs) as pool:
                 results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
+                
         # Pool is not a context manager in python 2
         else:
             pool = multiprocessing.Pool(n_jobs)

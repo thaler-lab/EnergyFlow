@@ -214,7 +214,7 @@ Particles are ensured to have $\phi$ values within $\pi$ of the jet (i.e. no $\p
 No detector simulation is performed.</p>
 <hr />
 <h4 id="load">load</h4>
-<pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, cache_dir=None)
+<pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, pad=True, cache_dir=None)
 </code></pre>
 
 <p>Loads samples from the dataset (which in total is contained in twenty files). 
@@ -225,6 +225,10 @@ performed.</p>
 <ul>
 <li><strong>num_data</strong> : <em>int</em><ul>
 <li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
+</ul>
+</li>
+<li><strong>pad</strong> : <em>bool</em><ul>
+<li>Whether to pad the events with zeros to make them the same length.</li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>

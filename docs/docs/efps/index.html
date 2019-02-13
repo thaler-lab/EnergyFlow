@@ -288,7 +288,7 @@ of the pairwise angles of an event.</li>
 </li>
 </ul>
 <h4 id="batch_compute">batch_compute</h4>
-<pre><code class="python">batch_compute(events, n_jobs=None, chunksize=10000)
+<pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
 <p>Computes the value of the EFP on several events.</p>
@@ -302,11 +302,6 @@ matching those anticipated by <code>coords</code>.</li>
 <li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
 <li>The number of worker processes to use. A value of <code>None</code> will
 use as many processes as there are CPUs on the machine.</li>
-</ul>
-</li>
-<li><strong>chunksize</strong> : <em>int</em><ul>
-<li>The size of chunks distributed to the worker processes. It
-is recommended to not make this value too small.</li>
 </ul>
 </li>
 </ul>
@@ -438,7 +433,7 @@ of the pairwise angles of an event.</li>
 </li>
 </ul>
 <h4 id="batch_compute_1">batch_compute</h4>
-<pre><code class="python">batch_compute(events, n_jobs=-1)
+<pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
 <p>Computes the value of the stored EFPs on several events.</p>
@@ -449,8 +444,8 @@ of the pairwise angles of an event.</li>
 matching those anticipated by <code>coords</code>.</li>
 </ul>
 </li>
-<li><strong>n_jobs</strong> : <em>int</em> <ul>
-<li>The number of worker processes to use. A value of <code>-1</code> will attempt
+<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
+<li>The number of worker processes to use. A value of <code>None</code> will attempt
 to use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>

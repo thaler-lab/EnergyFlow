@@ -410,7 +410,7 @@ class EFPSet(EFPBase):
         else:
             return self.calc_disc(results)
 
-    def batch_compute(self, events, n_jobs=-1):
+    def batch_compute(self, events, n_jobs=None):
         """Computes the value of the stored EFPs on several events.
 
         **Arguments**
@@ -418,8 +418,8 @@ class EFPSet(EFPBase):
         - **events** : array_like or `fastjet.PseudoJet`
             - The events as an array of arrays of particles in coordinates
             matching those anticipated by `coords`.
-        - **n_jobs** : _int_ 
-            - The number of worker processes to use. A value of `-1` will attempt
+        - **n_jobs** : _int_ or `None`
+            - The number of worker processes to use. A value of `None` will attempt
             to use as many processes as there are CPUs on the machine.
 
         **Returns**

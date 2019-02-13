@@ -111,7 +111,7 @@
     <li class="toctree-l3"><a href="#emd">emd</a></li>
     
 
-    <li class="toctree-l3"><a href="#pairwise_emds">pairwise_emds</a></li>
+    <li class="toctree-l3"><a href="#emds">emds</a></li>
     
 
     </ul>
@@ -174,31 +174,31 @@
           <div role="main">
             <div class="section">
               
-                <p>The Energy Mover's Distance (EMD), also known as the Earth Mover's Distance,
-is a metric between particle collider events introduced in <a href="https:
-//arxiv.org/abs/1902.02346">1902.02346</a>. This submodule contains convenient functions for 
-computing EMDs between individual events and collections of events. The core
-of the computation is done using the <a href="https:
-//pot.readthedocs.io">Python Optimal Transport (POT)</a> library, which must be installed in order to use this
-submodule.</p>
+                <p>The Energy Mover's Distance (EMD), also known as the Earth Mover's 
+Distance, is a metric between particle collider events introduced in
+<a href="https://arxiv.org/abs/1902.02346">1902.02346</a>. This submodule contains
+convenient functions for computing EMDs between individual events and
+collections of events. The core of the computation is done using the
+<a href="https://pot.readthedocs.io">Python Optimal Transport (POT)</a> library,
+which must be installed in order to use this submodule.</p>
 <p>From Eq. 1 in <a href="https://arxiv.org/abs/1902.02346">1902.02346</a>, the EMD between
 two events is the minimum ''work'' required to rearrange one event $\mathcal E$
 into the other $\mathcal E'$ by movements of energy $f_{ij}$ from particle $i$ 
 in one event to particle $j$ in the other:
 <script type="math/tex; mode=display">
-\text{EMD} = \min_{\{f_{ij}\}}\sum_{ij}f_{ij}\frac{\theta_{ij}}{R} + 
-\left|\sum_iE_i-\sum_jE^\prime_j\right|,\\
+\text{EMD}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\}}\sum_{ij}f_{ij}\frac{
+\theta_{ij}}{R} + \left|\sum_iE_i-\sum_jE^\prime_j\right|,\\
 f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E^\prime_j, \quad 
 \sum_{ij}f_{ij}=E_\text{min},
 </script>
 where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
 $\theta_{ij}$ is an angular distance between particles, and 
-$E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE^\prime_j\right)$ is the smaller of the 
-two total energies. In a hadronic context, transverse momenta are used 
+$E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE^\prime_j\right)$ is the smaller
+of the two total energies. In a hadronic context, transverse momenta are used 
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False)
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2)
 </code></pre>
 
 <p>Compute the EMD between two events.</p>
@@ -206,13 +206,14 @@ instead of energies.</p>
 <ul>
 <li><strong>ev0</strong> : <em>numpy.ndarray</em><ul>
 <li>The first event, given as a two-dimensional array. The event is 
-assumed to be an <code>(M,1+d)</code> array of particles, where <code>M</code> is the 
-multiplicity and <code>d</code> is the dimension of the ground space in which
-to compute euclidean distances between particles. The zeroth column 
-is assumed to be the energies (or equivalently, the transverse
-momenta) of the particles. For typical hadron collider jet 
-applications, each particle will be of the form <code>(pT,y,phi)</code> where 
-<code>y</code> is the rapidity and <code>phi</code> is the azimuthal angle.</li>
+assumed to be an <code>(M,1+gdim)</code> array of particles, where <code>M</code> is the 
+multiplicity and <code>gdim</code> is the dimension of the ground space in 
+which to compute euclidean distances between particles (as specified 
+by the <code>gdim</code> keyword argument. The zeroth column is assumed to be
+the energies (or equivalently, the transverse momenta) of the 
+particles. For typical hadron collider jet applications, each 
+particle will be of the form <code>(pT,y,phi)</code> where  <code>y</code> is the rapidity
+and <code>phi</code> is the azimuthal angle.</li>
 </ul>
 </li>
 <li><strong>ev1</strong> : <em>numpy.ndarray</em><ul>
@@ -239,6 +240,11 @@ particle in the event with lesser total pT, this will be reflected
 in the flow matrix.</li>
 </ul>
 </li>
+<li><strong>gdim</strong> : <em>int</em><ul>
+<li>The dimension of the ground metric space. See the description in
+<code>ev0</code> for details.</li>
+</ul>
+</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
@@ -254,8 +260,8 @@ and particle j in <code>ev1</code>.</li>
 </li>
 </ul>
 <hr />
-<h3 id="pairwise_emds">pairwise_emds</h3>
-<pre><code class="python">energyflow.emd.pairwise_emds(X0, X1=None, R=1.0, norm=False, n_jobs=None, verbose=0, print_every=1000000, chunksize=10000)
+<h3 id="emds">emds</h3>
+<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_jobs=None, verbose=1, print_every=1000000)
 </code></pre>
 
 <p>Compute the EMD between collections of events. This can be used to
@@ -264,14 +270,15 @@ and particle j in <code>ev1</code>.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>X0</strong> : <em>list</em><ul>
-<li>Iterable collection of events. Each event is assumed to be an
- <code>(M,1+d)</code> array of particles, where <code>M</code> is the multiplicity and
- <code>d</code> is the dimension of the ground space in which to compute
- euclidean distances between particles. The zeroth column is
- assumed to be the energies (or equivalently, the transverse
- momenta) of the particles. For typical hadron collider applications, 
- each particle will be of the form <code>(pT,y,phi)</code> where <code>y</code> is the 
- rapidity and <code>phi</code> is the azimuthal angle.</li>
+<li>Iterable collection of events. Each event is assumed to be an 
+ <code>(M,1+gdim)</code> array of particles, where <code>M</code> is the multiplicity and 
+ <code>gdim</code> is the dimension of the ground space in which to compute
+ euclidean distances between particles (as specified by the <code>gdim</code>
+ keyword argument. The zeroth column is assumed to be the energies
+ (or equivalently, the transverse momenta) of the particles. For
+ typical hadron collider jet applications, each particle will be of
+ the form <code>(pT,y,phi)</code> where  <code>y</code> is the rapidity and <code>phi</code> is the
+ azimuthal angle.</li>
 </ul>
 </li>
 <li><strong>X1</strong> : <em>list</em> or <code>None</code><ul>
@@ -292,9 +299,15 @@ and particle j in <code>ev1</code>.</li>
  computing the EMD.</li>
 </ul>
 </li>
+<li><strong>gdim</strong> : <em>int</em><ul>
+<li>The dimension of the ground metric space. See the description in
+ <code>ev0</code> for details.</li>
+</ul>
+</li>
 <li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
 <li>The number of worker processes to use. A value of <code>None</code> will use 
- as many processes as there are CPUs on the machine.</li>
+ as many processes as there are CPUs on the machine. Note that for
+ smaller numbers of events, a smaller value of <code>n_jobs</code> can be faster.</li>
 </ul>
 </li>
 <li><strong>verbose</strong> : <em>int</em><ul>
@@ -307,12 +320,6 @@ and particle j in <code>ev1</code>.</li>
  Even if the verbosity level is zero, this still plays a role in 
  determining when the worker processes report the results back to the
  main process.</li>
-</ul>
-</li>
-<li><strong>chunksize</strong> : <em>int</em><ul>
-<li>The size of chunks distributed to the worker processes. It is
- recommended to not make this value too small, and it should typically
- not be larger than <code>print_every</code>/<code>cpu_count</code>.</li>
 </ul>
 </li>
 </ul>
