@@ -6,7 +6,7 @@ python:
 install:
   - pip install cython
   - pip install pot
-  - pip install .
+  - pip install -e .
 script: 
   - python setup.py test -v
 branches:
