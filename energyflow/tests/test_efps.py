@@ -67,7 +67,6 @@ nogood = pytest.mark.xfail(raises=NotImplementedError) if sys.platform.startswit
 
 @pytest.mark.slow
 @pytest.mark.batch_compute
-#@pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
@@ -79,13 +78,12 @@ def test_batch_compute_vs_compute(measure, beta, kappa, normed):
         pytest.skip('normed not supported with kappa=pf')
     events = ef.gen_random_events(10, 15)
     s = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
-    r_batch = s.batch_compute(events)
+    r_batch = s.batch_compute(events, n_jobs=1)
     r = np.asarray([s.compute(event) for event in events])
     assert epsilon_percent(r_batch, r, 10**-14)
 
 # test that efpset matches efps
 @pytest.mark.slow
-#@pytest.mark.efm
 @pytest.mark.efpset
 @pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
 @pytest.mark.parametrize('normed', [True, False])

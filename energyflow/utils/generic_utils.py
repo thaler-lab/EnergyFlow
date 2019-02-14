@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 from functools import wraps
 from itertools import repeat
+from multiprocessing import Pool
 import os
 import sys
 import time
@@ -11,6 +12,7 @@ import numpy as np
 __all__ = [
     'default_efp_file', 
     'concat_specs',
+    'create_pool',
     'iter_or_rep', 
     'timing', 
     'transfer'
@@ -50,6 +52,15 @@ def concat_specs(c_specs, d_specs):
     else:
         return c_specs
 
+# handle Pool not being a context manager in Python 2
+def create_pool(*args, **kwargs):
+    pool = Pool(*args, **kwargs)
+    if sys.version_info[0] == 2:
+        def __exit__(self, *args):
+            self.terminate()
+        setattr(pool, '__exit__', __exit__)
+    return pool
+
 # return argument if iterable else make repeat generator
 def iter_or_rep(arg):
     if isinstance(arg, (tuple, list)):
@@ -79,3 +90,5 @@ def transfer(obj1, obj2, attrs):
     else:
         for attr in attrs:
             setattr(obj1, attr, getattr(obj2, attr))
+
+

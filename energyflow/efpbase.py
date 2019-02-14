@@ -11,7 +11,7 @@ from six import with_metaclass
 
 from energyflow.algorithms import einsum
 from energyflow.measure import Measure
-from energyflow.utils import timing, transfer
+from energyflow.utils import create_pool, timing, transfer
 
 ###############################################################################
 # EFPBase
@@ -93,15 +93,8 @@ class EFPBase(with_metaclass(ABCMeta, object)):
         chunksize = max(1, len(events)//n_jobs)
 
         # setup processor pool
-        if sys.version_info[0] == 3:
-            with multiprocessing.Pool(n_jobs) as pool:
-                results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
-                
-        # Pool is not a context manager in python 2
-        else:
-            pool = multiprocessing.Pool(n_jobs)
-            results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
-            pool.close()
+        with create_pool(n_jobs) as pool:
+            results = np.asarray(list(pool.map(self._batch_compute_func, events, chunksize)))
 
         return results
 

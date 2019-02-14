@@ -40,6 +40,8 @@ except:
     warnings.warn('cannot import module \'ot\', module \'emd\' will be empty')
     ot = False
 
+from energyflow.utils import create_pool
+
 if ot:
 
     __all__ = ['emd', 'emds']
@@ -263,7 +265,7 @@ if ot:
                 print('Using {} worker process{}:'.format(n_jobs, 'es' if n_jobs > 1 else ''))
 
             # create process pool
-            with multiprocessing.Pool(n_jobs) as pool:
+            with create_pool(n_jobs) as pool:
 
                 # iterate over pairs of events
                 begin = end = 0
@@ -277,7 +279,7 @@ if ot:
                     local_imap_args = [next(imap_args) for i in range(end - begin)]
 
                     # map function and store results
-                    results = list(pool.imap(_emd4imap, local_imap_args, chunksize=chunksize))
+                    results = list(pool.map(_emd4imap, local_imap_args, chunksize=chunksize))
                     for k,arg in enumerate(local_imap_args):
                         emds[arg[0],arg[1]] = results[k]
 
@@ -288,10 +290,6 @@ if ot:
                     if verbose >= 1:
                         args = (end, end/npairs*100, time.time() - start)
                         print('  Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
-
-            #pool = multiprocessing.Pool(n_jobs)
-            #results = np.asarray(list(pool.imap(self._batch_compute_func, events, chunksize)))
-            #pool.close()
 
         # run EMDs in this process
         elif n_jobs == 1:
