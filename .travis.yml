@@ -6,9 +6,10 @@ python:
 install:
   - pip install cython
   - pip install pot
-  - pip install -e .
+  - pip install pytest
+  - pip install .
 script: 
-  - python setup.py test -v
+  - pytest -v
 branches:
   only:
     - master
