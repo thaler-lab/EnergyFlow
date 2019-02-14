@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+import contextlib
 from functools import wraps
 from itertools import repeat
 from multiprocessing import Pool
@@ -53,13 +54,15 @@ def concat_specs(c_specs, d_specs):
         return c_specs
 
 # handle Pool not being a context manager in Python 2
+@contextlib.contextmanager
 def create_pool(*args, **kwargs):
-    pool = Pool(*args, **kwargs)
     if sys.version_info[0] == 2:
-        def __exit__(self, *args):
-            self.terminate()
-        setattr(pool, '__exit__', __exit__)
-    return pool
+        pool = Pool(*args, **kwargs)
+        yield pool
+        pool.terminate()
+    else:
+        with Pool(*args, **kwargs) as pool:
+            yield pool
 
 # return argument if iterable else make repeat generator
 def iter_or_rep(arg):
