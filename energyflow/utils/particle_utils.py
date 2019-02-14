@@ -111,7 +111,7 @@ def ys_from_p4s(p4s):
 
 
 def phis_from_p4s(p4s, phi_ref=None):
-    """Calculate the azimuthal angles of a collection of four-vectors. If `phi_ref` is 
+    r"""Calculate the azimuthal angles of a collection of four-vectors. If `phi_ref` is 
     not `None`, then `phi_fix` is called using this value. Otherwise, 
     the angles are chosen to be in the inverval $[0,2\pi]$.
     
@@ -121,7 +121,7 @@ def phis_from_p4s(p4s, phi_ref=None):
         - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each particle.
         A single particle as a one-dimensional array or list is also accepted.
     - **phi_ref** : _float_
-        - See 
+        - See [`phi_fix`](#phi_fix)
 
     **Returns**
 
