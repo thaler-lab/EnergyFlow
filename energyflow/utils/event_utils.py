@@ -18,10 +18,10 @@ __all__ = [
 ]
 
 def gen_random_events(nevents, nparticles, dim=4, mass=0):
-    """Generate random events with a given number of particles of a given mass
-    in a given spacetime dimension. The energy-momentum vectors have spatial
-    components drawn randomly from [-1,+1]. These events are not guaranteed
-    to uniformly sample phase space.
+    r"""Generate random events with a given number of particles of a given mass
+    in a given spacetime dimension. The spatial components of the momenta are
+    distributed uniformly in $[-1,+1]$. These events are not guaranteed to 
+    uniformly sample phase space.
 
     **Arguments**
 
@@ -37,8 +37,8 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
     **Returns**
 
     - _numpy.ndarray_
-        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` particles
-        with mass given by `mass`.
+        - An `(nevents,nparticles,dim)` array of events. The particles 
+        are specified as `[E,p1,p2,...]`.
     """
 
     spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
@@ -47,10 +47,10 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
     return np.squeeze(events)
 
 def gen_random_events_mcom(nevents, nparticles, dim=4):
-    """Generate random events with a given number of massless particles
-    in a given spacetime dimension. The total energy and momentum are made to sum to zero
-    by making about half of the particles incoming. These events are not guaranteed
-    to uniformly sample phase space.
+    r"""Generate random events with a given number of massless particles in a
+    given spacetime dimension. The total energy and momentum are made to sum
+    to zero by making about half of the particles incoming. These events are
+    not guaranteed to uniformly sample phase space.
 
     **Arguments**
 
@@ -64,8 +64,8 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
     **Returns**
 
     - _numpy.ndarray_
-        - An (`nevents`, `nparticles`, `dim`) array of events, each with `nparticles` massless
-        particles whose total energy and momentum are all zero.
+        - An `(nevents,nparticles,dim)` array of events. The particles 
+        are specified as `[E,p1,p2,...]`.
     """
 
     events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
@@ -85,8 +85,9 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
     return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
 
 def gen_massless_phase_space(nevents, nparticles, energy=1):
-    """Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm
-    for uniformly sampling massless M-body phase space for any center of mass energies.
+    r"""Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
+    algorithm for uniformly sampling massless M-body phase space for any center
+    of mass energy.
     
     **Arguments**
 
@@ -100,8 +101,8 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
     **Returns**
 
     - _numpy.ndarray_
-        - An (`nevents`, `nparticles`, 4) array of events, each with `nparticles` massless
-        particles and center of mass energy equal to `energy`.
+        - An `(nevents,nparticles,4)` array of events. The particles 
+        are specified as `[E,p_x,p_y,p_z]`.
     """
     
     # qs: to be massless four-momenta uniformly sampled in angle
