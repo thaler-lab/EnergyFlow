@@ -53,7 +53,7 @@ if ot:
         _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
         return out
 
-    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter=100000):
+    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000):
         """Compute the EMD between two events.
 
         **Arguments**
@@ -87,7 +87,7 @@ if ot:
         - **gdim** : _int_
             - The dimension of the ground metric space. See the description in
             `ev0` for details.
-        - **n_iter** : _int_
+        - **n_iter_max** : _int_
             - Maximum number of iterations to do while solving the optimal
             transport problem.
 
@@ -134,7 +134,7 @@ if ot:
             else:
                 thetas = _cdist_euclidean(coords0, coords1)/R
 
-        G, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter)
+        G, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter_max)
         check_result(result_code)
         
         return (cost, G) if return_flow else cost
@@ -154,11 +154,11 @@ if ot:
     # helper function for pool imap
     def _emd4imap(x):
         (i, j), param_repeater = x
-        X0, X1, R, norm, n_iter = next(param_repeater)
-        return _emd(X0[i], X1[j], R, norm, n_iter)
+        X0, X1, R, norm, n_iter_max = next(param_repeater)
+        return _emd(X0[i], X1[j], R, norm, n_iter_max)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, norm, n_iter):
+    def _emd(ev0, ev1, R, norm, n_iter_max):
 
         pTs0, coords0 = ev0
         pTs1, coords1 = ev1
@@ -177,7 +177,7 @@ if ot:
             thetas[-1,:] = 1.0
 
         # compute the emd with POT
-        _, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter)
+        _, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter_max)
         check_result(result_code)
 
         # important! must reset extra particles to have pt zero
@@ -186,7 +186,7 @@ if ot:
 
         return cost
 
-    def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter=100000,
+    def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000,
                           n_jobs=None, verbose=1, print_every=10**6):
         """Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
@@ -219,7 +219,7 @@ if ot:
         - **gdim** : _int_
             - The dimension of the ground metric space. See the description in
             `ev0` for details.
-        - **n_iter** : _int_
+        - **n_iter_max** : _int_
             - Maximum number of iterations to do while solving the optimal
             transport problem.
         - **n_jobs** : _int_ or `None`
@@ -277,7 +277,7 @@ if ot:
 
                 # iterate over pairs of events
                 begin = end = 0
-                param_repeater = itertools.repeat((X0, X1, R, norm, n_iter))
+                param_repeater = itertools.repeat((X0, X1, R, norm, n_iter_max))
                 imap_args = ((pair, param_repeater) for pair in pairs)
                 while end < npairs:
                     end += print_every
@@ -304,7 +304,7 @@ if ot:
         # run EMDs in this process
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
-                emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter)
+                emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter_max)
                 if verbose >= 1 and (k % print_every) == 0:
                     args = (k, k/npairs*100, time.time() - start)
                     print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
