@@ -329,7 +329,7 @@ class EFPSet(EFPBase):
             print('Originally Available EFPs:')
             self.print_stats(specs=concat_specs(orig_c_specs, orig_disc_specs), lws=2)
             if len(args) > 0:
-                print('Current Stored EFPs:')
+                print('Currently Stored EFPs:')
                 self.print_stats(lws=2)
 
     #================

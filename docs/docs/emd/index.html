@@ -198,7 +198,7 @@ of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2)
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter=100000)
 </code></pre>
 
 <p>Compute the EMD between two events.</p>
@@ -245,6 +245,11 @@ in the flow matrix.</li>
 <code>ev0</code> for details.</li>
 </ul>
 </li>
+<li><strong>n_iter</strong> : <em>int</em><ul>
+<li>Maximum number of iterations to do while solving the optimal
+transport problem.</li>
+</ul>
+</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
@@ -261,7 +266,7 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds">emds</h3>
-<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_jobs=None, verbose=1, print_every=1000000)
+<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter=100000, n_jobs=None, verbose=1, print_every=1000000)
 </code></pre>
 
 <p>Compute the EMD between collections of events. This can be used to
@@ -302,6 +307,11 @@ and particle j in <code>ev1</code>.</li>
 <li><strong>gdim</strong> : <em>int</em><ul>
 <li>The dimension of the ground metric space. See the description in
  <code>ev0</code> for details.</li>
+</ul>
+</li>
+<li><strong>n_iter</strong> : <em>int</em><ul>
+<li>Maximum number of iterations to do while solving the optimal
+ transport problem.</li>
 </ul>
 </li>
 <li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>

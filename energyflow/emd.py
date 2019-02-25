@@ -32,8 +32,9 @@ import warnings
 
 import numpy as np
 
+ot = True
 try:
-    import ot
+    from ot.lp import emd_c, check_result
     from scipy.spatial.distance import _distance_wrap # ot imports scipy anyway
     from scipy.spatial.distance import cdist
 except:
@@ -52,7 +53,7 @@ if ot:
         _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
         return out
 
-    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2):
+    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter=100000):
         """Compute the EMD between two events.
 
         **Arguments**
@@ -86,6 +87,9 @@ if ot:
         - **gdim** : _int_
             - The dimension of the ground metric space. See the description in
             `ev0` for details.
+        - **n_iter** : _int_
+            - Maximum number of iterations to do while solving the optimal
+            transport problem.
 
         **Returns**
 
@@ -130,11 +134,10 @@ if ot:
             else:
                 thetas = _cdist_euclidean(coords0, coords1)/R
 
-        if return_flow:
-            G, log = ot.emd(pTs0, pTs1, thetas, log=True)
-            return log['cost'], G
-        else:
-            return ot.emd2(pTs0, pTs1, thetas)
+        G, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter)
+        check_result(result_code)
+        
+        return (cost, G) if return_flow else cost
 
     # process events for EMD calculation using _emd
     def _process_for_emd(event, norm, gdim):
@@ -150,11 +153,12 @@ if ot:
 
     # helper function for pool imap
     def _emd4imap(x):
-        i, j, X0, X1, R, norm = x
-        return _emd(X0[i], X1[j], R, norm)
+        (i, j), param_repeater = x
+        X0, X1, R, norm, n_iter = next(param_repeater)
+        return _emd(X0[i], X1[j], R, norm, n_iter)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, norm):
+    def _emd(ev0, ev1, R, norm, n_iter):
 
         pTs0, coords0 = ev0
         pTs1, coords1 = ev1
@@ -173,7 +177,8 @@ if ot:
             thetas[-1,:] = 1.0
 
         # compute the emd with POT
-        cost = ot.emd2(pTs0, pTs1, thetas)
+        _, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter)
+        check_result(result_code)
 
         # important! must reset extra particles to have pt zero
         if not norm:
@@ -181,7 +186,7 @@ if ot:
 
         return cost
 
-    def emds(X0, X1=None, R=1.0, norm=False, gdim=2, 
+    def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter=100000,
                           n_jobs=None, verbose=1, print_every=10**6):
         """Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
@@ -214,6 +219,9 @@ if ot:
         - **gdim** : _int_
             - The dimension of the ground metric space. See the description in
             `ev0` for details.
+        - **n_iter** : _int_
+            - Maximum number of iterations to do while solving the optimal
+            transport problem.
         - **n_jobs** : _int_ or `None`
             - The number of worker processes to use. A value of `None` will use 
             as many processes as there are CPUs on the machine. Note that for
@@ -269,7 +277,8 @@ if ot:
 
                 # iterate over pairs of events
                 begin = end = 0
-                imap_args = ((pair[0], pair[1], X0, X1, R, norm) for pair in pairs)
+                param_repeater = itertools.repeat((X0, X1, R, norm, n_iter))
+                imap_args = ((pair, param_repeater) for pair in pairs)
                 while end < npairs:
                     end += print_every
                     end = min(end, npairs)
@@ -281,7 +290,8 @@ if ot:
                     # map function and store results
                     results = list(pool.map(_emd4imap, local_imap_args, chunksize=chunksize))
                     for k,arg in enumerate(local_imap_args):
-                        emds[arg[0],arg[1]] = results[k]
+                        i, j = arg[0]
+                        emds[i, j] = results[k]
 
                     # set begin to end
                     begin = end
@@ -294,7 +304,7 @@ if ot:
         # run EMDs in this process
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
-                emds[i,j] = _emd(X0[i], X1[j], R, norm)
+                emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter)
                 if verbose >= 1 and (k % print_every) == 0:
                     args = (k, k/npairs*100, time.time() - start)
                     print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
