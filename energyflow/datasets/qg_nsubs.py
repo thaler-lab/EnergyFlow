@@ -14,7 +14,7 @@ The dataset contains two members: `'X'` which is a numpy array of the nsubs that
 has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon 
 labels (quark=`1` and gluon=`0`).
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 

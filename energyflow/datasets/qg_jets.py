@@ -1,4 +1,4 @@
-"""### Quark and Gluon Jets
+r"""### Quark and Gluon Jets
 
 A dataset consisting of up to 2 million total quark and gluon jets generated with PYTHIA 8.226.
 To avoid downloading unnecessary samples, the dataset is contained in twenty
@@ -29,7 +29,7 @@ Jets with transverse momentum $p_T\in[500,550]$ GeV and rapidity $|y|<2.0$ are k
 Particles are ensured to have $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity issues).
 No detector simulation is performed.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import warnings
 

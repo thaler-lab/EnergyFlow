@@ -36,7 +36,6 @@ ot = True
 try:
     from ot.lp import emd_c, check_result
     from scipy.spatial.distance import _distance_wrap # ot imports scipy anyway
-    from scipy.spatial.distance import cdist
 except:
     warnings.warn('cannot import module \'ot\', module \'emd\' will be empty')
     ot = False
@@ -102,10 +101,10 @@ if ot:
         """
 
         ev0, ev1 = np.atleast_2d(ev0), np.atleast_2d(ev1)
-        pTs0 = np.ascontiguousarray(ev0[:,0], dtype=np.double)
-        pTs1 = np.ascontiguousarray(ev1[:,0], dtype=np.double)
-        coords0 = np.ascontiguousarray(ev0[:,1:(gdim+1)], dtype=np.double)
-        coords1 = np.ascontiguousarray(ev1[:,1:(gdim+1)], dtype=np.double)
+        pTs0 = np.ascontiguousarray(ev0[:,0], dtype=np.float64)
+        pTs1 = np.ascontiguousarray(ev1[:,0], dtype=np.float64)
+        coords0 = np.ascontiguousarray(ev0[:,1:(gdim+1)], dtype=np.float64)
+        coords1 = np.ascontiguousarray(ev1[:,1:(gdim+1)], dtype=np.float64)
 
         pT0, pT1 = pTs0.sum(), pTs1.sum()
 
@@ -120,13 +119,13 @@ if ot:
             pTdiff = pT1 - pT0
             if pTdiff > 0:
                 pTs0 = np.hstack((pTs0, pTdiff))
-                coords0_extra = np.vstack((coords0, np.zeros(coords0.shape[1], dtype=np.double)))
+                coords0_extra = np.vstack((coords0, np.zeros(coords0.shape[1], dtype=np.float64)))
                 thetas = _cdist_euclidean(coords0_extra, coords1)/R
                 thetas[-1,:] = 1.0
 
             elif pTdiff < 0:
                 pTs1 = np.hstack((pTs1, -pTdiff))
-                coords1_extra = np.vstack((coords1, np.zeros(coords1.shape[1], dtype=np.double)))
+                coords1_extra = np.vstack((coords1, np.zeros(coords1.shape[1], dtype=np.float64)))
                 thetas = _cdist_euclidean(coords0, coords1_extra)/R
                 thetas[:,-1] = 1.0
 
@@ -148,13 +147,13 @@ if ot:
             event = np.vstack((event, np.zeros(event.shape[1])))
             pts = event[:,0]
 
-        return (np.ascontiguousarray(pts, dtype=np.double), 
-                np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.double))
+        return (np.ascontiguousarray(pts, dtype=np.float64), 
+                np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64))
 
     # helper function for pool imap
     def _emd4imap(x):
-        (i, j), param_repeater = x
-        X0, X1, R, norm, n_iter_max = next(param_repeater)
+        i, j, X0, X1, R, norm, n_iter_max = x
+        #X0, X1, R, norm, n_iter_max = next(param_repeater)
         return _emd(X0[i], X1[j], R, norm, n_iter_max)
 
     # internal use only by emds, makes assumptions about input format
@@ -277,8 +276,8 @@ if ot:
 
                 # iterate over pairs of events
                 begin = end = 0
-                param_repeater = itertools.repeat((X0, X1, R, norm, n_iter_max))
-                imap_args = ((pair, param_repeater) for pair in pairs)
+                #param_repeater = itertools.repeat((X0, X1, R, norm, n_iter_max))
+                imap_args = ((pair[0], pair[1], X0, X1, R, norm, n_iter_max) for pair in pairs)
                 while end < npairs:
                     end += print_every
                     end = min(end, npairs)
@@ -289,11 +288,10 @@ if ot:
 
                     # map function and store results
                     results = list(pool.map(_emd4imap, local_imap_args, chunksize=chunksize))
-                    for k,arg in enumerate(local_imap_args):
-                        i, j = arg[0]
-                        emds[i, j] = results[k]
+                    for arg,r in zip(local_imap_args, results):
+                        emds[arg[0], arg[1]] = r
 
-                    # set begin to end
+                    # setup for next iteration of while loop
                     begin = end
 
                     # print update if verbose

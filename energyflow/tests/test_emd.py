@@ -26,27 +26,28 @@ nev = 5
 @pytest.mark.parametrize('M2', [1,2,5,25])
 @pytest.mark.parametrize('M1', [1,2,5,25])
 def test_emd_equivalence(M1, M2, norm, R):
-    events1 = np.random.rand(nev, M1, 3)
-    events2 = np.random.rand(nev, M2, 3)
+    gdim = 2
+    events1 = np.random.rand(nev, M1, gdim+1)
+    events2 = np.random.rand(nev, M2, gdim+1)
 
     # test two different sets
     emds1 = np.zeros((nev, nev))
     for i,ev1 in enumerate(events1):
         for j,ev2 in enumerate(events2):
-            emds1[i,j] = emd.emd(ev1, ev2, R=R, norm=norm)
-    emds2 = emd.emds(events1, events2, R=R, norm=norm, verbose=0, n_jobs=1)
+            emds1[i,j] = emd.emd(ev1, ev2, R=R, norm=norm, gdim=gdim)
+    emds2 = emd.emds(events1, events2, R=R, norm=norm, verbose=0, n_jobs=1, gdim=gdim)
 
-    assert epsilon_diff(emds1, emds2, 10**-13)
+    assert epsilon_diff(emds1, emds2, 10**-12)
 
     # test same set
     emds1 = np.zeros((nev, nev))
     for i,ev1 in enumerate(events1):
         for j in range(i):
-            emds1[i,j] = emd.emd(ev1, events1[j], R=R, norm=norm)
+            emds1[i,j] = emd.emd(ev1, events1[j], R=R, norm=norm, gdim=gdim)
     emds1 += emds1.T
-    emds2 = emd.emds(events1, R=R, norm=norm, verbose=0, n_jobs=1)
+    emds2 = emd.emds(events1, R=R, norm=norm, verbose=0, n_jobs=1, gdim=gdim)
 
-    assert epsilon_diff(emds1, emds2, 10**-13)
+    assert epsilon_diff(emds1, emds2, 10**-12)
 
 @pytest.mark.emd
 @pytest.mark.parametrize('R', [np.sqrt(2)/2, 1.0, 2])
@@ -61,7 +62,7 @@ def test_n_jobs(n_jobs, M, norm, R):
     emds1 += emds1.T
     emds2 = emd.emds(events, R=R, norm=norm, verbose=0, n_jobs=n_jobs)
 
-    assert epsilon_diff(emds1, emds2, 10**-13)
+    assert epsilon_diff(emds1, emds2, 10**-12)
 
 @pytest.mark.emd
 @pytest.mark.parametrize('R', [np.sqrt(2)/2, 1.0, 2])
