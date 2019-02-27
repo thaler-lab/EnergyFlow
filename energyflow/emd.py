@@ -87,8 +87,8 @@ if ot:
             - The dimension of the ground metric space. See the description in
             `ev0` for details.
         - **n_iter_max** : _int_
-            - Maximum number of iterations to do while solving the optimal
-            transport problem.
+            - Maximum number of iterations for solving the optimal transport 
+            problem.
 
         **Returns**
 
@@ -219,8 +219,8 @@ if ot:
             - The dimension of the ground metric space. See the description in
             `ev0` for details.
         - **n_iter_max** : _int_
-            - Maximum number of iterations to do while solving the optimal
-            transport problem.
+            - Maximum number of iterations for solving the optimal transport 
+            problem.
         - **n_jobs** : _int_ or `None`
             - The number of worker processes to use. A value of `None` will use 
             as many processes as there are CPUs on the machine. Note that for
