@@ -1,9 +1,8 @@
-"""An example involving Energy Flow Networks (EFNs), which were introduced 
+"""An example involving Energy Flow Networks (EFNs), which were introduced
 in [1810.05165](https://arxiv.org/abs/1810.05165). The [`EFN`](../docs/
-archs/#efn) class is used to construct the network architecture.
-The output of the example is a plot of the ROC curves obtained by
-the EFN as well as the jet mass and constituent multiplicity 
-observables.
+archs/#efn) class is used to construct the network architecture. The output
+of the example is a plot of the ROC curves obtained by the EFN as well as
+the jet mass and constituent multiplicity observables.
 """
 
 # standard library imports
@@ -32,20 +31,23 @@ except:
     print('please install matploltib in order to make plots')
     plt = False
 
-################################### SETTINGS ###################################
+################################### SETTINGS ##################################
+# the commented values correspond to those in 1810.05165
+###############################################################################
 
 # data controls, can go up to 2000000 total for full dataset
 train, val, test = 75000, 10000, 15000
+# train, val, test = 1000000, 200000, 200000
 
 # network architecture parameters
-ppm_sizes = (100, 100, 128)
-dense_sizes = (100, 100, 100)
+ppm_sizes, dense_sizes = (100, 100, 128), (100, 100, 100)
+# ppm_sizes, dense_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
 num_epoch = 5
 batch_size = 500
 
-################################################################################
+###############################################################################
 
 # load data
 X, y = qg_jets.load(train + val + test)
