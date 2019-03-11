@@ -248,17 +248,23 @@ observables that the model defines.</li>
 </ul>
 <p><strong>Default EFN Hyperparameters</strong></p>
 <ul>
-<li><strong>ppm_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>ppm_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras activation<ul>
 <li>Activation functions(s) for the dense layers in the 
-per-particle frontend module $\Phi$. A single string will apply 
-the same activation to all layers. See the <a href="https://keras.io/activations/">Keras activations 
+per-particle frontend module $\Phi$. A single string or activation
+layer will apply the same activation to all layers. Keras advanced
+activation layers are also accepted, either as strings (which use
+the default arguments) or as Keras <code>Layer</code> instances. If passing a
+single <code>Layer</code> instance, be aware that this layer will be used for
+all activations and may introduce weight sharing (such as with 
+<code>PReLU</code>); it is recommended in this case to pass as many activations
+as there are layers in the model. See the <a href="https://keras.io/activations/">Keras activations 
 docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras activation<ul>
 <li>Activation functions(s) for the dense layers in the 
-backend module $F$. A single string will apply  the same activation 
-to all layers.</li>
+backend module $F$. A single string or activation layer will apply
+the same activation to all layers.</li>
 </ul>
 </li>
 <li><strong>ppm_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
@@ -373,16 +379,23 @@ equivalent to an empty list.</li>
 <code>None</code> will not use maxpooling.</li>
 </ul>
 </li>
-<li><strong>conv_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
-<li>Activation function(s) for the conv layers. A single string 
-will apply the same activation to all conv layers. See the
-<a href="https://keras.io/activations/">Keras activations docs</a> for 
-more detail.</li>
+<li><strong>conv_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras activation<ul>
+<li>Activation function(s) for the conv layers. A single string or
+activation layer will apply the same activation to all conv layers.
+Keras advanced activation layers are also accepted, either as
+strings (which use the default arguments) or as Keras <code>Layer</code> 
+instances. If passing a single <code>Layer</code> instance, be aware that this
+layer will be used for all activations and may introduce weight 
+sharing (such as with <code>PReLU</code>); it is recommended in this case to 
+pass as many activations as there are layers in the model.See the
+<a href="https://keras.io/activations/">Keras activations docs</a> for more 
+detail.</li>
 </ul>
 </li>
-<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras activation<ul>
 <li>Activation functions(s) for the dense layers. A single string 
-will apply the same activation to all dense layers.</li>
+or activation layer will apply the same activation to all dense 
+layers.</li>
 </ul>
 </li>
 <li><strong>conv_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
@@ -445,11 +458,17 @@ for more detail.</li>
 </ul>
 <p><strong>Default DNN Hyperparameters</strong></p>
 <ul>
-<li><strong>acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
-<li>Activation functions(s) for the dense layers. A single string 
-will apply the same activation to all layers. See the
-<a href="https://keras.io/activations/">Keras activations docs</a> for 
-more detail.</li>
+<li><strong>acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras activation<ul>
+<li>Activation functions(s) for the dense layers. A single string or
+activation layer will apply the same activation to all dense layers.
+Keras advanced activation layers are also accepted, either as
+strings (which use the default arguments) or as Keras <code>Layer</code> 
+instances. If passing a single <code>Layer</code> instance, be aware that this
+layer will be used for all activations and may introduce weight 
+sharing (such as with <code>PReLU</code>); it is recommended in this case to 
+pass as many activations as there are layers in the model.See the
+<a href="https://keras.io/activations/">Keras activations docs</a> for more 
+detail.</li>
 </ul>
 </li>
 <li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
@@ -556,7 +575,7 @@ loss functions.</li>
 <li>The output dimension of the model.</li>
 </ul>
 </li>
-<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em><ul>
+<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em> or Keras activation<ul>
 <li>Activation function to apply to the output.</li>
 </ul>
 </li>
