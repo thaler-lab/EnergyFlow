@@ -29,11 +29,17 @@ class DNN(NNBase):
 
         **Default DNN Hyperparameters**
 
-        - **acts**=`'relu'` : {_tuple_, _list_} of _str_
-            - Activation functions(s) for the dense layers. A single string 
-            will apply the same activation to all layers. See the
-            [Keras activations docs](https://keras.io/activations/) for 
-            more detail.
+        - **acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
+            - Activation functions(s) for the dense layers. A single string or
+            activation layer will apply the same activation to all dense layers.
+            Keras advanced activation layers are also accepted, either as
+            strings (which use the default arguments) or as Keras `Layer` 
+            instances. If passing a single `Layer` instance, be aware that this
+            layer will be used for all activations and may introduce weight 
+            sharing (such as with `PReLU`); it is recommended in this case to 
+            pass as many activations as there are layers in the model.See the
+            [Keras activations docs](https://keras.io/activations/) for more 
+            detail.
         - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers. A single string 
             will apply the same initializer to all layers. See the
@@ -64,8 +70,8 @@ class DNN(NNBase):
         self.k_inits = iter_or_rep(self.hps.get('k_inits', 'he_uniform'))
 
         # regularization
-        self.dropouts = iter_or_rep(self.hps.get('dropouts', 0))
-        self.l2_regs = iter_or_rep(self.hps.get('l2_regs', 0))
+        self.dropouts = iter_or_rep(self.hps.get('dropouts', 0.))
+        self.l2_regs = iter_or_rep(self.hps.get('l2_regs', 0.))
 
     def construct_model(self):
 
@@ -83,15 +89,16 @@ class DNN(NNBase):
                                'bias_regularizer': l2(l2_reg)})
 
             # add dense layer
-            self.model.add(Dense(dim, activation=act, kernel_initializer=k_init, 
-                                      name='dense_'+str(i), **kwargs))
+            self.model.add(Dense(dim, kernel_initializer=k_init, name='dense_'+str(i), **kwargs))
+            self._add_act(act)
 
             # add dropout layer if nonzero
-            if dropout > 0:
+            if dropout > 0.:
                 self.model.add(Dropout(dropout, name='dropout_' + str(i)))
 
         # output layer
-        self.model.add(Dense(self.output_dim, activation=self.output_act, name='output'))    
+        self.model.add(Dense(self.output_dim, name='output'))
+        self._add_act(self.output_act)
 
         # compile model
         self.compile_model()

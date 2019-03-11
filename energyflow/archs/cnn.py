@@ -40,14 +40,21 @@ class CNN(NNBase):
         - **pool_sizes**=`None` : {_tuple_, _list_} of _int_
             - Size of maxpooling filter, taken to be a square. A value of 
             `None` will not use maxpooling.
-        - **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_
-            - Activation function(s) for the conv layers. A single string 
-            will apply the same activation to all conv layers. See the
-            [Keras activations docs](https://keras.io/activations/) for 
-            more detail.
-        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_
+        - **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
+            - Activation function(s) for the conv layers. A single string or
+            activation layer will apply the same activation to all conv layers.
+            Keras advanced activation layers are also accepted, either as
+            strings (which use the default arguments) or as Keras `Layer` 
+            instances. If passing a single `Layer` instance, be aware that this
+            layer will be used for all activations and may introduce weight 
+            sharing (such as with `PReLU`); it is recommended in this case to 
+            pass as many activations as there are layers in the model.See the
+            [Keras activations docs](https://keras.io/activations/) for more 
+            detail.
+        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
             - Activation functions(s) for the dense layers. A single string 
-            will apply the same activation to all dense layers.
+            or activation layer will apply the same activation to all dense 
+            layers.
         - **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the convolutional layers. A single
             string will apply the same initializer to all layers. See the
@@ -99,9 +106,9 @@ class CNN(NNBase):
         self.dense_k_inits = iter_or_rep(self.hps.get('dense_k_inits', 'he_uniform'))
 
         # regularization
-        self.conv_dropouts = iter_or_rep(self.hps.get('conv_dropouts', 0))
-        self.num_spatial2d_dropout = self.hps.get('num_spatial2d_dropout', 0)
-        self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0))
+        self.conv_dropouts = iter_or_rep(self.hps.get('conv_dropouts', 0.))
+        self.num_spatial2d_dropout = self.hps.get('num_spatial2d_dropout', 0.)
+        self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0.))
 
         # padding
         self.paddings = iter_or_rep(self.hps.get('padding', 'valid'))
@@ -120,16 +127,17 @@ class CNN(NNBase):
 
             # add conv2d layer to model using provided hyperparameters
             kwargs = {} if i > 0 else {'input_shape': self.input_shape}
-            self.model.add(Conv2D(num_filter, filter_size, activation=act, kernel_initializer=k_init,
+            self.model.add(Conv2D(num_filter, filter_size, kernel_initializer=k_init,
                                                            padding=pad, data_format=self.data_format,
                                                            name='conv2d_'+str(i), **kwargs))
+            self._add_act(act)
 
             # add pooling layer if we have a non-zero pool size
             if pool_size > 0:
                 self.model.add(MaxPooling2D(pool_size=pool_size, name='max_pool_' + str(i)))
 
             # add dropout layer if we have a non-zero dropout rate
-            if dropout > 0:
+            if dropout > 0.:
                 d_layer = SpatialDropout2D if i < self.num_spatial2d_dropout else Dropout
                 self.model.add(d_layer(dropout, name='dropout_' + str(i)))
                 num_dropout += 1
@@ -142,15 +150,16 @@ class CNN(NNBase):
         for i,(num_dense, act, dropout, k_init) in enumerate(dense_z):
 
             # add dense layer
-            self.model.add(Dense(num_dense, activation=act, kernel_initializer=k_init, name='dense_'+str(i)))
+            self.model.add(Dense(num_dense, kernel_initializer=k_init, name='dense_'+str(i)))
+            self._add_act(act)
 
             # add dropout layer if dropout is nonzero
-            if dropout > 0:
+            if dropout > 0.:
                 self.model.add(Dropout(dropout, name='dropout_' + str(i + num_dropout)))
 
         # output layer
-        self.model.add(Dense(self.output_dim, activation=self.output_act, name='output'))
+        self.model.add(Dense(self.output_dim, name='output'))
+        self._add_act(self.output_act)
 
         # compile model
         self.compile_model()
-

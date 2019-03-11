@@ -8,7 +8,7 @@ from keras.models import Model
 from keras.regularizers import l2
 import numpy as np
 
-from energyflow.archs.archbase import NNBase
+from energyflow.archs.archbase import NNBase, _apply_act
 from energyflow.utils import iter_or_rep
 
 __all__ = ['EFN', 'PFN']
@@ -35,15 +35,21 @@ class SymmetricPerParticleNN(NNBase):
 
         **Default EFN Hyperparameters**
 
-        - **ppm_acts**=`'relu'` : {_tuple_, _list_} of _str_
+        - **ppm_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
             - Activation functions(s) for the dense layers in the 
-            per-particle frontend module $\\Phi$. A single string will apply 
-            the same activation to all layers. See the [Keras activations 
+            per-particle frontend module $\\Phi$. A single string or activation
+            layer will apply the same activation to all layers. Keras advanced
+            activation layers are also accepted, either as strings (which use
+            the default arguments) or as Keras `Layer` instances. If passing a
+            single `Layer` instance, be aware that this layer will be used for
+            all activations and may introduce weight sharing (such as with 
+            `PReLU`); it is recommended in this case to pass as many activations
+            as there are layers in the model. See the [Keras activations 
             docs](https://keras.io/activations/) for more detail.
-        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_
+        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
             - Activation functions(s) for the dense layers in the 
-            backend module $F$. A single string will apply  the same activation 
-            to all layers.
+            backend module $F$. A single string or activation layer will apply
+            the same activation to all layers.
         - **ppm_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the per-particle
             frontend module $\\Phi$. A single string will apply the same initializer 
@@ -85,8 +91,8 @@ class SymmetricPerParticleNN(NNBase):
 
         # regularizations
         #self.ppm_dropouts = iter_or_rep(self.hps.get('ppm_dropouts', 0))
-        self.latent_dropout = self.hps.get('latent_dropout', 0)
-        self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0))
+        self.latent_dropout = self.hps.get('latent_dropout', 0.)
+        self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0.))
 
         # masking
         self.mask_val = self.hps.get('mask_val', 0.)
@@ -104,10 +110,11 @@ class SymmetricPerParticleNN(NNBase):
         for i,(s, act, k_init) in enumerate(zip(self.ppm_sizes, self.ppm_acts, self.ppm_k_inits)):
 
             # define a dense layer that will be applied through time distributed
-            d_layer = Dense(s, activation=act, kernel_initializer=k_init)
+            d_layer = Dense(s, kernel_initializer=k_init)
 
             # append time distributed layer to list of ppm layers
-            self.ppm_layers.append(TimeDistributed(d_layer, name='tdist_'+str(i))(self.ppm_layers[-1]))
+            tdist_layer = TimeDistributed(d_layer, name='tdist_'+str(i))(self.ppm_layers[-1])
+            self.ppm_layers.append(_apply_act(act, tdist_layer))
 
     @abstractmethod
     def construct_latent_layer(self):
@@ -123,14 +130,14 @@ class SymmetricPerParticleNN(NNBase):
         for i,(s, act, k_init, dropout) in enumerate(z):
 
             # a new dense layer
-            new_layer = Dense(s, activation=act, kernel_initializer=k_init, name='dense_'+str(i))
+            new_layer = _apply_act(act, Dense(s, kernel_initializer=k_init, name='dense_'+str(i))(self.backend_layers[-1]))
 
-            # apply dropout if specified 
-            if dropout > 0:
+            # apply dropout (does nothing if dropout is zero)
+            if dropout > 0.:
                 new_layer = Dropout(dropout, name='dropout_'+str(i))(new_layer)
 
             # apply new layer to previous and append to list
-            self.backend_layers.append(new_layer(self.backend_layers[-1]))
+            self.backend_layers.append(new_layer)
 
     def construct_model(self):
 
@@ -141,8 +148,7 @@ class SymmetricPerParticleNN(NNBase):
         self.construct_backend_module()
 
         # output layer, applied to the last backend layer
-        output_layer = Dense(self.output_dim, activation=self.output_act, 
-                                              name='output')(self.backend_layers[-1])
+        output_layer = _apply_act(self.output_act, Dense(self.output_dim, name='output')(self.backend_layers[-1]))
 
         # construct a new model
         self._model = Model(inputs=self.input_layers, outputs=output_layer)
@@ -176,8 +182,7 @@ class EFN(SymmetricPerParticleNN):
     def construct_latent_layer(self):
 
         self._latent_layer = Dot(0, name='dot')([self.input_layers[0], self.ppm_layers[-1]])
-
-        if self.latent_dropout > 0:
+        if self.latent_dropout > 0.:
             self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self._latent_layer)
 
     # eval_filters(patch, n=100, prune=True)
@@ -260,6 +265,5 @@ class PFN(SymmetricPerParticleNN):
     def construct_latent_layer(self):
 
         self._latent_layer = Lambda(lambda x: K.sum(x, axis=1), name='sum')(self.ppm_layers[-1])
-
-        if self.latent_dropout > 0:
+        if self.latent_dropout > 0.:
             self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self._latent_layer)

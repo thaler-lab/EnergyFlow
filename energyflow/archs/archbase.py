@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from keras.optimizers import Adam
-from six import with_metaclass
+from keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
+from six import string_types, with_metaclass
 
 __all__ = [
     'ArchBase',
@@ -115,6 +116,7 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 ###############################################################################
 # NNBase
 ###############################################################################
+_act_dict = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
 class NNBase(ArchBase):        
 
     def process_hps(self):
@@ -133,7 +135,7 @@ class NNBase(ArchBase):
             - A [Keras optimizer](https://keras.io/optimizers/).
         - **output_dim**=`2` : _int_
             - The output dimension of the model.
-        - **output_act**=`'softmax'` : _str_
+        - **output_act**=`'softmax'` : _str_ or Keras activation
             - Activation function to apply to the output.
         - **metrics**=`['accuracy']` : _list_ of _str_
             - The [Keras metrics](https://keras.io/metrics/) to apply
@@ -160,6 +162,20 @@ class NNBase(ArchBase):
         self.compile = self.hps.get('compile', True)
         self.summary = self.hps.get('summary', True)
 
+    def _add_act(self, act):
+
+        # handle case of act as a layer
+        if isinstance(act, Layer):
+            self.model.add(act)
+
+        # handle case of act being a string and in _act_dict
+        elif isinstance(act, string_types) and act in _act_dict:
+            self.model.add(_act_dict[act]())
+
+        # default case of regular activation
+        else:
+            self.model.add(Activation(act))
+
     def compile_model(self):
 
         # compile model if specified
@@ -179,3 +195,19 @@ class NNBase(ArchBase):
     @property
     def model(self):
         return self._model
+
+###############################################################################
+# Activation Functions
+###############################################################################
+def _apply_act(act, prev_layer):
+
+    # handle case of act as a layer
+    if isinstance(act, Layer):
+        return act(prev_layer)
+
+    # handle case of act being a string and in _act_dict
+    if isinstance(act, string_types) and act in _act_dict:
+        return _act_dict[act]()(prev_layer)
+
+    # default case of passing act into layer
+    return Activation(act)(prev_layer)
