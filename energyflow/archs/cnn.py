@@ -8,15 +8,17 @@ from energyflow.utils import iter_or_rep, transfer
 
 __all__ = ['CNN']
 
+
 ###############################################################################
 # CNN
 ###############################################################################
+
 class CNN(NNBase):
 
     """Convolutional Neural Network architecture."""
 
     # CNN(*args, **kwargs)
-    def process_hps(self):
+    def _process_hps(self):
         """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
         **Required CNN Hyperparameters**
@@ -87,34 +89,38 @@ class CNN(NNBase):
         super(CNN, self).process_hps()
 
         # required hyperparameters
-        transfer(self, self.hps, ['input_shape', 'filter_sizes', 'num_filters'])
+        self.input_shape = self._proc_arg('input_shape')
+        self.filter_sizes = self._proc_arg('filter_sizes')
+        self.num_filters = self._proc_arg('num_filters')
 
         # required checks
         m = 'filter_sizes and num_filters must be the same length'
         assert len(self.filter_sizes) == len(self.num_filters), m
 
         # optional (but likely provided) hyperparameters with defaults
-        self.pool_sizes = iter_or_rep(self.hps.get('pool_sizes', None))
-        self.dense_sizes = self.hps.get('dense_sizes', None)
+        self.pool_sizes = iter_or_rep(self._proc_arg('pool_sizes', default=None))
+        self.dense_sizes = self._proc_arg('dense_sizes', default=None)
 
         # activations
-        self.conv_acts = iter_or_rep(self.hps.get('conv_acts', 'relu'))
-        self.dense_acts = iter_or_rep(self.hps.get('dense_acts', 'relu'))
+        self.conv_acts = iter_or_rep(self._proc_arg('conv_acts', default='relu'))
+        self.dense_acts = iter_or_rep(self._proc_arg('dense_acts', default='relu'))
 
         # initializations
-        self.conv_k_inits = iter_or_rep(self.hps.get('conv_k_inits', 'he_uniform'))
-        self.dense_k_inits = iter_or_rep(self.hps.get('dense_k_inits', 'he_uniform'))
+        self.conv_k_inits = iter_or_rep(self._proc_arg('conv_k_inits', default='he_uniform'))
+        self.dense_k_inits = iter_or_rep(self._proc_arg('dense_k_inits', default='he_uniform'))
 
         # regularization
-        self.conv_dropouts = iter_or_rep(self.hps.get('conv_dropouts', 0.))
-        self.num_spatial2d_dropout = self.hps.get('num_spatial2d_dropout', 0.)
-        self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0.))
+        self.conv_dropouts = iter_or_rep(self._proc_arg('conv_dropouts', default=0.))
+        self.num_spatial2d_dropout = self._proc_arg('num_spatial2d_dropout', default=0)
+        self.dense_dropouts = iter_or_rep(self._proc_arg('dense_dropouts', default=0.))
 
         # padding
-        self.paddings = iter_or_rep(self.hps.get('padding', 'valid'))
-        self.data_format = self.hps.get('data_format', 'channels_first')
+        self.paddings = iter_or_rep(self._proc_arg('padding', default='valid'))
+        self.data_format = self._proc_arg('data_format', default='channels_first')
 
-    def construct_model(self):
+        self._verify_empty_hps()
+
+    def _construct_model(self):
 
         # fresh model
         self._model = Sequential()
@@ -162,4 +168,4 @@ class CNN(NNBase):
         self._add_act(self.output_act)
 
         # compile model
-        self.compile_model()
+        self._compile_model()

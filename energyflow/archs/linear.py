@@ -7,9 +7,11 @@ from energyflow.archs.archbase import ArchBase
 
 __all__ = ['LinearClassifier']
 
+
 ###############################################################################
 # LinearClassifier
 ###############################################################################
+
 class LinearClassifier(ArchBase):
 
     """Linear classifier that can be either Fisher's linear discriminant
@@ -17,7 +19,7 @@ class LinearClassifier(ArchBase):
     implementations of these classifiers."""
 
     # LinearClassifier(*args, **kwargs)
-    def process_hps(self):
+    def _process_hps(self):
         """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
         **Default Hyperparameters**
@@ -51,7 +53,7 @@ class LinearClassifier(ArchBase):
         # logistic regression hyperparameter dictionary
         self.LR_hps = self.hps.get('LR_hps', {})
 
-    def construct_model(self):
+    def _construct_model(self):
 
         # setup linear model according to linclass_type
         if self.linclass_type == 'lda':

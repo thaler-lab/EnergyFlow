@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+import warnings
 
 from keras.optimizers import Adam
 from keras.layers import Activation, Dense, Dropout, Layer, LeakyReLU, PReLU, ThresholdedReLU
@@ -15,9 +16,11 @@ __all__ = [
     'NNBase'
 ]
 
+
 ###############################################################################
 # ArchBase
 ###############################################################################
+
 class ArchBase(with_metaclass(ABCMeta, object)):
 
     """Base class for all architectures contained in EnergyFlow. The mechanism of
@@ -50,17 +53,34 @@ class ArchBase(with_metaclass(ABCMeta, object)):
         self.hps.update(kwargs)
 
         # process hyperparameters
-        self.process_hps()
+        self._process_hps()
 
         # construct model
-        self.construct_model()
+        self._construct_model()
+
+    def _proc_arg(self, name, **kwargs):
+        if 'old' in kwargs and kwargs['old'] in self.hps:
+            old = kwargs['old']
+            m = '{} is deprecated and will be removed in the future, use {} instead.'.format(old, name)
+            warnings.warn(FutureWarning(m))
+            kwargs['default'] = self.hps.pop(old)
+
+        return self.hps.pop(name, kwargs['default']) if 'default' in kwargs else self.hps.pop(name)
+
+    def _verify_empty_hps(self):
+
+        # hps should be all empty now
+        for k in self.hps:
+            raise ValueError('unrecognized keyword argument {}'.format(k))
+
+        del self.hps
 
     @abstractmethod
-    def process_hps(self):
+    def _process_hps(self):
         pass
 
     @abstractmethod
-    def construct_model(self):
+    def _construct_model(self):
         pass
 
     # fit(X_train, Y_train, **kwargs)
@@ -113,13 +133,23 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 
     @abstractproperty
     def model(self):
-        """The underlying model held by this architecture."""
+        """The underlying model held by this architecture. Note that accessing
+        an attribute that the architecture does not have will resulting in
+        attempting to retrieve the attribute from this model. This allows for
+        interrogation of the EnergyFlow architecture in the same manner as the
+        underlying model."""
 
         pass
+
+    # pass on unknown attribute lookups to the underlying model
+    def __getattr__(self, attr):
+        return getattr(self.model, attr)
+
 
 ###############################################################################
 # NNBase
 ###############################################################################
+
 class NNBase(ArchBase):        
 
     def process_hps(self):
@@ -155,21 +185,34 @@ class NNBase(ArchBase):
         """
 
         # optimization
-        self.loss = self.hps.get('loss', 'categorical_crossentropy')
-        self.lr = self.hps.get('lr', 0.001)
-        self.opt = self.hps.get('opt', Adam)
+        self.loss = self._proc_arg('loss', default='categorical_crossentropy')
+        self.lr = self._proc_arg('lr', default=0.001)
+        self.opt = self._proc_arg('opt', default=Adam)
 
         # output
-        self.output_dim = self.hps.get('output_dim', 2)
-        self.output_act = self.hps.get('output_act', 'softmax')
+        self.output_dim = self._proc_arg('output_dim', default=2)
+        self.output_act = self._proc_arg('output_act', default='softmax')
 
         # metrics
-        self.metrics = self.hps.get('metrics', ['accuracy'])
+        self.metrics = self._proc_arg('metrics', default=['accuracy'])
+
+        # callbacks
+        self.model_path = self._proc_arg('model_path', default='')
+        self.save_while_training = self._proc_arg('save_while_training', default=True)
+        self.modelcheck_opts = {'save_best_only': True, 'verbose': 1, 
+                                'save_weights_only': self._proc_arg('save_weights_only', default=False)}
+        self.modelcheck_opts.update(self._proc_arg('modelcheck_opts', default={}))
+        self.save_weights_only = self.modelcheck_opts['save_weights_only']
+
+        self.earlystop_opts = {'restore_best_weights': True, 'verbose': 1, 
+                               'patience': self._proc_arg('patience', default=None)}
+        self.earlystop_opts.update(self._proc_arg('earlystop_opts', default={}))
+        self.patience = self.earlystop_opts['patience']
 
         # flags
-        self.name_layers = self.hps.get('name_layers', True)
-        self.compile = self.hps.get('compile', True)
-        self.summary = self.hps.get('summary', True)
+        self.name_layers = self._proc_arg('name_layers', default=True)
+        self.compile = self._proc_arg('compile', default=True)
+        self.summary = self._proc_arg('summary', default=True)
 
     def _add_act(self, act):
 
@@ -188,7 +231,7 @@ class NNBase(ArchBase):
     def _proc_name(self, name):
         return name if self.name_layers else None
 
-    def compile_model(self):
+    def _compile_model(self):
 
         # compile model if specified
         if self.compile: 
@@ -201,7 +244,32 @@ class NNBase(ArchBase):
                 self.model.summary()
 
     def fit(self, *args, **kwargs):
-        return self.model.fit(*args, **kwargs)
+
+        # list of callback functions
+        callbacks = []
+
+        # do model checkpointing, used mainly to save model during training instead of at end
+        if self.model_path and self.save_while_training:
+            callbacks.append(ModelCheckpoint(self.model_path, **self.modelcheck_opts))
+
+        # do early stopping, which no also handle loading best weights at the end
+        if self.patience is not None:
+            callbacks.append(EarlyStopping(**self.earlystop_opts))
+
+        # update any callbacks that were passed with the two we build in explicitly
+        kwargs.setdefault('callbacks', []).extend(callbacks)
+
+        # do the fitting
+        hist = self.model.fit(*args, **kwargs)
+
+        # handle saving at the end, if we weren't already saving throughout 
+        if self.model_path and not self.save_while_training:
+            if self.save_weights_only:
+                self.model.save_weights(self.model_path)
+            else:
+                self.model.save(self.model_path)
+
+        return hist
 
     def predict(self, *args, **kwargs):
         return self.model.predict(*args, **kwargs)
@@ -210,10 +278,13 @@ class NNBase(ArchBase):
     def model(self):
         return self._model
 
+
 ###############################################################################
 # Activation Functions
 ###############################################################################
+
 _act_dict = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
+
 def _apply_act(act, prev_layer):
 
     # handle case of act as a layer

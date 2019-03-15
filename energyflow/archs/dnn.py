@@ -9,15 +9,17 @@ from energyflow.utils import iter_or_rep
 
 __all__ = ['DNN']
 
+
 ###############################################################################
 # DNN
 ###############################################################################
+
 class DNN(NNBase):
 
     """Dense Neural Network architecture."""
 
     # DNN(*args, **kwargs)
-    def process_hps(self):
+    def _process_hps(self):
         """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
         **Required DNN Hyperparameters**
@@ -59,21 +61,23 @@ class DNN(NNBase):
         # process generic NN hps
         super(DNN, self).process_hps()
 
-        # required hyperparameters
-        self.input_dim = self.hps['input_dim']
-        self.dense_sizes = self.hps['dense_sizes']
+         # required hyperparameters
+        self.input_dim = self._proc_arg('input_dim')
+        self.dense_sizes = self._proc_arg('dense_sizes')
 
         # activations
-        self.acts = iter_or_rep(self.hps.get('acts', 'relu'))
+        self.acts = iter_or_rep(self._proc_arg('acts', default='relu'))
 
         # initializations
-        self.k_inits = iter_or_rep(self.hps.get('k_inits', 'he_uniform'))
+        self.k_inits = iter_or_rep(self._proc_arg('k_inits', default='he_uniform'))
 
         # regularization
-        self.dropouts = iter_or_rep(self.hps.get('dropouts', 0.))
-        self.l2_regs = iter_or_rep(self.hps.get('l2_regs', 0.))
+        self.dropouts = iter_or_rep(self._proc_arg('dropouts', default=0.))
+        self.l2_regs = iter_or_rep(self._proc_arg('l2_regs', default=0.))
 
-    def construct_model(self):
+        self._verify_empty_hps()
+
+    def _construct_model(self):
 
         # fresh model
         self._model = Sequential()
@@ -101,4 +105,4 @@ class DNN(NNBase):
         self._add_act(self.output_act)
 
         # compile model
-        self.compile_model()
+        self._compile_model()

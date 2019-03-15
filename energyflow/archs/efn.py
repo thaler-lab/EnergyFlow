@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
-from abc import abstractmethod
+from abc import abstractmethod, abstractproperty
 
 import numpy as np
 
@@ -14,29 +14,30 @@ from energyflow.utils import iter_or_rep
 
 __all__ = ['EFN', 'PFN']
 
+
 ###############################################################################
 # SymmetricPerParticleNN - Base class for EFN-like models
 ###############################################################################
 class SymmetricPerParticleNN(NNBase):
 
     # EFN(*args, **kwargs)
-    def process_hps(self):
+    def _process_hps(self):
         r"""See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
         **Required EFN Hyperparameters**
 
         - **input_dim** : _int_
             - The number of features for each particle.
-        - **ppm_sizes** : {_tuple_, _list_} of _int_
+        - **Phi_sizes** : {_tuple_, _list_} of _int_
             - The sizes of the dense layers in the per-particle frontend
             module $\Phi$. The last element will be the number of latent 
             observables that the model defines.
-        - **dense_sizes** : {_tuple_, _list_} of _int_
+        - **F_sizes** : {_tuple_, _list_} of _int_
             - The sizes of the dense layers in the backend module $F$.
 
         **Default EFN Hyperparameters**
 
-        - **ppm_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
+        - **Phi_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
             - Activation functions(s) for the dense layers in the 
             per-particle frontend module $\Phi$. A single string or activation
             layer will apply the same activation to all layers. Keras advanced
@@ -47,16 +48,16 @@ class SymmetricPerParticleNN(NNBase):
             `PReLU`); it is recommended in this case to pass as many activations
             as there are layers in the model. See the [Keras activations 
             docs](https://keras.io/activations/) for more detail.
-        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
+        - **F_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
             - Activation functions(s) for the dense layers in the 
             backend module $F$. A single string or activation layer will apply
             the same activation to all layers.
-        - **ppm_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
+        - **Phi_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the per-particle
             frontend module $\Phi$. A single string will apply the same initializer 
             to all layers. See the [Keras initializer docs](https://
             keras.io/initializers/) for more detail.
-        - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
+        - **F_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the backend 
             module $F$. A single string will apply the same initializer 
             to all layers.
@@ -65,7 +66,7 @@ class SymmetricPerParticleNN(NNBase):
             value of the latent observables on the inputs. See the [Keras
             Dropout layer](https://keras.io/layers/core/#dropout) for more 
             detail.
-        - **dense_dropouts**=`0` : {_tuple_, _list_} of _float_
+        - **F_dropouts**=`0` : {_tuple_, _list_} of _float_
             - Dropout rates for the dense layers in the backend module $F$. 
             A single float will apply the same dropout rate to all dense layers.
         - **mask_val**=`0` : _float_
@@ -78,92 +79,113 @@ class SymmetricPerParticleNN(NNBase):
         super(SymmetricPerParticleNN, self).process_hps()
 
         # required hyperparameters
-        self.input_dim = self.hps['input_dim']
-        self.ppm_sizes = self.hps['ppm_sizes']
-        self.dense_sizes = self.hps['dense_sizes']
+        self.input_dim = self._proc_arg('input_dim')
+        self.Phi_sizes = self._proc_arg('Phi_sizes', old='ppm_sizes')
+        self.F_sizes = self._proc_arg('F_sizes', old='dense_sizes')
 
         # activations
-        self.ppm_acts = iter_or_rep(self.hps.get('ppm_acts', 'relu'))
-        self.dense_acts = iter_or_rep(self.hps.get('dense_acts', 'relu'))
+        self.Phi_acts = iter_or_rep(self._proc_arg('Phi_acts', default='relu', old='ppm_acts'))
+        self.F_acts = iter_or_rep(self._proc_arg('F_acts', default='relu', old='dense_acts'))
 
         # initializations
-        self.ppm_k_inits = iter_or_rep(self.hps.get('ppm_k_inits', 'he_uniform'))
-        self.dense_k_inits = iter_or_rep(self.hps.get('dense_k_inits', 'he_uniform'))
+        self.Phi_k_inits = iter_or_rep(self._proc_arg('Phi_k_inits', default='he_uniform', old='ppm_k_inits'))
+        self.F_k_inits = iter_or_rep(self._proc_arg('F_k_inits', default='he_uniform', old='dense_k_inits'))
 
         # regularizations
-        #self.ppm_dropouts = iter_or_rep(self.hps.get('ppm_dropouts', 0))
-        self.latent_dropout = self.hps.get('latent_dropout', 0.)
-        self.dense_dropouts = iter_or_rep(self.hps.get('dense_dropouts', 0.))
+        #self.ppm_dropouts = iter_or_rep(self.hps.pop('ppm_dropouts', 0))
+        self.latent_dropout = self._proc_arg('latent_dropout', default=0)
+        self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0, old='dense_dropouts'))
 
         # masking
-        self.mask_val = self.hps.get('mask_val', 0.)
+        self.mask_val = self._proc_arg('mask_val', default=0.)
+
+        self._verify_empty_hps()
 
     @abstractmethod
-    def construct_input_layers(self):
+    def _construct_inputs(self):
         pass
 
-    def construct_per_particle_module(self):
+    def _construct_Phi_network(self):
 
         # a list of the per-particle layers, starting with the masking layer operating on input 0
-        self.ppm_layers = [Masking(mask_value=self.mask_val, name=self._proc_name('mask_0'))(self.input_layers[-1])]
+        masking_name = self._proc_name('mask_0')
+        self._Phi_tensors = [Masking(mask_value=self.mask_val, 
+                                     name=masking_name)(self.input_tensors[-1])]
 
         # iterate over specified layers
-        for i,(s, act, k_init) in enumerate(zip(self.ppm_sizes, self.ppm_acts, self.ppm_k_inits)):
+        for i,(s, act, k_init) in enumerate(zip(self.Phi_sizes, self.Phi_acts, self.Phi_k_inits)):
 
             # define a dense layer that will be applied through time distributed
             d_layer = Dense(s, kernel_initializer=k_init)
 
             # append time distributed layer to list of ppm layers
-            tdist_layer = TimeDistributed(d_layer, name=self._proc_name('tdist_'+str(i)))(self.ppm_layers[-1])
-            self.ppm_layers.append(_apply_act(act, tdist_layer))
+            td_name = self._proc_name('tdist_'+str(i))
+            tdist_tensor = TimeDistributed(d_layer, name=td_name)(self.Phi_tensors[-1])
+            self._Phi_tensors.extend([tdist_tensor, _apply_act(act, tdist_tensor)])
 
     @abstractmethod
-    def construct_latent_layer(self):
+    def _construct_latent_tensor(self):
         pass
 
-    def construct_backend_module(self):
+    def _construct_F_network(self):
         
         # a list of backend layers
-        self.backend_layers = [self.latent_layer]
+        self._F_tensors = [self.latent_tensor]
 
         # iterate over specified backend layers
-        z = zip(self.dense_sizes, self.dense_acts, self.dense_k_inits, self.dense_dropouts)
+        z = zip(self.F_sizes, self.F_acts, self.F_k_inits, self.F_dropouts)
         for i,(s, act, k_init, dropout) in enumerate(z):
 
             # a new dense layer
-            new_layer = _apply_act(act, Dense(s, kernel_initializer=k_init, name=self._proc_name('dense_'+str(i)))(self.backend_layers[-1]))
+            d_name = self._proc_name('dense_'+str(i))
+            d_tensor = Dense(s, kernel_initializer=k_init, name=d_name)(self.F_tensors[-1])
+            act_tensor = _apply_act(act, d_tensor)
+            self._F_tensors.extend([d_tensor, act_tensor])
 
             # apply dropout (does nothing if dropout is zero)
             if dropout > 0.:
-                new_layer = Dropout(dropout, name=self._proc_name('dropout_'+str(i)))(new_layer)
+                dr_name = self._proc_name('dropout_'+str(i))
+                dr_tensor = Dropout(dropout, name=dr_name)(act_tensor)
+                self._F_tensors.append(dr_tensor)
 
-            # apply new layer to previous and append to list
-            self.backend_layers.append(new_layer)
-
-    def construct_model(self):
+    def _construct_model(self):
 
         # construct earlier parts of the model
-        self.construct_input_layers()
-        self.construct_per_particle_module()
-        self.construct_latent_layer()
-        self.construct_backend_module()
+        self._construct_inputs()
+        self._construct_Phi_network()
+        self._construct_latent_tensor()
+        self._construct_F_network()
 
         # output layer, applied to the last backend layer
-        output_layer = _apply_act(self.output_act, Dense(self.output_dim, name=self._proc_name('output'))(self.backend_layers[-1]))
+        out_name = self._proc_name('output')
+        d_tensor = Dense(self.output_dim, name=out_name)(self.F_tensors[-1])
+        self._output_tensor = _apply_act(self.output_act, d_tensor)
 
         # construct a new model
-        self._model = Model(inputs=self.input_layers, outputs=output_layer)
+        self._model = Model(inputs=self.input_tensors, outputs=self.output_tensor)
 
         # compile model
-        self.compile_model()
+        self._compile_model()
+
+    @abstractproperty
+    def input_tensors(self):
+        pass
 
     @property
-    def input_layers(self):
-        return self._input_layers
+    def Phi_tensors(self):
+        return self._Phi_tensors
+
+    @abstractproperty
+    def latent_tensor(self):
+        pass
 
     @property
-    def latent_layer(self):
-        return self._latent_layer
+    def F_tensors(self):
+        return self._F_tensors
+
+    @property
+    def output_tensor(self):
+        return self._output_tensor
 
 
 ###############################################################################
@@ -174,17 +196,28 @@ class EFN(SymmetricPerParticleNN):
 
     """Energy Flow Network (EFN) architecture."""
 
-    def construct_input_layers(self):
+    def _construct_inputs(self):
 
         zs_input = Input(batch_shape=(None, None), name=self._proc_name('zs_input'))
-        phats_input = Input(batch_shape=(None, None, self.input_dim), name=self._proc_name('phats_input'))
-        self._input_layers = [zs_input, phats_input]
+        phats_input = Input(batch_shape=(None, None, self.input_dim), 
+                            name=self._proc_name('phats_input'))
+        self._input_tensors = [zs_input, phats_input]
 
-    def construct_latent_layer(self):
+    def _construct_latent_tensor(self):
 
-        self._latent_layer = Dot(0, name=self._proc_name('dot'))([self.input_layers[0], self.ppm_layers[-1]])
+        name = self._proc_name('dot')
+        self._latent_tensor = Dot(0, name=name)([self.input_tensors[0], self.Phi_tensors[-1]])
         if self.latent_dropout > 0.:
-            self._latent_layer = Dropout(self.latent_dropout, name=self._proc_name('latent_dropout'))(self._latent_layer)
+            ld_name = self._proc_name('latent_dropout')
+            self._latent_tensor = Dropout(self.latent_dropout, name=ld_name)(self.latent_tensor)
+
+    @property
+    def input_tensors(self):
+        return self._input_tensors
+
+    @property
+    def latent_tensor(self):
+        return self._latent_tensor
 
     # eval_filters(patch, n=100, prune=True)
     def eval_filters(self, patch, n=100, prune=True):
@@ -236,10 +269,10 @@ class EFN(SymmetricPerParticleNN):
         XY = np.asarray([X, Y]).reshape((2, nx*ny)).T
 
         # construct function 
-        kf = K.function([self.input_layers[1]], [self.ppm_layers[-1]])
+        kf = K.function([self.input_tensors[1]], [self.Phi_tensors[-1]])
 
         # evaluate function
-        Z = kf([[XY]])[0][0].reshape(nx, ny, self.ppm_sizes[-1]).transpose((2,0,1))
+        Z = kf([[XY]])[0][0].reshape(nx, ny, self.Phi_sizes[-1]).transpose((2,0,1))
 
         # prune filters that are off
         if prune:
@@ -258,13 +291,24 @@ class PFN(SymmetricPerParticleNN):
     hyperparameters as the [`EFN`](#EFN)."""
 
     # PFN(*args, **kwargs)
-    def construct_input_layers(self):
+    def _construct_inputs(self):
         """""" # need this for autogen docs
 
-        self._input_layers = [Input(batch_shape=(None, None, self.input_dim), name=self._proc_name('input'))]
+        self._input_tensors = [Input(batch_shape=(None, None, self.input_dim), 
+                                    name=self._proc_name('input'))]
 
-    def construct_latent_layer(self):
+    def _construct_latent_tensor(self):
 
-        self._latent_layer = Lambda(lambda x: K.sum(x, axis=1), name=self._proc_name('sum'))(self.ppm_layers[-1])
+        name = self._proc_name('sum')
+        self._latent_tensor = Lambda(lambda x: K.sum(x, axis=1), name=name)(self.Phi_tensors[-1])
         if self.latent_dropout > 0.:
-            self._latent_layer = Dropout(self.latent_dropout, name=self._proc_name('latent_dropout'))(self._latent_layer)
+            ld_name = self._proc_name('latent_dropout')
+            self._latent_tensor = Dropout(self.latent_dropout, name=ld_name)(self._latent_tensor)
+
+    @property
+    def input_tensors(self):
+        return self._input_tensors
+
+    @property
+    def latent_tensor(self):
+        return self._latent_tensor
