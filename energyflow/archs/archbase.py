@@ -3,8 +3,12 @@ from __future__ import absolute_import, division, print_function
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 from keras.optimizers import Adam
-from keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
+from keras.layers import Activation, Dense, Dropout, Layer, LeakyReLU, PReLU, ThresholdedReLU
+from keras.regularizers import l2
+
 from six import string_types, with_metaclass
+
+from energyflow.utils import iter_or_rep
 
 __all__ = [
     'ArchBase',

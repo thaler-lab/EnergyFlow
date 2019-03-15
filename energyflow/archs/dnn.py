@@ -84,7 +84,7 @@ class DNN(NNBase):
 
             # construct variable argument dict
             kwargs = {} if i > 0 else {'input_dim': self.input_dim}
-            if l2_reg > 0:
+            if l2_reg > 0.:
                 kwargs.update({'kernel_regularizer': l2(l2_reg),
                                'bias_regularizer': l2(l2_reg)})
 

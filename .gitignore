@@ -30,3 +30,4 @@ datasets/
 !energyflow/datasets
 !docs/docs/datasets
 !EnergyFlow Demo.ipynb
+keras/

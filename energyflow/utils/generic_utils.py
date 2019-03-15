@@ -71,6 +71,8 @@ def iter_or_rep(arg):
             return repeat(arg[0])
         else:
             return arg
+    elif isinstance(arg, repeat):
+        return arg
     else:
         return repeat(arg)
 
@@ -93,5 +95,3 @@ def transfer(obj1, obj2, attrs):
     else:
         for attr in attrs:
             setattr(obj1, attr, getattr(obj2, attr))
-
-

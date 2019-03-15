@@ -2,11 +2,12 @@ from __future__ import absolute_import, division, print_function
 
 from abc import abstractmethod
 
+import numpy as np
+
 from keras import backend as K
 from keras.layers import Dense, Dot, Dropout, Input, Lambda, TimeDistributed, Masking
 from keras.models import Model
 from keras.regularizers import l2
-import numpy as np
 
 from energyflow.archs.archbase import NNBase, _apply_act
 from energyflow.utils import iter_or_rep
@@ -20,7 +21,7 @@ class SymmetricPerParticleNN(NNBase):
 
     # EFN(*args, **kwargs)
     def process_hps(self):
-        """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
+        r"""See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
         **Required EFN Hyperparameters**
 
@@ -28,7 +29,7 @@ class SymmetricPerParticleNN(NNBase):
             - The number of features for each particle.
         - **ppm_sizes** : {_tuple_, _list_} of _int_
             - The sizes of the dense layers in the per-particle frontend
-            module $\\Phi$. The last element will be the number of latent 
+            module $\Phi$. The last element will be the number of latent 
             observables that the model defines.
         - **dense_sizes** : {_tuple_, _list_} of _int_
             - The sizes of the dense layers in the backend module $F$.
@@ -37,7 +38,7 @@ class SymmetricPerParticleNN(NNBase):
 
         - **ppm_acts**=`'relu'` : {_tuple_, _list_} of _str_ or Keras activation
             - Activation functions(s) for the dense layers in the 
-            per-particle frontend module $\\Phi$. A single string or activation
+            per-particle frontend module $\Phi$. A single string or activation
             layer will apply the same activation to all layers. Keras advanced
             activation layers are also accepted, either as strings (which use
             the default arguments) or as Keras `Layer` instances. If passing a
@@ -52,7 +53,7 @@ class SymmetricPerParticleNN(NNBase):
             the same activation to all layers.
         - **ppm_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
             - Kernel initializers for the dense layers in the per-particle
-            frontend module $\\Phi$. A single string will apply the same initializer 
+            frontend module $\Phi$. A single string will apply the same initializer 
             to all layers. See the [Keras initializer docs](https://
             keras.io/initializers/) for more detail.
         - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
