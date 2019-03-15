@@ -89,15 +89,15 @@ class DNN(NNBase):
                                'bias_regularizer': l2(l2_reg)})
 
             # add dense layer
-            self.model.add(Dense(dim, kernel_initializer=k_init, name='dense_'+str(i), **kwargs))
+            self.model.add(Dense(dim, kernel_initializer=k_init, name=self._proc_name('dense_'+str(i)), **kwargs))
             self._add_act(act)
 
             # add dropout layer if nonzero
             if dropout > 0.:
-                self.model.add(Dropout(dropout, name='dropout_' + str(i)))
+                self.model.add(Dropout(dropout, name=self._proc_name('dropout_' + str(i))))
 
         # output layer
-        self.model.add(Dense(self.output_dim, name='output'))
+        self.model.add(Dense(self.output_dim, name=self._proc_name('output')))
         self._add_act(self.output_act)
 
         # compile model

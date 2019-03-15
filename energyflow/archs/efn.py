@@ -105,7 +105,7 @@ class SymmetricPerParticleNN(NNBase):
     def construct_per_particle_module(self):
 
         # a list of the per-particle layers, starting with the masking layer operating on input 0
-        self.ppm_layers = [Masking(mask_value=self.mask_val, name='mask_0')(self.input_layers[-1])]
+        self.ppm_layers = [Masking(mask_value=self.mask_val, name=self._proc_name('mask_0'))(self.input_layers[-1])]
 
         # iterate over specified layers
         for i,(s, act, k_init) in enumerate(zip(self.ppm_sizes, self.ppm_acts, self.ppm_k_inits)):
@@ -114,7 +114,7 @@ class SymmetricPerParticleNN(NNBase):
             d_layer = Dense(s, kernel_initializer=k_init)
 
             # append time distributed layer to list of ppm layers
-            tdist_layer = TimeDistributed(d_layer, name='tdist_'+str(i))(self.ppm_layers[-1])
+            tdist_layer = TimeDistributed(d_layer, name=self._proc_name('tdist_'+str(i)))(self.ppm_layers[-1])
             self.ppm_layers.append(_apply_act(act, tdist_layer))
 
     @abstractmethod
@@ -131,11 +131,11 @@ class SymmetricPerParticleNN(NNBase):
         for i,(s, act, k_init, dropout) in enumerate(z):
 
             # a new dense layer
-            new_layer = _apply_act(act, Dense(s, kernel_initializer=k_init, name='dense_'+str(i))(self.backend_layers[-1]))
+            new_layer = _apply_act(act, Dense(s, kernel_initializer=k_init, name=self._proc_name('dense_'+str(i)))(self.backend_layers[-1]))
 
             # apply dropout (does nothing if dropout is zero)
             if dropout > 0.:
-                new_layer = Dropout(dropout, name='dropout_'+str(i))(new_layer)
+                new_layer = Dropout(dropout, name=self._proc_name('dropout_'+str(i)))(new_layer)
 
             # apply new layer to previous and append to list
             self.backend_layers.append(new_layer)
@@ -149,7 +149,7 @@ class SymmetricPerParticleNN(NNBase):
         self.construct_backend_module()
 
         # output layer, applied to the last backend layer
-        output_layer = _apply_act(self.output_act, Dense(self.output_dim, name='output')(self.backend_layers[-1]))
+        output_layer = _apply_act(self.output_act, Dense(self.output_dim, name=self._proc_name('output'))(self.backend_layers[-1]))
 
         # construct a new model
         self._model = Model(inputs=self.input_layers, outputs=output_layer)
@@ -176,15 +176,15 @@ class EFN(SymmetricPerParticleNN):
 
     def construct_input_layers(self):
 
-        zs_input = Input(batch_shape=(None, None), name='zs_input')
-        phats_input = Input(batch_shape=(None, None, self.input_dim), name='phats_input')
+        zs_input = Input(batch_shape=(None, None), name=self._proc_name('zs_input'))
+        phats_input = Input(batch_shape=(None, None, self.input_dim), name=self._proc_name('phats_input'))
         self._input_layers = [zs_input, phats_input]
 
     def construct_latent_layer(self):
 
-        self._latent_layer = Dot(0, name='dot')([self.input_layers[0], self.ppm_layers[-1]])
+        self._latent_layer = Dot(0, name=self._proc_name('dot'))([self.input_layers[0], self.ppm_layers[-1]])
         if self.latent_dropout > 0.:
-            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self._latent_layer)
+            self._latent_layer = Dropout(self.latent_dropout, name=self._proc_name('latent_dropout'))(self._latent_layer)
 
     # eval_filters(patch, n=100, prune=True)
     def eval_filters(self, patch, n=100, prune=True):
@@ -261,10 +261,10 @@ class PFN(SymmetricPerParticleNN):
     def construct_input_layers(self):
         """""" # need this for autogen docs
 
-        self._input_layers = [Input(batch_shape=(None, None, self.input_dim), name='input')]
+        self._input_layers = [Input(batch_shape=(None, None, self.input_dim), name=self._proc_name('input'))]
 
     def construct_latent_layer(self):
 
-        self._latent_layer = Lambda(lambda x: K.sum(x, axis=1), name='sum')(self.ppm_layers[-1])
+        self._latent_layer = Lambda(lambda x: K.sum(x, axis=1), name=self._proc_name('sum'))(self.ppm_layers[-1])
         if self.latent_dropout > 0.:
-            self._latent_layer = Dropout(self.latent_dropout, name='latent_dropout')(self._latent_layer)
+            self._latent_layer = Dropout(self.latent_dropout, name=self._proc_name('latent_dropout'))(self._latent_layer)

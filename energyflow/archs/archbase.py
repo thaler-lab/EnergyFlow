@@ -120,19 +120,18 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 ###############################################################################
 # NNBase
 ###############################################################################
-_act_dict = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
 class NNBase(ArchBase):        
 
     def process_hps(self):
         """**Default NN Hyperparameters**
 
-        Common hyperparameters that apply to all architectures except 
-        for [`LinearClassifier`](#linearclassifier).
+        Common hyperparameters that apply to all architectures except for
+        [`LinearClassifier`](#linearclassifier).
 
         - **loss**=`'categorical_crossentropy'` : _str_
-            - The loss function to use for the model. See the [Keras
-            loss function docs](https://keras.io/losses/) for available
-            loss functions.
+            - The loss function to use for the model. See the [Keras loss 
+            function docs](https://keras.io/losses/) for available loss 
+            functions.
         - **lr**=`0.001` : _float_
             - The learning rate for the model.
         - **opt**=`Adam` : Keras optimizer
@@ -142,8 +141,13 @@ class NNBase(ArchBase):
         - **output_act**=`'softmax'` : _str_ or Keras activation
             - Activation function to apply to the output.
         - **metrics**=`['accuracy']` : _list_ of _str_
-            - The [Keras metrics](https://keras.io/metrics/) to apply
-            to the model.
+            - The [Keras metrics](https://keras.io/metrics/) to apply to the
+            model.
+        - **name_layers**=`True` : _bool_
+            - Whether to give the layers of the model explicit names or let
+            them be named automatically. One reason to set this to `False`
+            would be in order to use parts of this model in another model
+            (all Keras layers in a model are required to have unique names).
         - **compile**=`True` : _bool_
             - Whether the model should be compiled or not.
         - **summary**=`True` : _bool_
@@ -163,6 +167,7 @@ class NNBase(ArchBase):
         self.metrics = self.hps.get('metrics', ['accuracy'])
 
         # flags
+        self.name_layers = self.hps.get('name_layers', True)
         self.compile = self.hps.get('compile', True)
         self.summary = self.hps.get('summary', True)
 
@@ -180,11 +185,16 @@ class NNBase(ArchBase):
         else:
             self.model.add(Activation(act))
 
+    def _proc_name(self, name):
+        return name if self.name_layers else None
+
     def compile_model(self):
 
         # compile model if specified
         if self.compile: 
-            self.model.compile(loss=self.loss, optimizer=self.opt(lr=self.lr), metrics=self.metrics)
+            self.model.compile(loss=self.loss, 
+                               optimizer=self.opt(lr=self.lr), 
+                               metrics=self.metrics)
 
             # print summary
             if self.summary: 
@@ -203,6 +213,7 @@ class NNBase(ArchBase):
 ###############################################################################
 # Activation Functions
 ###############################################################################
+_act_dict = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
 def _apply_act(act, prev_layer):
 
     # handle case of act as a layer
