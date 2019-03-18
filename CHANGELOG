@@ -1,8 +1,10 @@
 Version 0.12.0
-- Changed naming of layers
 - Added attribute lookup to NNBase
 - Changed EFN parameter names
 - Added builtin callbacks (early stopping and model checkpoint)
+- Added option to name EFN layers or not
+- Added support for periodic phi in EMD
+- Changed how NNBase accepts compile options
 
 Version 0.11.2:
 - Added advanced activations support for NN archs.
