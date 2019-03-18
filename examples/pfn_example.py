@@ -33,14 +33,17 @@ except:
     plt = False
 
 ################################### SETTINGS ###################################
+# the commented values correspond to those in 1810.05165
+###############################################################################
 
 # data controls, can go up to 2000000 for full dataset
 train, val, test = 75000, 10000, 15000
+# train, val, test = 1000000, 200000, 200000
 use_pids = True
 
 # network architecture parameters
-ppm_sizes = (100, 100, 128)
-dense_sizes = (100, 100, 100)
+Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
+# Phi_sizes, F_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
 num_epoch = 5
@@ -79,7 +82,7 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-pfn = PFN(input_dim=X.shape[-1], ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
+pfn = PFN(input_dim=X.shape[-1], Phi_sizes=Phi_sizes, F_sizes=F_sizes)
 
 # train model
 pfn.fit(X_train, Y_train,

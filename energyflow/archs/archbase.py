@@ -1,20 +1,16 @@
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+import sys
 import warnings
 
-from keras.optimizers import Adam
-from keras.layers import Activation, Dense, Dropout, Layer, LeakyReLU, PReLU, ThresholdedReLU
-from keras.regularizers import l2
+from keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
 
 from six import string_types, with_metaclass
 
 from energyflow.utils import iter_or_rep
 
-__all__ = [
-    'ArchBase',
-    'NNBase'
-]
+__all__ = ['ArchBase', 'NNBase']
 
 
 ###############################################################################
@@ -61,11 +57,13 @@ class ArchBase(with_metaclass(ABCMeta, object)):
     def _proc_arg(self, name, **kwargs):
         if 'old' in kwargs and kwargs['old'] in self.hps:
             old = kwargs['old']
-            m = '{} is deprecated and will be removed in the future, use {} instead.'.format(old, name)
+            m = ('\'{}\' is deprecated and will be removed in the future, '
+                 'use \'{}\' instead.').format(old, name)
             warnings.warn(FutureWarning(m))
             kwargs['default'] = self.hps.pop(old)
 
-        return self.hps.pop(name, kwargs['default']) if 'default' in kwargs else self.hps.pop(name)
+        return (self.hps.pop(name, kwargs['default']) if 'default' in kwargs 
+                                                      else self.hps.pop(name))
 
     def _verify_empty_hps(self):
 
@@ -98,9 +96,10 @@ class ArchBase(with_metaclass(ABCMeta, object)):
             depending on the requirements of the underlying model (typically Keras
             models will use one-hot encoding whereas the linear model does not.)
         - **kwargs** : _dict_
-            - Keyword arguments passed on to the Keras method of the same name.
-            See the [Keras model docs](https://keras.io/models/model/#fit) for
-            details on available parameters.
+            - Keyword arguments passed on to the `fit` method of the underlying 
+            model. Most relevant for neural network models, where the [Keras model 
+            docs](https://keras.io/models/model/#fit) contain detailed information
+            on the possible arguments.
 
         **Returns**
 
@@ -112,16 +111,17 @@ class ArchBase(with_metaclass(ABCMeta, object)):
     # predict(X_test, **kwargs)
     @abstractmethod
     def predict(self):
-        """Evaluate the model on a dataset. 
+        """Evaluate the model on a dataset. Note that for the `LinearClassifier`
+        this corresponds to the `predict_proba` method of the underlying 
+        scikit-learn model.
 
         **Arguments**
 
         - **X_test** : _numpy.ndarray_
             - The dataset to evaluate the model on.
         - **kwargs** : _dict_
-            - Keyword arguments passed on to the Keras method of the same name.
-            See the [Keras model docs](https://keras.io/models/model/#fit) for
-            details on available parameters.
+            - Keyword arguments passed on to the underlying model when
+            predicting on a dataset.
 
         **Returns**
 
@@ -137,13 +137,30 @@ class ArchBase(with_metaclass(ABCMeta, object)):
         an attribute that the architecture does not have will resulting in
         attempting to retrieve the attribute from this model. This allows for
         interrogation of the EnergyFlow architecture in the same manner as the
-        underlying model."""
+        underlying model.
+
+        **Examples**
+
+        - For neural network models:
+            - `model.layers` will return a list of the layers, where 
+            `model` is any EnergFlow neural network.
+        - For linear models:
+            - `model.coef_` will return the coefficients, where `model`
+            is any EnergyFlow `LinearClassifier` instance.
+        """
 
         pass
 
     # pass on unknown attribute lookups to the underlying model
     def __getattr__(self, attr):
-        return getattr(self.model, attr)
+        try:
+            a = getattr(self.model, attr)
+        except:
+            name = self.__class__.__name__
+            sys.stderr.write(('\'{}\' object has no attribute \'{}\', '
+                              'checking underlying model.').format(name, attr))
+            raise
+        return a
 
 
 ###############################################################################
@@ -158,21 +175,64 @@ class NNBase(ArchBase):
         Common hyperparameters that apply to all architectures except for
         [`LinearClassifier`](#linearclassifier).
 
+        **Compilation Options**
+
         - **loss**=`'categorical_crossentropy'` : _str_
             - The loss function to use for the model. See the [Keras loss 
-            function docs](https://keras.io/losses/) for available loss 
+            function docs](https://keras.io/losses/) for available loss
             functions.
-        - **lr**=`0.001` : _float_
-            - The learning rate for the model.
-        - **opt**=`Adam` : Keras optimizer
-            - A [Keras optimizer](https://keras.io/optimizers/).
+        - **optimizer**=`'adam'` : Keras optimizer or _str_
+            - A [Keras optimizer](https://keras.io/optimizers/) instance or a
+            string referring to one (in which case the default arguments are 
+            used).
+        - **metrics**=`['accuracy']` : _list_ of _str_
+            - The [Keras metrics](https://keras.io/metrics/) to apply to the
+            model.
+        - **compile_opts**=`{}` : _dict_
+            - Dictionary of keyword arguments to be passed on to the
+            [`compile`](https://keras.io/models/model/#compile) method of the
+            model. `loss`, `optimizer`, and `metrics` (see above) are included
+            in this dictionary. All other values are the Keras defaults.
+
+        **Output Options**
+
         - **output_dim**=`2` : _int_
             - The output dimension of the model.
         - **output_act**=`'softmax'` : _str_ or Keras activation
             - Activation function to apply to the output.
-        - **metrics**=`['accuracy']` : _list_ of _str_
-            - The [Keras metrics](https://keras.io/metrics/) to apply to the
-            model.
+
+        **Callback Options**
+
+        - **filepath**=`None` : _str_
+            - The file path for where to save the model. If `None` then the
+            model will not be saved.
+        - **save_while_training**=`True` : _bool_
+            - Whether the model is saved during training (using the 
+            [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
+            callback) or only once training terminates. Only relevant if
+            `filepath` is set.
+        - **save_weights_only**=`False` : _bool_
+            - Whether only the weights of the model or the full model are
+            saved. Only relevant if `filepath` is set.
+        - **modelcheck_opts**=`{'save_best_only':True, 'verbose':1}` : _dict_
+            - Dictionary of keyword arguments to be passed on to the
+            [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
+            callback, if it is present. `save_weights_only` (see above) is
+            included in this dictionary. All other arguments are the Keras
+            defaults.
+        - **patience**=`None` : _int_
+            - The number of epochs with no improvement after which the training
+            is stopped (using the [`EarlyStopping`](https://keras.io/
+            callbacks/#earlystopping) callback). If `None` then no early stopping
+            is used.
+        - **earlystop_opts**=`{'restore_best_weights':True, 'verbose':1}` : _dict_
+            - Dictionary of keyword arguments to be passed on to the
+            [`EarlyStopping`](https://keras.io/callbacks/#earlystopping)
+            callback, if it is present. `patience` (see above) is included in
+            this dictionary. All other arguments are the Keras defaults.
+
+        **Flags**
+
         - **name_layers**=`True` : _bool_
             - Whether to give the layers of the model explicit names or let
             them be named automatically. One reason to set this to `False`
@@ -184,23 +244,26 @@ class NNBase(ArchBase):
             - Whether a summary should be printed or not.
         """
 
-        # optimization
-        self.loss = self._proc_arg('loss', default='categorical_crossentropy')
-        self.lr = self._proc_arg('lr', default=0.001)
-        self.opt = self._proc_arg('opt', default=Adam)
+        # compilation
+        self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
+                             'optimizer': self._proc_arg('optimizer', default='adam'),
+                             'metrics': self._proc_arg('metrics', default=['accuracy'])}
+        self.compile_opts.update({self._proc_arg('compile_opts', default={})})
+
+        # add these attributes for historical reasons
+        self.loss = self.compile_opts['loss']
+        self.optimizer = self.compile_opts['optimizer']
+        self.metrics = self.compile_opts['metrics']
 
         # output
         self.output_dim = self._proc_arg('output_dim', default=2)
         self.output_act = self._proc_arg('output_act', default='softmax')
 
-        # metrics
-        self.metrics = self._proc_arg('metrics', default=['accuracy'])
-
         # callbacks
-        self.model_path = self._proc_arg('model_path', default='')
+        self.filepath = self._proc_arg('filepath', default=None)
         self.save_while_training = self._proc_arg('save_while_training', default=True)
         self.modelcheck_opts = {'save_best_only': True, 'verbose': 1, 
-                                'save_weights_only': self._proc_arg('save_weights_only', default=False)}
+                'save_weights_only': self._proc_arg('save_weights_only', default=False)}
         self.modelcheck_opts.update(self._proc_arg('modelcheck_opts', default={}))
         self.save_weights_only = self.modelcheck_opts['save_weights_only']
 
@@ -235,9 +298,7 @@ class NNBase(ArchBase):
 
         # compile model if specified
         if self.compile: 
-            self.model.compile(loss=self.loss, 
-                               optimizer=self.opt(lr=self.lr), 
-                               metrics=self.metrics)
+            self.model.compile(**self.compile_opts)
 
             # print summary
             if self.summary: 
@@ -249,8 +310,8 @@ class NNBase(ArchBase):
         callbacks = []
 
         # do model checkpointing, used mainly to save model during training instead of at end
-        if self.model_path and self.save_while_training:
-            callbacks.append(ModelCheckpoint(self.model_path, **self.modelcheck_opts))
+        if self.filepath and self.save_while_training:
+            callbacks.append(ModelCheckpoint(self.filepath, **self.modelcheck_opts))
 
         # do early stopping, which no also handle loading best weights at the end
         if self.patience is not None:
@@ -263,11 +324,11 @@ class NNBase(ArchBase):
         hist = self.model.fit(*args, **kwargs)
 
         # handle saving at the end, if we weren't already saving throughout 
-        if self.model_path and not self.save_while_training:
+        if self.filepath and not self.save_while_training:
             if self.save_weights_only:
-                self.model.save_weights(self.model_path)
+                self.model.save_weights(self.filepath)
             else:
-                self.model.save(self.model_path)
+                self.model.save(self.filepath)
 
         return hist
 

@@ -198,7 +198,7 @@ of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000)
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000, periodic_phi=True, phi_col=2)
 </code></pre>
 
 <p>Compute the EMD between two events.</p>
@@ -208,7 +208,7 @@ instead of energies.</p>
 <li>The first event, given as a two-dimensional array. The event is 
 assumed to be an <code>(M,1+gdim)</code> array of particles, where <code>M</code> is the 
 multiplicity and <code>gdim</code> is the dimension of the ground space in 
-which to compute euclidean distances between particles (as specified 
+which to compute euclidean distances between particles (as specified
 by the <code>gdim</code> keyword argument. The zeroth column is assumed to be
 the energies (or equivalently, the transverse momenta) of the 
 particles. For typical hadron collider jet applications, each 
@@ -250,6 +250,18 @@ in the flow matrix.</li>
 problem.</li>
 </ul>
 </li>
+<li><strong>periodic_phi</strong> : <em>bool</em><ul>
+<li>Whether to expect (and therefore properly handle) periodicity
+in the coordinate corresponding to the azimuthal angle $\phi$.
+Should typically be <code>True</code> for event-level applications but can
+be set to <code>False</code> (which is slightly faster) for jet applications
+where all $\phi$ differences are less than or equal to $\pi$.</li>
+</ul>
+</li>
+<li><strong>phi_col</strong> : <em>int</em><ul>
+<li>The index of the column of $\phi$ values in the event array.</li>
+</ul>
+</li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
@@ -266,7 +278,7 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds">emds</h3>
-<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000, n_jobs=None, verbose=1, print_every=1000000)
+<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000, periodic_phi=True, phi_col=2, n_jobs=None, verbose=1, print_every=1000000)
 </code></pre>
 
 <p>Compute the EMD between collections of events. This can be used to
@@ -312,6 +324,18 @@ and particle j in <code>ev1</code>.</li>
 <li><strong>n_iter_max</strong> : <em>int</em><ul>
 <li>Maximum number of iterations for solving the optimal transport 
  problem.</li>
+</ul>
+</li>
+<li><strong>periodic_phi</strong> : <em>bool</em><ul>
+<li>Whether to expect (and therefore properly handle) periodicity
+ in the coordinate corresponding to the azimuthal angle $\phi$.
+ Should typically be <code>True</code> for event-level applications but can
+ be set to <code>False</code> (which is slightly faster) for jet applications
+ where all $\phi$ differences are less than or equal to $\pi$.</li>
+</ul>
+</li>
+<li><strong>phi_col</strong> : <em>int</em><ul>
+<li>The index of the column of $\phi$ values in the event array.</li>
 </ul>
 </li>
 <li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>

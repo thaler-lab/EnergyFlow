@@ -200,55 +200,57 @@
           <div role="main">
             <div class="section">
               
-                <p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs)
-are model architectures designed for learning from collider events
-as unordered, variable-length sets of particles. Both EFNs and PFNs are
-parameterized by a learnable per-particle function $\Phi$ and latent space function $F$.</p>
+                <p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) are model
+architectures designed for learning from collider events as unordered,
+variable-length sets of particles. Both EFNs and PFNs are parameterized by a
+learnable per-particle function $\Phi$ and latent space function $F$.</p>
 <p>An EFN takes the following form:
 <script type="math/tex; mode=display">\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)</script>
-where $z_i$ is a measure of the energy of particle $i$, such as $z_i = p_{T,i}$, and $\hat p_i$ is a measure 
-of the angular information of particle $i$, such as $\hat p_i = (y_i,\phi_i)$.
-Any infrared- and collinear-safe observable can be parameterized in this form.</p>
+where $z_i$ is a measure of the energy of particle $i$, such as $z_i=p_{T,i}$,
+and $\hat p_i$ is a measure of the angular information of particle $i$, such as
+$\hat p_i = (y_i,\phi_i)$. Any infrared- and collinear-safe observable can be
+parameterized in this form.</p>
 <p>A PFN takes the following form:
 <script type="math/tex; mode=display">\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)</script>
-where $p_i$ is the information of particle $i$, such as its four-momentum, charge, or flavor.
-Any observable can be parameterized in this form.
-See the <a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional discussion.</p>
-<p>Since these architectures are not
-used by the core EnergyFlow code, and require the external 
-<a href="https://keras.io">Keras</a> and <a href="http://scikit-learn.org/">scikit-learn</a>
-libraries, they are not imported by default but must be explicitly 
-imported, e.g. <code>from energyflow.archs import *</code>.
-EnergyFlow also contains several additional model architectures for ease of using
-common models that frequently appear in the intersection of 
-particle physics and machine learning. </p>
+where $p_i$ is the information of particle $i$, such as its four-momentum,
+charge, or flavor. Any observable can be parameterized in this form. See the
+<a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional 
+discussion.</p>
+<p>Since these architectures are not used by the core EnergyFlow code, and require
+the external <a href="https://keras.io">Keras</a> and <a href="http://scikit-
+learn.org/">scikit-learn</a> libraries, they are not imported by default but must be explicitly
+imported, e.g. <code>from energyflow.archs import *</code>. EnergyFlow also contains
+several additional model architectures for ease of using common models that
+frequently appear in the intersection of particle physics and machine learning.</p>
 <hr />
 <h3 id="efn">EFN</h3>
 <p>Energy Flow Network (EFN) architecture.</p>
 <pre><code class="python">energyflow.archs.EFN(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
+well as hyperparameters common to all EnergyFlow neural network models.</p>
 <p><strong>Required EFN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
 <li>The number of features for each particle.</li>
 </ul>
 </li>
-<li><strong>ppm_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li><strong>Phi_sizes</strong> (formerly <code>ppm_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>The sizes of the dense layers in the per-particle frontend
 module $\Phi$. The last element will be the number of latent 
 observables that the model defines.</li>
 </ul>
 </li>
-<li><strong>dense_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li><strong>F_sizes</strong> (formerly <code>dense_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>The sizes of the dense layers in the backend module $F$.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Default EFN Hyperparameters</strong></p>
 <ul>
-<li><strong>ppm_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras activation<ul>
+<li><strong>Phi_acts</strong>=<code>'relu'</code> (formerly <code>ppm_acts</code>) : {<em>tuple</em>, <em>list</em>} of
+<em>str</em> or Keras activation<ul>
 <li>Activation functions(s) for the dense layers in the 
 per-particle frontend module $\Phi$. A single string or activation
 layer will apply the same activation to all layers. Keras advanced
@@ -261,20 +263,23 @@ as there are layers in the model. See the <a href="https://keras.io/activations/
 docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras activation<ul>
+<li><strong>F_acts</strong>=<code>'relu'</code> (formerly <code>dense_acts</code>) : {<em>tuple</em>, <em>list</em>} of
+<em>str</em> or Keras activation<ul>
 <li>Activation functions(s) for the dense layers in the 
 backend module $F$. A single string or activation layer will apply
 the same activation to all layers.</li>
 </ul>
 </li>
-<li><strong>ppm_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>Phi_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>ppm_k_inits</code>) : {<em>tuple</em>,
+<em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers in the per-particle
-frontend module $\Phi$. A single string will apply the same initializer 
-to all layers. See the <a href="https://
-keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
+frontend module $\Phi$. A single string will apply the same
+initializer to all layers. See the <a href="https:
+//keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>F_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>dense_k_inits</code>) : {<em>tuple</em>,
+<em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers in the backend 
 module $F$. A single string will apply the same initializer 
 to all layers.</li>
@@ -287,7 +292,8 @@ Dropout layer</a> for more
 detail.</li>
 </ul>
 </li>
-<li><strong>dense_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
+<li><strong>F_dropouts</strong>=<code>0</code> (formerly <code>dense_dropouts</code>) : {<em>tuple</em>, <em>list</em>}
+of <em>float</em><ul>
 <li>Dropout rates for the dense layers in the backend module $F$. 
 A single float will apply the same dropout rate to all dense layers.</li>
 </ul>
@@ -336,18 +342,91 @@ filters at each point.</li>
 </ul>
 </li>
 </ul>
+<h5 id="inputs">inputs</h5>
+<pre><code class="python">inputs
+</code></pre>
+
+<p>List of input tensors to the model. EFNs have two input tensors:
+<code>inputs[0]</code> corresponds to the <code>zs</code> input and <code>inputs[1]</code> corresponds
+to the <code>phats</code> input.</p>
+<h5 id="weights">weights</h5>
+<pre><code class="python">weights
+</code></pre>
+
+<p>Weight tensor for the model. This is the <code>zs</code> input where entries
+equal to <code>mask_val</code> have been set to zero.</p>
+<h5 id="phi">Phi</h5>
+<pre><code class="python">Phi
+</code></pre>
+
+<p>List of tensors corresponding to the layers in the $\Phi$
+network.</p>
+<h5 id="latent">latent</h5>
+<pre><code class="python">latent
+</code></pre>
+
+<p>List of tensors corresponding to the summation layer in the
+network, including any dropout layer if present.</p>
+<h5 id="f">F</h5>
+<pre><code class="python">F
+</code></pre>
+
+<p>List of tensors corresponding to the layers in the $F$ network.</p>
+<h5 id="output">output</h5>
+<pre><code class="python">output
+</code></pre>
+
+<p>Output tensor for the model.</p>
+<hr />
 <h3 id="pfn">PFN</h3>
 <p>Particle Flow Network (PFN) architecture. Accepts the same 
 hyperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
 <pre><code class="python">energyflow.archs.PFN(*args, **kwargs)
 </code></pre>
 
+<h5 id="inputs_1">inputs</h5>
+<pre><code class="python">inputs
+</code></pre>
+
+<p>List of input tensors to the model. PFNs have one input tensor
+corresponding to the <code>ps</code> input.</p>
+<h5 id="weights_1">weights</h5>
+<pre><code class="python">weights
+</code></pre>
+
+<p>Weight tensor for the model. A weight of <code>0</code> is assigned to any
+particle which has all features equal to <code>mask_val</code>, and <code>1</code> is
+assigned otherwise.</p>
+<h5 id="phi_1">Phi</h5>
+<pre><code class="python">Phi
+</code></pre>
+
+<p>List of tensors corresponding to the layers in the $\Phi$
+network.</p>
+<h5 id="latent_1">latent</h5>
+<pre><code class="python">latent
+</code></pre>
+
+<p>List of tensors corresponding to the summation layer in the
+network, including any dropout layer if present.</p>
+<h5 id="f_1">F</h5>
+<pre><code class="python">F
+</code></pre>
+
+<p>List of tensors corresponding to the layers in the $F$ network.</p>
+<h5 id="output_1">output</h5>
+<pre><code class="python">output
+</code></pre>
+
+<p>Output tensor for the model.</p>
+<hr />
 <h3 id="cnn">CNN</h3>
 <p>Convolutional Neural Network architecture.</p>
 <pre><code class="python">energyflow.archs.CNN(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
+well as hyperparameters common to all EnergyFlow neural network models.</p>
 <p><strong>Required CNN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_shape</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
@@ -398,14 +477,14 @@ or activation layer will apply the same activation to all dense
 layers.</li>
 </ul>
 </li>
-<li><strong>conv_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>conv_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the convolutional layers. A single
 string will apply the same initializer to all layers. See the
 <a href="https://keras.io/initializers/">Keras initializer docs</a> for 
 more detail.</li>
 </ul>
 </li>
-<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers. A single string will 
 apply the same initializer to all layers.</li>
 </ul>
@@ -439,12 +518,14 @@ for more detail.</li>
 </ul>
 </li>
 </ul>
+<hr />
 <h3 id="dnn">DNN</h3>
 <p>Dense Neural Network architecture.</p>
 <pre><code class="python">energyflow.archs.DNN(*args, **kwargs)
 </code></pre>
 
-<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
+<p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
+well as hyperparameters common to all EnergyFlow neural network models.</p>
 <p><strong>Required DNN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
@@ -471,7 +552,7 @@ pass as many activations as there are layers in the model.See the
 detail.</li>
 </ul>
 </li>
-<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
+<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers. A single string 
 will apply the same initializer to all layers. See the
 <a href="https://keras.io/initializers/">Keras initializer docs</a> for 
@@ -492,6 +573,7 @@ $L_2$-regulatization to all layers.</li>
 </ul>
 </li>
 </ul>
+<hr />
 <hr />
 <h3 id="linearclassifier">LinearClassifier</h3>
 <p>Linear classifier that can be either Fisher's linear discriminant
@@ -515,7 +597,7 @@ class.</li>
 </ul>
 </li>
 </ul>
-<p><strong>LDA Hyperparameters</strong></p>
+<p><strong>Linear Discriminant Analysis Hyperparameters</strong></p>
 <ul>
 <li><strong>solver</strong>=<code>'svd'</code> : {<code>'svd'</code>, <code>'lsqr'</code>, <code>'eigen'</code>}<ul>
 <li>Which LDA solver to use.</li>
@@ -527,6 +609,15 @@ convergence parameter.</li>
 </ul>
 </li>
 </ul>
+<p><strong>Logistic Regression Hyperparameters</strong></p>
+<ul>
+<li><strong>LR_hps</strong>=<code>{}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to pass on to the underlying
+<code>LogisticRegression</code> model.</li>
+</ul>
+</li>
+</ul>
+<hr />
 <hr />
 <h3 id="archbase">ArchBase</h3>
 <p>Base class for all architectures contained in EnergyFlow. The mechanism of
@@ -554,23 +645,37 @@ positional arguments.</li>
 </li>
 </ul>
 <p><strong>Default NN Hyperparameters</strong></p>
-<p>Common hyperparameters that apply to all architectures except 
-for <a href="#linearclassifier"><code>LinearClassifier</code></a>.</p>
+<p>Common hyperparameters that apply to all architectures except for
+<a href="#linearclassifier"><code>LinearClassifier</code></a>.</p>
+<p><strong>Compilation Options</strong></p>
 <ul>
 <li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras
-loss function docs</a> for available
-loss functions.</li>
+<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras loss 
+function docs</a> for available loss
+functions.</li>
 </ul>
 </li>
-<li><strong>lr</strong>=<code>0.001</code> : <em>float</em><ul>
-<li>The learning rate for the model.</li>
+<li><strong>optimizer</strong>=<code>'adam'</code> : Keras optimizer or <em>str</em><ul>
+<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a> instance or a
+string referring to one (in which case the default arguments are 
+used).</li>
 </ul>
 </li>
-<li><strong>opt</strong>=<code>Adam</code> : Keras optimizer<ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a>.</li>
+<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
+<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply to the
+model.</li>
 </ul>
 </li>
+<li><strong>compile_opts</strong>=<code>{}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to be passed on to the
+<a href="https://keras.io/models/model/#compile"><code>compile</code></a> method of the
+model. <code>loss</code>, <code>optimizer</code>, and <code>metrics</code> (see above) are included
+in this dictionary. All other values are the Keras defaults.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Options</strong></p>
+<ul>
 <li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
 <li>The output dimension of the model.</li>
 </ul>
@@ -579,9 +684,56 @@ loss functions.</li>
 <li>Activation function to apply to the output.</li>
 </ul>
 </li>
-<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
-<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply
-to the model.</li>
+</ul>
+<p><strong>Callback Options</strong></p>
+<ul>
+<li><strong>filepath</strong>=<code>None</code> : <em>str</em><ul>
+<li>The file path for where to save the model. If <code>None</code> then the
+model will not be saved.</li>
+</ul>
+</li>
+<li><strong>save_while_training</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether the model is saved during training (using the 
+<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
+callback) or only once training terminates. Only relevant if
+<code>filepath</code> is set.</li>
+</ul>
+</li>
+<li><strong>save_weights_only</strong>=<code>False</code> : <em>bool</em><ul>
+<li>Whether only the weights of the model or the full model are
+saved. Only relevant if <code>filepath</code> is set.</li>
+</ul>
+</li>
+<li><strong>modelcheck_opts</strong>=<code>{'save_best_only':True, 'verbose':1}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to be passed on to the
+<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
+callback, if it is present. <code>save_weights_only</code> (see above) is
+included in this dictionary. All other arguments are the Keras
+defaults.</li>
+</ul>
+</li>
+<li><strong>patience</strong>=<code>None</code> : <em>int</em><ul>
+<li>The number of epochs with no improvement after which the training
+is stopped (using the <a href="https://keras.io/
+callbacks/#earlystopping"><code>EarlyStopping</code></a> callback). If <code>None</code> then no early stopping
+is used.</li>
+</ul>
+</li>
+<li><strong>earlystop_opts</strong>=<code>{'restore_best_weights':True, 'verbose':1}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to be passed on to the
+<a href="https://keras.io/callbacks/#earlystopping"><code>EarlyStopping</code></a>
+callback, if it is present. <code>patience</code> (see above) is included in
+this dictionary. All other arguments are the Keras defaults.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Flags</strong></p>
+<ul>
+<li><strong>name_layers</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether to give the layers of the model explicit names or let
+them be named automatically. One reason to set this to <code>False</code>
+would be in order to use parts of this model in another model
+(all Keras layers in a model are required to have unique names).</li>
 </ul>
 </li>
 <li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
@@ -612,9 +764,10 @@ models will use one-hot encoding whereas the linear model does not.)</li>
 </ul>
 </li>
 <li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the Keras method of the same name.
-See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
-details on available parameters.</li>
+<li>Keyword arguments passed on to the <code>fit</code> method of the underlying 
+model. Most relevant for neural network models, where the <a href="https://keras.io/models/model/#fit">Keras model 
+docs</a> contain detailed information
+on the possible arguments.</li>
 </ul>
 </li>
 </ul>
@@ -626,7 +779,9 @@ details on available parameters.</li>
 <pre><code class="python">predict(X_test, **kwargs)
 </code></pre>
 
-<p>Evaluate the model on a dataset. </p>
+<p>Evaluate the model on a dataset. Note that for the <code>LinearClassifier</code>
+this corresponds to the <code>predict_proba</code> method of the underlying 
+scikit-learn model.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
@@ -634,9 +789,8 @@ details on available parameters.</li>
 </ul>
 </li>
 <li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the Keras method of the same name.
-See the <a href="https://keras.io/models/model/#fit">Keras model docs</a> for
-details on available parameters.</li>
+<li>Keyword arguments passed on to the underlying model when
+predicting on a dataset.</li>
 </ul>
 </li>
 </ul>
@@ -651,7 +805,25 @@ details on available parameters.</li>
 <pre><code class="python">model
 </code></pre>
 
-<p>The underlying model held by this architecture.</p>
+<p>The underlying model held by this architecture. Note that accessing
+an attribute that the architecture does not have will resulting in
+attempting to retrieve the attribute from this model. This allows for
+interrogation of the EnergyFlow architecture in the same manner as the
+underlying model.</p>
+<p><strong>Examples</strong></p>
+<ul>
+<li>For neural network models:<ul>
+<li><code>model.layers</code> will return a list of the layers, where 
+<code>model</code> is any EnergFlow neural network.</li>
+</ul>
+</li>
+<li>For linear models:<ul>
+<li><code>model.coef_</code> will return the coefficients, where <code>model</code>
+is any EnergyFlow <code>LinearClassifier</code> instance.</li>
+</ul>
+</li>
+</ul>
+<hr />
               
             </div>
           </div>

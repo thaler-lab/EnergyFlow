@@ -40,8 +40,8 @@ train, val, test = 75000, 10000, 15000
 # train, val, test = 1000000, 200000, 200000
 
 # network architecture parameters
-ppm_sizes, dense_sizes = (100, 100, 128), (100, 100, 100)
-# ppm_sizes, dense_sizes = (100, 100, 256), (100, 100, 100)
+Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
+# Phi_sizes, F_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
 num_epoch = 5
@@ -78,7 +78,7 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-efn = EFN(input_dim=2, ppm_sizes=ppm_sizes, dense_sizes=dense_sizes)
+efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes)
 
 # train model
 efn.fit([z_train, p_train], Y_train,

@@ -149,7 +149,6 @@ def _pad_events_axis1(events, axis1_shape):
     such that the first dimension of the results has size `axis1_shape`.
     """
 
-
     num_zeros = axis1_shape - events.shape[1]
     if num_zeros > 0:
         zeros = np.zeros([s if i != 1 else num_zeros for i,s in enumerate(events.shape)])

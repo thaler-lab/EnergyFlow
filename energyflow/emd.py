@@ -47,13 +47,35 @@ if ot:
     __all__ = ['emd', 'emds']
 
     # faster than scipy's cdist function because we can avoid their checks
-    def _cdist_euclidean(X, Y):
-        out = np.empty((len(X), len(Y)), dtype=np.double)
-        _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
+    def _cdist_euclidean(X, Y, periodic_phi, phi_col):
+
+        if periodic_phi:
+
+            # delta phis (taking into account periodicity)
+            # aleady guaranteed for values to be in [0, 2pi]
+            d_phis = np.pi - np.abs(np.pi - np.abs(X[:,phi_col,np.newaxis] - Y[:,phi_col]))
+
+            # split out common case of having only one other dimension
+            if X.shape[1] == 2:
+                non_phi_col = 1 - phi_col
+                d_ys = X[:,non_phi_col,np.newaxis] - Y[:,non_phi_col]
+                out = np.sqrt(d_ys**2 + d_phis**2)
+
+            # general case
+            else:
+                non_phi_cols = [i for i in range(X.shape[1]) if i != phi_col]
+                d_others2 = (X[:,non_phi_cols,np.newaxis] - Y[:,non_phi_cols])**2
+                out = np.sqrt(d_others2.sum(axis=1) + d_phis**2)
+
+        else:
+            out = np.empty((len(X), len(Y)), dtype=np.double)
+            _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
+        
         return out
 
-    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000):
-        """Compute the EMD between two events.
+    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000,
+                      periodic_phi=True, phi_col=2):
+        r"""Compute the EMD between two events.
 
         **Arguments**
 
@@ -61,7 +83,7 @@ if ot:
             - The first event, given as a two-dimensional array. The event is 
             assumed to be an `(M,1+gdim)` array of particles, where `M` is the 
             multiplicity and `gdim` is the dimension of the ground space in 
-            which to compute euclidean distances between particles (as specified 
+            which to compute euclidean distances between particles (as specified
             by the `gdim` keyword argument. The zeroth column is assumed to be
             the energies (or equivalently, the transverse momenta) of the 
             particles. For typical hadron collider jet applications, each 
@@ -89,6 +111,14 @@ if ot:
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
+        - **periodic_phi** : _bool_
+            - Whether to expect (and therefore properly handle) periodicity
+            in the coordinate corresponding to the azimuthal angle $\phi$.
+            Should typically be `True` for event-level applications but can
+            be set to `False` (which is slightly faster) for jet applications
+            where all $\phi$ differences are less than or equal to $\pi$.
+        - **phi_col** : _int_
+            - The index of the column of $\phi$ values in the event array.
 
         **Returns**
 
@@ -100,11 +130,13 @@ if ot:
             and particle j in `ev1`.
         """
 
-        ev0, ev1 = np.atleast_2d(ev0), np.atleast_2d(ev1)
-        pTs0 = np.ascontiguousarray(ev0[:,0], dtype=np.float64)
-        pTs1 = np.ascontiguousarray(ev1[:,0], dtype=np.float64)
-        coords0 = np.ascontiguousarray(ev0[:,1:(gdim+1)], dtype=np.float64)
-        coords1 = np.ascontiguousarray(ev1[:,1:(gdim+1)], dtype=np.float64)
+        # check phi_col
+        assert 1 <= phi_col <= 1+gdim, '\'phi_col\' must be between 1 and 1+gdim'
+        phi_col_m1 = phi_col - 1
+
+        # process events
+        pTs0, coords0 = _process_for_emd(ev0, None, gdim, periodic_phi, phi_col_m1)
+        pTs1, coords1 = _process_for_emd(ev1, None, gdim, periodic_phi, phi_col_m1)
 
         pT0, pT1 = pTs0.sum(), pTs1.sum()
 
@@ -112,7 +144,7 @@ if ot:
         if norm:
             pTs0 /= pT0
             pTs1 /= pT1
-            thetas = _cdist_euclidean(coords0, coords1)/R
+            thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col_m1)/R
 
         # implement the EMD in Eq. 1 of the paper by adding an appropriate extra particle
         else:
@@ -120,18 +152,18 @@ if ot:
             if pTdiff > 0:
                 pTs0 = np.hstack((pTs0, pTdiff))
                 coords0_extra = np.vstack((coords0, np.zeros(coords0.shape[1], dtype=np.float64)))
-                thetas = _cdist_euclidean(coords0_extra, coords1)/R
+                thetas = _cdist_euclidean(coords0_extra, coords1, periodic_phi, phi_col_m1)/R
                 thetas[-1,:] = 1.0
 
             elif pTdiff < 0:
                 pTs1 = np.hstack((pTs1, -pTdiff))
                 coords1_extra = np.vstack((coords1, np.zeros(coords1.shape[1], dtype=np.float64)))
-                thetas = _cdist_euclidean(coords0, coords1_extra)/R
+                thetas = _cdist_euclidean(coords0, coords1_extra, periodic_phi, phi_col_m1)/R
                 thetas[:,-1] = 1.0
 
             # in this case, the pts were exactly equal already so no need to add a particle
             else:
-                thetas = _cdist_euclidean(coords0, coords1)/R
+                thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col_m1)/R
 
         G, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter_max)
         check_result(result_code)
@@ -139,30 +171,37 @@ if ot:
         return (cost, G) if return_flow else cost
 
     # process events for EMD calculation using _emd
-    def _process_for_emd(event, norm, gdim):
+    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col):
         event = np.atleast_2d(event)
+        
         if norm:
             pts = event[:,0]/event[:,0].sum()
+        elif norm is None:
+            pts = event[:,0]
         else:
             event = np.vstack((event, np.zeros(event.shape[1])))
             pts = event[:,0]
 
-        return (np.ascontiguousarray(pts, dtype=np.float64), 
-                np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64))
+        pts = np.ascontiguousarray(pts, dtype=np.float64)
+        coords = np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64)
+
+        if periodic_phi:
+            coords[:,phi_col] %= 2*np.pi
+
+        return pts, coords
 
     # helper function for pool imap
     def _emd4imap(x):
-        i, j, X0, X1, R, norm, n_iter_max = x
-        #X0, X1, R, norm, n_iter_max = next(param_repeater)
-        return _emd(X0[i], X1[j], R, norm, n_iter_max)
+        (i, j), (X0, X1, R, norm, n_iter_max, periodic_phi, phi_col) = x
+        return _emd(X0[i], X1[j], R, norm, n_iter_max, periodic_phi, phi_col)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, norm, n_iter_max):
+    def _emd(ev0, ev1, R, norm, n_iter_max, periodic_phi, phi_col):
 
         pTs0, coords0 = ev0
         pTs1, coords1 = ev1
 
-        thetas = _cdist_euclidean(coords0, coords1)/R
+        thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col)/R
 
         # extra particles (with zero pt) already added if going in here
         if not norm:
@@ -186,8 +225,9 @@ if ot:
         return cost
 
     def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000,
+                          periodic_phi=True, phi_col=2,
                           n_jobs=None, verbose=1, print_every=10**6):
-        """Compute the EMD between collections of events. This can be used to
+        r"""Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
         two difference sets.
 
@@ -221,6 +261,14 @@ if ot:
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
+        - **periodic_phi** : _bool_
+            - Whether to expect (and therefore properly handle) periodicity
+            in the coordinate corresponding to the azimuthal angle $\phi$.
+            Should typically be `True` for event-level applications but can
+            be set to `False` (which is slightly faster) for jet applications
+            where all $\phi$ differences are less than or equal to $\pi$.
+        - **phi_col** : _int_
+            - The index of the column of $\phi$ values in the event array.
         - **n_jobs** : _int_ or `None`
             - The number of worker processes to use. A value of `None` will use 
             as many processes as there are CPUs on the machine. Note that for
@@ -260,6 +308,11 @@ if ot:
         if n_jobs is None:
             n_jobs = multiprocessing.cpu_count() or 1
 
+        # period handling
+        assert norm is not None, '\'norm\' cannot be None'
+        assert 1 <= phi_col <= 1+gdim, '\'phi_col\' must be between 1 and 1+gdim'
+        phi_col_m1 = phi_col - 1
+
         # setup container for EMDs
         emds = np.zeros((len(X0), len(X1)))
 
@@ -276,8 +329,8 @@ if ot:
 
                 # iterate over pairs of events
                 begin = end = 0
-                #param_repeater = itertools.repeat((X0, X1, R, norm, n_iter_max))
-                imap_args = ((pair[0], pair[1], X0, X1, R, norm, n_iter_max) for pair in pairs)
+                other_params = [X0, X1, R, norm, n_iter_max, periodic_phi, phi_col_m1]
+                imap_args = ([pair, other_params] for pair in pairs)
                 while end < npairs:
                     end += print_every
                     end = min(end, npairs)
@@ -289,7 +342,8 @@ if ot:
                     # map function and store results
                     results = list(pool.map(_emd4imap, local_imap_args, chunksize=chunksize))
                     for arg,r in zip(local_imap_args, results):
-                        emds[arg[0], arg[1]] = r
+                        i, j = arg[0]
+                        emds[i, j] = r
 
                     # setup for next iteration of while loop
                     begin = end
@@ -302,7 +356,7 @@ if ot:
         # run EMDs in this process
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
-                emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter_max)
+                emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter_max, periodic_phi, phi_col_m1)
                 if verbose >= 1 and (k % print_every) == 0:
                     args = (k, k/npairs*100, time.time() - start)
                     print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))

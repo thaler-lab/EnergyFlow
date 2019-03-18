@@ -34,13 +34,19 @@ class LinearClassifier(ArchBase):
             all arguments are passed on directly to the scikit-learn
             class.
 
-        **LDA Hyperparameters**
+        **Linear Discriminant Analysis Hyperparameters**
 
         - **solver**=`'svd'` : {`'svd'`, `'lsqr'`, `'eigen'`}
             - Which LDA solver to use.
         - **tol**=`1e-12` : _float_
             - Threshold used for rank estimation. Notably not a
             convergence parameter.
+
+        **Logistic Regression Hyperparameters**
+
+        - **LR_hps**=`{}` : _dict_
+            - Dictionary of keyword arguments to pass on to the underlying
+            `LogisticRegression` model.
         """
 
         # which type of linear model we're using

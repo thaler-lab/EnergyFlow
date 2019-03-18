@@ -4,7 +4,7 @@ from keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialD
 from keras.models import Sequential
 
 from energyflow.archs.archbase import NNBase
-from energyflow.utils import iter_or_rep, transfer
+from energyflow.utils import iter_or_rep
 
 __all__ = ['CNN']
 
@@ -19,7 +19,8 @@ class CNN(NNBase):
 
     # CNN(*args, **kwargs)
     def _process_hps(self):
-        """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
+        """See [`ArchBase`](#archbase) for how to pass in hyperparameters as
+        well as hyperparameters common to all EnergyFlow neural network models.
 
         **Required CNN Hyperparameters**
 
@@ -57,12 +58,12 @@ class CNN(NNBase):
             - Activation functions(s) for the dense layers. A single string 
             or activation layer will apply the same activation to all dense 
             layers.
-        - **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
+        - **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
             - Kernel initializers for the convolutional layers. A single
             string will apply the same initializer to all layers. See the
             [Keras initializer docs](https://keras.io/initializers/) for 
             more detail.
-        - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
+        - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
             - Kernel initializers for the dense layers. A single string will 
             apply the same initializer to all layers.
         - **conv_dropouts**=`0` : {_tuple_, _list_} of _float_

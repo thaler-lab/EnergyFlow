@@ -20,7 +20,8 @@ class DNN(NNBase):
 
     # DNN(*args, **kwargs)
     def _process_hps(self):
-        """See [`ArchBase`](#archbase) for how to pass in hyperparameters.
+        """See [`ArchBase`](#archbase) for how to pass in hyperparameters as
+        well as hyperparameters common to all EnergyFlow neural network models.
 
         **Required DNN Hyperparameters**
 
@@ -42,7 +43,7 @@ class DNN(NNBase):
             pass as many activations as there are layers in the model.See the
             [Keras activations docs](https://keras.io/activations/) for more 
             detail.
-        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_
+        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
             - Kernel initializers for the dense layers. A single string 
             will apply the same initializer to all layers. See the
             [Keras initializer docs](https://keras.io/initializers/) for 
