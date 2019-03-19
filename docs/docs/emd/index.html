@@ -88,6 +88,10 @@
                     
     <a class="" href="../../faqs/">FAQs</a>
                 </li>
+                <li class="">
+                    
+    <a class="" href="../../releases/">Release Notes</a>
+                </li>
     </ul>
 	    </li>
           
@@ -122,7 +126,7 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../gen/">Generation</a>
+    <a class="" href="../gen/">Multigraph Generation</a>
                 </li>
                 <li class="">
                     
@@ -198,7 +202,7 @@ of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000, periodic_phi=True, phi_col=2)
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000, periodic_phi=False, phi_col=2)
 </code></pre>
 
 <p>Compute the EMD between two events.</p>
@@ -241,8 +245,10 @@ in the flow matrix.</li>
 </ul>
 </li>
 <li><strong>gdim</strong> : <em>int</em><ul>
-<li>The dimension of the ground metric space. See the description in
-<code>ev0</code> for details.</li>
+<li>The dimension of the ground metric space. Useful for restricting
+which dimensions are considered part of the ground space. Can be
+larger than the number of dimensions present in the events (in
+which case all dimensions will be included).</li>
 </ul>
 </li>
 <li><strong>n_iter_max</strong> : <em>int</em><ul>
@@ -278,7 +284,7 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds">emds</h3>
-<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000, periodic_phi=True, phi_col=2, n_jobs=None, verbose=1, print_every=1000000)
+<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000, periodic_phi=False, phi_col=2, n_jobs=None, verbose=1, print_every=1000000)
 </code></pre>
 
 <p>Compute the EMD between collections of events. This can be used to
@@ -317,8 +323,10 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 </li>
 <li><strong>gdim</strong> : <em>int</em><ul>
-<li>The dimension of the ground metric space. See the description in
- <code>ev0</code> for details.</li>
+<li>The dimension of the ground metric space. Useful for restricting
+ which dimensions are considered part of the ground space. Can be
+ larger than the number of dimensions present in the events (in
+ which case all dimensions will be included).</li>
 </ul>
 </li>
 <li><strong>n_iter_max</strong> : <em>int</em><ul>

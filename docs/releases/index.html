@@ -8,7 +8,7 @@
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>Installation - EnergyFlow</title>
+  <title>Release Notes - EnergyFlow</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
@@ -18,9 +18,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Installation";
-    var mkdocs_page_input_path = "installation.md";
-    var mkdocs_page_url = "/installation/";
+    var mkdocs_page_name = "Release Notes";
+    var mkdocs_page_input_path = "releases.md";
+    var mkdocs_page_url = "/releases/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
@@ -72,18 +72,9 @@
 		
     <span class="caption-text">Getting Started</span>
     <ul class="subnav">
-                <li class=" current">
+                <li class="">
                     
-    <a class="current" href="./">Installation</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#install-via-pip">Install via pip</a></li>
-    
-
-    <li class="toctree-l3"><a href="#numpy">NumPy</a></li>
-    
-
-    </ul>
+    <a class="" href="../installation/">Installation</a>
                 </li>
                 <li class="">
                     
@@ -97,9 +88,24 @@
                     
     <a class="" href="../faqs/">FAQs</a>
                 </li>
-                <li class="">
+                <li class=" current">
                     
-    <a class="" href="../releases/">Release Notes</a>
+    <a class="current" href="./">Release Notes</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#012x">0.12.x</a></li>
+    
+
+    <li class="toctree-l3"><a href="#011x">0.11.x</a></li>
+    
+
+    <li class="toctree-l3"><a href="#010x">0.10.x</a></li>
+    
+
+    <li class="toctree-l3"><a href="#09x">&lt;0.9.x</a></li>
+    
+
+    </ul>
                 </li>
     </ul>
 	    </li>
@@ -165,10 +171,10 @@
         
       
     
-    <li>Installation</li>
+    <li>Release Notes</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/installation.md"
+        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/releases.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -178,17 +184,67 @@
           <div role="main">
             <div class="section">
               
-                <p>The EnergyFlow package is written in pure Python and the core depends only on NumPy, the fundamental package for scientific computing with Python, and six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3. The extra features require additional packages as specified below:</p>
+                <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
+<h3 id="012x">0.12.x</h3>
+<p><strong>0.12.0</strong></p>
 <ul>
-<li>Architectures: <a href="https://keras.io">Keras</a>, <a href="https://scikit-learn.org">scikit-learn</a>.</li>
-<li>EMD: <a href="https://pot.readthedocs.io/en/stable">Python Optimal Transport (POT)</a>.</li>
-<li>Multigraph Generation: <a href="http://igraph.org/redirect.html">iGraph</a></li>
+<li>Fixed potential <a href="https://github.com/keras-team/keras/issues/12495">issue</a> involving the Keras <code>Masking</code> 
+layer not functioning as documented. This is not expected to affect any EFN models that
+were padded with zeros, nor any PFN models for which the padding was consistent across training and testing
+sets. Thanks to Anders Andreassen for pointing this out!</li>
+<li>Added arbitrary attribute lookup in the underlying model for all EnergyFlow architectures.</li>
+<li>Deprecated old EFN/PFN parameter names.</li>
+<li>Built-in support for ModelCheckpoint and EarlyStopping callbacks for neural network models.</li>
+<li>Made naming of neural network layers optional, allowing pieces to be reused more easily.</li>
+<li>Support for periodic phi values in EMD module.</li>
+<li>Added support for passing arbitrary compilation options to Keras models.</li>
 </ul>
-<p>The EnergyFlow package is designed to work with Python 2.7, 3.5, 3.6, and 3.7. These can be installed from <a href="https://www.python.org/downloads/">here</a>. A recent version of Python 3 is highly recommended, ideally 3.6 or higher.</p>
-<h3 id="install-via-pip">Install via <code>pip</code></h3>
-<p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
-<h3 id="numpy">NumPy</h3>
-<p>As of version <code>0.8.2</code>, EnergyFlow has used a modified version of <code>numpy.einsum</code> to do the heavy lifting for the computation of EFPs. NumPy 1.14.0 changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. It was found that the multi-process approach used by <a href="../docs/efps/#batch_compute_1"><code>batch_compute</code></a> is typically much faster when using the inherently single-threaded <code>c_einsum</code> versus <code>tensordot</code>, which can call BLAS. Hence the custom version of <code>einsum</code> shipped with EnergyFlow disables all calls to <code>tensordot</code> and uses only <code>c_einsum</code>.</p>
+<h3 id="011x">0.11.x</h3>
+<p><strong>0.11.2</strong></p>
+<ul>
+<li>Added advanced activations support for neural network architectures. Thanks to Kevin Bauer for this suggestion!</li>
+</ul>
+<p><strong>0.11.1</strong></p>
+<ul>
+<li>Fixed issue when using Python 2 caused by not importing division in dataset loading code. Thanks to Matt LeBlanc 
+for pointing this out!</li>
+<li>Added <code>n_iter_max</code> option to EMD functions.</li>
+</ul>
+<p><strong>0.11.0</strong></p>
+<ul>
+<li>Added <code>emd</code> module to EnergyFlow. This new module is not imported by default and relies on
+the <a href="https://pot.readthedocs.io">Python Optimal Transport</a> library and <a href="http://scipy.github.io/devdocs/">SciPy</a>.</li>
+</ul>
+<h3 id="010x">0.10.x</h3>
+<p><strong>0.10.5</strong></p>
+<ul>
+<li>Minor improvement and fixes. Thanks to Preksha Naik for pointing out a typo!</li>
+</ul>
+<p><strong>0.10.4</strong></p>
+<ul>
+<li>Updates to the documentation and enhanced examples provided.</li>
+</ul>
+<p><strong>0.10.3</strong></p>
+<ul>
+<li>Finalized initial documentation pages.</li>
+<li>Minor improvement and fixes.</li>
+</ul>
+<p><strong>0.10.2</strong></p>
+<ul>
+<li>Minor improvement and fixes.</li>
+</ul>
+<p><strong>0.10.1</strong></p>
+<ul>
+<li>Minor improvement and fixes.</li>
+</ul>
+<p><strong>0.10.0</strong></p>
+<ul>
+<li>Added <code>archs</code> module containing EFN, PFN, DNN, CNN, and Linear models.</li>
+</ul>
+<h3 id="09x">&lt;0.9.x</h3>
+<ul>
+<li>Rapid development of EFP code.</li>
+</ul>
               
             </div>
           </div>
@@ -196,10 +252,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../demo/" class="btn btn-neutral float-right" title="Demo">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../docs/efps/" class="btn btn-neutral float-right" title="Energy Flow Polynomials">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../faqs/" class="btn btn-neutral" title="FAQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -227,10 +283,10 @@
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../faqs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../demo/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../docs/efps/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

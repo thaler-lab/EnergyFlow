@@ -1,31 +1,62 @@
-Version 0.12.0
-- Added attribute lookup to NNBase
-- Changed EFN parameter names
-- Added builtin callbacks (early stopping and model checkpoint)
-- Added option to name EFN layers or not
-- Added support for periodic phi in EMD
-- Changed how NNBase accepts compile options
+### 0.12.x
+**0.12.0**
 
-Version 0.11.2:
-- Added advanced activations support for NN archs.
+- Fixed potential [issue](https://github.com/keras-team/keras/issues/12495) involving the Keras `Masking` 
+layer not functioning as documented. This is not expected to affect any EFN models that
+were padded with zeros, nor any PFN models for which the padding was consistent across training and testing
+sets. Thanks to Anders Andreassen for pointing this out!
+- Added arbitrary attribute lookup in the underlying model for all EnergyFlow architectures.
+- Deprecated old EFN/PFN parameter names.
+- Built-in support for ModelCheckpoint and EarlyStopping callbacks for neural network models.
+- Made naming of neural network layers optional, allowing pieces to be reused more easily.
+- Support for periodic phi values in EMD module.
+- Added support for passing arbitrary compilation options to Keras models.
 
-Version 0.11.1:
-- Fixed bug caused by not importing division in dataset loading.
-- Added n_iter_max option to emd submodule.
 
-Version 0.11.0:
-- Added EMD submodule for EMD computations.
-- Began the CHANGELOG ;)
+### 0.11.x
+**0.11.2**
 
-Version 0.10.0:
-- Added architectures submodule including EFNs, PFNs, CNNs, DNNs, and Linear models.
+- Added advanced activations support for neural network architectures. Thanks to Kevin Bauer for this suggestion!
 
-Version 0.8.2:
-- Switch to using customized einsumfunc.py borrowed from NumPy that avoids
-  calls to BLAS (which are suboptimal when trivially parallelizing computations).
+**0.11.1**
 
-Version 0.7.0:
-- Added tests for EFP code.
+- Fixed issue when using Python 2 caused by not importing division in dataset loading code. Thanks to Matt LeBlanc 
+for pointing this out!
+- Added `n_iter_max` option to EMD functions.
 
-Previous versions:
-- Rapid development of EFP code
+**0.11.0**
+
+- Added `emd` module to EnergyFlow. This new module is not imported by default and relies on
+the [Python Optimal Transport](https://pot.readthedocs.io) library and [SciPy](http://scipy.github.io/devdocs/).
+
+
+### 0.10.x
+**0.10.5**
+
+- Minor improvement and fixes. Thanks to Preksha Naik for pointing out a typo!
+
+**0.10.4**
+
+- Updates to the documentation and enhanced examples provided.
+
+**0.10.3**
+
+- Finalized initial documentation pages.
+- Minor improvement and fixes.
+
+**0.10.2**
+
+- Minor improvement and fixes.
+
+**0.10.1**
+
+- Minor improvement and fixes.
+
+**0.10.0**
+
+- Added `archs` module containing EFN, PFN, DNN, CNN, and Linear models.
+
+
+### <0.9.x
+
+- Rapid development of EFP code.

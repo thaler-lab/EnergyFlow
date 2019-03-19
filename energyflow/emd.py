@@ -46,9 +46,8 @@ if ot:
 
     __all__ = ['emd', 'emds']
 
+    # parameter checks
     def _check_params(norm, gdim, phi_col):
-
-        # parameter checks
         if norm is None:
             raise ValueError('\'norm\' cannot be None')
         if gdim < 1:
@@ -110,7 +109,7 @@ if ot:
         return pts, coords
 
     def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000,
-                      periodic_phi=True, phi_col=2):
+                      periodic_phi=False, phi_col=2):
         r"""Compute the EMD between two events.
 
         **Arguments**
@@ -245,7 +244,7 @@ if ot:
         return cost
 
     def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000,
-                          periodic_phi=True, phi_col=2,
+                          periodic_phi=False, phi_col=2,
                           n_jobs=None, verbose=1, print_every=10**6):
         r"""Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
