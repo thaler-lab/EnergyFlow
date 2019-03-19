@@ -63,8 +63,6 @@ def test_efp_asymbox(zs, thetas, beta):
     efp_result = ef.EFP(asymbox_graph, beta=beta).compute(zs=zs, thetas=thetas)
     return epsilon_percent(asymbox, efp_result, epsilon=10**-13)
 
-nogood = pytest.mark.xfail(raises=NotImplementedError) if sys.platform.startswith('linux') else []
-
 @pytest.mark.slow
 @pytest.mark.batch_compute
 @pytest.mark.parametrize('normed', [True, False])

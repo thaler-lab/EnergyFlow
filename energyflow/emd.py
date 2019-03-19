@@ -46,6 +46,16 @@ if ot:
 
     __all__ = ['emd', 'emds']
 
+    def _check_params(norm, gdim, phi_col):
+
+        # parameter checks
+        if norm is None:
+            raise ValueError('\'norm\' cannot be None')
+        if gdim < 1:
+            raise ValueError('\'gdim\' must be greater than or equal to 1')
+        if phi_col < 1 or phi_col > gdim + 1:
+            raise ValueError('\'phi_col\' must be in [1,gdim]')
+
     # faster than scipy's cdist function because we can avoid their checks
     def _cdist_euclidean(X, Y, periodic_phi, phi_col):
 
@@ -76,6 +86,7 @@ if ot:
     # process events for EMD calculation
     two_pi = 2*np.pi
     def _process_for_emd(event, norm, gdim, periodic_phi, phi_col):
+        
         event = np.atleast_2d(event)
         
         if norm:
@@ -90,6 +101,10 @@ if ot:
         coords = np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64)
 
         if periodic_phi:
+            if phi_col >= event.shape[1] - 1:
+                evgdim = str(event.shape[1] - 1)
+                raise ValueError('\'phi_col\' cannot be larger than the ground space '
+                                 'dimension, which is ' + evgdim + ' for one of the events')
             coords[:,phi_col] %= two_pi
 
         return pts, coords
@@ -127,8 +142,10 @@ if ot:
             particle in the event with lesser total pT, this will be reflected 
             in the flow matrix.
         - **gdim** : _int_
-            - The dimension of the ground metric space. See the description in
-            `ev0` for details.
+            - The dimension of the ground metric space. Useful for restricting
+            which dimensions are considered part of the ground space. Can be
+            larger than the number of dimensions present in the events (in
+            which case all dimensions will be included).
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
@@ -151,8 +168,10 @@ if ot:
             and particle j in `ev1`.
         """
 
-        # check phi_col
-        assert 1 <= phi_col <= 1+gdim, '\'phi_col\' must be between 1 and 1+gdim'
+        # parameter checks
+        _check_params(norm, gdim, phi_col)
+
+        # handle periodicity
         phi_col_m1 = phi_col - 1
 
         # process events
@@ -257,8 +276,10 @@ if ot:
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
         - **gdim** : _int_
-            - The dimension of the ground metric space. See the description in
-            `ev0` for details.
+            - The dimension of the ground metric space. Useful for restricting
+            which dimensions are considered part of the ground space. Can be
+            larger than the number of dimensions present in the events (in
+            which case all dimensions will be included).
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
@@ -291,13 +312,13 @@ if ot:
             otherwise it will have shape `(len(X0), len(X1))`.
         """
 
-        # period handling
-        assert norm is not None, '\'norm\' cannot be None'
-        assert 1 <= phi_col <= 1+gdim, '\'phi_col\' must be between 1 and 1+gdim'
-        phi_col_m1 = phi_col - 1
+        _check_params(norm, gdim, phi_col)
 
         # determine if we're doing symmetric pairs
         sym = X1 is None
+
+        # period handling
+        phi_col_m1 = phi_col - 1
 
         # process events into convenient form for EMD
         X0 = [_process_for_emd(x, norm, gdim, periodic_phi, phi_col_m1) for x in X0]

@@ -76,19 +76,20 @@ def test_gdim(gdim, evdim, M, norm, R):
     if R < np.sqrt(gdim)/2:
         pytest.skip('R too small')
     events = np.random.rand(nev, M, 1+evdim)
-    emds1 = emd.emds(events, gdim=gdim, norm=norm, R=R, n_jobs=1, verbose=0)
-    emds2 = emd.emds(events[:,:,:1+gdim], gdim=100, norm=norm, R=R, n_jobs=1, verbose=0)
+    emds1 = emd.emds(events, gdim=gdim, norm=norm, periodic_phi=False, R=R, n_jobs=1, verbose=0)
+    emds2 = emd.emds(events[:,:,:1+gdim], gdim=100, norm=norm, periodic_phi=False, R=R, n_jobs=1, verbose=0)
 
     assert epsilon_diff(emds1, emds2, 10**-13)
 
 @pytest.mark.emd
 @pytest.mark.periodic
+@pytest.mark.parametrize('periodic_phi', [True, False])
 @pytest.mark.parametrize('M', [1,2,5,25])
 @pytest.mark.parametrize('gdim', [1,2,3])
-def test_periodic_phi(gdim, M):
+def test_periodic_phi(gdim, M, periodic_phi):
     events = np.random.rand(nev, M, 1+gdim)
     for phi_col in range(1,gdim+1):
-        emds1 = emd.emds(events, R=1.0, periodic_phi=False, gdim=gdim, n_jobs=1, verbose=0)
+        emds1 = emd.emds(events, R=1.0, periodic_phi=periodic_phi, gdim=gdim, n_jobs=1, verbose=0)
         events_c = np.copy(events)
         events_c[:,:,phi_col] += 2*np.pi*np.random.randint(-10, 10, size=(nev, M))
         emds2 = emd.emds(events_c, R=1.0, gdim=gdim, periodic_phi=True, phi_col=phi_col, n_jobs=1, verbose=0)
@@ -136,7 +137,7 @@ def test_emd_byhand_1_1(gdim, norm, R):
         ev1 = np.random.rand(1+gdim)
         for j in range(nev):
             ev2 = np.random.rand(1+gdim)
-            ef_emd = emd.emd(ev1, ev2, norm=norm, R=R, gdim=gdim)
+            ef_emd = emd.emd(ev1, ev2, norm=norm, R=R, gdim=gdim, periodic_phi=False)
             if norm:
                 byhand_emd = np.linalg.norm(ev1[1:]-ev2[1:])/R
             else:
