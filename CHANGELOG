@@ -11,6 +11,7 @@ sets. Thanks to Anders Andreassen for pointing this out!
 - Made naming of neural network layers optional, allowing pieces to be reused more easily.
 - Support for periodic phi values in EMD module.
 - Added support for passing arbitrary compilation options to Keras models.
+- Added EMD Demo notebook
 
 
 ### 0.11.x

@@ -30,4 +30,5 @@ datasets/
 !energyflow/datasets
 !docs/docs/datasets
 !EnergyFlow Demo.ipynb
+!EMD Demo.ipynb
 keras/

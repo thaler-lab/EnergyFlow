@@ -245,7 +245,7 @@ if ot:
 
     def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000,
                           periodic_phi=False, phi_col=2,
-                          n_jobs=None, verbose=1, print_every=10**6):
+                          n_jobs=None, verbose=0, print_every=10**6):
         r"""Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
         two difference sets.
