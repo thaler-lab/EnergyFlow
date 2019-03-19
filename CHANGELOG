@@ -1,4 +1,10 @@
 ### 0.12.x
+**0.12.1**
+
+- Named lambda functions inside EFNs and PFNs (necessary for saving models).
+- Fixed typo in archbase code.
+- Added tests for architecture code.
+
 **0.12.0**
 
 - Fixed potential [issue](https://github.com/keras-team/keras/issues/12495) involving the Keras `Masking` 

@@ -7,6 +7,8 @@ install:
   - pip install cython
   - pip install pot
   - pip install pytest
+  - pip install keras
+  - pip install tensorflow
   - pip install .
 script: 
   - pytest -v

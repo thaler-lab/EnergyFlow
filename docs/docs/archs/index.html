@@ -457,9 +457,9 @@ the number of convolutional layers in the network.</li>
 equivalent to an empty list.</li>
 </ul>
 </li>
-<li><strong>pool_sizes</strong>=<code>None</code> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li><strong>pool_sizes</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>Size of maxpooling filter, taken to be a square. A value of 
-<code>None</code> will not use maxpooling.</li>
+<code>0</code> will not use maxpooling.</li>
 </ul>
 </li>
 <li><strong>conv_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras activation<ul>
@@ -556,7 +556,8 @@ pass as many activations as there are layers in the model.See the
 detail.</li>
 </ul>
 </li>
-<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
+<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras 
+initializer<ul>
 <li>Kernel initializers for the dense layers. A single string 
 will apply the same initializer to all layers. See the
 <a href="https://keras.io/initializers/">Keras initializer docs</a> for 

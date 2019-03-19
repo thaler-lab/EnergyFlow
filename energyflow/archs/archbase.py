@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 import sys
 import warnings
 
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
 
 from six import string_types, with_metaclass
@@ -248,7 +249,7 @@ class NNBase(ArchBase):
         self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
                              'optimizer': self._proc_arg('optimizer', default='adam'),
                              'metrics': self._proc_arg('metrics', default=['accuracy'])}
-        self.compile_opts.update({self._proc_arg('compile_opts', default={})})
+        self.compile_opts.update(self._proc_arg('compile_opts', default={}))
 
         # add these attributes for historical reasons
         self.loss = self.compile_opts['loss']

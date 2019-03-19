@@ -40,9 +40,9 @@ class CNN(NNBase):
         - **dense_sizes**=`None` : {_tuple_, _list_} of _int_
             - The sizes of the dense layer backend. A value of `None` is 
             equivalent to an empty list.
-        - **pool_sizes**=`None` : {_tuple_, _list_} of _int_
+        - **pool_sizes**=`0` : {_tuple_, _list_} of _int_
             - Size of maxpooling filter, taken to be a square. A value of 
-            `None` will not use maxpooling.
+            `0` will not use maxpooling.
         - **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
             - Activation function(s) for the conv layers. A single string or
             activation layer will apply the same activation to all conv layers.
@@ -99,8 +99,10 @@ class CNN(NNBase):
         assert len(self.filter_sizes) == len(self.num_filters), m
 
         # optional (but likely provided) hyperparameters with defaults
-        self.pool_sizes = iter_or_rep(self._proc_arg('pool_sizes', default=None))
+        self.pool_sizes = iter_or_rep(self._proc_arg('pool_sizes', default=0))
         self.dense_sizes = self._proc_arg('dense_sizes', default=None)
+        if self.dense_sizes is None:
+            self.dense_sizes = []
 
         # activations
         self.conv_acts = iter_or_rep(self._proc_arg('conv_acts', default='relu'))

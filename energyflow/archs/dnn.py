@@ -43,7 +43,8 @@ class DNN(NNBase):
             pass as many activations as there are layers in the model.See the
             [Keras activations docs](https://keras.io/activations/) for more 
             detail.
-        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
+        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras 
+        initializer
             - Kernel initializers for the dense layers. A single string 
             will apply the same initializer to all layers. See the
             [Keras initializer docs](https://keras.io/initializers/) for 
@@ -85,7 +86,9 @@ class DNN(NNBase):
 
         # iterate over specified dense layers
         z = zip(self.dense_sizes, self.acts, self.dropouts, self.l2_regs, self.k_inits)
+        looped = False
         for i,(dim, act, dropout, l2_reg, k_init) in enumerate(z):
+            looped = True
 
             # construct variable argument dict
             kwargs = {} if i > 0 else {'input_dim': self.input_dim}
@@ -100,6 +103,9 @@ class DNN(NNBase):
             # add dropout layer if nonzero
             if dropout > 0.:
                 self.model.add(Dropout(dropout, name=self._proc_name('dropout_' + str(i))))
+
+        if not looped:
+            raise ValueError('need to specify at least one dense layer')
 
         # output layer
         self.model.add(Dense(self.output_dim, name=self._proc_name('output')))

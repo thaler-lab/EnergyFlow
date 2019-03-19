@@ -228,8 +228,10 @@ class EFN(SymmetricPerParticleNN):
         self._inputs = [zs_input, phats_input]
 
         # make weight tensor
-        self._weights = Lambda(lambda x: x * K.cast(K.not_equal(x, self.mask_val), K.dtype(x)), 
-                               name=self._proc_name('mask'))(self.inputs[0])
+        self._weights = Lambda(self._efn_mask, name=self._proc_name('mask'))(self.inputs[0])
+
+    def _efn_mask(self, x):
+        return x * K.cast(K.not_equal(x, self.mask_val), K.dtype(x))
 
     @property
     def inputs(self):
@@ -328,9 +330,10 @@ class PFN(SymmetricPerParticleNN):
         self._inputs = [Input(batch_shape=(None, None, self.input_dim), 
                               name=self._proc_name('input'))]
 
-        self._weights = Lambda(lambda x: K.cast(K.any(K.not_equal(x, self.mask_val),
-                                                      axis=-1), K.dtype(x)),
-                               name=self._proc_name('mask'))(self.inputs[0])
+        self._weights = Lambda(self._pfn_mask, name=self._proc_name('mask'))(self.inputs[0])
+
+    def _pfn_mask(self, x):
+        return K.cast(K.any(K.not_equal(x, self.mask_val), axis=-1), K.dtype(x))
 
     @property
     def inputs(self):
