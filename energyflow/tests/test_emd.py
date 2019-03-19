@@ -88,7 +88,7 @@ def test_gdim(gdim, evdim, M, norm, R):
 def test_periodic_phi(gdim, M):
     events = np.random.rand(nev, M, 1+gdim)
     for phi_col in range(1,gdim+1):
-        emds1 = emd.emds(events, R=1.0, periodic_phi=periodic_phi, gdim=gdim, n_jobs=1, verbose=0)
+        emds1 = emd.emds(events, R=1.0, periodic_phi=False, gdim=gdim, n_jobs=1, verbose=0)
         events_c = np.copy(events)
         events_c[:,:,phi_col] += 2*np.pi*np.random.randint(-10, 10, size=(nev, M))
         emds2 = emd.emds(events_c, R=1.0, gdim=gdim, periodic_phi=True, phi_col=phi_col, n_jobs=1, verbose=0)
