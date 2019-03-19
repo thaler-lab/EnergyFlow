@@ -64,14 +64,35 @@ if ot:
             # general case
             else:
                 non_phi_cols = [i for i in range(X.shape[1]) if i != phi_col]
-                d_others2 = (X[:,non_phi_cols,np.newaxis] - Y[:,non_phi_cols])**2
-                out = np.sqrt(d_others2.sum(axis=1) + d_phis**2)
+                d_others2 = (X[:,np.newaxis,non_phi_cols] - Y[:,non_phi_cols])**2
+                out = np.sqrt(d_others2.sum(axis=-1) + d_phis**2)
 
         else:
             out = np.empty((len(X), len(Y)), dtype=np.double)
             _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
         
         return out
+
+    # process events for EMD calculation
+    two_pi = 2*np.pi
+    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col):
+        event = np.atleast_2d(event)
+        
+        if norm:
+            pts = event[:,0]/event[:,0].sum()
+        elif norm is None:
+            pts = event[:,0]
+        else:
+            event = np.vstack((event, np.zeros(event.shape[1])))
+            pts = event[:,0]
+
+        pts = np.ascontiguousarray(pts, dtype=np.float64)
+        coords = np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64)
+
+        if periodic_phi:
+            coords[:,phi_col] %= two_pi
+
+        return pts, coords
 
     def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000,
                       periodic_phi=True, phi_col=2):
@@ -169,26 +190,6 @@ if ot:
         check_result(result_code)
         
         return (cost, G) if return_flow else cost
-
-    # process events for EMD calculation using _emd
-    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col):
-        event = np.atleast_2d(event)
-        
-        if norm:
-            pts = event[:,0]/event[:,0].sum()
-        elif norm is None:
-            pts = event[:,0]
-        else:
-            event = np.vstack((event, np.zeros(event.shape[1])))
-            pts = event[:,0]
-
-        pts = np.ascontiguousarray(pts, dtype=np.float64)
-        coords = np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64)
-
-        if periodic_phi:
-            coords[:,phi_col] %= 2*np.pi
-
-        return pts, coords
 
     # helper function for pool imap
     def _emd4imap(x):
@@ -290,12 +291,17 @@ if ot:
             otherwise it will have shape `(len(X0), len(X1))`.
         """
 
+        # period handling
+        assert norm is not None, '\'norm\' cannot be None'
+        assert 1 <= phi_col <= 1+gdim, '\'phi_col\' must be between 1 and 1+gdim'
+        phi_col_m1 = phi_col - 1
+
         # determine if we're doing symmetric pairs
         sym = X1 is None
 
         # process events into convenient form for EMD
-        X0 = [_process_for_emd(x, norm, gdim) for x in X0]
-        X1 = X0 if sym else [_process_for_emd(x, norm, gdim) for x in X1]
+        X0 = [_process_for_emd(x, norm, gdim, periodic_phi, phi_col_m1) for x in X0]
+        X1 = X0 if sym else [_process_for_emd(x, norm, gdim, periodic_phi, phi_col_m1) for x in X1]
 
         # get iterator for indices
         pairs = (itertools.combinations(range(len(X0)), r=2) if sym else 
@@ -307,11 +313,6 @@ if ot:
             print_every = int(npairs*print_event)
         if n_jobs is None:
             n_jobs = multiprocessing.cpu_count() or 1
-
-        # period handling
-        assert norm is not None, '\'norm\' cannot be None'
-        assert 1 <= phi_col <= 1+gdim, '\'phi_col\' must be between 1 and 1+gdim'
-        phi_col_m1 = phi_col - 1
 
         # setup container for EMDs
         emds = np.zeros((len(X0), len(X1)))

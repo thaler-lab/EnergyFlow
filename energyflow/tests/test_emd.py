@@ -1,6 +1,7 @@
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, print_function
 
 import itertools
+import warnings
 
 import numpy as np
 import ot
@@ -10,6 +11,8 @@ import energyflow as ef
 from energyflow import emd
 from test_utils import epsilon_percent, epsilon_diff
 
+warnings.filterwarnings('error')
+
 @pytest.mark.emd
 def test_has_emd():
     assert emd.emd
@@ -18,7 +21,7 @@ def test_has_emd():
 def test_has_emds():
     assert emd.emds
 
-nev = 5
+nev = 15
 
 @pytest.mark.emd
 @pytest.mark.parametrize('R', [np.sqrt(2)/2, 1.0, 2])
@@ -77,6 +80,20 @@ def test_gdim(gdim, evdim, M, norm, R):
     emds2 = emd.emds(events[:,:,:1+gdim], gdim=100, norm=norm, R=R, n_jobs=1, verbose=0)
 
     assert epsilon_diff(emds1, emds2, 10**-13)
+
+@pytest.mark.emd
+@pytest.mark.periodic
+@pytest.mark.parametrize('M', [1,2,5,25])
+@pytest.mark.parametrize('gdim', [1,2,3])
+def test_periodic_phi(gdim, M):
+    events = np.random.rand(nev, M, 1+gdim)
+    for phi_col in range(1,gdim+1):
+        emds1 = emd.emds(events, R=1.0, periodic_phi=False, gdim=gdim, n_jobs=1, verbose=0)
+        events_c = np.copy(events)
+        events_c[:,:,phi_col] += 2*np.pi*np.random.randint(-10, 10, size=(nev, M))
+        emds2 = emd.emds(events_c, R=1.0, gdim=gdim, periodic_phi=True, phi_col=phi_col, n_jobs=1, verbose=0)
+
+    assert epsilon_diff(emds1, emds2, 10**-12)
 
 @pytest.mark.emd
 @pytest.mark.return_flow
