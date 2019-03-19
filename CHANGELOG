@@ -29,6 +29,7 @@ for pointing this out!
 
 - Added `emd` module to EnergyFlow. This new module is not imported by default and relies on
 the [Python Optimal Transport](https://pot.readthedocs.io) library and [SciPy](http://scipy.github.io/devdocs/).
+- Included binder support for the jupyter notebook demos. Thanks to Matthew Feickert for contributing this feature!
 
 
 ### 0.10.x
