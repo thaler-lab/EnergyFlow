@@ -83,10 +83,9 @@ def test_gdim(gdim, evdim, M, norm, R):
 
 @pytest.mark.emd
 @pytest.mark.periodic
-@pytest.mark.parametrize('periodic_phi', [True, False])
 @pytest.mark.parametrize('M', [1,2,5,25])
 @pytest.mark.parametrize('gdim', [1,2,3])
-def test_periodic_phi(gdim, M, periodic_phi):
+def test_periodic_phi(gdim, M):
     events = np.random.rand(nev, M, 1+gdim)
     for phi_col in range(1,gdim+1):
         emds1 = emd.emds(events, R=1.0, periodic_phi=periodic_phi, gdim=gdim, n_jobs=1, verbose=0)
