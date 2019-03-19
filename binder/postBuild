@@ -1,1 +1,1 @@
-pip install -U energyflow
+pip3 install -U energyflow

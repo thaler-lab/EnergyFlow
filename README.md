@@ -1,12 +1,12 @@
 # EnergyFlow
 ![alt-text](https://travis-ci.org/pkomiske/EnergyFlow.svg?branch=master "Travis-CI Build Status")
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pkomiske/EnergyFlow/master?filepath=EnergyFlow%20Demo.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pkomiske/EnergyFlow/master)
 
 EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) defined in Ref. [1], implements Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) defined in Ref. [2], and computes Energy Mover's Distances as defined in Ref. [3].
 
 #### Installation
 
-To install EnergyFlow with pip, simply write:
+To install EnergyFlow with pip, simply execute:
 ```sh
 pip install energyflow
 ```
