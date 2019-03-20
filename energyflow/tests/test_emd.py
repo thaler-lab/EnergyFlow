@@ -11,7 +11,7 @@ import energyflow as ef
 from energyflow import emd
 from test_utils import epsilon_percent, epsilon_diff
 
-warnings.filterwarnings('error')
+#warnings.filterwarnings('error')
 
 @pytest.mark.emd
 def test_has_emd():

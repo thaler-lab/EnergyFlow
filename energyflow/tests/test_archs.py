@@ -68,7 +68,7 @@ def test_EFN_required(input_dim, Phi_sizes, F_sizes):
     Y_train = np.random.rand(n, 2)
     efn = archs.EFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
     efn.fit(X_train, Y_train, epochs=1, batch_size=10)
-    efn.inputs, efn.latent, efn.weights, efn.outputs, efn.Phi, ef.F
+    efn.inputs, efn.latent, efn.weights, efn.outputs, efn.Phi, efn.F
 
 @pytest.mark.arch
 @pytest.mark.pfn
@@ -81,7 +81,7 @@ def test_PFN_required(input_dim, Phi_sizes, F_sizes):
     Y_train = np.random.rand(n, 2)
     pfn = archs.PFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
     pfn.fit(X_train, Y_train, epochs=1, batch_size=10)
-    pfn.inputs, pfn.latent, pfn.weights, pfn.outputs, pfn.Phi, pf.F
+    pfn.inputs, pfn.latent, pfn.weights, pfn.outputs, pfn.Phi, pfn.F
 
 @pytest.mark.arch
 @pytest.mark.archbase
