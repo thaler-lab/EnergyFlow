@@ -50,10 +50,13 @@ if ot:
     def _check_params(norm, gdim, phi_col):
         if norm is None:
             raise ValueError('\'norm\' cannot be None')
-        if gdim < 1:
-            raise ValueError('\'gdim\' must be greater than or equal to 1')
-        if phi_col < 1 or phi_col > gdim + 1:
-            raise ValueError('\'phi_col\' must be in [1,gdim]')
+        if phi_col < 1:
+            raise ValueError('\'phi_col\' cannot be smaller than 1')
+        if gdim is not None:
+            if gdim < 1:
+                raise ValueError('\'gdim\' must be greater than or equal to 1')
+            if phi_col > gdim + 1:
+                raise ValueError('\'phi_col\' must be less than or equal to gdim')
 
     # faster than scipy's cdist function because we can avoid their checks
     def _cdist_euclidean(X, Y, periodic_phi, phi_col):
@@ -97,7 +100,10 @@ if ot:
             pts = event[:,0]
 
         pts = np.ascontiguousarray(pts, dtype=np.float64)
-        coords = np.ascontiguousarray(event[:,1:(gdim+1)], dtype=np.float64)
+        if gdim is None:
+            coords = np.ascontiguousarray(event[:,1:], dtype=np.float64)
+        else:
+            coords = np.ascontiguousarray(event[:,1:gdim+1], dtype=np.float64)
 
         if periodic_phi:
             if phi_col >= event.shape[1] - 1:
@@ -108,7 +114,7 @@ if ot:
 
         return pts, coords
 
-    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=2, n_iter_max=100000,
+    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=None, n_iter_max=100000,
                       periodic_phi=False, phi_col=2):
         r"""Compute the EMD between two events.
 
@@ -144,7 +150,8 @@ if ot:
             - The dimension of the ground metric space. Useful for restricting
             which dimensions are considered part of the ground space. Can be
             larger than the number of dimensions present in the events (in
-            which case all dimensions will be included).
+            which case all dimensions will be included). If `None`, has no
+            effect.
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
@@ -243,7 +250,7 @@ if ot:
 
         return cost
 
-    def emds(X0, X1=None, R=1.0, norm=False, gdim=2, n_iter_max=100000,
+    def emds(X0, X1=None, R=1.0, norm=False, gdim=None, n_iter_max=100000,
                           periodic_phi=False, phi_col=2,
                           n_jobs=None, verbose=0, print_every=10**6):
         r"""Compute the EMD between collections of events. This can be used to
@@ -278,7 +285,8 @@ if ot:
             - The dimension of the ground metric space. Useful for restricting
             which dimensions are considered part of the ground space. Can be
             larger than the number of dimensions present in the events (in
-            which case all dimensions will be included).
+            which case all dimensions will be included). If `None`, has no
+            effect.
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.

@@ -1,4 +1,7 @@
 ### 0.12.x
+
+- Added another preiodic phi test for event EMD.
+
 **0.12.1**
 
 - Named lambda functions inside EFNs and PFNs (necessary for saving models).
