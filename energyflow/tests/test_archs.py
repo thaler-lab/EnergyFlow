@@ -11,23 +11,25 @@ from energyflow import archs
 from test_utils import epsilon_percent, epsilon_diff
 
 @pytest.mark.arch
+@pytest.mark.dnn
 @pytest.mark.parametrize('k_inits', ['he_uniform', 'glorot_uniform', 'uniform', [Constant(), Constant(), Constant()]])
 @pytest.mark.parametrize('acts', ['relu', 'LeakyReLU', 'sigmoid', [PReLU(), PReLU(), PReLU()]])
 @pytest.mark.parametrize('sizes', [pytest.param([], marks=pytest.mark.xfail), [10], [10, 10]])
 def test_DNN1(sizes, acts, k_inits):
-    n, input_dim = 100, 10
+    n, input_dim = 50, 10
     X_train = np.random.rand(n, input_dim)
     Y_train = np.random.rand(n, 2)
     dnn = archs.DNN(input_dim=input_dim, dense_sizes=sizes, acts=acts, k_inits=k_inits, summary=False, output_dim=2)
     dnn.fit(X_train, Y_train, epochs=1, batch_size=10)
 
 @pytest.mark.arch
+@pytest.mark.dnn
 @pytest.mark.parametrize('output_dim', [2, 4])
 @pytest.mark.parametrize('l2_regs', [0, 0.1, [0.2, 0.3, 0.5]])
 @pytest.mark.parametrize('dropouts', [0, 0.1, [0.2, 0.3, 0.5]])
 @pytest.mark.parametrize('sizes', [[10], [10, 10]])
 def test_DNN2(sizes, dropouts, l2_regs, output_dim):
-    n, input_dim = 100, 10
+    n, input_dim = 50, 10
     X_train = np.random.rand(n, input_dim)
     Y_train = np.random.rand(n, output_dim)
     dnn = archs.DNN(input_dim=input_dim, dense_sizes=sizes, dropouts=dropouts, 
@@ -36,12 +38,12 @@ def test_DNN2(sizes, dropouts, l2_regs, output_dim):
 
 @pytest.mark.arch
 @pytest.mark.cnn
-@pytest.mark.parametrize('pool_sizes', [0, 2])
+@pytest.mark.parametrize('pool_sizes', [0, (2, 0)])
 @pytest.mark.parametrize('dense_sizes', [None, [10]])
-@pytest.mark.parametrize('num_filters', [(2, 2), (6, 1)])
-@pytest.mark.parametrize('filter_sizes', [(2,2), (3,1)])
-@pytest.mark.parametrize('npix', [14, 20])
-@pytest.mark.parametrize('nb_chan', [1,2])
+@pytest.mark.parametrize('num_filters', [(2, 2), (3, 1)])
+@pytest.mark.parametrize('filter_sizes', [(2, 2), (3, 1)])
+@pytest.mark.parametrize('npix', [14])
+@pytest.mark.parametrize('nb_chan', [2])
 @pytest.mark.parametrize('data_format', ['channels_first', 'channels_last'])
 def test_CNN_required(data_format, nb_chan, npix, filter_sizes, num_filters, dense_sizes, pool_sizes):
     if data_format == 'channels_first':
@@ -61,7 +63,7 @@ def test_CNN_required(data_format, nb_chan, npix, filter_sizes, num_filters, den
 @pytest.mark.parametrize('Phi_sizes', [[], [10], [10, 10]])
 @pytest.mark.parametrize('input_dim', [1, 2])
 def test_EFN_required(input_dim, Phi_sizes, F_sizes):
-    n, m = 100, 10
+    n, m = 50, 10
     X_train = [np.random.rand(n, m), np.random.rand(n, m, input_dim)]
     Y_train = np.random.rand(n, 2)
     efn = archs.EFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
@@ -74,7 +76,7 @@ def test_EFN_required(input_dim, Phi_sizes, F_sizes):
 @pytest.mark.parametrize('Phi_sizes', [[], [10], [10, 10]])
 @pytest.mark.parametrize('input_dim', [1, 2])
 def test_PFN_required(input_dim, Phi_sizes, F_sizes):
-    n, m = 100, 10
+    n, m = 50, 10
     X_train = np.random.rand(n, m, input_dim)
     Y_train = np.random.rand(n, 2)
     pfn = archs.PFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
@@ -88,7 +90,7 @@ def test_PFN_required(input_dim, Phi_sizes, F_sizes):
 @pytest.mark.parametrize('save_while_training', [True, False])
 @pytest.mark.parametrize('model_path', ['', 'efn_test_model.h5'])
 def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, modelcheck_opts):
-    n, m = 100, 10
+    n, m = 50, 10
     X_train = [np.random.rand(n, m), np.random.rand(n, m, 2)]
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2)]
@@ -103,7 +105,7 @@ def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, mode
 @pytest.mark.efn
 @pytest.mark.parametrize('mask_val', [0.0, 10, np.pi])
 def test_EFN_masking(mask_val):
-    n,m1,m2 = (100, 10, 20)
+    n,m1,m2 = (50, 10, 20)
     input_dim = 3
 
     X_train = [np.random.rand(n,m1), np.random.rand(n,m1,input_dim)]
@@ -127,7 +129,7 @@ def test_EFN_masking(mask_val):
 @pytest.mark.pfn
 @pytest.mark.parametrize('mask_val', [0.0, 10, np.pi])
 def test_PFN_masking(mask_val):
-    n,m1,m2 = (100, 10, 20)
+    n,m1,m2 = (50, 10, 20)
     input_dim = 3
 
     X_train = np.random.rand(n,m1,input_dim)

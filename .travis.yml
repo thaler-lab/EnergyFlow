@@ -4,6 +4,7 @@ python:
   - "3.5"
   - "3.6"
 install:
+  - pip install -U scipy
   - pip install cython
   - pip install pot
   - pip install pytest

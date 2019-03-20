@@ -132,7 +132,9 @@ class CNN(NNBase):
         conv_z = zip(self.filter_sizes, self.num_filters, self.pool_sizes, self.conv_acts,
                      self.conv_dropouts, self.conv_k_inits, self.paddings)
         num_dropout = 0
+        looped = False
         for i,(filter_size, num_filter, pool_size, act, dropout, k_init, pad) in enumerate(conv_z):
+            looped = True
 
             # add conv2d layer to model using provided hyperparameters
             kwargs = {} if i > 0 else {'input_shape': self.input_shape}
@@ -150,6 +152,9 @@ class CNN(NNBase):
                 d_layer = SpatialDropout2D if i < self.num_spatial2d_dropout else Dropout
                 self.model.add(d_layer(dropout, name=self._proc_name('dropout_'+str(i))))
                 num_dropout += 1
+
+        if not looped:
+            raise ValueError('need to specify at least one conv layer')
 
         # flatten model for dense layers
         self.model.add(Flatten(name=self._proc_name('flatten')))
