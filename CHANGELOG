@@ -19,7 +19,6 @@ sets. Thanks to Anders Andreassen for pointing this out!
 - Added support for passing arbitrary compilation options to Keras models.
 - Added EMD Demo notebook
 
-
 ### 0.11.x
 **0.11.2**
 

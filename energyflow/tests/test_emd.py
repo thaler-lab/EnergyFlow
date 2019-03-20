@@ -83,7 +83,7 @@ def test_gdim(gdim, evdim, M, norm, R):
 
 @pytest.mark.emd
 @pytest.mark.periodic
-@pytest.mark.parametrize('M', [1,2,5,25])
+@pytest.mark.parametrize('M', [1,2,5,10])
 @pytest.mark.parametrize('gdim', [1,2,3])
 def test_periodic_phi(gdim, M):
     events = np.random.rand(nev, M, 1+gdim)
@@ -92,8 +92,36 @@ def test_periodic_phi(gdim, M):
         events_c = np.copy(events)
         events_c[:,:,phi_col] += 2*np.pi*np.random.randint(-10, 10, size=(nev, M))
         emds2 = emd.emds(events_c, R=1.0, gdim=gdim, periodic_phi=True, phi_col=phi_col, n_jobs=1, verbose=0)
+        assert epsilon_diff(emds1, emds2, 10**-12)
 
-    assert epsilon_diff(emds1, emds2, 10**-12)
+        ev1 = np.random.rand(10, 1+gdim) * 4*np.pi
+        ev2 = np.random.rand(20, 1+gdim) * 4*np.pi
+        thetaw = np.zeros((len(ev1), len(ev2)))
+        thetar = np.zeros((len(ev1), len(ev2)))
+        for i,p1 in enumerate(ev1):
+            for j,p2 in enumerate(ev2):
+                dw, dr = 0., 0.
+                for m,(k1,k2) in enumerate(zip(p1, p2)):
+                    if m == 0:
+                        continue
+                    elif m == phi_col:
+                        dw += (k1 - k2)**2
+                        dr += np.min([abs(k1 - (k2 + 2*np.pi*n)) for n in range(-3,3)])**2
+                    else:
+                        dw += (k1 - k2)**2
+                        dr += (k1 - k2)**2
+                thetaw[i,j] = np.sqrt(dw)
+                thetar[i,j] = np.sqrt(dr)
+
+        zs1 = np.ascontiguousarray(ev1[:,0]/np.sum(ev1[:,0]))
+        zs2 = np.ascontiguousarray(ev2[:,0]/np.sum(ev2[:,0]))
+        ot_w, ot_r = ot.emd2(zs1, zs2, thetaw), ot.emd2(zs1, zs2, thetar)
+
+        ef_w = emd.emd(ev1, ev2, norm=True, gdim=gdim, periodic_phi=False, phi_col=phi_col)
+        ef_r = emd.emd(ev1, ev2, norm=True, gdim=gdim, periodic_phi=True, phi_col=phi_col)
+        
+        assert epsilon_diff(ot_w, ef_w, 10**-15)
+        assert epsilon_diff(ot_r, ef_r, 10**-15)
 
 @pytest.mark.emd
 @pytest.mark.return_flow

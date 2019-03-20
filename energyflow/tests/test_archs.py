@@ -59,8 +59,8 @@ def test_CNN_required(data_format, nb_chan, npix, filter_sizes, num_filters, den
 
 @pytest.mark.arch
 @pytest.mark.efn
-@pytest.mark.parametrize('F_sizes', [[], [10], [10, 10]])
-@pytest.mark.parametrize('Phi_sizes', [[], [10], [10, 10]])
+@pytest.mark.parametrize('F_sizes', [[], [5], [5, 5]])
+@pytest.mark.parametrize('Phi_sizes', [[], [5], [5, 5]])
 @pytest.mark.parametrize('input_dim', [1, 2])
 def test_EFN_required(input_dim, Phi_sizes, F_sizes):
     n, m = 50, 10
@@ -72,8 +72,8 @@ def test_EFN_required(input_dim, Phi_sizes, F_sizes):
 
 @pytest.mark.arch
 @pytest.mark.pfn
-@pytest.mark.parametrize('F_sizes', [[], [10], [10, 10]])
-@pytest.mark.parametrize('Phi_sizes', [[], [10], [10, 10]])
+@pytest.mark.parametrize('F_sizes', [[], [5], [5, 5]])
+@pytest.mark.parametrize('Phi_sizes', [[], [5], [5, 5]])
 @pytest.mark.parametrize('input_dim', [1, 2])
 def test_PFN_required(input_dim, Phi_sizes, F_sizes):
     n, m = 50, 10
@@ -98,7 +98,7 @@ def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, mode
     efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], summary=False, filepath=model_path, 
                     save_while_training=save_while_training, save_weights_only=save_weights_only,
                     modelcheck_opts=modelcheck_opts)
-    efn.fit(X_train, Y_train, epochs=2, batch_size=10, validation_data=[X_val, Y_val])
+    hist = efn.fit(X_train, Y_train, epochs=2, batch_size=10, validation_data=[X_val, Y_val])
 
 @pytest.mark.arch
 @pytest.mark.masking
