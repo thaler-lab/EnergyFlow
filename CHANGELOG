@@ -1,6 +1,10 @@
 ### 0.12.x
+**0.12.2**
 
 - Added another preiodic phi test for event EMD.
+- Changed gdim defualt to None (to reduce potentially unexpected behavior).
+- Increased numerical stability of EMD computation by including an internal change of units.
+- Added verbosity functionality to EFP Generator.
 
 **0.12.1**
 

@@ -159,7 +159,7 @@ class ArchBase(with_metaclass(ABCMeta, object)):
         except:
             name = self.__class__.__name__
             sys.stderr.write(('\'{}\' object has no attribute \'{}\', '
-                              'checking underlying model.').format(name, attr))
+                              'checking underlying model.\n').format(name, attr))
             raise
         return a
 

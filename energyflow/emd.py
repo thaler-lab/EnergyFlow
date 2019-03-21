@@ -191,6 +191,7 @@ if ot:
             pTs0 /= pT0
             pTs1 /= pT1
             thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col_m1)/R
+            rescale = 1.0
 
         # implement the EMD in Eq. 1 of the paper by adding an appropriate extra particle
         else:
@@ -211,10 +212,14 @@ if ot:
             else:
                 thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col_m1)/R
 
-        G, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter_max)
+            # change units for numerical stability
+            rescale = max(pT0, pT1)
+
+        G, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
         check_result(result_code)
-        
-        return (cost, G) if return_flow else cost
+
+        # need to change units back
+        return (cost * rescale, G * rescale) if return_flow else cost * rescale
 
     # helper function for pool imap
     def _emd4imap(x):
@@ -230,6 +235,7 @@ if ot:
         thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col)/R
 
         # extra particles (with zero pt) already added if going in here
+        rescale = 1.0
         if not norm:
             pT0, pT1 = pTs0.sum(), pTs1.sum()
             pTdiff = pT1 - pT0
@@ -240,15 +246,18 @@ if ot:
             thetas[:,-1] = 1.0
             thetas[-1,:] = 1.0
 
+            # change units for numerical stability
+            rescale = max(pT0, pT1)
+
         # compute the emd with POT
-        _, cost, _, _, result_code = emd_c(pTs0, pTs1, thetas, n_iter_max)
+        _, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
         check_result(result_code)
 
         # important! must reset extra particles to have pt zero
         if not norm:
             pTs0[-1] = pTs1[-1] = 0
 
-        return cost
+        return cost * rescale
 
     def emds(X0, X1=None, R=1.0, norm=False, gdim=None, n_iter_max=100000,
                           periodic_phi=False, phi_col=2,

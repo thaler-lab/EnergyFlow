@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 
 from collections import Counter
 import itertools
+import time
 
 import numpy as np
 
@@ -15,15 +16,19 @@ igraph = import_igraph()
 
 __all__ = ['Generator']
 
+
 ###############################################################################
 # Generator helpers
 ###############################################################################
+
 def none2inf(x):
     return np.inf if x is None else x
+
 
 ###############################################################################
 # Generator
 ###############################################################################
+
 class Generator(object):
 
     """Generates non-isomorphic multigraphs according to provided specifications."""
@@ -63,6 +68,8 @@ class Generator(object):
             - A flag to control printing.
         """
 
+        start = time.time()
+
         # check for new generation
         if dmax is not None and filename is None:
 
@@ -74,9 +81,12 @@ class Generator(object):
 
             # get prime generator instance
             self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
-                                         self.np_optimize)
+                                         self.np_optimize, verbose, start)
             self.cols = self.pr_gen.cols
             self._set_col_inds()
+
+            if verbose:
+                print('Finished generating prime graphs in {:.3f}.'.format(time.time() - start))
 
             # store lists of important quantities
             transfer(self, self.pr_gen, self._prime_attrs())
@@ -95,7 +105,7 @@ class Generator(object):
             # get maxs from file and passed in options
             c_specs = file['c_specs']
             local_vars = locals()
-            for m in ['dmax','nmax','emax','cmax','vmax']:
+            for m in ['dmax', 'nmax', 'emax', 'cmax', 'vmax']:
                 setattr(self, m, min(file[m], none2inf(local_vars[m])))
 
             # select connected specs based on maxs
@@ -113,11 +123,12 @@ class Generator(object):
                 setattr(self, attr, [x for x,m in zip(file[attr],mask) if m])
             self.c_specs = c_specs[mask]
 
-
-
         # setup generator of disconnected graphs
         self._set_comp_dmaxs(comp_dmaxs)
         self.comp_gen = CompositeGenerator(self.c_specs, self.cols, self.comp_dmaxs)
+
+        if verbose:
+            print('Finished generating composite graphs in {:.3f}.'.format(time.time() - start))
 
         # get results and store
         transfer(self, self.comp_gen, self._comp_attrs())
@@ -151,7 +162,7 @@ class Generator(object):
             if comp_dmaxs >= 2:
                 self.comp_dmaxs = {n: comp_dmaxs for n in range(4, 2*comp_dmaxs+1)}
 
-    def _prime_attrs(self, no_global=False):
+    def _prime_attrs(self):
         attrs = set(['edges', 'weights', 'einstrs', 'einpaths', 'c_specs'])
         return attrs
 
@@ -186,9 +197,11 @@ class Generator(object):
             self._specs = concat_specs(self.c_specs, self.disc_specs)
         return self._specs
 
+
 ###############################################################################
 # PrimeGenerator
 ###############################################################################
+
 class PrimeGenerator(object):
 
     """Column descriptions:
@@ -203,7 +216,7 @@ class PrimeGenerator(object):
     """
     cols = ['n','e','d','v','k','c','p','h']
 
-    def __init__(self, dmax, nmax, emax, cmax, vmax, np_optimize):
+    def __init__(self, dmax, nmax, emax, cmax, vmax, np_optimize, verbose, start):
         """PrimeGenerator __init__."""
 
         if not igraph:
@@ -230,9 +243,13 @@ class PrimeGenerator(object):
 
         # get simple connected graphs
         self._generate_simple()
+        if verbose:
+            print('Finished generating simple graphs in {:.3f}.'.format(time.time() - start))
 
         # get weighted connected graphs
         self._generate_weights()
+        if verbose:
+            print('Finished generating weighted simple graphs in {:.3f}.'.format(time.time() - start))
 
         # flatten structures
         self._flatten_structures()
@@ -386,9 +403,11 @@ class PrimeGenerator(object):
                     self.einpaths.append(ep)
         self.c_specs = np.asarray(c_specs)
 
+
 ###############################################################################
 # CompositeGenerator
 ###############################################################################
+
 class CompositeGenerator(object):
 
     """CompositeGenerator"""
