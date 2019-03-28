@@ -56,6 +56,7 @@ _sel_re = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 ###############################################################################
 # EFP
 ###############################################################################
+
 class EFP(EFPBase):
 
     """A class for representing and computing a single EFP. Note that all
@@ -201,6 +202,7 @@ class EFP(EFPBase):
 ###############################################################################
 # EFPSet
 ###############################################################################
+
 class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on events.

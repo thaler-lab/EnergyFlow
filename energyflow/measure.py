@@ -81,9 +81,11 @@ def kappa_func(Es, ps, kappa):
 def pf_func(Es, ps, kappa):
     return np.ones(Es.shape), ps
 
+
 ###############################################################################
 # Measure 
 ###############################################################################
+
 class Measure(with_metaclass(ABCMeta, object)):
     
     """Class for dealing with any kind of measure."""
@@ -201,9 +203,11 @@ class Measure(with_metaclass(ABCMeta, object)):
             self.normed = False
             self._k_func = pf_func
 
+
 ###############################################################################
 # HadronicMeasure
 ###############################################################################
+
 class HadronicMeasure(Measure):
 
     @staticmethod
@@ -243,9 +247,11 @@ class HadronicMeasure(Measure):
         pts = np.asarray([c.pt() for c in constituents])
         return pts, constituents
 
+
 ###############################################################################
 # EEMeasure
 ###############################################################################
+
 class EEMeasure(Measure):
 
     @staticmethod
@@ -277,9 +283,11 @@ class EEMeasure(Measure):
         Es = np.asarray([c.e() for c in constituents])
         return Es, constituents
 
+
 ###############################################################################
 # HadronicDefaultMeasure
 ###############################################################################
+
 class HadronicDefaultMeasure(HadronicMeasure):
 
     def __init__(self, *args, **kwargs):
@@ -301,9 +309,11 @@ class HadronicDefaultMeasure(HadronicMeasure):
         thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])
         return pts**self.kappa, thetas**self.beta
 
+
 ###############################################################################
 # HadronicDotMeasure
 ###############################################################################
+
 class HadronicDotMeasure(HadronicMeasure):
 
     metric = flat_metric(4)
@@ -325,9 +335,11 @@ class HadronicDotMeasure(HadronicMeasure):
         pts, p4s = self._k_func(pts, p4s, self.kappa)
         return pts, self._ps_dot(p4s)**self.half_beta
 
+
 ###############################################################################
 # EEDefaultMeasure
 ###############################################################################
+
 class EEDefaultMeasure(EEMeasure):
 
     def ndarray_dim_arb(self, arg):

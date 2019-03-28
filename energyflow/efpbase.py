@@ -13,9 +13,11 @@ from energyflow.algorithms import einsum
 from energyflow.measure import Measure
 from energyflow.utils import create_pool, timing, transfer
 
+
 ###############################################################################
 # EFPBase
 ###############################################################################
+
 class EFPBase(with_metaclass(ABCMeta, object)):
 
     def __init__(self, measure, beta, kappa, normed, coords, check_input):
@@ -98,9 +100,11 @@ class EFPBase(with_metaclass(ABCMeta, object)):
 
         return results
 
+
 ###############################################################################
 # EFPElem
 ###############################################################################
+
 class EFPElem(object):
 
     # if weights are given, edges are assumed to be simple 

@@ -143,7 +143,6 @@ def load(num_data=100000, pad=True, cache_dir=None):
 
     return X, y
 
-
 def _pad_events_axis1(events, axis1_shape):
     """Pads the first axis of the NumPy array `events` with zero subarrays
     such that the first dimension of the results has size `axis1_shape`.
