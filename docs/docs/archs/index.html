@@ -304,8 +304,10 @@ A single float will apply the same dropout rate to all dense layers.</li>
 </li>
 <li><strong>mask_val</strong>=<code>0</code> : <em>float</em><ul>
 <li>The value for which particles with all features set equal to
-this value will be ignored. See the <a href="https://
-keras.io/layers/core/#masking">Keras Masking layer</a> for more detail.</li>
+this value will be ignored. The <a href="https://
+keras.io/layers/core/#masking">Keras Masking layer</a> appears to have issues masking
+the biases of a network, so this has been implemented in a
+custom (and correct) manner since version <code>0.12.0</code>.</li>
 </ul>
 </li>
 </ul>
@@ -363,8 +365,7 @@ equal to <code>mask_val</code> have been set to zero.</p>
 <pre><code class="python">Phi
 </code></pre>
 
-<p>List of tensors corresponding to the layers in the $\Phi$
-network.</p>
+<p>List of tensors corresponding to the layers in the $\Phi$ network.</p>
 <h5 id="latent">latent</h5>
 <pre><code class="python">latent
 </code></pre>
@@ -405,8 +406,7 @@ assigned otherwise.</p>
 <pre><code class="python">Phi
 </code></pre>
 
-<p>List of tensors corresponding to the layers in the $\Phi$
-network.</p>
+<p>List of tensors corresponding to the layers in the $\Phi$ network.</p>
 <h5 id="latent_1">latent</h5>
 <pre><code class="python">latent
 </code></pre>

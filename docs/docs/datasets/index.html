@@ -191,31 +191,32 @@
             <div class="section">
               
                 <h3 id="quark-and-gluon-jets">Quark and Gluon Jets</h3>
-<p>A dataset consisting of up to 2 million total quark and gluon jets generated with PYTHIA 8.226.
-To avoid downloading unnecessary samples, the dataset is contained in twenty
-files with 100k jets each, and only the required files are downloaded.
-These samples are used in <a href="https://arxiv.org/abs/1810.05165">1810.05165</a>.
-Splitting the data into 1.6M/200k/200k train/validation/test sets is recommended for standardized comparisons.</p>
+<p>A dataset consisting of up to 2 million total quark and gluon jets generated 
+with PYTHIA 8.226. To avoid downloading unnecessary samples, the dataset is
+contained in twenty files with 100k jets each, and only the required files
+are downloaded. These samples are used in <a href="https://arxiv.org/
+abs/1810.05165">1810.05165</a>. Splitting the data into 1.6M/200k/200k train/validation/test
+sets is recommended for standardized comparisons.</p>
 <p>The dataset <code>qg_jets</code> consists of two components:</p>
 <ul>
-<li><code>X</code> : a three-dimensional numpy array of the jets with shape <code>(num_data, max_num_particles, 4)</code></li>
-<li><code>y</code> : a numpy array of quark/gluon jet labels 
-(quark=<code>1</code> and gluon=<code>0</code>).</li>
+<li><code>X</code> : a three-dimensional numpy array of the jets with shape <code>(num_data, 
+max_num_particles, 4)</code></li>
+<li><code>y</code> : a numpy array of quark/gluon jet labels (quark=<code>1</code> and gluon=<code>0</code>).</li>
 </ul>
-<p>The jets are padded with zero-particles in order to make a contiguous 
-array. The particles are given as <code>(pt,y,phi,pid)</code> values, where <code>pid</code> is the particle's 
+<p>The jets are padded with zero-particles in order to make a contiguous array.
+The particles are given as <code>(pt,y,phi,pid)</code> values, where <code>pid</code> is the particle's 
 <a href="http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf">PDG id</a>.</p>
-<p>The samples are $Z(\to\nu\bar\nu)+g$ and $Z(\to\nu\bar\nu)+(u,d,s)$
- events generated with PYTHIA for $pp$ collisions at $\sqrt{s}=14$ TeV using the <code>WeakBosonAndParton:qqbar2gmZg</code> 
- and <code>WeakBosonAndParton:qg2gmZq</code> processes, ignoring the photon contribution and requiring
- the $Z$ to decay invisibly to neutrinos.
-Hadronization and multiple parton interactions (i.e. underlying event) are turned on
- and the default tunings and shower parameters are used.
+<p>The samples are $Z(\to\nu\bar\nu)+g$ and $Z(\to\nu\bar\nu)+(u,d,s)$ events
+generated with PYTHIA for $pp$ collisions at $\sqrt{s}=14$ TeV using the
+<code>WeakBosonAndParton:qqbar2gmZg</code> and <code>WeakBosonAndParton:qg2gmZq</code> processes,
+ignoring the photon contribution and requiring the $Z$ to decay invisibly to 
+neutrinos. Hadronization and multiple parton interactions (i.e. underlying
+event) are turned on and the default tunings and shower parameters are used.
 Final state non-neutrino particles are clustered into $R=0.4$ anti-$k_T$ jets
- using FASTJET 3.3.0.
-Jets with transverse momentum $p_T\in[500,550]$ GeV and rapidity $|y|&lt;2.0$ are kept.
-Particles are ensured to have $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity issues).
-No detector simulation is performed.</p>
+using FASTJET 3.3.0. Jets with transverse momentum $p_T\in[500,550]$ GeV and
+rapidity $|y|&lt;1.7$ are kept. Particles are ensured to have $\phi$ values within
+$\pi$ of the jet (i.e. no $\phi$-periodicity issues). No detector simulation is
+performed.</p>
 <hr />
 <h4 id="load">load</h4>
 <pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, pad=True, cache_dir=None)
@@ -249,9 +250,10 @@ performed.</p>
 </ul>
 <hr />
 <h3 id="quark-and-gluon-nsubs">Quark and Gluon Nsubs</h3>
-<p>A dataset consisting of 45 $N$-subjettiness observables for 100k quark 
-and gluon jets generated with Pythia 8.230. Following <a href="https:
-//arxiv.org/abs/1704.08249">1704.08249</a>, the observables are in the following order:
+<p>A dataset consisting of 45 $N$-subjettiness observables for 100k quark and 
+gluon jets generated with Pythia 8.230. Following <a href="https:
+//arxiv.org/abs/1704.08249">1704.08249</a>, the observables are in the following order:</p>
+<p>
 <script type="math/tex; mode=display">
 \{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
 \tau_2^{(\beta=0.5)},\tau_2^{(\beta=1.0)},\tau_2^{(\beta=2.0)},
@@ -259,8 +261,8 @@ and gluon jets generated with Pythia 8.230. Following <a href="https:
 \tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.
 </script>
 </p>
-<p>The dataset contains two members: <code>'X'</code> which is a numpy array of the nsubs that
-has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
+<p>The dataset contains two members: <code>'X'</code> which is a numpy array of the nsubs
+that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h4 id="load_1">load</h4>
