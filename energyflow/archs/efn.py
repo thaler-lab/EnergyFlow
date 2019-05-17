@@ -77,20 +77,23 @@ def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
 # NETWORK FUNCTIONS
 ###############################################################################
 
-def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', names=None):
+def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', names=None, l2_regs=0.):
     """"""
 
     # repeat options if singletons
     acts, k_inits, names = iter_or_rep(acts), iter_or_rep(k_inits), iter_or_rep(names)
-
+    l2_regs = iter_or_rep(l2_regs)
     # list of tensors
     tensors = [input_tensor]
 
     # iterate over specified layers
-    for s, act, k_init, name in zip(sizes, acts, k_inits, names):
+    for s, act, k_init, name, l2_reg in zip(sizes, acts, k_inits, names, l2_regs):
 
         # define a dense layer that will be applied through time distributed
-        d_layer = Dense(s, kernel_initializer=k_init)
+        kwargs = {} 
+        if l2_reg > 0.:
+            kwargs.update({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)})
+        d_layer = Dense(s, kernel_initializer=k_init, **kwargs)
 
         # append time distributed layer to list of ppm layers
         tdist_tensor = TimeDistributed(d_layer, name=name)(tensors[-1])
@@ -233,6 +236,10 @@ class SymmetricPerParticleNN(NNBase):
         #self.ppm_dropouts = iter_or_rep(self.hps.pop('ppm_dropouts', 0))
         self.latent_dropout = self._proc_arg('latent_dropout', default=0)
         self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0, old='dense_dropouts'))
+        
+        # l2 regularization
+        self.Phi_l2_regs = iter_or_rep(self._proc_arg('Phi_l2_regs', default=0.))
+        self.F_l2_regs   = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))
 
         # masking
         self.mask_val = self._proc_arg('mask_val', default=0.)
@@ -284,7 +291,7 @@ class SymmetricPerParticleNN(NNBase):
         # construct Phi
         self._Phi = construct_distributed_dense(self.inputs[-1], self.Phi_sizes, 
                                                 acts=self.Phi_acts, k_inits=self.Phi_k_inits,
-                                                names=names)
+                                                names=names, l2_regs=self.Phi_l2_regs)
 
     def _construct_latent(self):
 
@@ -320,7 +327,7 @@ class SymmetricPerParticleNN(NNBase):
         # construct F
         self._F = construct_dense(self.latent[-1], self.F_sizes,
                                   acts=self.F_acts, k_inits=self.F_k_inits, 
-                                  dropouts=self.F_dropouts, names=names)
+                                  dropouts=self.F_dropouts, names=names, l2_regs=self.F_l2_regs)
 
     @abstractproperty
     def inputs(self):
