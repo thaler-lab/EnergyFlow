@@ -19,6 +19,7 @@ def test_gen_massless_phase_space(nevents, nparticles):
     assert events.shape == (nevents, nparticles, 4)
     assert epsilon_diff(ef.ms_from_p4s(events)**2, 0, 10**-13)
 
+@pytest.mark.gen_random
 @pytest.mark.parametrize('nparticles', [10,100])
 @pytest.mark.parametrize('nevents', [20,200])
 @pytest.mark.parametrize('dim', [3,4,8])
@@ -28,6 +29,7 @@ def test_gen_random_events(nevents, nparticles, dim, mass):
     assert events.shape == (nevents, nparticles, dim)
     assert epsilon_diff(ef.ms_from_p4s(events)**2, mass**2, 10**-13)
 
+@pytest.mark.gen_random
 @pytest.mark.parametrize('nparticles', [10,100])
 @pytest.mark.parametrize('nevents', [20,200])
 @pytest.mark.parametrize('dim', [3,4,8])
@@ -35,7 +37,7 @@ def test_gen_random_events_mcom(nevents, nparticles, dim):
     events = ef.gen_random_events_mcom(nevents, nparticles, dim=dim)
     assert events.shape == (nevents, nparticles, dim)
     assert epsilon_diff(ef.ms_from_p4s(events)**2/dim, 0, 10**-12)
-    assert epsilon_diff(np.sum(events, axis=1), 0, 10**-12)
+    assert epsilon_diff(np.sum(events, axis=1)[:,1:], 0, 10**-12)
 
 # test measures
 ptyphis = [(10*np.random.rand(25), 6*np.random.rand(25)-3, 2*np.pi*np.random.rand(25)) for i in range(3)]

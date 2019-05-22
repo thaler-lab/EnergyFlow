@@ -240,6 +240,30 @@
 }
 </code></pre>
 
+<p>In addition to the above papers, we ask that you cite the <a href="../docs/datasets/#quark-and-gluon-jets">quark and gluon datasets</a> directly. Here are the BibTex entries to use:</p>
+<pre><code>@misc{komiske_patrick_2019_3164691,
+  author       = {Komiske, Patrick and Metodiev, Eric and Thaler, Jesse},
+  title        = {Pythia8 Quark and Gluon Jets for Energy Flow},
+  month        = may,
+  year         = 2019,
+  doi          = {10.5281/zenodo.3164691},
+  url          = {https://doi.org/10.5281/zenodo.3164691}
+}
+
+@misc{pathak_aditya_2019_3066475,
+  author       = {Pathak, Aditya and Komiske, Patrick and
+                  Metodiev, Eric and Schwartz, Matthew},
+  title        = {Herwig7.1 Quark and Gluon Jets},
+  month        = may,
+  year         = 2019,
+  doi          = {10.5281/zenodo.3066475},
+  url          = {https://doi.org/10.5281/zenodo.3066475}
+}
+</code></pre>
+
+<p><a href="https://doi.org/10.5281/zenodo.3164691"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3164691.svg" /></a> - Pythia samples
+<br>
+<a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <h4 id="why-python-instead-of-c">Why Python instead of C++?</h4>
 <p>Computing the EFPs requires a function such as NumPy's <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.einsum.html">einsum</a> that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use (though if one were to attempt this the <a href="http://tensor-compiler.org/">tensor algebra compiler</a> seems like a promising tool).</p>
 <p><a href="http://www.numpy.org">NumPy</a> is a highly-optimized Python library written in C that provides all of the tools required to efficiently compute the EFPs. Libraries like NumPy take advantage of optimizations that the physicist-programmer typically does not, such as architecture-optimized libraries like BLAS or LAPACK and low-level features such as SSE/AVX instructions.</p>

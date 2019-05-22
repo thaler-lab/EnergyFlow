@@ -1,49 +1,62 @@
 r"""### Energy and Angular Measures
 
-The appropriate notions of energy and angle depend on the collider context. Typically, one wants
-to work with observables that respect the appropriate Lorentz subgroup for the collision type
-of interest. EnergyFlow is capable of handling two broad classes of measures: $e^+e^-$ and
-hadronic, which are selected using the required `measure` argument. For substructure applications, 
-it is often convenient to normalize the energies so that $\sum_iz_i=1$. The `normed` keyword 
-argument is provided to control normalization of the energies (default is `True`).
+The appropriate notions of energy and angle depend on the collider context.
+Typically, one wants to work with observables that respect the appropriate
+Lorentz subgroup for the collision type of interest. EnergyFlow is capable of
+handling two broad classes of measures: $e^+e^-$ and hadronic, which are
+selected using the required `measure` argument. For substructure applications,
+it is often convenient to normalize the energies so that $\sum_iz_i=1$. The
+`normed` keyword argument is provided to control normalization of the energies
+(default is `True`).
 
-Each measure comes with a parameter $\beta>0$ which controls the relative weighting between
-smaller and larger anglular structures. This can be set using the `beta` keyword argument
-(default is `1`). There is also a $\kappa$ parameter to control the relative weighting
-between soft and hard energies. This can be set using the `kappa` keyword argument
-(default is `1`). Only `kappa=1` yields collinear-safe observables.
+Each measure comes with a parameter $\beta>0$ which controls the relative
+weighting between smaller and larger anglular structures. This can be set using
+the `beta` keyword argument (default is `1`). There is also a $\kappa$
+parameter to control the relative weighting between soft and hard energies.
+This can be set using the `kappa` keyword argument (default is `1`). Only
+`kappa=1` yields collinear-safe observables.
 
-Beyond the measures implemented here, the user can implement their own custom measure by
-passing in $\{z_i\}$ and $\{\theta_{ij}\}$ directly to the EFP classes.
+Beyond the measures implemented here, the user can implement their own custom
+measure by passing in $\{z_i\}$ and $\{\theta_{ij}\}$ directly to the EFP
+classes.
 
 #### Hadronic Measures
 
-For hadronic collisions, observables are typically desired to be invariant under boosts along
-the beam direction and rotations about the beam direction. Thus, particle transverse momentum
-$p_T$ and rapidity-azimuth coordinates $(y,\phi)$ are used.
+For hadronic collisions, observables are typically desired to be invariant
+under boosts along the beam direction and rotations about the beam direction.
+Thus, particle transverse momentum $p_T$ and rapidity-azimuth coordinates
+$(y,\phi)$ are used.
 
-There are two hadronic measures implemented in EnergyFlow: `'hadr'` and `'hadrdot'`.
-These are listed explicitly below.
+There are two hadronic measures implemented in EnergyFlow: `'hadr'` and
+`'hadrdot'`. These are listed explicitly below.
 
 `'hadr'`:
-$$z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + \Delta\phi_{ij}^2)^{\beta/2}.$$
+$$
+z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + 
+\Delta\phi_{ij}^2)^{\beta/2}.
+$$
 
 `'hadrdot'`:
-$$z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=\left(\frac{2p^\mu_ip_{j\mu}}{p_{T,i}p_{T,j}}
-\right)^{\beta/2}.$$
+$$
+z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=\left(\frac{2p^\mu_ip_{j\mu}}
+{p_{T,i}p_{T,j}}\right)^{\beta/2}.
+$$
 
 #### *e+e-* Measures
 
-For $e^+e^-$ collisions, observables are typically desired to be invariant under the full
-group of rotations about the interaction point. Since the center of momentum energy is known,
-the particle energy $E$ is typically used. For the angular measure, pairwise Lorentz contractions
-of the normalized particle four-momenta are used.
+For $e^+e^-$ collisions, observables are typically desired to be invariant
+under the full group of rotations about the interaction point. Since the center
+of momentum energy is known, the particle energy $E$ is typically used. For the
+angular measure, pairwise Lorentz contractions of the normalized particle
+four-momenta are used.
 
 There is one $e^+e^-$ measure implemented.
 
 `'ee'`:
-$$z_i = E_{i}^{\kappa},
-\quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}{E_i E_j}\right)^{\beta/2}.$$
+$$
+z_i = E_{i}^{\kappa},\quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}
+{E_i E_j}\right)^{\beta/2}.
+$$
 """
 from __future__ import absolute_import, division, print_function
 

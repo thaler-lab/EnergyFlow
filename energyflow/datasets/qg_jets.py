@@ -1,33 +1,51 @@
 r"""### Quark and Gluon Jets
 
-A dataset consisting of up to 2 million total quark and gluon jets generated 
-with PYTHIA 8.226. To avoid downloading unnecessary samples, the dataset is
-contained in twenty files with 100k jets each, and only the required files
-are downloaded. These samples are used in [1810.05165](https://arxiv.org/
-abs/1810.05165). Splitting the data into 1.6M/200k/200k train/validation/test
-sets is recommended for standardized comparisons.
+Four datasets of quark and gluon jets, each having two million total jets, have
+been generated with [Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and
+[Herwig](https://herwig.hepforge.org/) and are accessible through this
+submodule of EnergyFlow. The four datasets are:
 
-The dataset `qg_jets` consists of two components:
+- Pythia 8.226 quark (uds) and gluon jets.
+- Pythia 8.235 quark (udscb) and gluon jets.
+- Herwig 7.1.4 quark (uds) and gluon jets.
+- Herwig 7.1.4 quark (udscb) and gluon jets
 
-* `X` : a three-dimensional numpy array of the jets with shape 
-`(num_data,max_num_particles,4)`
-* `y` : a numpy array of quark/gluon jet labels (quark=`1` and gluon=`0`).
+To avoid downloading unnecessary samples, the datasets are contained in twenty
+files with 100k jets each, and only the required files are downloaded. These
+are based on the samples used in 
+[1810.05165](https://arxiv.org/abs/1810.05165). Splitting the data into 
+1.6M/200k/200k train/validation/test sets is recommended for standardized
+comparisons.
+
+Each dataset consists of two components:
+
+- `X` : a three-dimensional numpy array of the jets with shape 
+`(num_data,max_num_particles,4)`.
+- `y` : a numpy array of quark/gluon jet labels (quark=`1` and gluon=`0`).
 
 The jets are padded with zero-particles in order to make a contiguous array.
-The particles are given as `(pt,y,phi,pid)` values, where `pid` is the particle's 
-[PDG id](http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf).
+The particles are given as `(pt,y,phi,pid)` values, where `pid` is the
+particle's [PDG id](http://pdg.lbl.gov/2018/reviews/rpp2018-rev-monte
+-carlo-numbering.pdf). Quark jets either include or exclude $c$ and $b$
+quarks depending on the `with_bc` argument.
 
-The samples are $Z(\to\nu\bar\nu)+g$ and $Z(\to\nu\bar\nu)+(u,d,s)$ events
-generated with Pythia for $pp$ collisions at $\sqrt{s}=14$ TeV using the
-`WeakBosonAndParton:qqbar2gmZg` and `WeakBosonAndParton:qg2gmZq` processes,
-ignoring the photon contribution and requiring the $Z$ to decay invisibly to 
-neutrinos. Hadronization and multiple parton interactions (i.e. underlying
-event) are turned on and the default tunings and shower parameters are used.
-Final state non-neutrino particles are clustered into $R=0.4$ anti-$k_T$ jets
-using FastJet 3.3.0. Jets with transverse momentum $p_T\in[500,550]$ GeV and
-rapidity $|y|<1.7$ are kept. Particles are ensured to have $\phi$ values within
-$\pi$ of the jet (i.e. no $\phi$-periodicity issues). No detector simulation is
-performed.
+The samples are generated from $q\bar q\to Z(\to\nu\bar\nu)+g$ and
+$qg\to Z(\to\nu\bar\nu)+(uds[cb])$ processes in $pp$ collisions at
+$\sqrt{s}=14$ TeV. Hadronization and multiple parton interactions (i.e.
+underlying event) are turned on and the default tunings and shower parameters
+are used. Final state non-neutrino particles are clustered into $R=0.4$
+anti-$k_T$ jets using FastJet 3.3.0. Jets with transverse momentum
+$p_T\in[500,550]$ GeV and rapidity $|y|<1.7$ are kept. Particles are ensured
+have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity 
+issues). No detector simulation is performed.
+
+The samples are also hosted on Zenodo and we ask that you cite them
+appropriately if they are useful to your research. For BibTex entries,
+see the [FAQs](/faqs/#how-do-i-cite-the-energyflow-package).
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3164691.svg)](https://doi.org/10.5281/zenodo.3164691) - Pythia samples
+<br>
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg)](https://doi.org/10.5281/zenodo.3066475) - Herwig samples
 """
 from __future__ import absolute_import, division, print_function
 

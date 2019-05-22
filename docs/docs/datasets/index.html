@@ -191,32 +191,48 @@
             <div class="section">
               
                 <h3 id="quark-and-gluon-jets">Quark and Gluon Jets</h3>
-<p>A dataset consisting of up to 2 million total quark and gluon jets generated 
-with PYTHIA 8.226. To avoid downloading unnecessary samples, the dataset is
-contained in twenty files with 100k jets each, and only the required files
-are downloaded. These samples are used in <a href="https://arxiv.org/
-abs/1810.05165">1810.05165</a>. Splitting the data into 1.6M/200k/200k train/validation/test
-sets is recommended for standardized comparisons.</p>
-<p>The dataset <code>qg_jets</code> consists of two components:</p>
+<p>Four datasets of quark and gluon jets, each having two million total jets, have
+been generated with <a href="http://home.thep.lu.se/~torbjorn/Pythia.html">Pythia</a> and
+<a href="https://herwig.hepforge.org/">Herwig</a> and are accessible through this
+submodule of EnergyFlow. The four datasets are:</p>
+<ul>
+<li>Pythia 8.226 quark (uds) and gluon jets.</li>
+<li>Pythia 8.235 quark (udscb) and gluon jets.</li>
+<li>Herwig 7.1.4 quark (uds) and gluon jets.</li>
+<li>Herwig 7.1.4 quark (udscb) and gluon jets</li>
+</ul>
+<p>To avoid downloading unnecessary samples, the datasets are contained in twenty
+files with 100k jets each, and only the required files are downloaded. These
+are based on the samples used in 
+<a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. Splitting the data into 
+1.6M/200k/200k train/validation/test sets is recommended for standardized
+comparisons.</p>
+<p>Each dataset consists of two components:</p>
 <ul>
 <li><code>X</code> : a three-dimensional numpy array of the jets with shape 
-<code>(num_data,max_num_particles,4)</code></li>
+<code>(num_data,max_num_particles,4)</code>.</li>
 <li><code>y</code> : a numpy array of quark/gluon jet labels (quark=<code>1</code> and gluon=<code>0</code>).</li>
 </ul>
 <p>The jets are padded with zero-particles in order to make a contiguous array.
-The particles are given as <code>(pt,y,phi,pid)</code> values, where <code>pid</code> is the particle's 
-<a href="http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf">PDG id</a>.</p>
-<p>The samples are $Z(\to\nu\bar\nu)+g$ and $Z(\to\nu\bar\nu)+(u,d,s)$ events
-generated with Pythia for $pp$ collisions at $\sqrt{s}=14$ TeV using the
-<code>WeakBosonAndParton:qqbar2gmZg</code> and <code>WeakBosonAndParton:qg2gmZq</code> processes,
-ignoring the photon contribution and requiring the $Z$ to decay invisibly to 
-neutrinos. Hadronization and multiple parton interactions (i.e. underlying
-event) are turned on and the default tunings and shower parameters are used.
-Final state non-neutrino particles are clustered into $R=0.4$ anti-$k_T$ jets
-using FastJet 3.3.0. Jets with transverse momentum $p_T\in[500,550]$ GeV and
-rapidity $|y|&lt;1.7$ are kept. Particles are ensured to have $\phi$ values within
-$\pi$ of the jet (i.e. no $\phi$-periodicity issues). No detector simulation is
-performed.</p>
+The particles are given as <code>(pt,y,phi,pid)</code> values, where <code>pid</code> is the
+particle's <a href="http://pdg.lbl.gov/2018/reviews/rpp2018-rev-monte
+-carlo-numbering.pdf">PDG id</a>. Quark jets either include or exclude $c$ and $b$
+quarks depending on the <code>with_bc</code> argument.</p>
+<p>The samples are generated from $q\bar q\to Z(\to\nu\bar\nu)+g$ and
+$qg\to Z(\to\nu\bar\nu)+(uds[cb])$ processes in $pp$ collisions at
+$\sqrt{s}=14$ TeV. Hadronization and multiple parton interactions (i.e.
+underlying event) are turned on and the default tunings and shower parameters
+are used. Final state non-neutrino particles are clustered into $R=0.4$
+anti-$k_T$ jets using FastJet 3.3.0. Jets with transverse momentum
+$p_T\in[500,550]$ GeV and rapidity $|y|&lt;1.7$ are kept. Particles are ensured
+have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity 
+issues). No detector simulation is performed.</p>
+<p>The samples are also hosted on Zenodo and we ask that you cite them
+appropriately if they are useful to your research. For BibTex entries,
+see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
+<p><a href="https://doi.org/10.5281/zenodo.3164691"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3164691.svg" /></a> - Pythia samples
+<br>
+<a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
 <h4 id="load">load</h4>
 <pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')

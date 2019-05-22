@@ -6,6 +6,8 @@
 - Quark and gluon dataset files can now be obtained from Zenodo in addition to Dropbox.
 - Changed internals of EFN to use standalone functions for easier use of subnetwork components.
 - Added some particle utility functions to deal with PDGIDs.
+- Changed `gen_random_events_mcom` to have positive energies (momenta still sum to zero).
+- Added l2 regularization to layers in EFN and PFN architectures. Thanks to Anders Andreassen for submiting this pull request!
 
 **0.12.2**
 
