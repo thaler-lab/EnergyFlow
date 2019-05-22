@@ -83,21 +83,28 @@ def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
 # NETWORK FUNCTIONS
 ###############################################################################
 
-def construct_distributed_dense(input_tensor, sizes, acts='relu', 
-                                                     k_inits='he_uniform', names=None):
+def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', 
+                                                                  names=None, l2_regs=0.):
     """"""
 
     # repeat options if singletons
     acts, k_inits, names = iter_or_rep(acts), iter_or_rep(k_inits), iter_or_rep(names)
-
+    l2_regs = iter_or_rep(l2_regs)
+    
     # list of tensors
     layers, tensors = [], [input_tensor]
 
     # iterate over specified layers
-    for s, act, k_init, name in zip(sizes, acts, k_inits, names):
+    for s, act, k_init, name, l2_reg in zip(sizes, acts, k_inits, names, l2_regs):
+        
+        # define a dense layer that will be applied through time distributed
+        kwargs = {} 
+        if l2_reg > 0.:
+            kwargs.update({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)})
+        d_layer = Dense(s, kernel_initializer=k_init, **kwargs)
 
         # get layers and append them to list
-        tdist_layer = TimeDistributed(Dense(s, kernel_initializer=k_init), name=name)
+        tdist_layer = TimeDistributed(d_layer, name=name)
         act_layer = _get_act_layer(act)
         layers.extend([tdist_layer, act_layer])
 
@@ -252,6 +259,8 @@ class SymmetricPerParticleNN(NNBase):
         self.latent_dropout = self._proc_arg('latent_dropout', default=0)
         self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0, 
                                                                    old='dense_dropouts'))
+        self.Phi_l2_regs = iter_or_rep(self._proc_arg('Phi_l2_regs', default=0.))
+        self.F_l2_regs   = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))
 
         # masking
         self.mask_val = self._proc_arg('mask_val', default=0.)
@@ -299,7 +308,8 @@ class SymmetricPerParticleNN(NNBase):
         Phi_layers, Phi_tensors = construct_distributed_dense(self.inputs[-1], self.Phi_sizes, 
                                                               acts=self.Phi_acts, 
                                                               k_inits=self.Phi_k_inits, 
-                                                              names=names)
+                                                              names=names, 
+                                                              l2_regs=self.Phi_l2_regs)
         
         # add layers and tensors to internal lists
         self._layers.extend(Phi_layers)
@@ -347,7 +357,8 @@ class SymmetricPerParticleNN(NNBase):
         # construct F
         F_layers, F_tensors = construct_dense(self.latent[-1], self.F_sizes,
                                               acts=self.F_acts, k_inits=self.F_k_inits, 
-                                              dropouts=self.F_dropouts, names=names)
+                                              dropouts=self.F_dropouts, names=names,
+                                              l2_regs=self.F_l2_regs)
 
         # add layers and tensors to internal lists
         self._layers.extend(F_layers)
