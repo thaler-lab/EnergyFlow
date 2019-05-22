@@ -42,6 +42,8 @@ except:
 
 from energyflow.utils import create_pool
 
+__all__ = []
+
 if ot:
 
     __all__ = ['emd', 'emds']
@@ -395,7 +397,7 @@ if ot:
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
                 emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter_max, periodic_phi, phi_col_m1)
-                if verbose >= 1 and (k % print_every) == 0:
+                if verbose >= 1 and (k % print_every) == 0 and k != 0:
                     args = (k, k/npairs*100, time.time() - start)
                     print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
 
@@ -411,8 +413,3 @@ if ot:
             print()
 
         return emds
-
-# if we don't have ot
-else:
-
-    __all__ = []

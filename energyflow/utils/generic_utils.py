@@ -11,7 +11,7 @@ import time
 import numpy as np
 
 __all__ = [
-    'default_efp_file', 
+    'DEFAULT_EFP_FILE', 
     'concat_specs',
     'create_pool',
     'iter_or_rep', 
@@ -20,8 +20,8 @@ __all__ = [
 ]
 
 # get access to the data directory of the installed package and the default efp file
-ef_data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
-default_efp_file = os.path.join(ef_data_dir, 'efps_d_le_10.npz')
+EF_DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
+DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.npz')
 
 # handle pickling methods in python 2
 if sys.version_info[0] == 2:

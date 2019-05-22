@@ -170,7 +170,7 @@ class ArchBase(with_metaclass(ABCMeta, object)):
 
 class NNBase(ArchBase):        
 
-    def process_hps(self):
+    def _process_hps(self):
         """**Default NN Hyperparameters**
 
         Common hyperparameters that apply to all architectures except for
@@ -284,9 +284,9 @@ class NNBase(ArchBase):
         if isinstance(act, Layer):
             self.model.add(act)
 
-        # handle case of act being a string and in _act_dict
-        elif isinstance(act, string_types) and act in _act_dict:
-            self.model.add(_act_dict[act]())
+        # handle case of act being a string and in ACT_DICT
+        elif isinstance(act, string_types) and act in ACT_DICT:
+            self.model.add(ACT_DICT[act]())
 
         # default case of regular activation
         else:
@@ -345,17 +345,17 @@ class NNBase(ArchBase):
 # Activation Functions
 ###############################################################################
 
-_act_dict = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
+ACT_DICT = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
 
-def _apply_act(act, prev_layer):
+def _get_act_layer(act):
 
     # handle case of act as a layer
     if isinstance(act, Layer):
-        return act(prev_layer)
+        return act
 
-    # handle case of act being a string and in _act_dict
-    if isinstance(act, string_types) and act in _act_dict:
-        return _act_dict[act]()(prev_layer)
+    # handle case of act being a string and in ACT_DICT
+    if isinstance(act, string_types) and act in ACT_DICT:
+        return ACT_DICT[act]()
 
     # default case of passing act into layer
-    return Activation(act)(prev_layer)
+    return Activation(act)

@@ -48,9 +48,8 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
 
 def gen_random_events_mcom(nevents, nparticles, dim=4):
     r"""Generate random events with a given number of massless particles in a
-    given spacetime dimension. The total energy and momentum are made to sum
-    to zero by making about half of the particles incoming. These events are
-    not guaranteed to uniformly sample phase space.
+    given spacetime dimension. The total momentum are made to sum
+    to zero. These events are not guaranteed to uniformly sample phase space.
 
     **Arguments**
 
@@ -74,15 +73,18 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
     events_1_sp_com = np.concatenate((events_1_sp, -np.sum(events_1_sp, axis=1)[:,np.newaxis]), axis=1)
     events_2_sp_com = np.concatenate((events_2_sp, -np.sum(events_2_sp, axis=1)[:,np.newaxis]), axis=1)
 
-    events_1_tup = (np.sqrt(np.sum(events_1_sp_com**2, axis=-1))[:,:,np.newaxis], events_1_sp_com)
-    events_2_tup = (np.sqrt(np.sum(events_2_sp_com**2, axis=-1))[:,:,np.newaxis], events_2_sp_com)
+    events_1_tup = (np.sqrt(np.abs(np.sum(events_1_sp_com**2, axis=-1)))[:,:,np.newaxis], events_1_sp_com)
+    events_2_tup = (np.sqrt(np.abs(np.sum(events_2_sp_com**2, axis=-1)))[:,:,np.newaxis], events_2_sp_com)
     events_1 = np.concatenate(events_1_tup, axis=-1)
     events_2 = np.concatenate(events_2_tup, axis=-1)
 
     events_1_tot, events_2_tot = np.sum(events_1, axis=1), np.sum(events_2, axis=1)
     factors = events_1_tot[:,0]/events_2_tot[:,0]
 
-    return np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
+    events = np.concatenate((events_1, -events_2*factors[:,np.newaxis,np.newaxis]), axis=1)
+    events[...,0] = np.abs(events[...,0])
+
+    return events
 
 def gen_massless_phase_space(nevents, nparticles, energy=1):
     r"""Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)

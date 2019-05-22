@@ -1,1 +1,1 @@
-pip3 install -U energyflow pot
+python -m pip install -U energyflow pot

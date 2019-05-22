@@ -9,7 +9,7 @@ from keras.layers import Dense, Dot, Dropout, Input, Lambda, TimeDistributed
 from keras.models import Model
 from keras.regularizers import l2
 
-from energyflow.archs.archbase import NNBase, _apply_act
+from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.utils import iter_or_rep
 
 __all__ = [
@@ -59,7 +59,10 @@ def construct_efn_weight_mask(input_tensor, mask_val=0., name=None):
         # map mask_val to zero and leave everything else alone    
         return X * K.cast(K.not_equal(X, mask_val), K.dtype(X))
 
-    return Lambda(efn_mask_func, name=name)(input_tensor)
+    mask_layer = Lambda(efn_mask_func, name=name)
+
+    # return as lists for consistency
+    return [mask_layer], [mask_layer(input_tensor)]
 
 def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
     """"""
@@ -70,49 +73,61 @@ def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
         # map mask_val to zero and return 1 elsewhere
         return K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X))
 
-    return Lambda(pfn_mask_func, name=name)(input_tensor)
+    mask_layer = Lambda(pfn_mask_func, name=name)
+
+    # return as lists for consistency
+    return [mask_layer], [mask_layer(input_tensor)]
 
 
 ###############################################################################
 # NETWORK FUNCTIONS
 ###############################################################################
 
-def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', names=None, l2_regs=0.):
+def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', 
+                                                                  names=None, l2_regs=0.):
     """"""
 
     # repeat options if singletons
     acts, k_inits, names = iter_or_rep(acts), iter_or_rep(k_inits), iter_or_rep(names)
     l2_regs = iter_or_rep(l2_regs)
+    
     # list of tensors
-    tensors = [input_tensor]
+    layers, tensors = [], [input_tensor]
 
     # iterate over specified layers
     for s, act, k_init, name, l2_reg in zip(sizes, acts, k_inits, names, l2_regs):
-
+        
         # define a dense layer that will be applied through time distributed
         kwargs = {} 
         if l2_reg > 0.:
             kwargs.update({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)})
         d_layer = Dense(s, kernel_initializer=k_init, **kwargs)
 
-        # append time distributed layer to list of ppm layers
-        tdist_tensor = TimeDistributed(d_layer, name=name)(tensors[-1])
-        tensors.extend([tdist_tensor, _apply_act(act, tdist_tensor)])
+        # get layers and append them to list
+        tdist_layer = TimeDistributed(d_layer, name=name)
+        act_layer = _get_act_layer(act)
+        layers.extend([tdist_layer, act_layer])
 
-    return tensors
+        # get tensors and append them to list
+        tensors.append(tdist_layer(tensors[-1]))
+        tensors.append(act_layer(tensors[-1]))
+
+    return layers, tensors
 
 def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
     """"""
 
-    # list of tensors
-    tensors = [Dot(0, name=name)([weight_tensor, input_tensor])]
+    # lists of layers and tensors
+    layers = [Dot(0, name=name)]
+    tensors = [layers[-1]([weight_tensor, input_tensor])]
 
     # apply dropout if specified
     if dropout > 0.:
         dr_name = None if name is None else '{}_dropout'.format(name)
-        tensors.append(Dropout(dropout, name=dr_name)(tensors[-1]))
+        layers.append(Dropout(dropout, name=dr_name))
+        tensors.append(layers[-1](tensors[-1]))
 
-    return tensors
+    return layers, tensors
 
 def construct_dense(input_tensor, sizes, 
                     acts='relu', k_inits='he_uniform', 
@@ -121,30 +136,34 @@ def construct_dense(input_tensor, sizes,
     """"""
     
     # repeat options if singletons
-    acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
+    acts, k_inits, names = iter_or_rep(acts), iter_or_rep(k_inits), iter_or_rep(names)
     dropouts, l2_regs = iter_or_rep(dropouts), iter_or_rep(l2_regs)
-    names = iter_or_rep(names)
 
-    # list of tensors
-    tensors = [input_tensor]
+    # lists of layers and tensors
+    layers, tensors = [], [input_tensor]
 
     # iterate to make specified layers
     z = zip(sizes, acts, k_inits, dropouts, l2_regs, names)
     for s, act, k_init, dropout, l2_reg, name in z:
 
-        # make new dense layer
-        kwargs = {} 
-        if l2_reg > 0.:
-            kwargs.update({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)})
-        d_tensor = Dense(s, kernel_initializer=k_init, name=name, **kwargs)(tensors[-1])
-        tensors.extend([d_tensor, _apply_act(act, d_tensor)])
+        # get layers and append them to list
+        kwargs = ({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)} 
+                  if l2_reg > 0. else {})
+        dense_layer = Dense(s, kernel_initializer=k_init, name=name, **kwargs)
+        act_layer = _get_act_layer(act)
+        layers.extend([dense_layer, act_layer])
+
+        # get tensors and append them to list
+        tensors.append(dense_layer(tensors[-1]))
+        tensors.append(act_layer(tensors[-1]))
 
         # apply dropout if specified
         if dropout > 0.:
             dr_name = None if name is None else '{}_dropout'.format(name)
-            tensors.append(Dropout(dropout, name=dr_name)(tensors[-1]))
+            layers.append(Dropout(dropout, name=dr_name))
+            tensors.append(layers[-1](tensors[-1]))
 
-    return tensors
+    return layers, tensors
 
 
 ###############################################################################
@@ -217,7 +236,7 @@ class SymmetricPerParticleNN(NNBase):
         """
 
         # process generic NN hps
-        super(SymmetricPerParticleNN, self).process_hps()
+        super(SymmetricPerParticleNN, self)._process_hps()
 
         # required hyperparameters
         self.input_dim = self._proc_arg('input_dim')
@@ -225,19 +244,21 @@ class SymmetricPerParticleNN(NNBase):
         self.F_sizes = self._proc_arg('F_sizes', old='dense_sizes')
 
         # activations
-        self.Phi_acts = iter_or_rep(self._proc_arg('Phi_acts', default='relu', old='ppm_acts'))
-        self.F_acts = iter_or_rep(self._proc_arg('F_acts', default='relu', old='dense_acts'))
+        self.Phi_acts = iter_or_rep(self._proc_arg('Phi_acts', default='relu', 
+                                                               old='ppm_acts'))
+        self.F_acts = iter_or_rep(self._proc_arg('F_acts', default='relu', 
+                                                           old='dense_acts'))
 
         # initializations
-        self.Phi_k_inits = iter_or_rep(self._proc_arg('Phi_k_inits', default='he_uniform', old='ppm_k_inits'))
-        self.F_k_inits = iter_or_rep(self._proc_arg('F_k_inits', default='he_uniform', old='dense_k_inits'))
+        self.Phi_k_inits = iter_or_rep(self._proc_arg('Phi_k_inits', default='he_uniform', 
+                                                                     old='ppm_k_inits'))
+        self.F_k_inits = iter_or_rep(self._proc_arg('F_k_inits', default='he_uniform', 
+                                                                 old='dense_k_inits'))
 
         # regularizations
-        #self.ppm_dropouts = iter_or_rep(self.hps.pop('ppm_dropouts', 0))
         self.latent_dropout = self._proc_arg('latent_dropout', default=0)
-        self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0, old='dense_dropouts'))
-        
-        # l2 regularization
+        self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0, 
+                                                                   old='dense_dropouts'))
         self.Phi_l2_regs = iter_or_rep(self._proc_arg('Phi_l2_regs', default=0.))
         self.F_l2_regs   = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))
 
@@ -248,16 +269,22 @@ class SymmetricPerParticleNN(NNBase):
 
     def _construct_model(self):
 
+        # initialize dictionaries for holding indices of subnetworks
+        self._layer_inds, self._tensor_inds = {}, {}
+
         # construct earlier parts of the model
         self._construct_inputs()
         self._construct_Phi()
         self._construct_latent()
         self._construct_F()
 
-        # output layer, applied to the last backend layer
-        out_name = self._proc_name('output')
-        d_tensor = Dense(self.output_dim, name=out_name)(self._F[-1])
-        self._output = _apply_act(self.output_act, d_tensor)
+        # get output layers
+        d_layer = Dense(self.output_dim, name=self._proc_name('output'))
+        act_layer = _get_act_layer(self.output_act)
+
+        # append output tensors
+        self._tensors.append(d_layer(self.tensors[-1]))
+        self._tensors.append(act_layer(self.tensors[-1]))
 
         # construct a new model
         self._model = Model(inputs=self.inputs, outputs=self.output)
@@ -270,64 +297,80 @@ class SymmetricPerParticleNN(NNBase):
         pass
 
     def _construct_Phi(self):
-#
-        # a list of the per-particle layers
-#        self._Phi = [self.inputs[-1]]
-
-        # iterate over specified layers
-#        for i,(s, act, k_init) in enumerate(zip(self.Phi_sizes, self.Phi_acts, self.Phi_k_inits)):
-
-            # define a dense layer that will be applied through time distributed
-#            d_layer = Dense(s, kernel_initializer=k_init)
-
-            # append time distributed layer to list of ppm layers
-#            td_name = self._proc_name('tdist_'+str(i))
-#            tdist_tensor = TimeDistributed(d_layer, name=td_name)(self._Phi[-1])
-#            self._Phi.extend([tdist_tensor, _apply_act(act, tdist_tensor)])
 
         # get names
         names = [self._proc_name('tdist_{}'.format(i)) for i in range(len(self.Phi_sizes))]
 
+        # determine begin inds
+        layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
+
         # construct Phi
-        self._Phi = construct_distributed_dense(self.inputs[-1], self.Phi_sizes, 
-                                                acts=self.Phi_acts, k_inits=self.Phi_k_inits,
-                                                names=names, l2_regs=self.Phi_l2_regs)
+        Phi_layers, Phi_tensors = construct_distributed_dense(self.inputs[-1], self.Phi_sizes, 
+                                                              acts=self.Phi_acts, 
+                                                              k_inits=self.Phi_k_inits, 
+                                                              names=names, 
+                                                              l2_regs=self.Phi_l2_regs)
+        
+        # add layers and tensors to internal lists
+        self._layers.extend(Phi_layers)
+        self._tensors.extend(Phi_tensors)
+
+        # determine end inds
+        layer_inds.append(len(self.layers))
+        tensor_inds.append(len(self.tensors))
+
+        # store inds
+        self._layer_inds['Phi'] = layer_inds
+        self._tensor_inds['Phi'] = tensor_inds
 
     def _construct_latent(self):
 
-        # get name
-        name = self._proc_name('sum')
+        # determine begin inds
+        layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
 
         # construct latent tensors
-        self._latent = construct_latent(self._Phi[-1], self.weights, 
-                                        dropout=self.latent_dropout, name=self._proc_name('sum'))
+        latent_layers, latent_tensors = construct_latent(self._tensors[-1], self.weights, 
+                                                         dropout=self.latent_dropout, 
+                                                         name=self._proc_name('sum'))
+        
+        # add layers and tensors to internal lists
+        self._layers.extend(latent_layers)
+        self._tensors.extend(latent_tensors)
+
+        # determine end inds
+        layer_inds.append(len(self.layers))
+        tensor_inds.append(len(self.tensors))
+
+        # store inds
+        self._layer_inds['latent'] = layer_inds
+        self._tensor_inds['latent'] = tensor_inds
 
     def _construct_F(self):
-        
-        # a list of backend layers
-#        self._F = [self.latent[-1]]
-
-        # iterate over specified backend layers
-#        z = zip(self.F_sizes, self.F_acts, self.F_k_inits, self.F_dropouts)
-#        for i,(s, act, k_init, dropout) in enumerate(z):
-
-            # a new dense layer
-#            d_name = self._proc_name('dense_'+str(i))
-#            d_tensor = Dense(s, kernel_initializer=k_init, name=d_name)(self._F[-1])
-#            self._F.extend([d_tensor, _apply_act(act, d_tensor)])
-
-            # apply dropout (does nothing if dropout is zero)
-#            if dropout > 0.:
-#                dr_name = self._proc_name('dropout_'+str(i))
-#                self._F.append(Dropout(dropout, name=dr_name)(self._F[-1]))
 
         # get names
         names = [self._proc_name('dense_{}'.format(i)) for i in range(len(self.F_sizes))]
 
+        # determine begin inds
+        layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
+
+
         # construct F
-        self._F = construct_dense(self.latent[-1], self.F_sizes,
-                                  acts=self.F_acts, k_inits=self.F_k_inits, 
-                                  dropouts=self.F_dropouts, names=names, l2_regs=self.F_l2_regs)
+        F_layers, F_tensors = construct_dense(self.latent[-1], self.F_sizes,
+                                              acts=self.F_acts, k_inits=self.F_k_inits, 
+                                              dropouts=self.F_dropouts, names=names,
+                                              l2_regs=self.F_l2_regs)
+
+        # add layers and tensors to internal lists
+        self._layers.extend(F_layers)
+        self._tensors.extend(F_tensors)
+
+        # determine end inds
+        layer_inds.append(len(self.layers))
+        tensor_inds.append(len(self.tensors))
+
+        # store inds
+        self._layer_inds['F'] = layer_inds
+        self._tensor_inds['F'] = tensor_inds
 
     @abstractproperty
     def inputs(self):
@@ -339,10 +382,10 @@ class SymmetricPerParticleNN(NNBase):
 
     @property
     def Phi(self):
-        r"""List of tensors corresponding to the layers in the $\Phi$
-        network."""
+        r"""List of tensors corresponding to the layers in the $\Phi$ network."""
 
-        return self._Phi[1:]
+        begin, end = self._tensor_inds['Phi']
+        return self._tensors[begin:end]
 
     @property
     def latent(self):
@@ -350,19 +393,33 @@ class SymmetricPerParticleNN(NNBase):
         network, including any dropout layer if present.
         """
 
-        return self._latent
+        begin, end = self._tensor_inds['latent']
+        return self._tensors[begin:end]
 
     @property
     def F(self):
         """List of tensors corresponding to the layers in the $F$ network."""
 
-        return self._F[1:]
+        begin, end = self._tensor_inds['F']
+        return self._tensors[begin:end]
 
     @property
     def output(self):
         """Output tensor for the model."""
 
-        return self._output
+        return self._tensors[-1]
+
+    @property
+    def layers(self):
+        """List of all layers in the model."""
+
+        return self._layers
+
+    @property
+    def tensors(self):
+        """List of all tensors in the model."""
+
+        return self._tensors
 
 
 ###############################################################################
@@ -376,12 +433,21 @@ class EFN(SymmetricPerParticleNN):
     def _construct_inputs(self):
 
         # construct input tensors
-        self._inputs = construct_efn_input(self.input_dim, zs_name=self._proc_name('zs_input'), 
-                                                    phats_name=self._proc_name('phats_input'))
+        self._inputs = construct_efn_input(self.input_dim, 
+                                           zs_name=self._proc_name('zs_input'), 
+                                           phats_name=self._proc_name('phats_input'))
 
         # construct weight tensor
-        self._weights = construct_efn_weight_mask(self.inputs[0], mask_val=self.mask_val, 
-                                                                  name=self._proc_name('mask'))
+        mask_layers, mask_tensors = construct_efn_weight_mask(self.inputs[0], 
+                                                              mask_val=self.mask_val, 
+                                                              name=self._proc_name('mask'))
+        self._weights = mask_tensors[0]
+
+        # begin list of tensors with the inputs
+        self._tensors = [self.inputs, self.weights]
+
+        # begin list of layers with the mask layer
+        self._layers = [mask_layers[0]]
 
     @property
     def inputs(self):
@@ -450,7 +516,7 @@ class EFN(SymmetricPerParticleNN):
         XY = np.asarray([X, Y]).reshape((2, nx*ny)).T
 
         # construct function 
-        kf = K.function([self.inputs[1]], [self._Phi[-1]])
+        kf = K.function([self.inputs[1]], [self._tensors[self._tensor_inds['latent'][0] - 1]])
 
         # evaluate function
         s = self.Phi_sizes[-1] if len(self.Phi_sizes) else self.input_dim
@@ -480,8 +546,16 @@ class PFN(SymmetricPerParticleNN):
         self._inputs = construct_pfn_input(self.input_dim, name=self._proc_name('input'))
 
         # construct weight tensor
-        self._weights = construct_pfn_weight_mask(self.inputs[0], mask_val=self.mask_val, 
-                                                                  name=self._proc_name('mask'))
+        mask_layers, mask_tensors = construct_pfn_weight_mask(self.inputs[0], 
+                                                              mask_val=self.mask_val, 
+                                                              name=self._proc_name('mask'))
+        self._weights = mask_tensors[0]
+
+        # begin list of tensors with the inputs
+        self._tensors = [self.inputs, self.weights]
+
+        # begin list of layers with the mask layer
+        self._layers = [mask_layers[0]]
 
     @property
     def inputs(self):
