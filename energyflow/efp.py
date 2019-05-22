@@ -21,7 +21,7 @@ import numpy as np
 from energyflow.algorithms import VariableElimination, einsum_path
 from energyflow.efpbase import EFPBase, EFPElem
 from energyflow.gen import Generator
-from energyflow.utils import concat_specs, default_efp_file
+from energyflow.utils import concat_specs, DEFAULT_EFP_FILE
 from energyflow.utils.graph_utils import graph_union
 
 __all__ = ['EFP', 'EFPSet']
@@ -30,7 +30,7 @@ __all__ = ['EFP', 'EFPSet']
 # EFP helpers
 ###############################################################################
 
-comp_map = {
+COMP_MAP = {
     '>':  '__gt__', 
     '<':  '__lt__', 
     '>=': '__ge__', 
@@ -41,7 +41,7 @@ comp_map = {
 
 # applies comprison comp of obj on val
 def explicit_comp(obj, comp, val):
-    return getattr(obj, comp_map[comp])(val)
+    return getattr(obj, COMP_MAP[comp])(val)
 
 # raises TypeError if unexpected keyword left in kwargs
 def kwargs_check(name, kwargs, allowed=[]):
@@ -50,7 +50,7 @@ def kwargs_check(name, kwargs, allowed=[]):
             continue
         raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
 
-_sel_re = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
+SEL_RE = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
 
 
 ###############################################################################
@@ -285,12 +285,12 @@ class EFPSet(EFPBase):
             args = args[1:]
         elif self.filename is not None:
             self.filename += '.npz' if not self.filename.endswith('.npz') else ''
-            gen = np.load(self.filename)
+            gen = np.load(self.filename, allow_pickle=True)
         else:
-            gen = np.load(default_efp_file)
+            gen = np.load(DEFAULT_EFP_FILE, allow_pickle=True)
 
         # compile regular expression for use in sel()
-        self._sel_re = _sel_re
+        self.SEL_RE = SEL_RE
         
         # put column headers and indices into namespace
         self._cols = gen['cols']
@@ -482,7 +482,7 @@ class EFPSet(EFPBase):
                 raise TypeError('invalid type for {}'.format(arg))
 
             # match string to pattern
-            match = self._sel_re.match(s)
+            match = self.SEL_RE.match(s)
             if match is None:
                 raise ValueError('could not understand \'{}\''.format(arg))
 

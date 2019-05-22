@@ -6,7 +6,6 @@ from `energyflow.utils`.
 """
 from __future__ import absolute_import, division, print_function
 
-from contextlib import closing
 import hashlib
 import os
 import sys
@@ -28,7 +27,8 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
     **Arguments**
 
     - **path** : _str_
-        - The destination for the downloaded files.
+        - The destination for the downloaded files. Note that `examples`
+        is automatically appended to the end of this path.
     - **which** : {_list_, `'all'`}
         - List of examples to download, or the string `'all'` in which 
         case all the available examples are downloaded.
@@ -65,8 +65,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
         if overwrite and os.path.exists(file_path):
             os.remove(file_path)
 
-        files.append(_get_file(example, url=base_url+example, 
-                                        cache_dir=cache_dir, cache_subdir='examples'))
+        files.append(_get_file(example, base_url+example, cache_dir, cache_subdir='examples'))
 
     # print summary
     print()
@@ -209,8 +208,10 @@ def remap_pids(events, pid_i=3):
     events[:,:,pid_i] = np.asarray([pid2float_mapping.get(pid, 0) for pid in pids]).reshape(events_shape[:2])
 
 
-# begin code copied from Keras
+# the following code is closely based on analogous parts of Keras
+
 if sys.version_info[0] == 2:
+    from contextlib import closing
     from six.moves.urllib.request import urlopen
     def urlretrieve(url, filename, reporthook=None, data=None):
         """Replacement for `urlretrive` for Python 2.
@@ -245,8 +246,8 @@ if sys.version_info[0] == 2:
                     break
 
         with closing(urlopen(url, data)) as response, open(filename, 'wb') as fd:
-                for chunk in chunk_read(response, reporthook=reporthook):
-                    fd.write(chunk)
+            for chunk in chunk_read(response, reporthook=reporthook):
+                fd.write(chunk)
 else:
     from six.moves.urllib.request import urlretrieve
 
@@ -267,7 +268,7 @@ def _hash_file(fpath, algorithm='sha256', chunk_size=65535):
     # Returns
         The file hash
     """
-    if (algorithm is 'sha256') or (algorithm is 'auto' and len(hash) is 64):
+    if (algorithm is 'sha256') or (algorithm is 'auto'):
         hasher = hashlib.sha256()
     else:
         hasher = hashlib.md5()
@@ -291,26 +292,18 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=65535):
     # Returns
         Whether the file is valid
     """
-    if ((algorithm is 'sha256') or
-            (algorithm is 'auto' and len(file_hash) is 64)):
+    if ((algorithm is 'sha256') or (algorithm is 'auto' and len(file_hash) is 64)):
         hasher = 'sha256'
     else:
         hasher = 'md5'
 
-    if str(_hash_file(fpath, hasher, chunk_size)) == str(file_hash):
-        return True
-    else:
-        return False
-# end code copied from Keras
+    return str(_hash_file(fpath, hasher, chunk_size)) == str(file_hash)
 
 
-# the following function is closely based on the matching Keras function
-def _get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=None):
+def _get_file(filename, url, cache_dir, cache_subdir='datasets', file_hash=None):
     """Pulls file from the internet."""
 
-    # cache_dir = None means use default cache
-    if cache_dir is None:
-        cache_dir = os.path.join(os.path.expanduser('~'), '.energyflow')
+    # handle '~' in path
     datadir_base = os.path.expanduser(cache_dir)
 
     # ensure that directory exists
@@ -329,8 +322,8 @@ def _get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=
     # determine if file needs to be downloaded
     download = False
     if os.path.exists(fpath):
-        if file_hash is not None and not _validate_file(fpath, file_hash, 'sha256'):
-            print('local file hash does not match so we will redownload')
+        if file_hash is not None and not _validate_file(fpath, file_hash):
+            print('Local file hash does not match so we will redownload...')
             download = True
     else:
         download = True
@@ -352,6 +345,6 @@ def _get_file(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=
             raise
 
         if file_hash is not None:
-            assert _validate_file(fpath, file_hash, 'sha256')
+            assert _validate_file(fpath, file_hash), 'Hash of downloaded file incorrect.'
 
     return fpath

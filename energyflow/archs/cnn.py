@@ -87,7 +87,7 @@ class CNN(NNBase):
         """
 
         # process generic NN hps
-        super(CNN, self).process_hps()
+        super(CNN, self)._process_hps()
 
         # required hyperparameters
         self.input_shape = self._proc_arg('input_shape')

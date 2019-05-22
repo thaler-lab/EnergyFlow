@@ -61,7 +61,7 @@ class DNN(NNBase):
         """
 
         # process generic NN hps
-        super(DNN, self).process_hps()
+        super(DNN, self)._process_hps()
 
          # required hyperparameters
         self.input_dim = self._proc_arg('input_dim')

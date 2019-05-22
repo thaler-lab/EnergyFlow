@@ -199,52 +199,70 @@ abs/1810.05165">1810.05165</a>. Splitting the data into 1.6M/200k/200k train/val
 sets is recommended for standardized comparisons.</p>
 <p>The dataset <code>qg_jets</code> consists of two components:</p>
 <ul>
-<li><code>X</code> : a three-dimensional numpy array of the jets with shape <code>(num_data, 
-max_num_particles, 4)</code></li>
+<li><code>X</code> : a three-dimensional numpy array of the jets with shape 
+<code>(num_data,max_num_particles,4)</code></li>
 <li><code>y</code> : a numpy array of quark/gluon jet labels (quark=<code>1</code> and gluon=<code>0</code>).</li>
 </ul>
 <p>The jets are padded with zero-particles in order to make a contiguous array.
 The particles are given as <code>(pt,y,phi,pid)</code> values, where <code>pid</code> is the particle's 
 <a href="http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf">PDG id</a>.</p>
 <p>The samples are $Z(\to\nu\bar\nu)+g$ and $Z(\to\nu\bar\nu)+(u,d,s)$ events
-generated with PYTHIA for $pp$ collisions at $\sqrt{s}=14$ TeV using the
+generated with Pythia for $pp$ collisions at $\sqrt{s}=14$ TeV using the
 <code>WeakBosonAndParton:qqbar2gmZg</code> and <code>WeakBosonAndParton:qg2gmZq</code> processes,
 ignoring the photon contribution and requiring the $Z$ to decay invisibly to 
 neutrinos. Hadronization and multiple parton interactions (i.e. underlying
 event) are turned on and the default tunings and shower parameters are used.
 Final state non-neutrino particles are clustered into $R=0.4$ anti-$k_T$ jets
-using FASTJET 3.3.0. Jets with transverse momentum $p_T\in[500,550]$ GeV and
+using FastJet 3.3.0. Jets with transverse momentum $p_T\in[500,550]$ GeV and
 rapidity $|y|&lt;1.7$ are kept. Particles are ensured to have $\phi$ values within
 $\pi$ of the jet (i.e. no $\phi$-periodicity issues). No detector simulation is
 performed.</p>
 <hr />
 <h4 id="load">load</h4>
-<pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, pad=True, cache_dir=None)
+<pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
 
-<p>Loads samples from the dataset (which in total is contained in twenty files). 
-Any file that is needed that has not been cached will be automatically downloaded.
-Downloading a file causes it to be cached for later use. Basic checksums are
-performed.</p>
+<p>Loads samples from the dataset (which in total is contained in twenty 
+files). Any file that is needed that has not been cached will be 
+automatically downloaded. Downloading a file causes it to be cached for
+later use. Basic checksums are performed.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>num_data</strong> : <em>int</em><ul>
-<li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
+<li>The number of events to return. A value of <code>-1</code> means read in all
+events.</li>
+</ul>
+</li>
+<li><strong>generator</strong> : <em>str</em><ul>
+<li>Specifies which Monte Carlo generator the events should come from.
+Currently, the options are <code>'pythia'</code> and <code>'herwig'</code>.</li>
 </ul>
 </li>
 <li><strong>pad</strong> : <em>bool</em><ul>
-<li>Whether to pad the events with zeros to make them the same length.</li>
+<li>Whether to pad the events with zeros to make them the same length.
+Note that if set to <code>False</code>, the returned <code>X</code> array will be an object
+array and not a 3-d array of floats.</li>
+</ul>
+</li>
+<li><strong>with_bc</strong> : <em>bool</em><ul>
+<li>Whether to include jets coming from bottom or charm quarks. Changing
+this flag does not mask out these jets but rather accesses an entirely
+different dataset. The datasets with and without b and c quarks should
+not be combined.</li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the file.</li>
+<li>The directory where to store/look for the files. Note that 
+<code>'datasets'</code> is automatically appended to the end of this path.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>3-d numpy.ndarray</em>, <em>1-d numpy.ndarray</em><ul>
-<li>The <code>X</code> and <code>y</code> components of the dataset as specified above.</li>
+<li>The <code>X</code> and <code>y</code> components of the dataset as specified above. If
+<code>pad</code> is <code>False</code> then these will be object arrays holding the events,
+each of which is a 2-d ndarray.</li>
 </ul>
 </li>
 </ul>

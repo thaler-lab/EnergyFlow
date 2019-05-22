@@ -9,7 +9,7 @@ import numpy as np
 
 from energyflow.algorithms import *
 from energyflow.efpbase import EFPElem
-from energyflow.utils import concat_specs, default_efp_file, transfer
+from energyflow.utils import concat_specs, DEFAULT_EFP_FILE, transfer
 from energyflow.utils.graph_utils import *
 
 igraph = import_igraph()
@@ -94,9 +94,9 @@ class Generator(object):
         # if filename is set, read in file
         else:
             if filename is None or filename == 'default':
-                filename = default_efp_file
+                filename = DEFAULT_EFP_FILE
 
-            file = np.load(filename + ('' if filename.endswith('.npz') else '.npz'))
+            file = np.load(filename + ('' if filename.endswith('.npz') else '.npz'), allow_pickle=True)
 
             # setup cols and col inds
             self.cols = file['cols']

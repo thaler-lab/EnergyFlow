@@ -1,4 +1,12 @@
 ### 0.12.x
+**0.12.3**
+
+- Set allow_pickle to True explicitly in Generator (recently changed default in NumPy).
+- Added Herwig7.1 dataset to `qg_jets`. A big thanks to Aditya Pathak for generating these Herwig samples!
+- Quark and gluon dataset files can now be obtained from Zenodo in addition to Dropbox.
+- Changed internals of EFN to use standalone functions for easier use of subnetwork components.
+- Added some particle utility functions to deal with PDGIDs.
+
 **0.12.2**
 
 - Added another periodic phi test for event EMD.

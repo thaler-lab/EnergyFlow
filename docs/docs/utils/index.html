@@ -128,10 +128,6 @@
     
         <ul>
         
-            <li><a class="toctree-l4" href="#p4s_from_ptyphims">p4s_from_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#p4s_from_ptyphis">p4s_from_ptyphis</a></li>
-        
             <li><a class="toctree-l4" href="#ptyphims_from_p4s">ptyphims_from_p4s</a></li>
         
             <li><a class="toctree-l4" href="#pts_from_p4s">pts_from_p4s</a></li>
@@ -141,6 +137,18 @@
             <li><a class="toctree-l4" href="#phis_from_p4s">phis_from_p4s</a></li>
         
             <li><a class="toctree-l4" href="#ms_from_p4s">ms_from_p4s</a></li>
+        
+            <li><a class="toctree-l4" href="#p4s_from_ptyphims">p4s_from_ptyphims</a></li>
+        
+            <li><a class="toctree-l4" href="#p4s_from_ptyphis">p4s_from_ptyphis</a></li>
+        
+            <li><a class="toctree-l4" href="#p4s_from_ptyphipids">p4s_from_ptyphipids</a></li>
+        
+            <li><a class="toctree-l4" href="#combine_ptyphims">combine_ptyphims</a></li>
+        
+            <li><a class="toctree-l4" href="#combine_ptyphipids">combine_ptyphipids</a></li>
+        
+            <li><a class="toctree-l4" href="#pids2ms">pids2ms</a></li>
         
             <li><a class="toctree-l4" href="#phi_fix">phi_fix</a></li>
         
@@ -239,72 +247,43 @@
             <div class="section">
               
                 <h3 id="particle-tools">Particle Tools</h3>
-<p>Tools to compute particle kinematic quantities from four-vectors,
-such as transverse momentum $p_T$, rapidity $y$, and azimuthal angle
-$\phi$, and vice versa.</p>
-<hr />
-<h4 id="p4s_from_ptyphims">p4s_from_ptyphims</h4>
-<pre><code class="python">energyflow.p4s_from_ptyphims(ptyphims)
-</code></pre>
-
-<p>Calculate Euclidean four-vectors from transverse momentum, rapidity, azimuthal angle,
-and (optionally) mass for each input.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An array with shape <code>(M,4)</code> of <code>[pT,y,phi,m]</code> for each particle. An array with 
-shape <code>(M,3)</code> is also accepted where the masses are taken to be zero. A single 
-particle is also accepted.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each particle.
-If a single particle was given as input, a single four-vector will be returned.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h4 id="p4s_from_ptyphis">p4s_from_ptyphis</h4>
-<pre><code class="python">energyflow.p4s_from_ptyphis(ptyphis)
-</code></pre>
-
-<p><em>Legacy function</em>: Will be removed in version 1.0. Use <code>p4s_from_ptyphims</code>
-for equivalent functionality.</p>
+<p>Tools to compute particle kinematic quantities from four-vectors, such as
+transverse momentum $p_T$, rapidity $y$, azimuthal angle $\phi$, and mass 
+$m$, and vice versa.</p>
 <hr />
 <h4 id="ptyphims_from_p4s">ptyphims_from_p4s</h4>
 <pre><code class="python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None, keep_allzeros=True)
 </code></pre>
 
-<p>Compute the <code>[pt,y,phi,m]</code> representation of a four-vector for each Euclidean
-four-vector given as input. All-zero four-vectors are removed unless <code>keep_shape</code> 
-is <code>True</code>.</p>
+<p>Compute the <code>[pt,y,phi,m]</code> representation of a four-vector for each
+Euclidean four-vector given as input. All-zero four-vectors are removed
+unless <code>keep_shape</code> is <code>True</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each particle.
-A single particle as a one-dimensional array or list is also accepted.</li>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. A single particle as a one-dimensional array or list is also
+accepted.</li>
 </ul>
 </li>
 <li><strong>phi_ref</strong> : <em>float</em><ul>
-<li>A reference value used so that all phis will be within $\pm\pi$ of this value.
-A value of <code>None</code> means that no phi fixing will be applied.</li>
+<li>A reference value used so that all phis will be within $\pm\pi$ of
+this value. A value of <code>None</code> means that no phi fixing will be applied.</li>
 </ul>
 </li>
 <li><strong>keep_allzeros</strong> : <em>bool</em><ul>
-<li>Flag to determine if all-zero four-vectors will be retained as such. Otherwise,
-they are removed (resulting in a change in the shape of the output).</li>
+<li>Flag to determine if all-zero four-vectors will be retained as such.
+Otherwise, they are removed (resulting in a change in the shape of the 
+output).</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An array of size <code>(M,4)</code> consisting of the transverse momentum, rapidity,
-azimuthal angle, and mass of each particle. If a single particle was given as 
-input, a one-dimensional array is returned.</li>
+<li>An array of size <code>(M,4)</code> consisting of the transverse momentum, 
+rapidity, azimuthal angle, and mass of each particle. If a single
+particle was given as input, a one-dimensional array is returned.</li>
 </ul>
 </li>
 </ul>
@@ -317,16 +296,18 @@ input, a one-dimensional array is returned.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each particle.
-A single particle as a one-dimensional array or list is also accepted.</li>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. A single particle as a one-dimensional array or list is also 
+accepted.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An <code>M</code>-length array consisting of the transverse momentum of each particle.
-If a single particle was given as input, a single float is returned.</li>
+<li>An <code>M</code>-length array consisting of the transverse momentum of each
+particle. If a single particle was given as input, a single float is
+returned.</li>
 </ul>
 </li>
 </ul>
@@ -339,8 +320,9 @@ If a single particle was given as input, a single float is returned.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each particle.
-A single particle as a one-dimensional array or list is also accepted.</li>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. A single particle as a one-dimensional array or list is also
+accepted.</li>
 </ul>
 </li>
 </ul>
@@ -357,14 +339,15 @@ If a single particle was given as input, a single float is returned.</li>
 <pre><code class="python">energyflow.phis_from_p4s(p4s, phi_ref=None)
 </code></pre>
 
-<p>Calculate the azimuthal angles of a collection of four-vectors. If <code>phi_ref</code> is 
-not <code>None</code>, then <code>phi_fix</code> is called using this value. Otherwise, 
-the angles are chosen to be in the inverval $[0,2\pi]$.</p>
+<p>Calculate the azimuthal angles of a collection of four-vectors. If
+<code>phi_ref</code> is not <code>None</code>, then <code>phi_fix</code> is called using this value. 
+Otherwise, the angles are chosen to be in the inverval $[0,2\pi]$.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each particle.
-A single particle as a one-dimensional array or list is also accepted.</li>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. A single particle as a one-dimensional array or list is also
+accepted.</li>
 </ul>
 </li>
 <li><strong>phi_ref</strong> : <em>float</em><ul>
@@ -375,8 +358,9 @@ A single particle as a one-dimensional array or list is also accepted.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An <code>M</code>-length array consisting of the azimuthal angle of each particle.
-If a single particle was given as input, a single float is returned.</li>
+<li>An <code>M</code>-length array consisting of the azimuthal angle of each 
+particle. If a single particle was given as input, a single float is
+returned.</li>
 </ul>
 </li>
 </ul>
@@ -389,16 +373,161 @@ If a single particle was given as input, a single float is returned.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>p4s</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each particle.
-A single particle as a one-dimensional array or list is also accepted.</li>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. A single particle as a one-dimensional array or list is also
+accepted.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An <code>M</code>-length array consisting of the mass of each particle. If a single 
-particle was given as input, a single float is returned.</li>
+<li>An <code>M</code>-length array consisting of the mass of each particle. If a
+single particle was given as input, a single float is returned.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="p4s_from_ptyphims">p4s_from_ptyphims</h4>
+<pre><code class="python">energyflow.p4s_from_ptyphims(ptyphims)
+</code></pre>
+
+<p>Calculate Euclidean four-vectors from transverse momentum, rapidity,
+azimuthal angle, and (optionally) mass for each input.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An array with shape <code>(M,4)</code> of <code>[pT,y,phi,m]</code> for each particle. An
+array with shape <code>(M,3)</code> is also accepted where the masses are taken to
+be zero. A single particle is also accepted.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. If a single particle was given as input, a single four-vector
+will be returned.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="p4s_from_ptyphis">p4s_from_ptyphis</h4>
+<pre><code class="python">energyflow.p4s_from_ptyphis(ptyphis)
+</code></pre>
+
+<p><em>Legacy function</em>: Will be removed in version 1.0. Use 
+<code>p4s_from_ptyphims</code> for equivalent functionality.</p>
+<hr />
+<h4 id="p4s_from_ptyphipids">p4s_from_ptyphipids</h4>
+<pre><code class="python">energyflow.p4s_from_ptyphipids(ptyphipids, error_on_uknown=False)
+</code></pre>
+
+<p>Calculate Euclidean four-vectors from transverse momentum, rapidity,
+azimuthal angle, and particle ID (which is used to determine the mass)
+for each input.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphipids</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An array with shape <code>(M,4)</code> of <code>[pT,y,phi,pdgid]</code> for each particle.
+A single particle is also accepted.</li>
+</ul>
+</li>
+<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
+<li>See <a href="#pids2ms"><code>pids2ms</code></a>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An event as an <code>(M,4)</code> array of four-vectors <code>[E,px,py,pz]</code> for each
+particle. If a single particle was given as input, a single four-vector
+will be returned.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="combine_ptyphims">combine_ptyphims</h4>
+<pre><code class="python">energyflow.combine_ptyphims(ptyphims, scheme='escheme')
+</code></pre>
+
+<p>Combine (add) a collection of four-vectors that are expressed in
+hadronic coordinates.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An array with shape <code>(M,4)</code> of <code>[pT,y,phi,m]</code> for each particle. An
+array with shape <code>(M,3)</code> is also accepted where the masses are taken to
+be zero.</li>
+</ul>
+</li>
+<li><strong>scheme</strong> : {<code>'escheme'</code>}<ul>
+<li>A string specifying how the four-vectors are to be combined.
+Currently, there is only one option, <code>'escheme'</code>, which adds the 
+four-vectors in euclidean coordinates.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>The combined four-vector, expressed as <code>[pT,y,phi,m]</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="combine_ptyphipids">combine_ptyphipids</h4>
+<pre><code class="python">energyflow.combine_ptyphipids(ptyphipids, scheme='escheme')
+</code></pre>
+
+<p>Combine (add) a collection of four-vectors that are expressed as 
+<code>[pT,y,phi,pdgid]</code>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphipids</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An array with shape <code>(M,4)</code> of <code>[pT,y,phi,pdgid]</code> for each particle.</li>
+</ul>
+</li>
+<li><strong>scheme</strong> : {<code>'escheme'</code>}<ul>
+<li>A string specifying how the four-vectors are to be combined.
+Currently, there is only one option, <code>'escheme'</code>, which adds the 
+four-vectors in euclidean coordinates.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>The combined four-vector, expressed as <code>[pT,y,phi,m]</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="pids2ms">pids2ms</h4>
+<pre><code class="python">energyflow.pids2ms(pids, error_on_uknown=False)
+</code></pre>
+
+<p>Map an array of <a href="http://pdg.lbl.gov/2018/
+reviews/rpp2018-rev-monte-carlo-numbering.pdf">Particle Data Group IDs</a> to an array of the
+corresponding particle masses (in GeV).</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pids</strong> : <em>1-d numpy.ndarray</em> or <em>list</em><ul>
+<li>An array of numeric (float or integer) PDGID values.</li>
+</ul>
+</li>
+<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
+<li>Controls whether a <code>KeyError</code> is raised if an unknown PDGID is
+encountered. If <code>False</code>, unknown PDGIDs will map to zero.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>An array of masses in GeV.</li>
 </ul>
 </li>
 </ul>
@@ -407,7 +536,7 @@ particle was given as input, a single float is returned.</li>
 <pre><code class="python">energyflow.phi_fix(phis, phi_ref, copy=False)
 </code></pre>
 
-<p>A function to ensure that all phi values are within $\pi$ of <code>phi_ref</code>. 
+<p>A function to ensure that all phi values are within $\pi$ of <code>phi_ref</code>.
 It is assumed that all starting phi values are within $2\pi$ of <code>phi_ref</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -416,11 +545,12 @@ It is assumed that all starting phi values are within $2\pi$ of <code>phi_ref</c
 </ul>
 </li>
 <li><strong>phi_ref</strong> : <em>float</em><ul>
-<li>A reference value used so that all phis will be within $\pm\pi$ of this value.</li>
+<li>A reference value used so that all phis will be within $\pm\pi$ of
+this value.</li>
 </ul>
 </li>
 <li><strong>copy</strong> : <em>bool</em><ul>
-<li>Determines if <code>phis</code> are copied or not. If <code>False</code> then <code>phis</code> may be 
+<li>Determines if <code>phis</code> are copied or not. If <code>False</code> then <code>phis</code> may be
 modified in place.</li>
 </ul>
 </li>
@@ -437,18 +567,21 @@ modified in place.</li>
 <pre><code class="python">energyflow.flat_metric(dim)
 </code></pre>
 
-<p>The Minkowski metric in <code>dim</code> spacetime dimensions in the mostly-minus convention.</p>
+<p>The Minkowski metric in <code>dim</code> spacetime dimensions in the mostly-minus
+convention.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>dim</strong> : <em>int</em><ul>
-<li>The number of spacetime dimensions (thought to be four in our universe).</li>
+<li>The number of spacetime dimensions (thought to be four in our 
+universe).</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>1-d numpy.ndarray</em><ul>
-<li>A <code>dim</code>-length, one-dimensional (not matrix) array equal to <code>[+1,-1,...,-1]</code></li>
+<li>A <code>dim</code>-length, one-dimensional (not matrix) array equal to 
+<code>[+1,-1,...,-1]</code>.</li>
 </ul>
 </li>
 </ul>
@@ -500,9 +633,8 @@ are specified as <code>[E,p1,p2,...]</code>.</li>
 </code></pre>
 
 <p>Generate random events with a given number of massless particles in a
-given spacetime dimension. The total energy and momentum are made to sum
-to zero by making about half of the particles incoming. These events are
-not guaranteed to uniformly sample phase space.</p>
+given spacetime dimension. The total momentum are made to sum
+to zero. These events are not guaranteed to uniformly sample phase space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>nevents</strong> : <em>int</em><ul>
@@ -572,7 +704,8 @@ update EnergyFlow to the latest version.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>path</strong> : <em>str</em><ul>
-<li>The destination for the downloaded files.</li>
+<li>The destination for the downloaded files. Note that <code>examples</code>
+is automatically appended to the end of this path.</li>
 </ul>
 </li>
 <li><strong>which</strong> : {<em>list</em>, <code>'all'</code>}<ul>
