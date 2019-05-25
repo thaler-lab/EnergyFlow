@@ -302,6 +302,18 @@ of <em>float</em><ul>
 A single float will apply the same dropout rate to all dense layers.</li>
 </ul>
 </li>
+<li><strong>Phi_l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
+<li>$L_2$-regulatization strength for both the weights and biases
+of the layers in the $\Phi$ network. A single float will apply the
+same $L_2$-regulatization to all layers.</li>
+</ul>
+</li>
+<li><strong>F_l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
+<li>$L_2$-regulatization strength for both the weights and biases
+of the layers in the $F$ network. A single float will apply the
+same $L_2$-regulatization to all layers.</li>
+</ul>
+</li>
 <li><strong>mask_val</strong>=<code>0</code> : <em>float</em><ul>
 <li>The value for which particles with all features set equal to
 this value will be ignored. The <a href="https://

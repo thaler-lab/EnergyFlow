@@ -227,6 +227,14 @@ class SymmetricPerParticleNN(NNBase):
         of _float_
             - Dropout rates for the dense layers in the backend module $F$. 
             A single float will apply the same dropout rate to all dense layers.
+        - **Phi_l2_regs**=`0` : {_tuple_, _list_} of _float_
+            - $L_2$-regulatization strength for both the weights and biases
+            of the layers in the $\Phi$ network. A single float will apply the
+            same $L_2$-regulatization to all layers.
+        - **F_l2_regs**=`0` : {_tuple_, _list_} of _float_
+            - $L_2$-regulatization strength for both the weights and biases
+            of the layers in the $F$ network. A single float will apply the
+            same $L_2$-regulatization to all layers.
         - **mask_val**=`0` : _float_
             - The value for which particles with all features set equal to
             this value will be ignored. The [Keras Masking layer](https://
@@ -256,8 +264,8 @@ class SymmetricPerParticleNN(NNBase):
                                                                  old='dense_k_inits'))
 
         # regularizations
-        self.latent_dropout = self._proc_arg('latent_dropout', default=0)
-        self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0, 
+        self.latent_dropout = self._proc_arg('latent_dropout', default=0.)
+        self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0., 
                                                                    old='dense_dropouts'))
         self.Phi_l2_regs = iter_or_rep(self._proc_arg('Phi_l2_regs', default=0.))
         self.F_l2_regs   = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))

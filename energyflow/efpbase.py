@@ -7,7 +7,7 @@ import multiprocessing
 import sys
 
 import numpy as np
-from six import with_metaclass
+import six
 
 from energyflow.algorithms import einsum
 from energyflow.measure import Measure
@@ -18,7 +18,7 @@ from energyflow.utils import create_pool, timing, transfer
 # EFPBase
 ###############################################################################
 
-class EFPBase(with_metaclass(ABCMeta, object)):
+class EFPBase(six.with_metaclass(ABCMeta, object)):
 
     def __init__(self, measure, beta, kappa, normed, coords, check_input):
 

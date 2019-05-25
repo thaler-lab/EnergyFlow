@@ -1,4 +1,5 @@
 ### 0.12.x
+
 **0.12.3**
 
 - Set allow_pickle to True explicitly in Generator (recently changed default in NumPy).
@@ -6,8 +7,11 @@
 - Quark and gluon dataset files can now be obtained from Zenodo in addition to Dropbox.
 - Changed internals of EFN to use standalone functions for easier use of subnetwork components.
 - Added some particle utility functions to deal with PDGIDs.
+- Added particle utilities to deal with pseudorapidities.
 - Changed `gen_random_events_mcom` to have positive energies (momenta still sum to zero).
 - Added l2 regularization to layers in EFN and PFN architectures. Thanks to Anders Andreassen for submiting this pull request!
+- Added tests for particle utils.
+- Particle utilities now accept arrays of events.
 
 **0.12.2**
 
@@ -36,7 +40,9 @@ sets. Thanks to Anders Andreassen for pointing this out!
 - Added support for passing arbitrary compilation options to Keras models.
 - Added EMD Demo notebook
 
+
 ### 0.11.x
+
 **0.11.2**
 
 - Added advanced activations support for neural network architectures. Thanks to Kevin Bauer for this suggestion!
@@ -55,6 +61,7 @@ the [Python Optimal Transport](https://pot.readthedocs.io) library and [SciPy](h
 
 
 ### 0.10.x
+
 **0.10.5**
 
 - Minor improvement and fixes. Thanks to Preksha Naik for pointing out a typo!

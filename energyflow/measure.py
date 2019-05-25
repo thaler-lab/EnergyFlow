@@ -64,7 +64,7 @@ from abc import ABCMeta, abstractmethod
 import warnings
 
 import numpy as np
-from six import with_metaclass
+import six
 
 from energyflow.utils import transfer
 from energyflow.utils.particle_utils import *
@@ -72,7 +72,7 @@ from energyflow.utils.particle_utils import *
 __all__ = ['Measure']
 
 # special value of kappa indicating "particle flow"
-pf_marker = 'pf'
+PF_MARKER = 'pf'
 
 # form theta_ij**2 matrix from array of (rapidity,phi) values
 # theta_ij**2 = (y_i - y_j)**2 + (phi_i - phi_j)**2
@@ -99,7 +99,7 @@ def pf_func(Es, ps, kappa):
 # Measure 
 ###############################################################################
 
-class Measure(with_metaclass(ABCMeta, object)):
+class Measure(six.with_metaclass(ABCMeta, object)):
     
     """Class for dealing with any kind of measure."""
 
@@ -210,9 +210,9 @@ class Measure(with_metaclass(ABCMeta, object)):
 
     def _set_k_func(self):
         self._k_func = kappa_func
-        if self.kappa == pf_marker:
+        if self.kappa == PF_MARKER:
             if self.normed:
-                warnings.warn('Normalization not supported when kappa=\'' + pf_marker + '\'.')
+                warnings.warn('Normalization not supported when kappa=\'' + PF_MARKER + '\'.')
             self.normed = False
             self._k_func = pf_func
 
@@ -305,7 +305,7 @@ class HadronicDefaultMeasure(HadronicMeasure):
 
     def __init__(self, *args, **kwargs):
         super(HadronicDefaultMeasure, self).__init__(*args, **kwargs)
-        if self.kappa == pf_marker:
+        if self.kappa == PF_MARKER:
             raise ValueError('particle flow not available for HadronicDefaultMeasure')
 
     def ndarray_dim3(self, arg):

@@ -1,32 +1,72 @@
 r"""### Particle Tools
 
-Tools to compute particle kinematic quantities from four-vectors, such as
-transverse momentum $p_T$, rapidity $y$, azimuthal angle $\phi$, and mass 
-$m$, and vice versa.
+Tools for dealing with particle momenta four-vectors. A four-vector can either
+be in Cartesian coordinates, `[e,px,py,pz]` (energy, momentum in `x` direction,
+momentum in `y` direction, momentum in `z` direction), or hadronic coordinates, 
+`[pt,y,phi,m]` (transverse momentum, rapidity, azimuthal angle, mass), which
+are related via:
+
+$$p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+\phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}$$
+
+and inversely:
+
+$$E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.$$
+
+The pseudorapidity `eta` can be obtained from a Cartesian four-momentum as:
+
+$$\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+|\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},$$
+
+and is related to the rapidity via
+
+$$\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).$$
+
+Note that the above formulas are numerically stable up to values of rapidity or
+pseudorapidity of a few hundred, above which the formulas have numerical issues. 
+In this case, a different but equivalent formulae are used that are numerically
+stable in this region. In all cases, the $p_T\to0$ limit produces infinite
+values.
+
+In the context of this package, an "event" is a two-dimensional numpy array
+with shape `(M,4)` where `M` is the multiplicity. An array of events is a 
+three-dimensional array with shape `(N,M,4)` where `N` is the number of events.
+The valid inputs and outputs of the functions here will be described using
+this terminology.
 """
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, print_function
 
 import warnings
 
 import numpy as np
+import six
 
 __all__ = [
 
     # from_p4s functions
     'ptyphims_from_p4s',
     'pts_from_p4s',
+    'pt2s_from_p4s',
     'ys_from_p4s',
+    'etas_from_p4s',
     'phis_from_p4s',
+    'm2s_from_p4s',
     'ms_from_p4s',
+    'ms_from_ps',
+
+    # eta/y conversions
+    'etas_from_pts_ys_ms',
+    'ys_from_pts_etas_ms',
 
     # from_ptyphims functions
     'p4s_from_ptyphims',
-    'p4s_from_ptyphis',
     'p4s_from_ptyphipids',
 
     # combination functions
-    'combine_ptyphims',
-    'combine_ptyphipids',
+    'sum_ptyphims',
+    'sum_ptyphipids',
 
     # pid functions
     'pids2ms',
@@ -36,130 +76,229 @@ __all__ = [
     'flat_metric',
 ]
 
-def ptyphims_from_p4s(p4s, phi_ref=None, keep_allzeros=True):
-    r"""Compute the `[pt,y,phi,m]` representation of a four-vector for each
-    Euclidean four-vector given as input. All-zero four-vectors are removed
-    unless `keep_shape` is `True`.
+def ptyphims_from_p4s(p4s, phi_ref=None):
+    r"""Convert to hadronic coordinates `[pt,y,phi,m]` from Cartesian
+    coordinates. All-zero four-vectors are left alone.
 
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. A single particle as a one-dimensional array or list is also
-        accepted.
-    - **phi_ref** : _float_
-        - A reference value used so that all phis will be within $\pm\pi$ of
-        this value. A value of `None` means that no phi fixing will be applied.
-    - **keep_allzeros** : _bool_
-        - Flag to determine if all-zero four-vectors will be retained as such.
-        Otherwise, they are removed (resulting in a change in the shape of the 
-        output).
+        - A single particle, event, or array of events in Cartesian coordinates.
+    - **phi_ref** : {`None`, `'hardest'`, _float_, _numpy.ndarray_}
+        - Used to help deal with the fact that $\phi$ is a periodic coordinate.
+        If a float (which should be in $[0,2\pi)$), all phi values will be
+        within $\pm\pi$ of this reference value. If `'\hardest'`, the phi of
+        the hardest particle is used as the reference value. If `None`, all
+        phis will be in the range $[0,2\pi)$. An array is accepted in the case
+        that `p4s` is an array of events, in which case the `phi_ref` array
+        should have shape `(N,)` where `N` is the number of events.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An array of size `(M,4)` consisting of the transverse momentum, 
-        rapidity, azimuthal angle, and mass of each particle. If a single
-        particle was given as input, a one-dimensional array is returned.
+        - An array of hadronic four-momenta with the same shape as the input.
     """
 
-    # ensure a two-dimensional array
-    particles = np.copy(np.atleast_2d(p4s))
+    p4s = np.asarray(p4s, dtype=float)
+    if p4s.shape[-1] != 4:
+        raise ValueError("Last dimension of 'p4s' must have size 4.")
 
-    # find non-zero particles
-    nonzero_mask = np.count_nonzero(particles, axis=1) > 0
-    nonzero_particles = particles[nonzero_mask]
+    out = np.zeros(p4s.shape, dtype=float)
+    out[...,0] = pts_from_p4s(p4s)
+    out[...,1] = ys_from_p4s(p4s)
+    out[...,2] = phis_from_p4s(p4s, phi_ref, _pts=out[...,0])
+    out[...,3] = ms_from_p4s(p4s)
 
-    # get quantities
-    pts = pts_from_p4s(nonzero_particles)
-    ys = ys_from_p4s(nonzero_particles)
-    phis = phis_from_p4s(nonzero_particles, phi_ref=phi_ref)
-    ms = ms_from_p4s(nonzero_particles)
-    ptyphims = np.vstack((pts, ys, phis, ms)).T
+    return out
 
-    # keep the all-zero particles
-    if keep_allzeros:
-        particles[nonzero_mask] = ptyphims
-        return np.squeeze(particles)
 
-    # return just the ptyphims for the non-zero particles
-    return np.squeeze(ptyphims)
+def pt2s_from_p4s(p4s):
+    """Calculate the squared transverse momenta of a collection of four-vectors.
+    
+    **Arguments**
 
+    - **p4s** : _numpy.ndarray_ or _list_
+        - A single particle, event, or array of events in Cartesian coordinates.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of squared transverse momenta with shape `p4s.shape[:-1]`.
+    """
+
+    p4s = np.asarray(p4s, dtype=float)
+    return p4s[...,1]**2 + p4s[...,2]**2
 
 def pts_from_p4s(p4s):
-    """Calculate the transverse momenta of a collection of four-vectors
+    """Calculate the transverse momenta of a collection of four-vectors.
     
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. A single particle as a one-dimensional array or list is also 
-        accepted.
+        - A single particle, event, or array of events in Cartesian coordinates.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An `M`-length array consisting of the transverse momentum of each
-        particle. If a single particle was given as input, a single float is
-        returned.
+        - An array of transverse momenta with shape `p4s.shape[:-1]`.
     """
 
-    pts = np.sqrt(p4s[...,1]**2 + p4s[...,2]**2)
-    return np.squeeze(pts)
-
+    return np.sqrt(pt2s_from_p4s(p4s))
 
 def ys_from_p4s(p4s):
-    """Calculate the rapidities of a collection of four-vectors
+    """Calculate the rapidities of a collection of four-vectors. Returns zero
+    for all-zero particles
     
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. A single particle as a one-dimensional array or list is also
-        accepted.
+        - A single particle, event, or array of events in Cartesian coordinates.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An `M`-length array consisting of the rapidity of each particle.
-        If a single particle was given as input, a single float is returned.
+        - An array of rapidities with shape `p4s.shape[:-1]`.
     """
 
-    ys = 0.5*np.log((p4s[...,0] + p4s[...,3])/(p4s[...,0] - p4s[...,3]))
-    return np.squeeze(ys)
+    p4s = np.asarray(p4s, dtype=float)
+    out = np.zeros(p4s.shape[:-1], dtype=float)
 
+    nz_mask = np.any(p4s != 0., axis=-1)
+    nz_p4s = p4s[nz_mask]
+    out[nz_mask] = np.arctanh(nz_p4s[...,3]/nz_p4s[...,0])
 
-def phis_from_p4s(p4s, phi_ref=None):
-    r"""Calculate the azimuthal angles of a collection of four-vectors. If
-    `phi_ref` is not `None`, then `phi_fix` is called using this value. 
-    Otherwise, the angles are chosen to be in the inverval $[0,2\pi]$.
+    return out
+
+def etas_from_p4s(p4s):
+    """Calculate the pseudorapidities of a collection of four-vectors. Returns
+    zero for all-zero particles
     
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. A single particle as a one-dimensional array or list is also
-        accepted.
-    - **phi_ref** : _float_
-        - See [`phi_fix`](#phi_fix)
+        - A single particle, event, or array of events in Cartesian coordinates.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An `M`-length array consisting of the azimuthal angle of each 
-        particle. If a single particle was given as input, a single float is
-        returned.
+        - An array of pseudorapidities with shape `p4s.shape[:-1]`.
     """
 
-    phis = np.arctan2(p4s[...,2], p4s[...,1])
+    p4s = np.asarray(p4s, dtype=float)
+    out = np.zeros(p4s.shape[:-1], dtype=float)
+
+    nz_mask = np.any(p4s != 0., axis=-1)
+    nz_p4s = p4s[nz_mask]
+    out[nz_mask] = np.arctanh(nz_p4s[...,3]/np.sqrt(nz_p4s[...,1]**2 + nz_p4s[...,2]**2 + nz_p4s[...,3]**2))
+
+    return out
+
+# phis_from_p4s(p4s, phi_ref=None)
+def phis_from_p4s(p4s, phi_ref=None, _pts=None):
+    r"""Calculate the azimuthal angles of a collection of four-vectors.
+    
+    **Arguments**
+
+    - **p4s** : _numpy.ndarray_ or _list_
+        - A single particle, event, or array of events in Cartesian coordinates.
+    - **phi_ref** : {_float_, _numpy.ndarray_, `None`, `'hardest'`}
+        - Used to help deal with the fact that $\phi$ is a periodic coordinate.
+        If a float (which should be in $[0,2\pi)$), all phi values will be
+        within $\pm\pi$ of this reference value. If `'\hardest'`, the phi of
+        the hardest particle is used as the reference value. If `None`, all
+        phis will be in the range $[0,2\pi)$. An array is accepted in the case
+        that `p4s` is an array of events, in which case the `phi_ref` array
+        should have shape `(N,)` where `N` is the number of events.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of azimuthal angles with shape `p4s.shape[:-1]`.
+    """
+
+    # get phis
+    p4s = np.asarray(p4s, dtype=float)
+    phis = np.asarray(np.arctan2(p4s[...,2], p4s[...,1]))
     phis[phis<0] += 2*np.pi
 
     # ensure close to reference value
     if phi_ref is not None:
-        phis = phi_fix(phis, phi_ref)
+        if isinstance(phi_ref, six.string_types) and phi_ref == 'hardest':
+            ndim = phis.ndim
 
-    return np.squeeze(phis)
+            # here the particle is already phi fixed with respect to itself
+            if ndim == 0:
+                return phis
 
+            # get pts if needed (pt2s are fine for determining hardest)
+            if _pts is None:
+                _pts = pt2s_from_p4s(p4s)
+            hardest = np.argmax(_pts, axis=-1)
+
+            # indexing into vector
+            if ndim == 1:
+                phi_ref = phis[hardest]
+
+            # advanced indexing
+            elif ndim == 2:
+                phi_ref = phis[np.arange(len(phis)), hardest]
+
+            else:
+                raise ValueError("'p4s' should not have more than three dimensions.")
+
+        phis = phi_fix(phis, phi_ref, copy=False)
+
+    return phis
+
+TWOPI = 2*np.pi
+def phi_fix(phis, phi_ref, copy=True):
+    r"""A function to ensure that all phis are within $\pi$ of `phi_ref`. It is
+    assumed that all starting phi values are $\pm 2\pi$ of `phi_ref`.
+
+    **Arguments**
+
+    - **phis** : _numpy.ndarray_ or _list_
+        - Array of phi values.
+    - **phi_ref** : {_float_ or _numpy.ndarray_}
+        - A reference value used so that all phis will be within $\pm\pi$ of
+        this value. Should have a shape of `phis.shape[:-1]`.
+    - **copy** : _bool_
+        - Determines if `phis` are copied or not. If `False` then `phis` is
+        modified in place.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of the fixed phi values.
+    """
+
+    phis, phi_ref = np.asarray(phis, dtype=float), np.asarray(phi_ref, dtype=float)
+    phi_ref = phi_ref[...,np.newaxis] if phi_ref.ndim > 0 else phi_ref
+
+    diff = phis - phi_ref
+
+    new_phis = np.copy(phis) if copy else phis
+    new_phis[diff > np.pi] -= TWOPI
+    new_phis[diff < -np.pi] += TWOPI
+
+    return new_phis
+
+def m2s_from_p4s(p4s):
+    """Calculate the squared masses of a collection of four-vectors.
+    
+    **Arguments**
+
+    - **p4s** : _numpy.ndarray_ or _list_
+        - A single particle, event, or array of events in Cartesian coordinates.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of squared masses with shape `p4s.shape[:-1]`.
+    """
+
+    p4s = np.asarray(p4s, dtype=float)
+    return p4s[...,0]**2 - p4s[...,1]**2 - p4s[...,2]**2 - p4s[...,3]**2
 
 def ms_from_p4s(p4s):
     """Calculate the masses of a collection of four-vectors.
@@ -167,162 +306,243 @@ def ms_from_p4s(p4s):
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. A single particle as a one-dimensional array or list is also
-        accepted.
+        - A single particle, event, or array of events in Cartesian coordinates.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An `M`-length array consisting of the mass of each particle. If a
-        single particle was given as input, a single float is returned.
+        - An array of masses with shape `p4s.shape[:-1]`.
     """
 
-    p4s = np.atleast_2d(p4s)
-    m2s = np.squeeze(p4s[...,0]**2 - np.sum(p4s[...,1:]**2, axis=-1))
-    ms = np.sign(m2s)*np.sqrt(np.abs(m2s))
-    return np.squeeze(ms)
+    m2s = m2s_from_p4s(p4s)
+    return np.sign(m2s)*np.sqrt(np.abs(m2s))
+
+def ms_from_ps(ps):
+    r"""Calculate the masses of a collection of Lorentz vectors in two or more
+    spacetime dimensions.
+
+    **Arguments**
+
+    - **ps** : _numpy.ndarray_ or _list_
+        - A single particle, event, or array of events in Cartesian
+        coordinates in $d\ge2$ spacetime dimensions.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of masses with shape `ps.shape[:-1]`.
+    """
+
+    nps = np.asarray(ps, dtype=float)
+    m2s = nps[...,0]**2 - np.sum(nps[...,1:]**2, axis=-1)
+    return np.sign(m2s)*np.sqrt(np.abs(m2s))
+
+# etas_from_pts_ys_ms(pts, ys, ms)
+def etas_from_pts_ys_ms(pts, ys, ms, _cutoff=50.):
+    """Calculate pseudorapidities from transverse momenta, rapidities, and masses.
+    All input arrays should have the same shape.
+
+    **Arguments**
+
+    - **pts** : _numpy.ndarray_
+        - Array of transverse momenta.
+    - **ys** : _numpy.ndarray_
+        - Array of rapidities.
+    - **ms** : _numpy.ndarray_
+        - Array of masses.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - Array of pseudorapidities with the same shape as `ys`.
+    """
+
+    pts, ys, ms = np.asarray(pts), np.asarray(ys), np.asarray(ms)
+
+    abs_ys, x2s = np.abs(ys), (ms/pts)**2
+    sqrt1plusx2s = np.sqrt(1 + x2s)
+
+    if np.max(abs_ys) < _cutoff:
+        return np.arcsinh(np.sinh(ys)*sqrt1plusx2s)
+
+    # have to use different formulas for large and small ys
+    large_mask = (abs_ys > _cutoff)
+    small_mask = ~large_mask
+    out = np.zeros(ys.shape, dtype=float)
+
+    large_abs_ys = abs_ys[large_mask]
+
+    # note that the commented term can be ignored since it is numerically 1 for |y| > 20
+    out[large_mask] = large_abs_ys + np.log(#(1. - np.exp(-2.*large_abs_ys))*
+                        (sqrt1plusx2s[large_mask] + 
+                         np.sqrt(x2s[large_mask] + 1./np.tanh(large_abs_ys)**2))/2.)
+    out[large_mask] *= np.sign(ys[large_mask])
+
+    out[small_mask] = np.arcsinh(np.sinh(ys[small_mask])*sqrt1plusx2s[small_mask])
+
+    return out
+
+# ys_from_pts_etas_ms(pts, etas, ms)
+def ys_from_pts_etas_ms(pts, etas, ms, _cutoff=50.):
+    """Calculate rapidities from transverse momenta, pseudorapidities, and masses.
+    All input arrays should have the same shape.
+
+    **Arguments**
+
+    - **pts** : _numpy.ndarray_
+        - Array of transverse momenta.
+    - **etas** : _numpy.ndarray_
+        - Array of pseudorapidities.
+    - **ms** : _numpy.ndarray_
+        - Array of masses.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - Array of rapidities with the same shape as `etas`.
+    """
+
+    pts, etas, ms = np.asarray(pts), np.asarray(etas), np.asarray(ms)
+
+    abs_etas, x2s = np.abs(etas), (ms/pts)**2
+    sqrt1plusx2s = np.sqrt(1 + x2s)
+
+    if np.max(abs_etas) < _cutoff:
+        return np.arcsinh(np.sinh(etas)/sqrt1plusx2s)
+
+    # have to use different formulas for large and small etas
+    large_mask = (abs_etas > _cutoff)
+    small_mask = ~large_mask
+    out = np.zeros(etas.shape, dtype=float)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+
+        large_abs_etas = abs_etas[large_mask]
+
+        # note that the commented term can be ignored since it is numerically 1 for |eta| > 20
+        out[large_mask] = large_abs_etas + np.log(#(1. - np.exp(-2.*large_abs_etas))*
+                                   (1. + np.sqrt(1./np.tanh(large_abs_etas)**2 + 
+                                                 x2s[large_mask]/np.sinh(large_abs_etas)**2))/
+                                   (2.*sqrt1plusx2s[large_mask]))
+        out[large_mask] *= np.sign(etas[large_mask])
+
+    out[small_mask] = np.arcsinh(np.sinh(etas[small_mask])/sqrt1plusx2s[small_mask])
+
+    return out
 
 def p4s_from_ptyphims(ptyphims):
-    """Calculate Euclidean four-vectors from transverse momentum, rapidity,
-    azimuthal angle, and (optionally) mass for each input.
+    """Calculate Cartesian four-vectors from transverse momenta, rapidities,
+    azimuthal angles, and (optionally) masses for each input.
     
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M,4)` of `[pT,y,phi,m]` for each particle. An
-        array with shape `(M,3)` is also accepted where the masses are taken to
-        be zero. A single particle is also accepted.
+        - A single particle, event, or array of events in hadronic coordinates.
+        The mass is optional and if left out will be taken to be zero.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. If a single particle was given as input, a single four-vector
-        will be returned.
+        - An array of Cartesian four-vectors.
     """
 
-    # ensure a two-dimensional array
-    ptyphims = np.atleast_2d(ptyphims)
-
     # get pts, ys, phis
-    pts, ys, phis = [ptyphims[:,i] for i in range(3)]
+    ptyphims = np.asarray(ptyphims, dtype=float)
+    pts, ys, phis = (ptyphims[...,0,np.newaxis], 
+                     ptyphims[...,1,np.newaxis], 
+                     ptyphims[...,2,np.newaxis])
 
     # get masses
-    ms = ptyphims[:,3] if ptyphims.shape[1] == 4 else np.zeros(len(ptyphims))
+    ms = ptyphims[...,3,np.newaxis] if ptyphims.shape[-1] == 4 else np.zeros(pts.shape)
 
     Ets = np.sqrt(pts**2 + ms**2)
-    p4s = np.vstack([Ets*np.cosh(ys), pts*np.cos(phis), 
-                     pts*np.sin(phis), Ets*np.sinh(ys)]).T
+    p4s = np.concatenate((Ets*np.cosh(ys), pts*np.cos(phis), 
+                          pts*np.sin(phis), Ets*np.sinh(ys)), axis=-1)
+    return p4s
 
-    return np.squeeze(p4s)
-
-def p4s_from_ptyphipids(ptyphipids, error_on_uknown=False):
-    """Calculate Euclidean four-vectors from transverse momentum, rapidity,
-    azimuthal angle, and particle ID (which is used to determine the mass)
-    for each input.
+def p4s_from_ptyphipids(ptyphipids, error_on_unknown=False):
+    """Calculate Cartesian four-vectors from transverse momenta, rapidities,
+    azimuthal angles, and particle IDs for each input. The particle IDs are
+    used to lookup the mass of the particle. Transverse momenta should have
+    units of GeV when using this function.
     
     **Arguments**
 
     - **ptyphipids** : _numpy.ndarray_ or _list_
-        - An array with shape `(M,4)` of `[pT,y,phi,pdgid]` for each particle.
-        A single particle is also accepted.
+        - A single particle, event, or array of events in hadronic coordinates
+        where the mass is replaced by the PDG ID of the particle.
     - **error_on_unknown** : _bool_
-        - See [`pids2ms`](#pids2ms).
+        - See the corresponding argument of [`pids2ms`](#pids2ms).
 
     **Returns**
 
     - _numpy.ndarray_
-        - An event as an `(M,4)` array of four-vectors `[E,px,py,pz]` for each
-        particle. If a single particle was given as input, a single four-vector
-        will be returned.
+        - An array of Cartesian four-vectors with the same shape as the input.
     """
-
-    # ensure a two-dimensional array
-    ptyphipids = np.atleast_2d(ptyphipids)
 
     # get pts, ys, phis
-    pts, ys, phis, pids = [ptyphipids[:,i] for i in range(4)]
+    ptyphipids = np.asarray(ptyphipids, dtype=float)
+    pts, ys, phis = (ptyphipids[...,0,np.newaxis],
+                     ptyphipids[...,1,np.newaxis],
+                     ptyphipids[...,2,np.newaxis])
 
     # get masses
-    ms = pids2ms(pids, error_on_unknown)
+    ms = pids2ms(ptyphipids[...,3,np.newaxis], error_on_unknown)
 
     Ets = np.sqrt(pts**2 + ms**2)
-    p4s = np.vstack([Ets*np.cosh(ys), pts*np.cos(phis), 
-                     pts*np.sin(phis), Ets*np.sinh(ys)]).T
+    p4s = np.concatenate((Ets*np.cosh(ys), pts*np.cos(phis), 
+                          pts*np.sin(phis), Ets*np.sinh(ys)), axis=-1)
+    return p4s
 
-    return np.squeeze(p4s)
-
-def p4s_from_ptyphis(ptyphis):
-    """_Legacy function_: Will be removed in version 1.0. Use 
-    `p4s_from_ptyphims` for equivalent functionality.
-    """
-
-    warnings.warn('This function is deprecated and will be removed in version '
-                  '1.0. Use p4s_from_ptyphims for equivalent functionality.')
-
-    return p4s_from_ptyphims(ptyphis)
-
-def combine_ptyphims(ptyphims, scheme='escheme'):
-    """Combine (add) a collection of four-vectors that are expressed in
-    hadronic coordinates.
+def sum_ptyphims(ptyphims):
+    """Add a collection of four-vectors that are expressed in hadronic
+    coordinates by first converting to Cartesian coordinates and then summing.
 
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An array with shape `(M,4)` of `[pT,y,phi,m]` for each particle. An
-        array with shape `(M,3)` is also accepted where the masses are taken to
-        be zero.
-    - **scheme** : {`'escheme'`}
-        - A string specifying how the four-vectors are to be combined.
-        Currently, there is only one option, `'escheme'`, which adds the 
-        four-vectors in euclidean coordinates.
+        - An event, or array of events in hadronic coordinates. The mass is
+        optional and if left out will be taken to be zero. An argument of a
+        single particle does nothing.
 
     **Returns**
 
-    - _1-d numpy.ndarray_
-        - The combined four-vector, expressed as `[pT,y,phi,m]`.
+    - _numpy.ndarray_
+        - Array of summed four-vectors, in hadronic coordinates.
     """
 
-    if scheme == 'escheme':
-        p4s = np.atleast_2d(p4s_from_ptyphims(ptyphims))
-        tot = np.sum(p4s, axis=0)
+    if ptyphims.ndim <= 1:
+        return ptyphims
 
-    else:
-        raise ValueError("Combination scheme '{}' not supported.".format(scheme))
+    return ptyphims_from_p4s(np.sum(p4s_from_ptyphims(ptyphims), axis=-2))
 
-    return ptyphims_from_p4s(tot)
-
-def combine_ptyphipids(ptyphipids, scheme='escheme'):
-    """Combine (add) a collection of four-vectors that are expressed as 
+def sum_ptyphipids(ptyphipids, error_on_unknown=False):
+    """Add a collection of four-vectors that are expressed as
     `[pT,y,phi,pdgid]`.
 
     **Arguments**
 
     - **ptyphipids** : _numpy.ndarray_ or _list_
-        - An array with shape `(M,4)` of `[pT,y,phi,pdgid]` for each particle.
-    - **scheme** : {`'escheme'`}
-        - A string specifying how the four-vectors are to be combined.
-        Currently, there is only one option, `'escheme'`, which adds the 
-        four-vectors in euclidean coordinates.
+        - A single particle, event, or array of events in hadronic coordinates
+        where the mass is replaced by the PDG ID of the particle.
+    - **error_on_unknown** : _bool_
+        - See the corresponding argument of [`pids2ms`](#pids2ms).
 
     **Returns**
 
-    - _1-d numpy.ndarray_
-        - The combined four-vector, expressed as `[pT,y,phi,m]`.
+    - _numpy.ndarray_
+        - Array of summed four-vectors, in hadronic coordinates.
     """
 
-    if scheme == 'escheme':
-        p4s = np.atleast_2d(p4s_from_ptyphipids(ptyphipids))
-        tot = np.sum(p4s, axis=0)
+    if ptyphipids.ndim <= 1:
+        return ptyphipids
 
-    else:
-        raise ValueError("Combination scheme '{}' not supported.".format(scheme))
-
-    return ptyphims_from_p4s(tot)
+    return ptyphims_from_p4s(np.sum(p4s_from_ptyphipids(ptyphipids, error_on_unknown), axis=-2))
 
 # masses (in GeV) of particles by pdgid
 # obtained from the Pythia8 Particle Data page
+# includes fundamental particles and most ground state uds mesons and baryons
 PARTICLE_MASSES = {
     0:    0.,      # void
     1:    0.33,    # down
@@ -343,14 +563,26 @@ PARTICLE_MASSES = {
     24:   80.385,  # W+
     25:   125.,    # Higgs
     111:  0.13498, # pi0
+    113:  0.77549, # rho0
     130:  0.49761, # K0-long
     211:  0.13957, # pi+
+    213:  0.77549, # rho+
+    221:  0.54785, # eta
+    223:  0.78265, # omega
     310:  0.49761, # K0-short
     321:  0.49368, # K+
+    331:  0.95778, # eta'
+    333:  1.01946, # phi
     2112: 0.93957, # neutron
     2212: 0.93827, # proton
+    1114: 1.232,   # Delta-
+    2114: 1.232,   # Delta0
+    2214: 1.232,   # Delta+
+    2224: 1.232,   # Delta++
     3122: 1.11568, # Lambda0
     3222: 1.18937, # Sigma+
+    3212: 1.19264, # Sigma0
+    3112: 1.19745, # Sigma-
     3312: 1.32171, # Xi-
     3322: 1.31486, # Xi0
     3334: 1.67245, # Omega-
@@ -363,55 +595,28 @@ def pids2ms(pids, error_on_uknown=False):
 
     **Arguments**
 
-    - **pids** : _1-d numpy.ndarray_ or _list_
-        - An array of numeric (float or integer) PDGID values.
+    - **pids** : _numpy.ndarray_ or _list_
+        - An array of numeric (float or integer) PDG ID values.
     - **error_on_unknown** : _bool_
-        - Controls whether a `KeyError` is raised if an unknown PDGID is
-        encountered. If `False`, unknown PDGIDs will map to zero.
-
-    **Returns**
-
-    - _1-d numpy.ndarray_
-        - An array of masses in GeV.
-    """
-
-    pids_arr = np.asarray(pids, dtype=int)
-
-    if error_on_uknown:
-        masses = [PARTICLE_MASSES[pid] for pid in pids_arr]
-    else:
-        masses = [PARTICLE_MASSES.get(pid, 0.) for pid in pids_arr]
-
-    return np.asarray(masses, dtype=float)
-
-TWOPI = 2*np.pi
-def phi_fix(phis, phi_ref, copy=False):
-    r"""A function to ensure that all phi values are within $\pi$ of `phi_ref`.
-    It is assumed that all starting phi values are within $2\pi$ of `phi_ref`.
-
-    **Arguments**
-
-    - **phis** : _numpy.ndarray_ or _list_
-        - One-dimensional array of phi values.
-    - **phi_ref** : _float_
-        - A reference value used so that all phis will be within $\pm\pi$ of
-        this value.
-    - **copy** : _bool_
-        - Determines if `phis` are copied or not. If `False` then `phis` may be
-        modified in place.
+        - Controls whether a `KeyError` is raised if an unknown PDG ID is
+        encountered. If `False`, unknown PDG IDs will map to zero.
 
     **Returns**
 
     - _numpy.ndarray_
-        - An array of the fixed phi values.
+        - An array of masses in GeV.
     """
 
-    phis = np.asarray(phis)
-    diff = phis - phi_ref
-    new_phis = np.copy(phis) if copy else phis
-    new_phis[diff > np.pi] -= TWOPI
-    new_phis[diff < -np.pi] += TWOPI
-    return new_phis
+    abspids = np.abs(np.asarray(pids, dtype=int))
+    orig_shape = abspids.shape
+    abspids = abspids.reshape(-1)
+
+    if error_on_uknown:
+        masses = [PARTICLE_MASSES[pid] for pid in abspids]
+    else:
+        masses = [PARTICLE_MASSES.get(pid, 0.) for pid in abspids]
+
+    return np.asarray(masses, dtype=float).reshape(orig_shape)
 
 LONG_METRIC = np.array([1.] + [-1.]*100)
 def flat_metric(dim):

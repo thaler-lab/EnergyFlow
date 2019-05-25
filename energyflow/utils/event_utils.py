@@ -17,9 +17,9 @@ __all__ = [
     'gen_massless_phase_space'
 ]
 
-def gen_random_events(nevents, nparticles, dim=4, mass=0):
-    r"""Generate random events with a given number of particles of a given mass
-    in a given spacetime dimension. The spatial components of the momenta are
+def gen_random_events(nevents, nparticles, dim=4, mass=0.):
+    r"""Generate random events with a given number of particles in a given
+    spacetime dimension. The spatial components of the momenta are
     distributed uniformly in $[-1,+1]$. These events are not guaranteed to 
     uniformly sample phase space.
 
@@ -31,20 +31,27 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0):
         - Number of particles in each event.
     - **dim** : _int_
         - Number of spacetime dimensions.
-    - **mass** : _float_
-        - Mass of the particles to generate.
+    - **mass** : _float_ or `'random'`
+        - Mass of the particles to generate. Can be set to `'random'` to obtain
+        a different random mass for each particle.
 
     **Returns**
 
     - _numpy.ndarray_
         - An `(nevents,nparticles,dim)` array of events. The particles 
-        are specified as `[E,p1,p2,...]`.
+        are specified as `[E,p1,p2,...]`. If `nevents` is 1 then that axis is
+        dropped.
     """
 
     spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
+
+    if isinstance(mass, str) and mass == 'random':
+        mass = np.random.rand(nevents, nparticles)
+
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
-    events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1) 
-    return np.squeeze(events)
+    events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1)
+
+    return events if nevents > 1 else events[0]
 
 def gen_random_events_mcom(nevents, nparticles, dim=4):
     r"""Generate random events with a given number of massless particles in a
@@ -86,7 +93,7 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
 
     return events
 
-def gen_massless_phase_space(nevents, nparticles, energy=1):
+def gen_massless_phase_space(nevents, nparticles, energy=1.):
     r"""Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
     algorithm for uniformly sampling massless M-body phase space for any center
     of mass energy.
@@ -104,7 +111,8 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
 
     - _numpy.ndarray_
         - An `(nevents,nparticles,4)` array of events. The particles 
-        are specified as `[E,p_x,p_y,p_z]`.
+        are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
+        dropped.
     """
     
     # qs: to be massless four-momenta uniformly sampled in angle
@@ -139,4 +147,4 @@ def gen_massless_phase_space(nevents, nparticles, energy=1):
     ps[:,:,1:] = xs[:,np.newaxis]*(qs[:,:,1:] + 
                                               bs*qs[:,:,0,np.newaxis] + 
                                               As*bdotq[:,:,np.newaxis]*bs)
-    return np.squeeze(ps)
+    return ps if nevents > 1 else ps[0]

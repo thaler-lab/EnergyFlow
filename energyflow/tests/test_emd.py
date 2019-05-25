@@ -120,8 +120,8 @@ def test_periodic_phi(gdim, M):
         ef_w = emd.emd(ev1, ev2, norm=True, gdim=gdim, periodic_phi=False, phi_col=phi_col)
         ef_r = emd.emd(ev1, ev2, norm=True, gdim=gdim, periodic_phi=True, phi_col=phi_col)
         
-        assert epsilon_diff(ot_w, ef_w, 10**-15)
-        assert epsilon_diff(ot_r, ef_r, 10**-15)
+        assert epsilon_diff(ot_w, ef_w, 10**-14)
+        assert epsilon_diff(ot_r, ef_r, 10**-14)
 
 @pytest.mark.emd
 @pytest.mark.return_flow
