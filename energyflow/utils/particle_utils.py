@@ -70,6 +70,8 @@ __all__ = [
 
     # pid functions
     'pids2ms',
+    'pids2chrgs',
+    'ischrgd',
 
     # other functions
     'phi_fix',
@@ -512,6 +514,8 @@ def sum_ptyphims(ptyphims):
         - Array of summed four-vectors, in hadronic coordinates.
     """
 
+    ptyphims = np.asarray(ptyphims, dtype=float)
+
     if ptyphims.ndim <= 1:
         return ptyphims
 
@@ -534,6 +538,8 @@ def sum_ptyphipids(ptyphipids, error_on_unknown=False):
     - _numpy.ndarray_
         - Array of summed four-vectors, in hadronic coordinates.
     """
+
+    ptyphipids = np.asarray(ptyphipids, dtype=float)
 
     if ptyphipids.ndim <= 1:
         return ptyphipids
@@ -588,6 +594,54 @@ PARTICLE_MASSES = {
     3334: 1.67245, # Omega-
 }
 
+# particle electric charges in fundamental units
+PARTICLE_CHARGES = {
+    0:     0.,   # void
+    1:    -1./3, # down
+    2:     2./3, # up
+    3:    -1./3, # strange
+    4:     2./3, # charm
+    5:    -1./3, # bottom
+    6:     2./3, # top
+    11:   -1.,   # e-
+    12:    0.,   # nu_e
+    13:   -1.,   # mu-
+    14:    0.,   # nu_mu
+    15:   -1.,   # tau-
+    16:    0.,   # nu_tau
+    21:    0.,   # gluon
+    22:    0.,   # photon
+    23:    0.,   # Z
+    24:    1.,   # W+
+    25:    0.,   # Higgs
+    111:   0.,   # pi0
+    113:   0.,   # rho0
+    130:   0.,   # K0-long
+    211:   1.,   # pi+
+    213:   1.,   # rho+
+    221:   0.,   # eta
+    223:   0.,   # omega
+    310:   0.,   # K0-short
+    321:   1.,   # K+
+    331:   0.,   # eta'
+    333:   0.,   # phi
+    2112:  0.,   # neutron
+    2212:  1.,   # proton
+    1114: -1.,   # Delta-
+    2114:  0.,   # Delta0
+    2214:  1.,   # Delta+
+    2224:  2.,   # Delta++
+    3122:  0.,   # Lambda0
+    3222:  1.,   # Sigma+
+    3212:  0.,   # Sigma0
+    3112: -1.,   # Sigma-
+    3312: -1.,   # Xi-
+    3322:  0.,   # Xi0
+    3334: -1.,   # Omega-
+}
+
+CHARGED_PIDS = frozenset(k for k,v in PARTICLE_CHARGES.items() if v != 0.)
+
 def pids2ms(pids, error_on_uknown=False):
     r"""Map an array of [Particle Data Group IDs](http://pdg.lbl.gov/2018/
     reviews/rpp2018-rev-monte-carlo-numbering.pdf) to an array of the
@@ -617,6 +671,50 @@ def pids2ms(pids, error_on_uknown=False):
         masses = [PARTICLE_MASSES.get(pid, 0.) for pid in abspids]
 
     return np.asarray(masses, dtype=float).reshape(orig_shape)
+
+def pids2chrgs(pids, error_on_unknown=False):
+    r"""Map an array of [Particle Data Group IDs](http://pdg.lbl.gov/2018/
+    reviews/rpp2018-rev-monte-carlo-numbering.pdf) to an array of the
+    corresponding particle charges (in fundamental units where the charge
+    of the electron is -1).
+
+    **Arguments**
+
+    - **pids** : _numpy.ndarray_ or _list_
+        - An array of numeric (float or integer) PDG ID values.
+    - **error_on_unknown** : _bool_
+        - Controls whether a `KeyError` is raised if an unknown PDG ID is
+        encountered. If `False`, unknown PDG IDs will map to zero.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of charges as floats.
+    """
+
+    signs = np.sign(np.asarray(pids, dtype=float))
+    abspids = np.abs(np.asarray(pids, dtype=int))
+    orig_shape = abspids.shape
+    abspids = abspids.reshape(-1)
+
+    if error_on_unknown:
+        charges = [PARTICLE_CHARGES[pid] for pid in abspids]
+    else:
+        charges = [PARTICLE_CHARGES.get(pid, 0.) for pid in abspids]
+
+    return signs * np.asarray(charges, dtype=float).reshape(orig_shape)
+
+def ischrgd(pids):
+    """"""
+    
+    abspids = np.abs(np.asarray(pids, dtype=int))
+    orig_shape = abspids.shape
+    abspids = abspids.reshape(-1)
+
+    charged = np.asarray([pid in CHARGED_PIDS for pid in abspids], dtype=bool)
+
+    return charged.reshape(orig_shape)
+
 
 LONG_METRIC = np.array([1.] + [-1.]*100)
 def flat_metric(dim):

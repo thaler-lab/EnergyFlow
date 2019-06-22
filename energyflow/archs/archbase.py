@@ -262,6 +262,8 @@ class NNBase(ArchBase):
 
         # callbacks
         self.filepath = self._proc_arg('filepath', default=None)
+        if self.filepath is not None:
+            self.filepath = os.path.expanduser(self.filepath)
         self.save_while_training = self._proc_arg('save_while_training', default=True)
         self.modelcheck_opts = {'save_best_only': True, 'verbose': 1, 
                 'save_weights_only': self._proc_arg('save_weights_only', default=False)}

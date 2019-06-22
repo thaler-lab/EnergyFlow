@@ -224,7 +224,7 @@ if ot:
         return (cost * rescale, G * rescale) if return_flow else cost * rescale
 
     # helper function for pool imap
-    def _emd4imap(x):
+    def _emd4map(x):
         (i, j), (X0, X1, R, norm, n_iter_max, periodic_phi, phi_col) = x
         return _emd(X0[i], X1[j], R, norm, n_iter_max, periodic_phi, phi_col)
 
@@ -370,18 +370,18 @@ if ot:
                 # iterate over pairs of events
                 begin = end = 0
                 other_params = [X0, X1, R, norm, n_iter_max, periodic_phi, phi_col_m1]
-                imap_args = ([pair, other_params] for pair in pairs)
+                map_args = ([pair, other_params] for pair in pairs)
                 while end < npairs:
                     end += print_every
                     end = min(end, npairs)
                     chunksize = max(1, (end - begin)//n_jobs)
 
                     # only hold this many pairs in memory
-                    local_imap_args = [next(imap_args) for i in range(end - begin)]
+                    local_map_args = [next(map_args) for i in range(end - begin)]
 
                     # map function and store results
-                    results = list(pool.map(_emd4imap, local_imap_args, chunksize=chunksize))
-                    for arg,r in zip(local_imap_args, results):
+                    results = list(pool.map(_emd4map, local_map_args, chunksize=chunksize))
+                    for arg,r in zip(local_map_args, results):
                         i, j = arg[0]
                         emds[i, j] = r
 

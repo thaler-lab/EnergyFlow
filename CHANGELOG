@@ -1,12 +1,18 @@
 ### 0.12.x
 
+**0.12.4**
+
+- Added particle utility functions to map PDG IDs to electric charges.
+- A `~` is now expanded to the user's home directory properly in the `filepath` option to architectures.
+- Added conversion to numpy arrays in `sum_ptyphims` and `sum_ptyphipids`.
+
 **0.12.3**
 
 - Set allow_pickle to True explicitly in Generator (recently changed default in NumPy).
 - Added Herwig7.1 dataset to `qg_jets`. A big thanks to Aditya Pathak for generating these Herwig samples!
 - Quark and gluon dataset files can now be obtained from Zenodo in addition to Dropbox.
 - Changed internals of EFN to use standalone functions for easier use of subnetwork components.
-- Added some particle utility functions to deal with PDGIDs.
+- Added some particle utility functions to deal with PDG IDs.
 - Added particle utilities to deal with pseudorapidities.
 - Changed `gen_random_events_mcom` to have positive energies (momenta still sum to zero).
 - Added l2 regularization to layers in EFN and PFN architectures. Thanks to Anders Andreassen for submiting this pull request!
