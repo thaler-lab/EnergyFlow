@@ -5,6 +5,8 @@
 - Added particle utility functions to map PDG IDs to electric charges.
 - A `~` is now expanded to the user's home directory properly in the `filepath` option to architectures.
 - Added conversion to numpy arrays in `sum_ptyphims` and `sum_ptyphipids`.
+- EMD module now has support for spherical measure.
+- Added scheme choices for summing four-vectors of particles.
 
 **0.12.3**
 

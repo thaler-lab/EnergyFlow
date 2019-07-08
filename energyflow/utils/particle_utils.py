@@ -68,6 +68,10 @@ __all__ = [
     'sum_ptyphims',
     'sum_ptyphipids',
 
+    # transformation functions
+    'center_ptyphims',
+    'rotate_ptyphims',
+
     # pid functions
     'pids2ms',
     'pids2chrgs',
@@ -497,7 +501,7 @@ def p4s_from_ptyphipids(ptyphipids, error_on_unknown=False):
                           pts*np.sin(phis), Ets*np.sinh(ys)), axis=-1)
     return p4s
 
-def sum_ptyphims(ptyphims):
+def sum_ptyphims(ptyphims, scheme='escheme'):
     """Add a collection of four-vectors that are expressed in hadronic
     coordinates by first converting to Cartesian coordinates and then summing.
 
@@ -507,6 +511,13 @@ def sum_ptyphims(ptyphims):
         - An event, or array of events in hadronic coordinates. The mass is
         optional and if left out will be taken to be zero. An argument of a
         single particle does nothing.
+    - **scheme** : _str_
+        - A string specifying a recombination scheme for adding four-vectors
+        together. Currently supported options are `'escheme'`, which adds the
+        vectors in Cartesian coordinates, and `'ptscheme'`, which sums the pTs
+        of each particle and places the jet axis at the pT-weighted centroid
+        in the rapidity-azimuth plane. Note that `'ptscheme'` will return a
+        three-vector consisting of the jet `[pT,y,phi]` with no mass value.
 
     **Returns**
 
@@ -519,9 +530,18 @@ def sum_ptyphims(ptyphims):
     if ptyphims.ndim <= 1:
         return ptyphims
 
-    return ptyphims_from_p4s(np.sum(p4s_from_ptyphims(ptyphims), axis=-2))
+    if scheme == 'escheme':
+        return ptyphims_from_p4s(np.sum(p4s_from_ptyphims(ptyphims), axis=-2))
 
-def sum_ptyphipids(ptyphipids, error_on_unknown=False):
+    elif scheme == 'ptscheme':
+        pt = np.sum(ptyphims[:,0])
+        y, phi = np.average(ptyphims[:,1:3], weights=ptyphims[:,0], axis=0)
+        return np.asarray([pt, y, phi])
+
+    else:
+        raise ValueError('Unknown recombination scheme {}'.format(scheme))
+
+def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     """Add a collection of four-vectors that are expressed as
     `[pT,y,phi,pdgid]`.
 
@@ -530,6 +550,8 @@ def sum_ptyphipids(ptyphipids, error_on_unknown=False):
     - **ptyphipids** : _numpy.ndarray_ or _list_
         - A single particle, event, or array of events in hadronic coordinates
         where the mass is replaced by the PDG ID of the particle.
+    - **scheme** : _str_
+        - See the argument of the same name [`here`](#sum_ptyphims).
     - **error_on_unknown** : _bool_
         - See the corresponding argument of [`pids2ms`](#pids2ms).
 
@@ -544,7 +566,77 @@ def sum_ptyphipids(ptyphipids, error_on_unknown=False):
     if ptyphipids.ndim <= 1:
         return ptyphipids
 
-    return ptyphims_from_p4s(np.sum(p4s_from_ptyphipids(ptyphipids, error_on_unknown), axis=-2))
+    if scheme == 'escheme':
+        return ptyphims_from_p4s(np.sum(p4s_from_ptyphipids(ptyphipids, error_on_unknown), axis=-2))
+
+    elif scheme == 'ptscheme':
+        pt = np.sum(ptyphipids[:,0])
+        y, phi = np.average(ptyphipids[:,1:3], weights=ptyphipids[:,0], axis=0)
+        return np.asarray([pt, y, phi])
+
+    else:
+        raise ValueError('Unknown recombination scheme {}'.format(scheme))
+
+def center_ptyphims(ptyphims, axis=None, scheme='escheme', copy=True):
+    """Center a collection of four-vectors according to a calculated or 
+    provided axis.
+
+    **Arguments**
+
+    - **ptyphims** : _numpy.ndarray_ or _list_
+        - An event, or array of events in hadronic coordinates. The mass is
+        optional and if left out will be taken to be zero.
+    - **axis** : _numpy.ndarray_
+        - If not `None`, the `[y,phi]` values to use for centering.
+    - **scheme** : _str_
+        - See the argument of the same name [`here`](#sum_ptyphims).
+    - **copy** : _bool_
+        - Whether or not to copy the input array.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of hadronic four-momenta with the positions centered around
+        the origin.
+    """
+
+    if axis is None:
+        axis = sum_ptyphims(ptyphims, scheme=scheme)[1:3]
+
+    if copy:
+        ptyphims = np.copy(ptyphims)
+
+    ptyphims[:,1:3] -= axis
+
+    return ptyphims
+
+def rotate_ptyphims(ptyphims, scheme='ptscheme', center=None, copy=True):
+    """"""
+
+    if copy:
+        ptyphims = np.copy(ptyphims)
+
+    if center is not None:
+        ptyphims = center_ptyphims(ptyphims, scheme=center, copy=False)
+
+    if scheme == 'ptscheme':
+
+        zs, phats = ptyphims[:,0], ptyphims[:,1:3]
+        efm2 = np.einsum('a,ab,ac->bc', zs, phats, phats, optimize=['einsum_path', (0,1), (0,1)])
+        eigvals, eigvecs = np.linalg.eigh(efm2)
+
+        ptyphims[:,1:3] = np.dot(phats, eigvecs)
+
+        new_phis = ptyphims[:,2]
+        z_top, z_bot = np.sum(zs[new_phis > 0.]), np.sum(zs[new_phis < 0.])
+
+        if z_top < z_bot:
+            ptyphims[:,1:3] *= -1.
+
+    else:
+        raise ValueError('Unknown rotation scheme {}'.format(scheme))
+
+    return ptyphims
 
 # masses (in GeV) of particles by pdgid
 # obtained from the Pythia8 Particle Data page

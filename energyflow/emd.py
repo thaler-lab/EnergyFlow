@@ -40,7 +40,7 @@ except:
     warnings.warn('cannot import module \'ot\', module \'emd\' will be empty')
     ot = False
 
-from energyflow.utils import create_pool
+from energyflow.utils import create_pool, p4s_from_ptyphims
 
 __all__ = []
 
@@ -49,74 +49,123 @@ if ot:
     __all__ = ['emd', 'emds']
 
     # parameter checks
-    def _check_params(norm, gdim, phi_col):
+    def _check_params(norm, gdim, phi_col, measure, coords):
+
+        # check norm
         if norm is None:
-            raise ValueError('\'norm\' cannot be None')
+            raise ValueError("'norm' cannot be None")
+
+        # check phi_col
         if phi_col < 1:
-            raise ValueError('\'phi_col\' cannot be smaller than 1')
+            raise ValueError("'phi_col' cannot be smaller than 1")
+
+        # check gdim
         if gdim is not None:
             if gdim < 1:
-                raise ValueError('\'gdim\' must be greater than or equal to 1')
+                raise ValueError("'gdim' must be greater than or equal to 1")
             if phi_col > gdim + 1:
-                raise ValueError('\'phi_col\' must be less than or equal to gdim')
+                raise ValueError("'phi_col' must be less than or equal to 'gdim'")
+
+        # check measure
+        if measure not in {'euclidean', 'spherical'}:
+            raise ValueError("'measure' must be one of 'euclidean', 'spherical'")
+
+        # check coords
+        if coords not in {'hadronic', 'cartesian'}:
+            raise ValueError("'coords' must be one of 'hadronic', 'cartesian'")
 
     # faster than scipy's cdist function because we can avoid their checks
-    def _cdist_euclidean(X, Y, periodic_phi, phi_col):
+    def _cdist(X, Y, euclidean, periodic_phi, phi_col):
 
-        if periodic_phi:
+        if euclidean:
+            
+            if periodic_phi:
 
-            # delta phis (taking into account periodicity)
-            # aleady guaranteed for values to be in [0, 2pi]
-            d_phis = np.pi - np.abs(np.pi - np.abs(X[:,phi_col,np.newaxis] - Y[:,phi_col]))
+                # delta phis (taking into account periodicity)
+                # aleady guaranteed for values to be in [0, 2pi]
+                d_phis = np.pi - np.abs(np.pi - np.abs(X[:,phi_col,None] - Y[:,phi_col]))
 
-            # split out common case of having only one other dimension
-            if X.shape[1] == 2:
-                non_phi_col = 1 - phi_col
-                d_ys = X[:,non_phi_col,np.newaxis] - Y[:,non_phi_col]
-                out = np.sqrt(d_ys**2 + d_phis**2)
+                # split out common case of having only one other dimension
+                if X.shape[1] == 2:
+                    non_phi_col = 1 - phi_col
+                    d_ys = X[:,non_phi_col,None] - Y[:,non_phi_col]
+                    out = np.sqrt(d_ys**2 + d_phis**2)
 
-            # general case
+                # general case
+                else:
+                    non_phi_cols = [i for i in range(X.shape[1]) if i != phi_col]
+                    d_others2 = (X[:,None,non_phi_cols] - Y[:,non_phi_cols])**2
+                    out = np.sqrt(d_others2.sum(axis=-1) + d_phis**2)
+
             else:
-                non_phi_cols = [i for i in range(X.shape[1]) if i != phi_col]
-                d_others2 = (X[:,np.newaxis,non_phi_cols] - Y[:,non_phi_cols])**2
-                out = np.sqrt(d_others2.sum(axis=-1) + d_phis**2)
+                out = np.empty((len(X), len(Y)), dtype=np.double)
+                _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
 
+        # spherical measure
         else:
-            out = np.empty((len(X), len(Y)), dtype=np.double)
-            _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
-        
+
+            # add min/max conditions to ensure valid input
+            out = np.arccos(np.fmax(np.fmin(np.tensordot(X, Y, axes=(1, 1)), 1.0), -1.0))
+
         return out
 
     # process events for EMD calculation
     two_pi = 2*np.pi
-    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col):
+    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col, mask, R, hadr2cart, euclidean):
         
-        event = np.atleast_2d(event)
-        
-        if norm:
-            pts = event[:,0]/event[:,0].sum()
-        elif norm is None:
-            pts = event[:,0]
-        else:
-            event = np.vstack((event, np.zeros(event.shape[1])))
-            pts = event[:,0]
+        # ensure event is at least a 2d numpy array
+        event = np.atleast_2d(event) if gdim is None else np.atleast_2d(event)[:,:(gdim+1)]
 
-        pts = np.ascontiguousarray(pts, dtype=np.float64)
-        if gdim is None:
-            coords = np.ascontiguousarray(event[:,1:], dtype=np.float64)
-        else:
-            coords = np.ascontiguousarray(event[:,1:gdim+1], dtype=np.float64)
+        # if we need to map hadronic coordinates to cartesian ones
+        if hadr2cart:
+            event = p4s_from_ptyphims(event)
 
-        if periodic_phi:
+        # select the pts and coords
+        pts, coords = event[:,0], event[:,1:]
+
+        # norm vectors if spherical
+        if not euclidean:
+
+            # special case for three dimensions (most common), twice as fast
+            if coords.shape[1] == 3:
+                coords /= np.sqrt(coords[:,0]**2 + coords[:,1]**2 + coords[:,2]**2)[:,None]
+            else:
+                coords /= np.sqrt(np.sum(coords**2, axis=1))[:,None]
+
+        # handle periodic phi (only applicable if using euclidean)
+        elif periodic_phi:
             if phi_col >= event.shape[1] - 1:
                 evgdim = str(event.shape[1] - 1)
-                raise ValueError('\'phi_col\' cannot be larger than the ground space '
+                raise ValueError("'phi_col' cannot be larger than the ground space "
                                  'dimension, which is ' + evgdim + ' for one of the events')
             coords[:,phi_col] %= two_pi
 
-        return pts, coords
+        # handle masking out particles farther than R away from origin
+        if mask:
 
-    def emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=None, n_iter_max=100000,
+            # ensure contiguous coords for scipy distance function
+            coords = np.ascontiguousarray(coords, dtype=np.double)
+            rs = _cdist(np.zeros((1, coords.shape[1])), coords, euclidean, periodic_phi, phi_col)[0]
+            rmask = (rs <= R)
+
+            # detect when masking actually needs to occur
+            if not np.all(rmask):
+                pts, coords = pts[rmask], coords[rmask]
+                
+        # handle norming pts or adding extra zeros to event
+        if norm:
+            pts /= pts.sum()
+        elif norm is None:
+            pass
+        else:
+            coords = np.vstack((coords, np.zeros(coords.shape[1])))
+            pts = np.concatenate(pts, np.zeros(1))
+
+        return (np.ascontiguousarray(pts, dtype=np.double), 
+                np.ascontiguousarray(coords, dtype=np.double))
+
+    def emd(ev0, ev1, R=1.0, norm=False, measure='euclidean', coords='hadronic',
+                      return_flow=False, gdim=None, mask=False, n_iter_max=100000,
                       periodic_phi=False, phi_col=2):
         r"""Compute the EMD between two events.
 
@@ -154,6 +203,9 @@ if ot:
             larger than the number of dimensions present in the events (in
             which case all dimensions will be included). If `None`, has no
             effect.
+        - **mask** : _bool_
+            - If `True`, ignores particles farther than `R` away from the
+            origin.
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
@@ -177,14 +229,17 @@ if ot:
         """
 
         # parameter checks
-        _check_params(norm, gdim, phi_col)
+        _check_params(norm, gdim, phi_col, measure, coords)
+        euclidean = (measure == 'euclidean')
+        hadr2cart = (not euclidean) and (coords == 'hadronic')
 
         # handle periodicity
         phi_col_m1 = phi_col - 1
 
         # process events
-        pTs0, coords0 = _process_for_emd(ev0, None, gdim, periodic_phi, phi_col_m1)
-        pTs1, coords1 = _process_for_emd(ev1, None, gdim, periodic_phi, phi_col_m1)
+        args = (None, gdim, periodic_phi, phi_col_m1, mask, R, hadr2cart, euclidean)
+        pTs0, coords0 = _process_for_emd(ev0, *args)
+        pTs1, coords1 = _process_for_emd(ev1, *args)
 
         pT0, pT1 = pTs0.sum(), pTs1.sum()
 
@@ -192,7 +247,7 @@ if ot:
         if norm:
             pTs0 /= pT0
             pTs1 /= pT1
-            thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col_m1)/R
+            thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col_m1)/R
             rescale = 1.0
 
         # implement the EMD in Eq. 1 of the paper by adding an appropriate extra particle
@@ -201,18 +256,18 @@ if ot:
             if pTdiff > 0:
                 pTs0 = np.hstack((pTs0, pTdiff))
                 coords0_extra = np.vstack((coords0, np.zeros(coords0.shape[1], dtype=np.float64)))
-                thetas = _cdist_euclidean(coords0_extra, coords1, periodic_phi, phi_col_m1)/R
+                thetas = _cdist(coords0_extra, coords1, euclidean, periodic_phi, phi_col_m1)/R
                 thetas[-1,:] = 1.0
 
             elif pTdiff < 0:
                 pTs1 = np.hstack((pTs1, -pTdiff))
                 coords1_extra = np.vstack((coords1, np.zeros(coords1.shape[1], dtype=np.float64)))
-                thetas = _cdist_euclidean(coords0, coords1_extra, periodic_phi, phi_col_m1)/R
+                thetas = _cdist(coords0, coords1_extra, euclidean, periodic_phi, phi_col_m1)/R
                 thetas[:,-1] = 1.0
 
             # in this case, the pts were exactly equal already so no need to add a particle
             else:
-                thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col_m1)/R
+                thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col_m1)/R
 
             # change units for numerical stability
             rescale = max(pT0, pT1)
@@ -225,20 +280,20 @@ if ot:
 
     # helper function for pool imap
     def _emd4map(x):
-        (i, j), (X0, X1, R, norm, n_iter_max, periodic_phi, phi_col) = x
-        return _emd(X0[i], X1[j], R, norm, n_iter_max, periodic_phi, phi_col)
+        (i, j), (X0, X1, R, norm, euclidean, n_iter_max, periodic_phi, phi_col) = x
+        return _emd(X0[i], X1[j], R, norm, euclidean, n_iter_max, periodic_phi, phi_col)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, norm, n_iter_max, periodic_phi, phi_col):
+    def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, periodic_phi, phi_col):
 
         pTs0, coords0 = ev0
         pTs1, coords1 = ev1
 
-        thetas = _cdist_euclidean(coords0, coords1, periodic_phi, phi_col)/R
+        thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col)/R
 
         # extra particles (with zero pt) already added if going in here
         rescale = 1.0
-        if not norm:
+        if no_norm:
             pT0, pT1 = pTs0.sum(), pTs1.sum()
             pTdiff = pT1 - pT0
             if pTdiff > 0:
@@ -256,12 +311,13 @@ if ot:
         check_result(result_code)
 
         # important! must reset extra particles to have pt zero
-        if not norm:
+        if no_norm:
             pTs0[-1] = pTs1[-1] = 0
 
         return cost * rescale
 
-    def emds(X0, X1=None, R=1.0, norm=False, gdim=None, n_iter_max=100000,
+    def emds(X0, X1=None, R=1.0, norm=False, measure='euclidean', coords='hadronic', 
+                          gdim=None, mask=False, n_iter_max=100000, 
                           periodic_phi=False, phi_col=2,
                           n_jobs=None, verbose=0, print_every=10**6):
         r"""Compute the EMD between collections of events. This can be used to
@@ -298,6 +354,9 @@ if ot:
             larger than the number of dimensions present in the events (in
             which case all dimensions will be included). If `None`, has no
             effect.
+        - **mask** : _bool_
+            - If `True`, ignores particles farther than `R` away from the
+            origin.
         - **n_iter_max** : _int_
             - Maximum number of iterations for solving the optimal transport 
             problem.
@@ -330,7 +389,9 @@ if ot:
             otherwise it will have shape `(len(X0), len(X1))`.
         """
 
-        _check_params(norm, gdim, phi_col)
+        _check_params(norm, gdim, phi_col, measure, coords)
+        euclidean = (measure == 'euclidean')
+        hadr2cart = (not euclidean) and (coords == 'hadronic')
 
         # determine if we're doing symmetric pairs
         sym = X1 is None
@@ -339,8 +400,9 @@ if ot:
         phi_col_m1 = phi_col - 1
 
         # process events into convenient form for EMD
-        X0 = [_process_for_emd(x, norm, gdim, periodic_phi, phi_col_m1) for x in X0]
-        X1 = X0 if sym else [_process_for_emd(x, norm, gdim, periodic_phi, phi_col_m1) for x in X1]
+        args = (norm, gdim, periodic_phi, phi_col_m1, mask, R, hadr2cart, euclidean)
+        X0 = [_process_for_emd(x, *args) for x in X0]
+        X1 = X0 if sym else [_process_for_emd(x, *args) for x in X1]
 
         # get iterator for indices
         pairs = (itertools.combinations(range(len(X0)), r=2) if sym else 
@@ -358,6 +420,7 @@ if ot:
 
         # use some number of worker processes to calculate EMDs
         start = time.time()
+        no_norm = not norm
         if n_jobs != 1:
 
             # verbose printing
@@ -369,7 +432,8 @@ if ot:
 
                 # iterate over pairs of events
                 begin = end = 0
-                other_params = [X0, X1, R, norm, n_iter_max, periodic_phi, phi_col_m1]
+                no_norm
+                other_params = [X0, X1, R, no_norm, euclidean, n_iter_max, periodic_phi, phi_col_m1]
                 map_args = ([pair, other_params] for pair in pairs)
                 while end < npairs:
                     end += print_every
@@ -380,7 +444,7 @@ if ot:
                     local_map_args = [next(map_args) for i in range(end - begin)]
 
                     # map function and store results
-                    results = list(pool.map(_emd4map, local_map_args, chunksize=chunksize))
+                    results = pool.map(_emd4map, local_map_args, chunksize=chunksize)
                     for arg,r in zip(local_map_args, results):
                         i, j = arg[0]
                         emds[i, j] = r
@@ -396,9 +460,10 @@ if ot:
         # run EMDs in this process
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
-                emds[i, j] = _emd(X0[i], X1[j], R, norm, n_iter_max, periodic_phi, phi_col_m1)
-                if verbose >= 1 and (k % print_every) == 0 and k != 0:
-                    args = (k, k/npairs*100, time.time() - start)
+                emds[i, j] = _emd(X0[i], X1[j], R, no_norm, euclidean, 
+                                  n_iter_max, periodic_phi, phi_col_m1)
+                if verbose >= 1 and ((k+1) % print_every) == 0:
+                    args = (k+1, (k+1)/npairs*100, time.time() - start)
                     print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
 
         # unrecognized n_jobs value
@@ -409,6 +474,7 @@ if ot:
         if sym:
             emds += emds.T
 
+        # print new line if verbose
         if verbose >= 1:
             print()
 
