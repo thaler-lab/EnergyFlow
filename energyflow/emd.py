@@ -400,9 +400,17 @@ if ot:
         phi_col_m1 = phi_col - 1
 
         # process events into convenient form for EMD
+        start = time.time()
         args = (norm, gdim, periodic_phi, phi_col_m1, mask, R, hadr2cart, euclidean)
         X0 = [_process_for_emd(x, *args) for x in X0]
         X1 = X0 if sym else [_process_for_emd(x, *args) for x in X1]
+
+        # begin printing
+        if verbose >= 1:
+            n = len(X0) if sym else len(X0) + len(X1)
+            s = 'symmetric' if sym else 'asymmetric'
+            t = time.time() - start
+            print('Processed {} events for {} EMD computation in {:.3f}s'.format(n, s, t))
 
         # get iterator for indices
         pairs = (itertools.combinations(range(len(X0)), r=2) if sym else 
@@ -438,7 +446,7 @@ if ot:
                 while end < npairs:
                     end += print_every
                     end = min(end, npairs)
-                    chunksize = max(1, (end - begin)//n_jobs)
+                    chunksize = max(1, (end - begin)//(n_jobs*5))
 
                     # only hold this many pairs in memory
                     local_map_args = [next(map_args) for i in range(end - begin)]
@@ -473,9 +481,5 @@ if ot:
         # if doing an array with itself, symmetrize the distance matrix
         if sym:
             emds += emds.T
-
-        # print new line if verbose
-        if verbose >= 1:
-            print()
 
         return emds

@@ -71,6 +71,7 @@ __all__ = [
     # transformation functions
     'center_ptyphims',
     'rotate_ptyphims',
+    'reflect_ptyphims',
 
     # pid functions
     'pids2ms',
@@ -508,9 +509,8 @@ def sum_ptyphims(ptyphims, scheme='escheme'):
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An event, or array of events in hadronic coordinates. The mass is
-        optional and if left out will be taken to be zero. An argument of a
-        single particle does nothing.
+        - An event in hadronic coordinates. The mass is optional and if left
+        out will be taken to be zero.
     - **scheme** : _str_
         - A string specifying a recombination scheme for adding four-vectors
         together. Currently supported options are `'escheme'`, which adds the
@@ -548,8 +548,8 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     **Arguments**
 
     - **ptyphipids** : _numpy.ndarray_ or _list_
-        - A single particle, event, or array of events in hadronic coordinates
-        where the mass is replaced by the PDG ID of the particle.
+        - A single particle or event in hadronic coordinates where the mass
+        is replaced by the PDG ID of the particle.
     - **scheme** : _str_
         - See the argument of the same name [`here`](#sum_ptyphims).
     - **error_on_unknown** : _bool_
@@ -570,9 +570,7 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
         return ptyphims_from_p4s(np.sum(p4s_from_ptyphipids(ptyphipids, error_on_unknown), axis=-2))
 
     elif scheme == 'ptscheme':
-        pt = np.sum(ptyphipids[:,0])
-        y, phi = np.average(ptyphipids[:,1:3], weights=ptyphipids[:,0], axis=0)
-        return np.asarray([pt, y, phi])
+        return sum_ptyphims(ptyphipids, scheme=scheme)
 
     else:
         raise ValueError('Unknown recombination scheme {}'.format(scheme))
@@ -610,6 +608,9 @@ def center_ptyphims(ptyphims, axis=None, scheme='escheme', copy=True):
 
     return ptyphims
 
+def _do_reflection(zs, coords):
+    return np.sum(zs[coords > 0.]) < np.sum(zs[coords < 0.])
+
 def rotate_ptyphims(ptyphims, scheme='ptscheme', center=None, copy=True):
     """"""
 
@@ -627,14 +628,29 @@ def rotate_ptyphims(ptyphims, scheme='ptscheme', center=None, copy=True):
 
         ptyphims[:,1:3] = np.dot(phats, eigvecs)
 
-        new_phis = ptyphims[:,2]
-        z_top, z_bot = np.sum(zs[new_phis > 0.]), np.sum(zs[new_phis < 0.])
-
-        if z_top < z_bot:
+        if _do_reflection(zs, ptyphims[:,2]):
             ptyphims[:,1:3] *= -1.
 
     else:
         raise ValueError('Unknown rotation scheme {}'.format(scheme))
+
+    return ptyphims
+
+def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
+    """"""
+
+    if copy:
+        ptyphims = np.copy(ptyphims)
+
+    if center is not None:
+        ptyphims = center_ptyphims(ptyphims, scheme=center, copy=False)
+
+    zs = ptyphims[:,0]
+    if (which == 'both' or which == 'x') and _do_reflection(zs, ptyphims[:,1]):
+        ptyphims[:,1] *= -1.
+
+    if (which == 'both' or which == 'y') and _do_reflection(zs, ptyphims[:,2]):
+        ptyphims[:,2] *= -1.
 
     return ptyphims
 
@@ -796,17 +812,19 @@ def pids2chrgs(pids, error_on_unknown=False):
 
     return signs * np.asarray(charges, dtype=float).reshape(orig_shape)
 
-def ischrgd(pids):
+def ischrgd(pids, ignored_pids=None):
     """"""
     
     abspids = np.abs(np.asarray(pids, dtype=int))
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
 
-    charged = np.asarray([pid in CHARGED_PIDS for pid in abspids], dtype=bool)
+    if ignored_pids is None:
+        charged = np.asarray([pid in CHARGED_PIDS for pid in abspids], dtype=bool)
+    else:
+        charged = np.asarray([(pid in CHARGED_PIDS) and (pid not in ignored_pids) for pid in abspids], dtype=bool)
 
     return charged.reshape(orig_shape)
-
 
 LONG_METRIC = np.array([1.] + [-1.]*100)
 def flat_metric(dim):
