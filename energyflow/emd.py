@@ -276,7 +276,11 @@ if ot:
         check_result(result_code)
 
         # need to change units back
-        return (cost * rescale, G * rescale) if return_flow else cost * rescale
+        if return_flow:
+            G *= rescale
+            return cost * rescale, G
+        else:
+            return cost * rescale
 
     # helper function for pool imap
     def _emd4map(x):

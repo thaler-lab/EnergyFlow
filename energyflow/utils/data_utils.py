@@ -65,7 +65,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
         if overwrite and os.path.exists(file_path):
             os.remove(file_path)
 
-        files.append(_get_file(example, base_url+example, cache_dir, cache_subdir='examples'))
+        files.append(_get_filepath(example, base_url+example, cache_dir, cache_subdir='examples'))
 
     # print summary
     print()
@@ -252,7 +252,7 @@ else:
     from six.moves.urllib.request import urlretrieve
 
 
-def _hash_file(fpath, algorithm='sha256', chunk_size=65535):
+def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     """Calculates a file sha256 or md5 hash.
     # Example
     ```python
@@ -280,7 +280,7 @@ def _hash_file(fpath, algorithm='sha256', chunk_size=65535):
     return hasher.hexdigest()
 
 
-def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=65535):
+def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=131071):
     """Validates a file against a sha256 or md5 hash.
     # Arguments
         fpath: path to the file being validated
@@ -300,7 +300,7 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=65535):
     return str(_hash_file(fpath, hasher, chunk_size)) == str(file_hash)
 
 
-def _get_file(filename, url, cache_dir, cache_subdir='datasets', file_hash=None):
+def _get_filepath(filename, url, cache_dir, cache_subdir='datasets', file_hash=None):
     """Pulls file from the internet."""
 
     # handle '~' in path

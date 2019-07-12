@@ -21,37 +21,10 @@ import numpy as np
 from energyflow.algorithms import VariableElimination, einsum_path
 from energyflow.efpbase import EFPBase, EFPElem
 from energyflow.gen import Generator
-from energyflow.utils import concat_specs, DEFAULT_EFP_FILE
+from energyflow.utils import concat_specs, explicit_comp, kwargs_check, DEFAULT_EFP_FILE
 from energyflow.utils.graph_utils import graph_union
 
 __all__ = ['EFP', 'EFPSet']
-
-###############################################################################
-# EFP helpers
-###############################################################################
-
-COMP_MAP = {
-    '>':  '__gt__', 
-    '<':  '__lt__', 
-    '>=': '__ge__', 
-    '<=': '__le__',
-    '==': '__eq__', 
-    '!=': '__ne__'
-}
-
-# applies comprison comp of obj on val
-def explicit_comp(obj, comp, val):
-    return getattr(obj, COMP_MAP[comp])(val)
-
-# raises TypeError if unexpected keyword left in kwargs
-def kwargs_check(name, kwargs, allowed=[]):
-    for k in kwargs:
-        if k in allowed:
-            continue
-        raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
-
-SEL_RE = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
-
 
 ###############################################################################
 # EFP
@@ -290,7 +263,7 @@ class EFPSet(EFPBase):
             gen = np.load(DEFAULT_EFP_FILE, allow_pickle=True)
 
         # compile regular expression for use in sel()
-        self.SEL_RE = SEL_RE
+        self.SEL_RE = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
         
         # put column headers and indices into namespace
         self._cols = gen['cols']
