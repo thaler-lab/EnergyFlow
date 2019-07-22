@@ -160,6 +160,10 @@
         
             <li><a class="toctree-l4" href="#pids2ms">pids2ms</a></li>
         
+            <li><a class="toctree-l4" href="#pids2chrgs">pids2chrgs</a></li>
+        
+            <li><a class="toctree-l4" href="#ischrgd">ischrgd</a></li>
+        
             <li><a class="toctree-l4" href="#phi_fix">phi_fix</a></li>
         
             <li><a class="toctree-l4" href="#flat_metric">flat_metric</a></li>
@@ -655,7 +659,7 @@ where the mass is replaced by the PDG ID of the particle.</li>
 </ul>
 <hr />
 <h4 id="pids2ms">pids2ms</h4>
-<pre><code class="python">energyflow.pids2ms(pids, error_on_uknown=False)
+<pre><code class="python">energyflow.pids2ms(pids, error_on_unknown=False)
 </code></pre>
 
 <p>Map an array of <a href="http://pdg.lbl.gov/2018/
@@ -680,6 +684,39 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </ul>
 </li>
 </ul>
+<hr />
+<h4 id="pids2chrgs">pids2chrgs</h4>
+<pre><code class="python">energyflow.pids2chrgs(pids, error_on_unknown=False)
+</code></pre>
+
+<p>Map an array of <a href="http://pdg.lbl.gov/2018/
+reviews/rpp2018-rev-monte-carlo-numbering.pdf">Particle Data Group IDs</a> to an array of the
+corresponding particle charges (in fundamental units where the charge
+of the electron is -1).</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pids</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An array of numeric (float or integer) PDG ID values.</li>
+</ul>
+</li>
+<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
+<li>Controls whether a <code>KeyError</code> is raised if an unknown PDG ID is
+encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of charges as floats.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="ischrgd">ischrgd</h4>
+<pre><code class="python">energyflow.ischrgd(pids)
+</code></pre>
+
 <hr />
 <h4 id="phi_fix">phi_fix</h4>
 <pre><code class="python">energyflow.phi_fix(phis, phi_ref, copy=True)

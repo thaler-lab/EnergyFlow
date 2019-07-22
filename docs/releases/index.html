@@ -186,13 +186,19 @@
               
                 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
 <h3 id="012x">0.12.x</h3>
+<p><strong>0.12.4</strong></p>
+<ul>
+<li>Added particle utility functions to map PDG IDs to electric charges.</li>
+<li>A <code>~</code> is now expanded to the user's home directory properly in the <code>filepath</code> option to architectures.</li>
+<li>Added conversion to numpy arrays in <code>sum_ptyphims</code> and <code>sum_ptyphipids</code>.</li>
+</ul>
 <p><strong>0.12.3</strong></p>
 <ul>
 <li>Set allow_pickle to True explicitly in Generator (recently changed default in NumPy).</li>
 <li>Added Herwig7.1 dataset to <code>qg_jets</code>. A big thanks to Aditya Pathak for generating these Herwig samples!</li>
 <li>Quark and gluon dataset files can now be obtained from Zenodo in addition to Dropbox.</li>
 <li>Changed internals of EFN to use standalone functions for easier use of subnetwork components.</li>
-<li>Added some particle utility functions to deal with PDGIDs.</li>
+<li>Added some particle utility functions to deal with PDG IDs.</li>
 <li>Added particle utilities to deal with pseudorapidities.</li>
 <li>Changed <code>gen_random_events_mcom</code> to have positive energies (momenta still sum to zero).</li>
 <li>Added l2 regularization to layers in EFN and PFN architectures. Thanks to Anders Andreassen for submiting this pull request!</li>

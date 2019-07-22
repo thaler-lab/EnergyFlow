@@ -642,7 +642,7 @@ PARTICLE_CHARGES = {
 
 CHARGED_PIDS = frozenset(k for k,v in PARTICLE_CHARGES.items() if v != 0.)
 
-def pids2ms(pids, error_on_uknown=False):
+def pids2ms(pids, error_on_unknown=False):
     r"""Map an array of [Particle Data Group IDs](http://pdg.lbl.gov/2018/
     reviews/rpp2018-rev-monte-carlo-numbering.pdf) to an array of the
     corresponding particle masses (in GeV).
@@ -665,7 +665,7 @@ def pids2ms(pids, error_on_uknown=False):
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
 
-    if error_on_uknown:
+    if error_on_unknown:
         masses = [PARTICLE_MASSES[pid] for pid in abspids]
     else:
         masses = [PARTICLE_MASSES.get(pid, 0.) for pid in abspids]
