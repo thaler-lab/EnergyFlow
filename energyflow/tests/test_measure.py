@@ -52,8 +52,8 @@ def test_measure_hadr_p4s(event, beta, kappa, normed):
     thetas = np.asarray([[(ys[i]-ys[j])**2 + min(abs(phis[i]-phis[j]), 2*np.pi-abs(phis[i]-phis[j]))**2
                           for i in range(M)] for j in range(M)])**(beta/2)
     
-    assert epsilon_diff(hzs, zs, 10**-13)
-    assert epsilon_diff(hthetas, thetas, 10**-13)
+    assert epsilon_diff(hzs, zs, 10**-12)
+    assert epsilon_diff(hthetas, thetas, 10**-12)
 
 @pytest.mark.measure
 @pytest.mark.parametrize('normed', [True, False])

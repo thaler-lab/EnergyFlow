@@ -2,6 +2,7 @@ from __future__ import absolute_import, division
 
 import numpy as np
 import pytest
+import six
 
 import energyflow as ef
 
@@ -34,7 +35,7 @@ def test_gen_random_events(nevents, nparticles, dim, mass):
     events = ef.gen_random_events(nevents, nparticles, dim=dim, mass=mass)
 
     assert events.shape == (nevents, nparticles, dim)
-    if mass != 'random':
+    if not (isinstance(mass, six.string_types) and mass == 'random'):
         assert epsilon_diff(ef.ms_from_ps(events)**2, mass**2, 10**-13)
 
 @pytest.mark.utils
