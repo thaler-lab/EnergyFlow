@@ -530,8 +530,13 @@ def sum_ptyphims(ptyphims, scheme='escheme'):
     if ptyphims.ndim <= 1:
         return ptyphims
 
+    if ptyphims.shape[0] == 0:
+        return np.zeros(ptyphims.shape[1])
+
     if scheme == 'escheme':
-        return ptyphims_from_p4s(np.sum(p4s_from_ptyphims(ptyphims), axis=-2))
+        phi = ptyphims[np.argmax(ptyphims[:,0]),2]
+        sum_p4 = np.sum(p4s_from_ptyphims(ptyphims), axis=-2)
+        return ptyphims_from_p4s(sum_p4, phi_ref=phi)
 
     elif scheme == 'ptscheme':
         pt = np.sum(ptyphims[:,0])
@@ -566,8 +571,13 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     if ptyphipids.ndim <= 1:
         return ptyphipids
 
+    if ptyphipids.shape[0] == 0:
+        return np.zeros(ptyphipids.shape[1])
+
     if scheme == 'escheme':
-        return ptyphims_from_p4s(np.sum(p4s_from_ptyphipids(ptyphipids, error_on_unknown), axis=-2))
+        phi = ptyphipids[np.argmax(ptyphipids[:,0]),2]
+        sum_p4 = np.sum(p4s_from_ptyphipids(ptyphipids, error_on_unknown), axis=-2)
+        return ptyphims_from_p4s(sum_p4, phi_ref=phi)
 
     elif scheme == 'ptscheme':
         return sum_ptyphims(ptyphipids, scheme=scheme)
@@ -575,7 +585,7 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     else:
         raise ValueError('Unknown recombination scheme {}'.format(scheme))
 
-def center_ptyphims(ptyphims, axis=None, scheme='escheme', copy=True):
+def center_ptyphims(ptyphims, axis=None, center='escheme', copy=True):
     """Center a collection of four-vectors according to a calculated or 
     provided axis.
 
@@ -599,7 +609,7 @@ def center_ptyphims(ptyphims, axis=None, scheme='escheme', copy=True):
     """
 
     if axis is None:
-        axis = sum_ptyphims(ptyphims, scheme=scheme)[1:3]
+        axis = sum_ptyphims(ptyphims, scheme=center)[1:3]
 
     if copy:
         ptyphims = np.copy(ptyphims)
@@ -611,16 +621,16 @@ def center_ptyphims(ptyphims, axis=None, scheme='escheme', copy=True):
 def _do_reflection(zs, coords):
     return np.sum(zs[coords > 0.]) < np.sum(zs[coords < 0.])
 
-def rotate_ptyphims(ptyphims, scheme='ptscheme', center=None, copy=True):
+def rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True):
     """"""
 
     if copy:
         ptyphims = np.copy(ptyphims)
 
     if center is not None:
-        ptyphims = center_ptyphims(ptyphims, scheme=center, copy=False)
+        ptyphims = center_ptyphims(ptyphims, center=center, copy=False)
 
-    if scheme == 'ptscheme':
+    if rotate == 'ptscheme':
 
         zs, phats = ptyphims[:,0], ptyphims[:,1:3]
         efm2 = np.einsum('a,ab,ac->bc', zs, phats, phats, optimize=['einsum_path', (0,1), (0,1)])
@@ -632,7 +642,7 @@ def rotate_ptyphims(ptyphims, scheme='ptscheme', center=None, copy=True):
             ptyphims[:,1:3] *= -1.
 
     else:
-        raise ValueError('Unknown rotation scheme {}'.format(scheme))
+        raise ValueError('Unknown rotation scheme {}'.format(rotate))
 
     return ptyphims
 
@@ -643,7 +653,7 @@ def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
         ptyphims = np.copy(ptyphims)
 
     if center is not None:
-        ptyphims = center_ptyphims(ptyphims, scheme=center, copy=False)
+        ptyphims = center_ptyphims(ptyphims, center=center, copy=False)
 
     zs = ptyphims[:,0]
     if (which == 'both' or which == 'x') and _do_reflection(zs, ptyphims[:,1]):
@@ -750,7 +760,7 @@ PARTICLE_CHARGES = {
 
 CHARGED_PIDS = frozenset(k for k,v in PARTICLE_CHARGES.items() if v != 0.)
 
-def pids2ms(pids, error_on_uknown=False):
+def pids2ms(pids, error_on_unknown=False):
     r"""Map an array of [Particle Data Group IDs](http://pdg.lbl.gov/2018/
     reviews/rpp2018-rev-monte-carlo-numbering.pdf) to an array of the
     corresponding particle masses (in GeV).
@@ -773,7 +783,7 @@ def pids2ms(pids, error_on_uknown=False):
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
 
-    if error_on_uknown:
+    if error_on_unknown:
         masses = [PARTICLE_MASSES[pid] for pid in abspids]
     else:
         masses = [PARTICLE_MASSES.get(pid, 0.) for pid in abspids]

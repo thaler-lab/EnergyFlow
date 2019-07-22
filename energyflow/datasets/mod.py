@@ -152,7 +152,9 @@ class MODDataset(object):
     def __init__(self, *args, **kwargs):
 
         default_kwargs = {
+            'num': -1,
             'path': None,
+            'shuffle': True,
             'store_gens': True,
             'store_pfcs': True,
         }
@@ -163,8 +165,16 @@ class MODDataset(object):
                 kwargs[k] = v
         
         # store options
-        self.store_pfcs = kwargs['store_pfcs']
-        self.store_gens = kwargs['store_gens']
+        self.num = kwargs.pop('num')
+        self.shuffle = kwargs.pop('shuffle')
+        self.store_pfcs = kwargs.pop('store_pfcs')
+        self.store_gens = kwargs.pop('store_gens')
+
+        # check for disallowed kwargs
+        other_allowed_kwargs = {'_arrays', '_dataset', 'datasets', 'path'}
+        for kw in kwargs:
+            if kw not in other_allowed_kwargs:
+                raise TypeError("__init__() got an unexpected keyword argument '{}'".format(kw))
 
         # initialize from explicit arrays (used only when making files initially)
         if len(args) == 0 and '_arrays' in kwargs and '_dataset' in kwargs:
@@ -230,9 +240,6 @@ class MODDataset(object):
         # calculate corrected pts
         self.corr_jet_pts = self.jet_pts*self.jecs if hasattr(self, 'jecs') else self.jet_pts
 
-        # sum all weights
-        self.total_weight = np.sum(self.weights)
-
     def sel(self, *args, **kwargs):
 
         selection = kwargs.pop('_selection', None)
@@ -253,9 +260,15 @@ class MODDataset(object):
         # valid columns to select from
         if not hasattr(self, 'selection_cols'):
             self.selection_cols = self.jets_f_cols.tolist() + self.jets_i_cols.tolist()
-            self.selection_cols += ['corr_jet_pt', 'abs_jet_eta']
+            self.selection_cols += ['corr_jet_pt', 'abs_jet_eta', 'abs_jet_y']
+            
+            # handle special cases for sim
             if 'get_jet_eta' in self.selection_cols:
-                self.selection_cols += ['abs_gen_jet_eta']
+                self.selection_cols += ['abs_gen_jet_eta', 'abs_gen_jet_y']
+
+            # special cases for gen
+            if self.gen:
+                self.selection_cols += ['quality']
 
         if not len(selection):
             return (mask, []) if return_specs else mask
@@ -264,9 +277,9 @@ class MODDataset(object):
         if not hasattr(self, '_sel_re'):
             cols_re = '|'.join(self.selection_cols)
             comps_re = '|'.join(COMP_MAP.keys())
-            expr = (r'\s*(-?\d+\.\d*\s*({0})|-?\d+\s*({0}))?'
+            expr = (r'\s*(-?(?:\d*\.\d*|inf)\s*({0})|-?\d+\s*({0}))?'
                     r'\s*({1})s?'
-                    r'\s*(({0})\s*-?\d+\.\d*|({0})\s*-?\d+)?\s*(&\s*|$)').format(comps_re, cols_re)
+                    r'\s*(({0})\s*-?(?:\d*\.\d*|inf)|({0})\s*-?\d+)?\s*(&\s*|$)').format(comps_re, cols_re)
             self._sel_re = re.compile(expr)
             self._sel_re_check = re.compile('(?:{})+'.format(expr))
 
@@ -284,6 +297,8 @@ class MODDataset(object):
             name = spec[0]
             if 'abs_' in name:
                 arr = np.abs(getattr(self, name.replace('abs_', '')))
+            elif 'quality' in name and self.gen:
+                continue
             else:
                 arr = getattr(self, name)
 
@@ -351,6 +366,9 @@ class MODDataset(object):
         # store views of jets cols
         self._store_views_of_jets()
 
+        # sum all weights
+        self._orig_total_weight = np.sum(self.weights)
+
         # pfcs
         if self.store_pfcs:
             self.pfcs = arrays['pfcs']
@@ -369,21 +387,21 @@ class MODDataset(object):
 
     def _init_from_filename(self, filename, path):
 
-        # determine type of dataset
-        filename_lower = filename.lower()
-        dataset = ('cms' if 'cms' in filename_lower else 
-                  ('sim' if 'sim' in filename_lower else
-                  ('gen' if 'gen' in filename_lower else None)))
-
-        # store dataset info
-        self._store_dataset_info(dataset)
-
         # handle suffix
         if not filename.endswith('.h5'):
             filename += '.h5'
 
         # get filepath
         self.filepath = filename if path is None else os.path.join(path, filename)
+
+        # determine type of dataset
+        filename_lower = os.path.basename(self.filepath).lower()
+        dataset = ('cms' if 'cms' in filename_lower else 
+                  ('sim' if 'sim' in filename_lower else
+                  ('gen' if 'gen' in filename_lower else None)))
+
+        # store dataset info
+        self._store_dataset_info(dataset)
 
         # open h5 file
         self.hf = h5py.File(self.filepath, 'r')
@@ -392,6 +410,10 @@ class MODDataset(object):
         self.jets_i = self.hf['jets_i'][:]
         self.jets_f = self.hf['jets_f'][:]
 
+        # update store particles based on availability
+        self.store_pfcs &= ('pfcs' in self.hf)
+        self.store_gens &= ('gens' in self.hf)
+
         # store jets cols
         self._store_cols('jets_i')
         self._store_cols('jets_f')
@@ -399,12 +421,41 @@ class MODDataset(object):
         # store views of jets cols
         self._store_views_of_jets()
 
+        # sum all weights
+        self._orig_total_weight = np.sum(self.weights)
+
         # process selections
         self.mask, self.specs = self.sel(_selection=self.selection)
+
+        # determine weight factor caused by subselecting
+        total_weight_after_selections = np.sum(self.weights[self.mask])
+
+        # select the requested number of jets
+        if self.num != -1:
+
+            # shuffle if requested
+            arange = np.arange(len(self.mask))[self.mask]
+            if self.shuffle:
+                np.random.shuffle(arange)
+
+            # mask out jets beyond what was requested
+            self.mask[arange[self.num:]] = False
+
+            # weight factor
+            weight_factor = total_weight_after_selections/np.sum(self.weights[self.mask])
+
+        else:
+            weight_factor = 1.0
 
         # apply mask to jets
         self.jets_i = self.jets_i[self.mask]
         self.jets_f = self.jets_f[self.mask]
+
+        # alter weights due to subselection
+        self.jets_f[:,self.weight] *= weight_factor
+
+        # store views of jets cols
+        self._store_views_of_jets()
 
         if self.store_pfcs:
 
@@ -508,6 +559,9 @@ class MODDataset(object):
         # store views of jets cols
         self._store_views_of_jets()
 
+        # sum all weights
+        self._orig_total_weight = np.sum(self.weights)
+
         if self.store_pfcs:
             self.pfcs = np.concatenate(pfcs, axis=0)
 
@@ -516,6 +570,29 @@ class MODDataset(object):
 
         # set particles
         self._set_particles()
+
+    def apply_mask(self, mask, preserve_total_weight=False):
+
+        if len(mask) != len(self):
+            raise IndexError('Incorrectly sized mask')
+
+        if preserve_total_weight:
+            total_weight_before_mask = np.sum(self.weights)
+
+        self.jets_i = self.jets_i[mask]
+        self.jets_f = self.jets_f[mask]
+
+        if preserve_total_weight:
+            weight_factor = total_weight_before_mask/np.sum(self.jets_f[:,self.weight])
+            self.jets_f[:,self.weight] *= weight_factor
+
+        self._store_views_of_jets()
+
+        if self.store_pfcs:
+            self.pfcs = self.pfcs[mask]
+
+        if self.store_gens:
+            self.gens = self.gens[mask]
 
     def save(self, filepath, npf=-1, compression=None, verbose=1, n_jobs=1):
 
@@ -575,6 +652,9 @@ class MODDataset(object):
                         if verbose >= 1 and ((i+1) % 5 == 0 or i+1 == len(args)):
                             pf = (i+1, (i+1)/len(args)*100, time.time() - start)
                             print('  Saved {} files, {:.2f}% done in {:.3f}s'.format(*pf))
+
+                    del moddsets
+                    
             return
 
         # compression opts
@@ -604,13 +684,15 @@ class MODDataset(object):
 
         # pfcs
         if self.store_pfcs:
-            pfcs = _write_large_object_array_to_h5(hf, 'pfcs', self.pfcs, **compression)
+            pfcs = _write_large_object_array_to_h5(hf, 'pfcs', self.pfcs, 
+                                                   ncols=len(self.pfcs_cols), **compression)
             pfcs.attrs.create('cols', np.asarray(self.pfcs_cols, dtype='S'))
             hf.create_dataset('pfcs_index', data=_make_particles_index(self.pfcs), **compression)
 
         # gens
         if self.store_gens:
-            gens = _write_large_object_array_to_h5(hf, 'gens', self.gens, **compression)
+            gens = _write_large_object_array_to_h5(hf, 'gens', self.gens, 
+                                                   ncols=len(self.gens_cols), **compression)
             gens.attrs.create('cols', np.asarray(self.gens_cols, dtype='S'))
             hf.create_dataset('gens_index', data=_make_particles_index(self.gens), **compression)
 
@@ -667,7 +749,7 @@ def load(*args, **kwargs):
         subdatasets = dataset['subdatasets']
     else:
         subdatasets = [sdset for sdset in dataset['subdatasets']
-                                 if sdset[0] in kwargs['subdatasets']]
+                               if sdset[0] in kwargs['subdatasets']]
 
     # get hashes
     info = _read_dataset_json_file(EF_DATA_DIR, cname)
@@ -716,7 +798,7 @@ def load(*args, **kwargs):
             print('Loaded {} in {:.3f}s'.format(name, time.time() - start_subdset))
 
         # set weights appropriately in case we're not using all the files
-        subdset_total_weight = sum([dset.total_weight for dset in modsubdsets])
+        subdset_total_weight = sum([dset._orig_total_weight for dset in modsubdsets])
         for dset in modsubdsets:
             dset.jets_f[:,dset.weight] *= total_weights[name]/subdset_total_weight
 

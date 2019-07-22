@@ -49,7 +49,7 @@ if ot:
     __all__ = ['emd', 'emds']
 
     # parameter checks
-    def _check_params(norm, gdim, phi_col, measure, coords):
+    def _check_params(norm, gdim, phi_col, measure, coords, empty_policy):
 
         # check norm
         if norm is None:
@@ -73,6 +73,10 @@ if ot:
         # check coords
         if coords not in {'hadronic', 'cartesian'}:
             raise ValueError("'coords' must be one of 'hadronic', 'cartesian'")
+
+        # check empty_policy
+        if not (isinstance(empty_policy, (int, float)) or empty_policy == 'error'):
+            raise ValueError("'empty_policy' must be a number or 'error'")
 
     # faster than scipy's cdist function because we can avoid their checks
     def _cdist(X, Y, euclidean, periodic_phi, phi_col):
@@ -111,7 +115,8 @@ if ot:
 
     # process events for EMD calculation
     two_pi = 2*np.pi
-    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col, mask, R, hadr2cart, euclidean):
+    def _process_for_emd(event, norm, gdim, periodic_phi, phi_col, 
+                         mask, R, hadr2cart, euclidean, error_on_empty):
         
         # ensure event is at least a 2d numpy array
         event = np.atleast_2d(event) if gdim is None else np.atleast_2d(event)[:,:(gdim+1)]
@@ -151,6 +156,13 @@ if ot:
             # detect when masking actually needs to occur
             if not np.all(rmask):
                 pts, coords = pts[rmask], coords[rmask]
+
+        # check that we have at least one particle
+        if pts.size == 0:
+            if error_on_empty:
+                raise ValueError('empty event encountered, must have at least one particle')
+            else:
+                return (None, None)
                 
         # handle norming pts or adding extra zeros to event
         if norm:
@@ -166,7 +178,7 @@ if ot:
 
     def emd(ev0, ev1, R=1.0, norm=False, measure='euclidean', coords='hadronic',
                       return_flow=False, gdim=None, mask=False, n_iter_max=100000,
-                      periodic_phi=False, phi_col=2):
+                      periodic_phi=False, phi_col=2, empty_policy='error'):
         r"""Compute the EMD between two events.
 
         **Arguments**
@@ -229,17 +241,25 @@ if ot:
         """
 
         # parameter checks
-        _check_params(norm, gdim, phi_col, measure, coords)
+        _check_params(norm, gdim, phi_col, measure, coords, empty_policy)
         euclidean = (measure == 'euclidean')
         hadr2cart = (not euclidean) and (coords == 'hadronic')
+        error_on_empty = (empty_policy == 'error')
 
         # handle periodicity
         phi_col_m1 = phi_col - 1
 
         # process events
-        args = (None, gdim, periodic_phi, phi_col_m1, mask, R, hadr2cart, euclidean)
+        args = (None, gdim, periodic_phi, phi_col_m1, 
+                mask, R, hadr2cart, euclidean, error_on_empty)
         pTs0, coords0 = _process_for_emd(ev0, *args)
         pTs1, coords1 = _process_for_emd(ev1, *args)
+
+        if pTs0 is None or pTs1 is None:
+            if return_flow:
+                return empty_policy, np.zeros((0,0))
+            else:
+                return empty_policy
 
         pT0, pT1 = pTs0.sum(), pTs1.sum()
 
@@ -272,8 +292,13 @@ if ot:
             # change units for numerical stability
             rescale = max(pT0, pT1)
 
-        G, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
-        check_result(result_code)
+        try:
+            G, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
+            check_result(result_code)
+        except:
+            print(ev0, ev1)
+            print(np.sum(pTs0), np.sum(pTs1))
+            raise
 
         # need to change units back
         if return_flow:
@@ -284,14 +309,18 @@ if ot:
 
     # helper function for pool imap
     def _emd4map(x):
-        (i, j), (X0, X1, R, norm, euclidean, n_iter_max, periodic_phi, phi_col) = x
-        return _emd(X0[i], X1[j], R, norm, euclidean, n_iter_max, periodic_phi, phi_col)
+        (i, j), ((X0, X1), other_params) = x
+        return _emd(X0[i], X1[j], *other_params)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, periodic_phi, phi_col):
+    def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, 
+             periodic_phi, phi_col, empty_policy):
 
         pTs0, coords0 = ev0
         pTs1, coords1 = ev1
+
+        if pTs0 is None or pTs1 is None:
+            return empty_policy
 
         thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col)/R
 
@@ -322,7 +351,7 @@ if ot:
 
     def emds(X0, X1=None, R=1.0, norm=False, measure='euclidean', coords='hadronic', 
                           gdim=None, mask=False, n_iter_max=100000, 
-                          periodic_phi=False, phi_col=2,
+                          periodic_phi=False, phi_col=2, empty_policy='error',
                           n_jobs=None, verbose=0, print_every=10**6):
         r"""Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
@@ -393,9 +422,10 @@ if ot:
             otherwise it will have shape `(len(X0), len(X1))`.
         """
 
-        _check_params(norm, gdim, phi_col, measure, coords)
+        _check_params(norm, gdim, phi_col, measure, coords, empty_policy)
         euclidean = (measure == 'euclidean')
         hadr2cart = (not euclidean) and (coords == 'hadronic')
+        error_on_empty = (empty_policy == 'error')
 
         # determine if we're doing symmetric pairs
         sym = X1 is None
@@ -405,7 +435,8 @@ if ot:
 
         # process events into convenient form for EMD
         start = time.time()
-        args = (norm, gdim, periodic_phi, phi_col_m1, mask, R, hadr2cart, euclidean)
+        args = (norm, gdim, periodic_phi, phi_col_m1, 
+                mask, R, hadr2cart, euclidean, error_on_empty)
         X0 = [_process_for_emd(x, *args) for x in X0]
         X1 = X0 if sym else [_process_for_emd(x, *args) for x in X1]
 
@@ -441,16 +472,21 @@ if ot:
 
             # create process pool
             with create_pool(n_jobs) as pool:
+                
+                Xarrs = (X0, X1)
+                other_params = (R, no_norm, euclidean, n_iter_max, 
+                                periodic_phi, phi_col_m1, empty_policy)
+                params = (Xarrs, other_params)
+                map_args = ((pair, params) for pair in pairs)
 
                 # iterate over pairs of events
                 begin = end = 0
-                no_norm
-                other_params = [X0, X1, R, no_norm, euclidean, n_iter_max, periodic_phi, phi_col_m1]
-                map_args = ([pair, other_params] for pair in pairs)
                 while end < npairs:
                     end += print_every
                     end = min(end, npairs)
-                    chunksize = max(1, (end - begin)//(n_jobs*5))
+                    chunksize, extra = divmod(end - begin, n_jobs * 2)
+                    if extra:
+                        chunksize += 1
 
                     # only hold this many pairs in memory
                     local_map_args = [next(map_args) for i in range(end - begin)]
@@ -473,7 +509,8 @@ if ot:
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
                 emds[i, j] = _emd(X0[i], X1[j], R, no_norm, euclidean, 
-                                  n_iter_max, periodic_phi, phi_col_m1)
+                                  n_iter_max, periodic_phi, phi_col_m1, empty_policy)
+
                 if verbose >= 1 and ((k+1) % print_every) == 0:
                     args = (k+1, (k+1)/npairs*100, time.time() - start)
                     print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
