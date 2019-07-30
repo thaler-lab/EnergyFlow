@@ -592,12 +592,13 @@ def center_ptyphims(ptyphims, axis=None, center='escheme', copy=True):
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
-        - An event, or array of events in hadronic coordinates. The mass is
-        optional and if left out will be taken to be zero.
+        - An event in hadronic coordinates. The mass is optional and if left
+        out will be taken to be zero.
     - **axis** : _numpy.ndarray_
         - If not `None`, the `[y,phi]` values to use for centering.
-    - **scheme** : _str_
-        - See the argument of the same name [`here`](#sum_ptyphims).
+    - **center** : _str_
+        - The centering scheme to be used. Valid options are the same as the
+        `scheme` argument [`here`](#sum_ptyphims).
     - **copy** : _bool_
         - Whether or not to copy the input array.
 
@@ -622,7 +623,33 @@ def _do_reflection(zs, coords):
     return np.sum(zs[coords > 0.]) < np.sum(zs[coords < 0.])
 
 def rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True):
-    """"""
+    """Rotate a collection of four-vectors to vertically align the principal
+    component of the energy-flow tensor. The principal component is obtained
+    as the eigenvector of the energy-flow tensor with the largest eigenvalue.
+    It is only defined up to a sign, however it is ensured that 
+
+    **Arguments**
+
+    - **ptyphims** : _numpy.ndarray_ or _list_
+        - An event in hadronic coordinates. The mass is optional and if left
+        out will be taken to be zero.
+    - **rotate** : _str_
+        - The rotation scheme to be used. Currently, only `'ptscheme'` is
+        supported, which causes the rotation to take place in the 
+        rapidity-azimuth plane.
+    - **center** : _str_ or `None`
+        - If not `None`, the event will be centered prior to rotation and this
+        argument will be passed on to `center_ptyphims` as the centering
+        scheme.
+    - **copy** : _bool_
+        - Whether or not to copy the input array.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - An array of hadronic four-momenta with the positions rotated around
+        the origin.
+    """
 
     if copy:
         ptyphims = np.copy(ptyphims)

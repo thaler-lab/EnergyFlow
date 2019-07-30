@@ -155,14 +155,14 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
 
     # pass on unknown attribute lookups to the underlying model
     def __getattr__(self, attr):
-        try:
-            a = getattr(self.model, attr)
-        except:
+
+        if hasattr(self.model, attr):
+            return getattr(self.model, attr)
+
+        else:
             name = self.__class__.__name__
-            sys.stderr.write(('\'{}\' object has no attribute \'{}\', '
-                              'checking underlying model.\n').format(name, attr))
-            raise
-        return a
+            raise AttributeError("'{}' object has no attribute '{}', ".format(name, attr)
+                                 + "check of underlying model failed")
 
 
 ###############################################################################

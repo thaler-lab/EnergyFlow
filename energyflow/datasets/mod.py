@@ -594,6 +594,9 @@ class MODDataset(object):
         if self.store_gens:
             self.gens = self.gens[mask]
 
+        # set particles
+        self._set_particles()
+
     def save(self, filepath, npf=-1, compression=None, verbose=1, n_jobs=1):
 
         path, name = os.path.split(filepath)
