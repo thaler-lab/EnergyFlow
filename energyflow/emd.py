@@ -1,4 +1,10 @@
-r"""The Energy Mover's Distance (EMD), also known as the Earth Mover's 
+r"""<video width="100%" autoplay loop>
+    <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
+            type="video/mp4">
+</video>
+<br>
+
+The Energy Mover's Distance (EMD), also known as the Earth Mover's 
 Distance, is a metric between particle collider events introduced in
 [1902.02346](https://arxiv.org/abs/1902.02346). This submodule contains
 convenient functions for computing EMDs between individual events and
