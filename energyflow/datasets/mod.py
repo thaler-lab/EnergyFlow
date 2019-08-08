@@ -19,35 +19,37 @@ from energyflow.utils import create_pool, explicit_comp
 
 __all__ = ['MODDataset', 'load']
 
+ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
+
 COLLECTIONS = {
     'CMS2011AJets': {
         'cms': {
-            'subdatasets': [('CMS_Jet300_pT375-infGeV', 18)],
+            'subdatasets': [('CMS_Jet300_pT375-infGeV', 18, '3340205')],
         },
 
         'sim': {
             'subdatasets': [
-                ('SIM170_Jet300_pT375-infGeV', 1),
-                ('SIM300_Jet300_pT375-infGeV', 24),
-                ('SIM470_Jet300_pT375-infGeV', 73),
-                ('SIM600_Jet300_pT375-infGeV', 78),
-                ('SIM800_Jet300_pT375-infGeV', 79),
-                ('SIM1000_Jet300_pT375-infGeV', 40),
-                ('SIM1400_Jet300_pT375-infGeV', 40),
-                ('SIM1800_Jet300_pT375-infGeV', 20),
+                ('SIM170_Jet300_pT375-infGeV', 1, '3341500'),
+                ('SIM300_Jet300_pT375-infGeV', 24, '3341498'),
+                ('SIM470_Jet300_pT375-infGeV', 73, '3341419'),
+                ('SIM600_Jet300_pT375-infGeV', 78, '3341421'),
+                ('SIM800_Jet300_pT375-infGeV', 79, '3341413'),
+                ('SIM1000_Jet300_pT375-infGeV', 40, '3341502'),
+                ('SIM1400_Jet300_pT375-infGeV', 40, '3341770'),
+                ('SIM1800_Jet300_pT375-infGeV', 20, '3341772'),
             ]
         },
 
         'gen': {
             'subdatasets': [
-                ('GEN170_pT375-infGeV', 1),
-                ('GEN300_pT375-infGeV', 24),
-                ('GEN470_pT375-infGeV', 74),
-                ('GEN600_pT375-infGeV', 79),
-                ('GEN800_pT375-infGeV', 79),
-                ('GEN1000_pT375-infGeV', 40),
-                ('GEN1400_pT375-infGeV', 40),
-                ('GEN1800_pT375-infGeV', 20),
+                ('GEN170_pT375-infGeV', 1, '3341500'),
+                ('GEN300_pT375-infGeV', 24, '3341498'),
+                ('GEN470_pT375-infGeV', 74, '3341419'),
+                ('GEN600_pT375-infGeV', 79, '3341421'),
+                ('GEN800_pT375-infGeV', 79, '3341413'),
+                ('GEN1000_pT375-infGeV', 40, '3341502'),
+                ('GEN1400_pT375-infGeV', 40, '3341770'),
+                ('GEN1800_pT375-infGeV', 20, '3341772'),
             ]
         }
     }
@@ -754,14 +756,14 @@ def load(*args, **kwargs):
         subdatasets = [sdset for sdset in dataset['subdatasets']
                                if sdset[0] in kwargs['subdatasets']]
 
-    # get hashes
+    # get file info
     info = _read_dataset_json_file(EF_DATA_DIR, cname)
     hashes, total_weights = info['md5_hashes'], info['total_weights']
 
     # iterate over subdatasets
     moddsets = []
     for subdataset in subdatasets:
-        name, nfiles = subdataset
+        name, nfiles, record = subdataset
 
         # get path to dataset files
         subdir = os.path.join('datasets', cname, name)
@@ -787,9 +789,10 @@ def load(*args, **kwargs):
             start = time.time()
             filename = '{}_{}{}.h5'.format(name, i, '_compressed' if compressed else '')
             file_hash = hashes[filename] if validate_files else None
+            url = ZENODO_URL_PATTERN.format(record, filename)
 
-            filepath = _get_filepath(filename, None, cache_dir, cache_subdir=subdir, 
-                                                                file_hash=file_hash)
+            filepath = _get_filepath(filename, url, cache_dir, cache_subdir=subdir, 
+                                                               file_hash=file_hash)
 
             moddset_args = (filepath,) + args
             modsubdsets.append(MODDataset(*moddset_args, **moddset_kwargs))
