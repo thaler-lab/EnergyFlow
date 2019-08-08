@@ -2,5 +2,3 @@ numpy>=1.14.0
 cython>=0.29.5
 matplotlib>=3.0.0
 scipy>=1.2.0
-pot>=0.5.1
-energyflow>=0.12.3
