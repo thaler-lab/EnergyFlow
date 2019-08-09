@@ -10,7 +10,8 @@ python -m pip install -U pot
 
 # create default ipython profile
 ipython profile create
-IPYTHON_KERNEL_CONFIG="/home/jovyan/.ipython/profile_default/ipython_kernel_config.py"
+IPYTHON_KERNEL_CONFIG="${REPO_DIR}/.ipython/profile_default/ipython_kernel_config.py"
 
 # add EnergyFlow specific config
-cat $IPYTHON_KERNEL_CONFIG /home/jovyan/binder/ef_ipython_kernel_config.py > $IPYTHON_KERNEL_CONFIG
+cat $IPYTHON_KERNEL_CONFIG ${REPO_DIR}/binder/ef_ipython_kernel_config.py > ./tmp_kernel_config.py
+mv -v ./tmp_kernel_config.py $IPYTHON_KERNEL_CONFIG
