@@ -23,4 +23,4 @@ __all__ = (datasets.__all__ +
            measure.__all__ +
            utils.__all__)
 
-__version__ = '0.12.3'
+__version__ = '0.13.0'

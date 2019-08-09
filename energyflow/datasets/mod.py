@@ -6,10 +6,15 @@ import json
 import math
 import os
 import re
+import sys
 import time
 import warnings
 
-import h5py
+try:
+    import h5py
+except ImportError as e:
+    sys.stderr.write(str(e) + '\n')
+
 import numpy as np
 import six
 
@@ -32,7 +37,7 @@ COLLECTIONS = {
                 ('SIM170_Jet300_pT375-infGeV', 1, '3341500'),
                 ('SIM300_Jet300_pT375-infGeV', 24, '3341498'),
                 ('SIM470_Jet300_pT375-infGeV', 73, '3341419'),
-                ('SIM600_Jet300_pT375-infGeV', 78, '3341421'),
+                ('SIM600_Jet300_pT375-infGeV', 78, '3364139'),
                 ('SIM800_Jet300_pT375-infGeV', 79, '3341413'),
                 ('SIM1000_Jet300_pT375-infGeV', 40, '3341502'),
                 ('SIM1400_Jet300_pT375-infGeV', 40, '3341770'),
@@ -45,7 +50,7 @@ COLLECTIONS = {
                 ('GEN170_pT375-infGeV', 1, '3341500'),
                 ('GEN300_pT375-infGeV', 24, '3341498'),
                 ('GEN470_pT375-infGeV', 74, '3341419'),
-                ('GEN600_pT375-infGeV', 79, '3341421'),
+                ('GEN600_pT375-infGeV', 79, '3364139'),
                 ('GEN800_pT375-infGeV', 79, '3341413'),
                 ('GEN1000_pT375-infGeV', 40, '3341502'),
                 ('GEN1400_pT375-infGeV', 40, '3341770'),
@@ -755,6 +760,11 @@ def load(*args, **kwargs):
     else:
         subdatasets = [sdset for sdset in dataset['subdatasets']
                                if sdset[0] in kwargs['subdatasets']]
+        allowed_sds = set([sdset[0] for sdset in dataset['subdatasets']])
+        remaining_sds = set(kwargs['subdatasets']) - allowed_sds
+        if len(remaining_sds):
+            raise ValueError('Did not understand the following subdatasets: {}'.format(remaining_sds)
+                             + ', acceptable values are {}'.format(allowed_sds))
 
     # get file info
     info = _read_dataset_json_file(EF_DATA_DIR, cname)
