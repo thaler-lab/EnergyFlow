@@ -1,7 +1,8 @@
-### 0.12.x
+### 0.13.x
 
-**0.12.4**
+**0.13.0**
 
+- Added support for downloading and reading MOD datasets containing CMS Open Data and Simulation from Zenodo.
 - Added particle utility functions to map PDG IDs to electric charges.
 - A `~` is now expanded to the user's home directory properly in the `filepath` option to architectures.
 - Added `sum_ptyphims` and `sum_ptyphipids` functions to sum four-vectors in hadronic coordinates.
@@ -12,6 +13,9 @@
 - Added `h5py` install dependency for MOD Datasets.
 - Improved binder environment with latex and default matplotlib settings.
 - Added observables submodule which includes image_activity 
+
+
+### 0.12.x
 
 **0.12.3**
 
