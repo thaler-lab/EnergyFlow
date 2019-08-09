@@ -1,3 +1,4 @@
 texlive-latex-base
 texlive-latex-extra
 dvipng
+ffmpeg
