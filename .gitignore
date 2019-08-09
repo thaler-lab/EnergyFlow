@@ -9,7 +9,6 @@ dist/
 *.pyc
 test.npz
 EnergyFlow.egg-info
-*.txt
 plan.jpg
 .cache
 build

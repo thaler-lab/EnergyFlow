@@ -1,1 +1,9 @@
+#!/bin/bash
+
+# run matplotlib once to generate the font cache
+python -c "import matplotlib as mpl; mpl.use('Agg'); import matplotlib.pyplot as plt; fig, ax = plt.subplots(); fig.savefig('test.png')"
+
+test -e test.png && rm test.png
+
+# ensure latest version of energyflow (pot must be installed here due to cython requirement)
 python -m pip install -U energyflow pot

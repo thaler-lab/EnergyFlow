@@ -1,0 +1,2 @@
+texlive-latex-base
+texlive-latex-extra
