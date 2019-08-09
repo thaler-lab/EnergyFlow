@@ -1,3 +1,4 @@
+
 # EnergyFlow jupyter/matplotlib defaults
 c.InteractiveShellApp.matplotlib = 'inline'
 c.InlineBackend.figure_formats = {'retina'}
