@@ -177,7 +177,7 @@ if ot:
             pass
         else:
             coords = np.vstack((coords, np.zeros(coords.shape[1])))
-            pts = np.concatenate(pts, np.zeros(1))
+            pts = np.concatenate((pts, np.zeros(1)))
 
         return (np.ascontiguousarray(pts, dtype=np.double), 
                 np.ascontiguousarray(coords, dtype=np.double))
