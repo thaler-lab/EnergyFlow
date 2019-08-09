@@ -18,7 +18,7 @@ from energyflow.utils.data_utils import _get_filepath
 from energyflow.utils.generic_utils import COMP_MAP, EF_DATA_DIR, REVERSE_COMPS
 from energyflow.utils import create_pool, explicit_comp
 
-__all__ = ['MODDataset', 'load']
+__all__ = ['MODDataset', 'load', 'filter_particles']
 
 ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
 
@@ -56,10 +56,79 @@ COLLECTIONS = {
     }
 }
 
-def _read_dataset_json_file(path, cname):
-    fpath = os.path.join(path, '{}.json'.format(cname))
-    with open(fpath, 'r') as f:
-        return json.load(f)
+def filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5):
+    
+    mask = np.ones(len(particles), dtype=bool)
+    
+    # pt cut
+    if pt_cut is not None:
+        mask &= (particles[:,pt_i] >= pt_cut)
+        
+    # select specified particles
+    if which != 'all':
+        chrg_mask = ef.ischrgd(particles[:,pid_i])
+        
+        if which == 'charged':
+            mask &= chrg_mask
+        else:
+            mask &= ~chrg_mask
+            
+    # apply chs
+    if chs:
+        mask &= (particles[:,vertex_i] <= 0)
+        
+    return mask
+
+def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True):
+
+    # verify dataset
+    if dataset not in {'sim', 'gen'}:
+        raise ValueError("dataset must be one of 'sim' or 'gen'")
+
+    # get info for the specified collection
+    info = _get_dataset_info(collection)
+
+    # base kfactors from https://arxiv.org/abs/1309.5311
+    base_kfactors = np.interp(pts, info['kfactor_x'], info['kfactor_y'])
+
+    # include npv reweighting if sim
+    if dataset == 'sim':
+
+        # verify we have npvs
+        if npvs is None:
+            raise ValueError("npvs cannot be None when dataset is 'sim'")
+
+        base_kfactors *= info['npv_hist_ratios'][np.asarray(npvs, dtype=int)]
+
+    # apply residual factor if desired
+    if apply_residual_correction:
+        base_kfactors *= info['residual_factor']
+
+    return base_kfactors
+
+def _get_collection(cname):
+
+    # verify collection
+    if cname not in COLLECTIONS:
+        raise ValueError("Collection '{}' not recognized".format(cname))
+
+    return COLLECTIONS[cname]
+
+def _get_dataset_info(cname):
+
+    # get collection
+    collection = _get_collection(cname)
+
+    # cache info if not already stored
+    if 'info' not in collection:
+
+        fpath = os.path.join(EF_DATA_DIR, '{}.json'.format(cname))
+        with open(fpath, 'r') as f:
+            info = json.load(f)
+
+        collection['info'] = info
+
+    return collection['info']
 
 def _separate_particle_arrays(particles, particles_index, mask, copy=True):
     
@@ -742,8 +811,7 @@ def load(*args, **kwargs):
 
     # verify collection
     cname = kwargs['collection']
-    assert cname in COLLECTIONS, "Collection '{}' not recognized".format(cname)
-    collection = COLLECTIONS[cname]
+    collection = _get_collection(cname)
 
     # verify dataset
     dname = kwargs['dataset']
@@ -763,7 +831,7 @@ def load(*args, **kwargs):
                              + ', acceptable values are {}'.format(allowed_sds))
 
     # get file info
-    info = _read_dataset_json_file(EF_DATA_DIR, cname)
+    info = _get_dataset_info(cname)
     hashes, total_weights = info['md5_hashes'], info['total_weights']
 
     # iterate over subdatasets
