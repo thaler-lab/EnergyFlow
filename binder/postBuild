@@ -7,3 +7,7 @@ test -e test.png && rm test.png
 
 # ensure latest version of energyflow (pot must be installed here due to cython requirement)
 python -m pip install -U energyflow pot
+
+# add default matplotlib style
+ipython profile create
+
