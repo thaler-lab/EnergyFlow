@@ -10,11 +10,7 @@ import sys
 import time
 import warnings
 
-try:
-    import h5py
-except ImportError as e:
-    sys.stderr.write(str(e) + '\n')
-
+import h5py
 import numpy as np
 import six
 

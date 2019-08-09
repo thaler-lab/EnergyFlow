@@ -9,6 +9,8 @@
 - Added scheme choices for summing four-vectors of particles.
 - Added preprocessing functions to particle utilities, including `center_ptyphims`, 
 `rotate_ptyphims` and `reflect_ptyphims`.
+- Added `h5py` install dependency for MOD Datasets.
+- Improved binder environment with latex and default matplotlib settings.
 
 **0.12.3**
 
