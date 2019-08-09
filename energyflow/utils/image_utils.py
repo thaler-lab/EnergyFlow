@@ -113,7 +113,6 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
 
     return jet_image
 
-
 # standardize(*args, channels=None, copy=False, reg=10**-10)
 def standardize(*args, **kwargs):
     """Normalizes each argument by the standard deviation of the pixels in 
@@ -166,7 +165,6 @@ def standardize(*args, **kwargs):
         for chan in channels: 
             x[:,chan] /= stds[chan]
     return X
-
 
 def zero_center(*args, **kwargs):
     """Subtracts the mean of arg[0] from the arguments. The expected 

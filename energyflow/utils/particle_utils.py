@@ -118,7 +118,6 @@ def ptyphims_from_p4s(p4s, phi_ref=None):
 
     return out
 
-
 def pt2s_from_p4s(p4s):
     """Calculate the squared transverse momenta of a collection of four-vectors.
     

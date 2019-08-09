@@ -75,7 +75,6 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
         print(fname, 'exists at', path)
     print()
 
-
 # data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 def data_split(*args, **kwargs):
     """A function to split a dataset into train, test, and optionally 
@@ -148,7 +147,6 @@ def data_split(*args, **kwargs):
     # return list of new datasets
     return [arg[mask] for arg in args for mask in masks]
 
-
 def to_categorical(labels, num_classes=None):
     """One-hot encodes class labels.
 
@@ -179,7 +177,6 @@ def to_categorical(labels, num_classes=None):
 
     return categorical
 
-
 # PDGid to small float dictionary
 pid2float_mapping = {22: 0,
                      211: .1, -211: .2,
@@ -207,9 +204,7 @@ def remap_pids(events, pid_i=3):
     pids = events[:,:,pid_i].astype(int).reshape((events_shape[0]*events_shape[1]))
     events[:,:,pid_i] = np.asarray([pid2float_mapping.get(pid, 0) for pid in pids]).reshape(events_shape[:2])
 
-
 # the following code is closely based on analogous parts of Keras
-
 if sys.version_info[0] == 2:
     from contextlib import closing
     from six.moves.urllib.request import urlopen
@@ -251,7 +246,6 @@ if sys.version_info[0] == 2:
 else:
     from six.moves.urllib.request import urlretrieve
 
-
 def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     """Calculates a file sha256 or md5 hash.
     # Example
@@ -279,7 +273,6 @@ def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
 
     return hasher.hexdigest()
 
-
 def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=131071):
     """Validates a file against a sha256 or md5 hash.
     # Arguments
@@ -298,7 +291,6 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=131071):
         hasher = 'md5'
 
     return str(_hash_file(fpath, hasher, chunk_size)) == str(file_hash)
-
 
 def _get_filepath(filename, url, cache_dir, cache_subdir='datasets', file_hash=None):
     """Pulls file from the internet."""

@@ -11,6 +11,7 @@
 `rotate_ptyphims` and `reflect_ptyphims`.
 - Added `h5py` install dependency for MOD Datasets.
 - Improved binder environment with latex and default matplotlib settings.
+- Added observables submodule which includes image_activity 
 
 **0.12.3**
 

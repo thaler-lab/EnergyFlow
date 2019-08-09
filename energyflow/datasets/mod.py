@@ -16,9 +16,10 @@ import six
 
 from energyflow.utils.data_utils import _get_filepath
 from energyflow.utils.generic_utils import COMP_MAP, EF_DATA_DIR, REVERSE_COMPS
+from energyflow.utils.particle_utils import ischrgd
 from energyflow.utils import create_pool, explicit_comp
 
-__all__ = ['MODDataset', 'load', 'filter_particles']
+__all__ = ['MODDataset', 'load', 'filter_particles', 'kfactors']
 
 ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
 
@@ -57,6 +58,7 @@ COLLECTIONS = {
 }
 
 def filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5):
+    """"""
     
     mask = np.ones(len(particles), dtype=bool)
     
@@ -66,7 +68,7 @@ def filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid
         
     # select specified particles
     if which != 'all':
-        chrg_mask = ef.ischrgd(particles[:,pid_i])
+        chrg_mask = ischrgd(particles[:,pid_i])
         
         if which == 'charged':
             mask &= chrg_mask
@@ -80,6 +82,7 @@ def filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid
     return mask
 
 def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True):
+    """"""
 
     # verify dataset
     if dataset not in {'sim', 'gen'}:
@@ -114,6 +117,14 @@ def _get_collection(cname):
 
     return COLLECTIONS[cname]
 
+def _get_dataset(collection, dname):
+
+    # check for valid dname (special case info since we add that to collection)
+    if dname == 'info' or dname not in collection:
+        raise ValueError('dataset {} not recognized'.format(dname))
+
+    return collection[dname]
+
 def _get_dataset_info(cname):
 
     # get collection
@@ -125,6 +136,10 @@ def _get_dataset_info(cname):
         fpath = os.path.join(EF_DATA_DIR, '{}.json'.format(cname))
         with open(fpath, 'r') as f:
             info = json.load(f)
+
+        # convert to numpy arrays
+        for key in ['kfactor_x', 'kfactor_y', 'npv_hist_ratios']:
+            info[key] = np.asarray(info[key])
 
         collection['info'] = info
 
@@ -814,9 +829,7 @@ def load(*args, **kwargs):
     collection = _get_collection(cname)
 
     # verify dataset
-    dname = kwargs['dataset']
-    assert dname in collection, "Dataset must be one of {}".format(list(collection.keys()))
-    dataset = collection[dname]
+    dataset = _get_dataset(collection, kwargs['dataset'])
 
     # determine subdatasets
     if kwargs['subdatasets'] is None:

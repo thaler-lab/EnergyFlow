@@ -16,6 +16,7 @@ __all__ = [
     'concat_specs',
     'create_pool',
     'explicit_comp',
+    'import_fastjet',
     'iter_or_rep', 
     'kwargs_check',
     'timing', 
@@ -81,6 +82,14 @@ def create_pool(*args, **kwargs):
 # applies comprison comp of obj on val
 def explicit_comp(obj, comp, val):
     return getattr(obj, COMP_MAP[comp])(val)
+
+# determine if fastjet can be imported, returns either the fastjet module or false
+def import_fastjet():
+    try:
+        import fastjet
+    except:
+        fastjet = False
+    return fastjet
 
 # return argument if iterable else make repeat generator
 def iter_or_rep(arg):
