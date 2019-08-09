@@ -35,6 +35,7 @@ def test_gen_random_events(nevents, nparticles, dim, mass):
     events = ef.gen_random_events(nevents, nparticles, dim=dim, mass=mass)
 
     assert events.shape == (nevents, nparticles, dim)
+
     if not (isinstance(mass, six.string_types) and mass == 'random'):
         assert epsilon_diff(ef.ms_from_ps(events)**2, mass**2, 10**-13)
 
@@ -302,6 +303,17 @@ def test_ms_from_ps(dim, nevents, nparticles):
     if dim == 4:
         assert epsilon_diff(results, ef.ms_from_p4s(events), 1e-10)
 
+@pytest.mark.utils
+@pytest.mark.parametrize('scheme', ['escheme', 'ptscheme'])
+@pytest.mark.parametrize('nparticles', [1, 20])
+def test_sum_ptyphims(nparticles, scheme):
+    events = ef.ptyphims_from_p4s(ef.gen_random_events(10, nparticles, dim=4, mass='random'))
+
+    for event in events:
+        tot = ef.sum_ptyphims(event, scheme=scheme)
+
+        assert len(tot) == (3 if scheme == 'ptscheme' else 4)
+
 @pytest.mark.utils 
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
@@ -324,3 +336,27 @@ def test_pids2ms(nevents, nparticles):
     # pion
     assert ef.pids2ms(211) == .139570
 
+@pytest.mark.utils 
+@pytest.mark.parametrize('nparticles', [1, 20])
+@pytest.mark.parametrize('nevents', [1, 10])
+def test_pids2chrgs(nevents, nparticles):
+    pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
+            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+                             size=(nevents, nparticles)))
+    
+    # test shapes
+    results = ef.pids2chrgs(pids)
+    assert epsilon_diff(results[0],   ef.pids2chrgs(pids[0]))
+    assert epsilon_diff(results[0,0], ef.pids2chrgs(pids[0,0]))
+
+    # electron/positron
+    assert ef.pids2chrgs(11) == -1.
+    assert ef.pids2chrgs(-11) == 1.
+
+    # photon
+    assert ef.pids2chrgs(22) == 0.
+    assert ef.pids2chrgs(-22) == 0.
+
+    # pion
+    assert ef.pids2chrgs(211) == 1.
+    assert ef.pids2chrgs(-211) == -1.

@@ -12,9 +12,13 @@ import numpy as np
 
 __all__ = [
     'DEFAULT_EFP_FILE', 
+    'EF_DATA_DIR',
     'concat_specs',
     'create_pool',
+    'explicit_comp',
+    'import_fastjet',
     'iter_or_rep', 
+    'kwargs_check',
     'timing', 
     'transfer'
 ]
@@ -22,6 +26,17 @@ __all__ = [
 # get access to the data directory of the installed package and the default efp file
 EF_DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.npz')
+
+COMP_MAP = {
+    '>':  '__gt__', 
+    '<':  '__lt__', 
+    '>=': '__ge__', 
+    '<=': '__le__',
+    '==': '__eq__', 
+    '!=': '__ne__'
+}
+
+REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 
 # handle pickling methods in python 2
 if sys.version_info[0] == 2:
@@ -64,6 +79,18 @@ def create_pool(*args, **kwargs):
         with Pool(*args, **kwargs) as pool:
             yield pool
 
+# applies comprison comp of obj on val
+def explicit_comp(obj, comp, val):
+    return getattr(obj, COMP_MAP[comp])(val)
+
+# determine if fastjet can be imported, returns either the fastjet module or false
+def import_fastjet():
+    try:
+        import fastjet
+    except:
+        fastjet = False
+    return fastjet
+
 # return argument if iterable else make repeat generator
 def iter_or_rep(arg):
     if isinstance(arg, (tuple, list)):
@@ -75,6 +102,16 @@ def iter_or_rep(arg):
         return arg
     else:
         return repeat(arg)
+
+# raises TypeError if unexpected keyword left in kwargs
+def kwargs_check(name, kwargs, allowed=None):
+    if allowed is None:
+        allowed = set()
+        
+    for k in kwargs:
+        if k in allowed:
+            continue
+        raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
 
 # timing meta-decorator
 def timing(obj, func):

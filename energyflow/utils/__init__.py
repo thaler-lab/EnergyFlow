@@ -6,6 +6,7 @@ from . import particle_utils
 
 from .data_utils import *
 from .event_utils import *
+from .fastjet_utils import *
 from .generic_utils import *
 from .graph_utils import *
 from .image_utils import *

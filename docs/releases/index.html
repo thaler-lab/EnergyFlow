@@ -190,7 +190,14 @@
 <ul>
 <li>Added particle utility functions to map PDG IDs to electric charges.</li>
 <li>A <code>~</code> is now expanded to the user's home directory properly in the <code>filepath</code> option to architectures.</li>
-<li>Added conversion to numpy arrays in <code>sum_ptyphims</code> and <code>sum_ptyphipids</code>.</li>
+<li>Added <code>sum_ptyphims</code> and <code>sum_ptyphipids</code> functions to sum four-vectors in hadronic coordinates.</li>
+<li>EMD module now has support for spherical measure.</li>
+<li>Added scheme choices for summing four-vectors of particles.</li>
+<li>Added preprocessing functions to particle utilities, including <code>center_ptyphims</code>, 
+<code>rotate_ptyphims</code> and <code>reflect_ptyphims</code>.</li>
+<li>Added <code>h5py</code> install dependency for MOD Datasets.</li>
+<li>Improved binder environment with latex and default matplotlib settings.</li>
+<li>Added observables submodule which includes image_activity </li>
 </ul>
 <p><strong>0.12.3</strong></p>
 <ul>

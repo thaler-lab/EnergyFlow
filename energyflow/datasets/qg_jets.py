@@ -53,7 +53,7 @@ import warnings
 
 import numpy as np
 
-from energyflow.utils.data_utils import _get_file
+from energyflow.utils.data_utils import _get_filepath
 
 __all__ = ['load']
 
@@ -509,7 +509,7 @@ def load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir
                 url = urls[source][i]
                 filename = url.split('/')[-1].split('?')[0]
 
-                fpath = _get_file(filename, url, cache_dir, file_hash=hashes['sha256'][i])
+                fpath = _get_filepath(filename, url, cache_dir, file_hash=hashes['sha256'][i])
 
                 # we succeeded, so don't continue trying to download this file
                 break

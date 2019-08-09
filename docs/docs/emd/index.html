@@ -208,7 +208,7 @@ of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, return_flow=False, gdim=None, n_iter_max=100000, periodic_phi=False, phi_col=2)
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, measure='euclidean', coords='hadronic', return_flow=False, gdim=None, mask=False, n_iter_max=100000, periodic_phi=False, phi_col=2, empty_policy='error')
 </code></pre>
 
 <p>Compute the EMD between two events.</p>
@@ -258,6 +258,11 @@ which case all dimensions will be included). If <code>None</code>, has no
 effect.</li>
 </ul>
 </li>
+<li><strong>mask</strong> : <em>bool</em><ul>
+<li>If <code>True</code>, ignores particles farther than <code>R</code> away from the
+origin.</li>
+</ul>
+</li>
 <li><strong>n_iter_max</strong> : <em>int</em><ul>
 <li>Maximum number of iterations for solving the optimal transport 
 problem.</li>
@@ -291,7 +296,7 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds">emds</h3>
-<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, gdim=None, n_iter_max=100000, periodic_phi=False, phi_col=2, n_jobs=None, verbose=0, print_every=1000000)
+<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, measure='euclidean', coords='hadronic', gdim=None, mask=False, n_iter_max=100000, periodic_phi=False, phi_col=2, empty_policy='error', n_jobs=None, verbose=0, print_every=1000000)
 </code></pre>
 
 <p>Compute the EMD between collections of events. This can be used to
@@ -335,6 +340,11 @@ and particle j in <code>ev1</code>.</li>
  larger than the number of dimensions present in the events (in
  which case all dimensions will be included). If <code>None</code>, has no
  effect.</li>
+</ul>
+</li>
+<li><strong>mask</strong> : <em>bool</em><ul>
+<li>If <code>True</code>, ignores particles farther than <code>R</code> away from the
+ origin.</li>
 </ul>
 </li>
 <li><strong>n_iter_max</strong> : <em>int</em><ul>

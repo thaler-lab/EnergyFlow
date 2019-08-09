@@ -158,6 +158,12 @@
         
             <li><a class="toctree-l4" href="#sum_ptyphipids">sum_ptyphipids</a></li>
         
+            <li><a class="toctree-l4" href="#center_ptyphims">center_ptyphims</a></li>
+        
+            <li><a class="toctree-l4" href="#rotate_ptyphims">rotate_ptyphims</a></li>
+        
+            <li><a class="toctree-l4" href="#reflect_ptyphims">reflect_ptyphims</a></li>
+        
             <li><a class="toctree-l4" href="#pids2ms">pids2ms</a></li>
         
             <li><a class="toctree-l4" href="#pids2chrgs">pids2chrgs</a></li>
@@ -610,7 +616,7 @@ where the mass is replaced by the PDG ID of the particle.</li>
 </ul>
 <hr />
 <h4 id="sum_ptyphims">sum_ptyphims</h4>
-<pre><code class="python">energyflow.sum_ptyphims(ptyphims)
+<pre><code class="python">energyflow.sum_ptyphims(ptyphims, scheme='escheme')
 </code></pre>
 
 <p>Add a collection of four-vectors that are expressed in hadronic
@@ -618,9 +624,17 @@ coordinates by first converting to Cartesian coordinates and then summing.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>An event, or array of events in hadronic coordinates. The mass is
-optional and if left out will be taken to be zero. An argument of a
-single particle does nothing.</li>
+<li>An event in hadronic coordinates. The mass is optional and if left
+out will be taken to be zero.</li>
+</ul>
+</li>
+<li><strong>scheme</strong> : <em>str</em><ul>
+<li>A string specifying a recombination scheme for adding four-vectors
+together. Currently supported options are <code>'escheme'</code>, which adds the
+vectors in Cartesian coordinates, and <code>'ptscheme'</code>, which sums the pTs
+of each particle and places the jet axis at the pT-weighted centroid
+in the rapidity-azimuth plane. Note that <code>'ptscheme'</code> will return a
+three-vector consisting of the jet <code>[pT,y,phi]</code> with no mass value.</li>
 </ul>
 </li>
 </ul>
@@ -633,7 +647,7 @@ single particle does nothing.</li>
 </ul>
 <hr />
 <h4 id="sum_ptyphipids">sum_ptyphipids</h4>
-<pre><code class="python">energyflow.sum_ptyphipids(ptyphipids, error_on_unknown=False)
+<pre><code class="python">energyflow.sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False)
 </code></pre>
 
 <p>Add a collection of four-vectors that are expressed as
@@ -641,8 +655,12 @@ single particle does nothing.</li>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphipids</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>A single particle, event, or array of events in hadronic coordinates
-where the mass is replaced by the PDG ID of the particle.</li>
+<li>A single particle or event in hadronic coordinates where the mass
+is replaced by the PDG ID of the particle.</li>
+</ul>
+</li>
+<li><strong>scheme</strong> : <em>str</em><ul>
+<li>See the argument of the same name <a href="#sum_ptyphims"><code>here</code></a>.</li>
 </ul>
 </li>
 <li><strong>error_on_unknown</strong> : <em>bool</em><ul>
@@ -657,6 +675,88 @@ where the mass is replaced by the PDG ID of the particle.</li>
 </ul>
 </li>
 </ul>
+<hr />
+<h4 id="center_ptyphims">center_ptyphims</h4>
+<pre><code class="python">energyflow.center_ptyphims(ptyphims, axis=None, center='escheme', copy=True)
+</code></pre>
+
+<p>Center a collection of four-vectors according to a calculated or 
+provided axis.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An event in hadronic coordinates. The mass is optional and if left
+out will be taken to be zero.</li>
+</ul>
+</li>
+<li><strong>axis</strong> : <em>numpy.ndarray</em><ul>
+<li>If not <code>None</code>, the <code>[y,phi]</code> values to use for centering.</li>
+</ul>
+</li>
+<li><strong>center</strong> : <em>str</em><ul>
+<li>The centering scheme to be used. Valid options are the same as the
+<code>scheme</code> argument <a href="#sum_ptyphims"><code>here</code></a>.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input array.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of hadronic four-momenta with the positions centered around
+the origin.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="rotate_ptyphims">rotate_ptyphims</h4>
+<pre><code class="python">energyflow.rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True)
+</code></pre>
+
+<p>Rotate a collection of four-vectors to vertically align the principal
+component of the energy-flow tensor. The principal component is obtained
+as the eigenvector of the energy-flow tensor with the largest eigenvalue.
+It is only defined up to a sign, however it is ensured that </p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>An event in hadronic coordinates. The mass is optional and if left
+out will be taken to be zero.</li>
+</ul>
+</li>
+<li><strong>rotate</strong> : <em>str</em><ul>
+<li>The rotation scheme to be used. Currently, only <code>'ptscheme'</code> is
+supported, which causes the rotation to take place in the 
+rapidity-azimuth plane.</li>
+</ul>
+</li>
+<li><strong>center</strong> : <em>str</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the event will be centered prior to rotation and this
+argument will be passed on to <code>center_ptyphims</code> as the centering
+scheme.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input array.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of hadronic four-momenta with the positions rotated around
+the origin.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="reflect_ptyphims">reflect_ptyphims</h4>
+<pre><code class="python">energyflow.reflect_ptyphims(ptyphims, which='both', center=None, copy=True)
+</code></pre>
+
 <hr />
 <h4 id="pids2ms">pids2ms</h4>
 <pre><code class="python">energyflow.pids2ms(pids, error_on_unknown=False)
@@ -714,7 +814,7 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </ul>
 <hr />
 <h4 id="ischrgd">ischrgd</h4>
-<pre><code class="python">energyflow.ischrgd(pids)
+<pre><code class="python">energyflow.ischrgd(pids, ignored_pids=None)
 </code></pre>
 
 <hr />
