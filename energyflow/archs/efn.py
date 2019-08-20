@@ -15,18 +15,17 @@ from energyflow.utils import iter_or_rep
 __all__ = [
 
     # input constructor functions
-    'construct_efn_input', 'construct_pfn_input',
+    #'construct_efn_input', 'construct_pfn_input',
 
     # weight mask constructor functions
-    'construct_efn_weight_mask', 'construct_pfn_weight_mask',
+    #'construct_efn_weight_mask', 'construct_pfn_weight_mask',
 
     # network consstructor functions
-    'construct_distributed_dense', 'construct_latent', 'construct_dense', 
+    #'construct_distributed_dense', 'construct_latent', 'construct_dense', 
 
     # full model classes
     'EFN', 'PFN'
 ]
-
 
 ###############################################################################
 # INPUT FUNCTIONS
@@ -175,7 +174,7 @@ class SymmetricPerParticleNN(NNBase):
     # EFN(*args, **kwargs)
     def _process_hps(self):
         r"""See [`ArchBase`](#archbase) for how to pass in hyperparameters as
-        well as hyperparameters common to all EnergyFlow neural network models.
+        well as defaults common to all EnergyFlow neural network models.
 
         **Required EFN Hyperparameters**
 

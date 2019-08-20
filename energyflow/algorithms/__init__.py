@@ -9,4 +9,6 @@ from .einsumfunc import *
 from .integer_partitions import *
 from .ve import *
 
-__all__ = einsumfunc.__all__ + integer_partitions.__all__ + ve.__all__
+__all__ = (einsumfunc.__all__ + 
+           integer_partitions.__all__ + 
+           ve.__all__)

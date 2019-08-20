@@ -16,14 +16,12 @@ igraph = import_igraph()
 
 __all__ = ['Generator']
 
-
 ###############################################################################
 # Generator helpers
 ###############################################################################
 
 def none2inf(x):
     return np.inf if x is None else x
-
 
 ###############################################################################
 # Generator
@@ -169,7 +167,6 @@ class Generator(object):
     def _comp_attrs(self):
         return set(['disc_specs', 'disc_formulae'])
 
-
     ################
     # PUBLIC METHODS
     ################
@@ -253,7 +250,6 @@ class PrimeGenerator(object):
 
         # flatten structures
         self._flatten_structures()
-
 
     #################
     # PRIVATE METHODS
@@ -430,7 +426,6 @@ class CompositeGenerator(object):
             self.ndk2i[(n,d,k)] = i
 
         self._generate_disconnected()
-
 
     #################
     # PRIVATE METHODS

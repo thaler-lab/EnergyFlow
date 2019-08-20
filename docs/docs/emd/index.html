@@ -101,11 +101,11 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
+    <a class="" href="../archs/">Architectures</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../archs/">Architectures</a>
+    <a class="" href="../datasets/">Datasets</a>
                 </li>
                 <li class=" current">
                     
@@ -122,6 +122,10 @@
                 </li>
                 <li class="">
                     
+    <a class="" href="../efps/">Energy Flow Polynomials</a>
+                </li>
+                <li class="">
+                    
     <a class="" href="../measures/">Measures</a>
                 </li>
                 <li class="">
@@ -130,11 +134,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../utils/">Utils</a>
+    <a class="" href="../obs/">Observables</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../datasets/">Datasets</a>
+    <a class="" href="../utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -178,7 +182,7 @@
           <div role="main">
             <div class="section">
               
-                <video width="100%" autoplay loop>
+                <video width="100%" autoplay loop controls>
     <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
             type="video/mp4">
 </video>
@@ -242,6 +246,21 @@ to be a valid metric.</li>
 computing the EMD.</li>
 </ul>
 </li>
+<li><strong>measure</strong> : <em>str</em><ul>
+<li>Controls which metric is used to calculate the ground distances
+between particles. <code>'euclidean'</code> uses the euclidean metric in
+however many dimensions are provided and specified by <code>gdim</code>.
+<code>'spherical'</code> uses the opening angle between particles on the
+sphere (note that this is not fully tested and should be used
+cautiously).</li>
+</ul>
+</li>
+<li><strong>coords</strong> : <em>str</em><ul>
+<li>Only has an effect if <code>measure='spherical'</code>, in which case it
+controls if <code>'hadronic'</code> coordinates <code>(pT,y,phi,[m])</code> are expected
+versus <code>'cartesian'</code> coordinates <code>(E,px,py,pz)</code>.</li>
+</ul>
+</li>
 <li><strong>return_flow</strong> : <em>bool</em><ul>
 <li>Whether or not to return the flow matrix describing the optimal 
 transport found during the computation of the EMD. Note that since
@@ -278,6 +297,13 @@ where all $\phi$ differences are less than or equal to $\pi$.</li>
 </li>
 <li><strong>phi_col</strong> : <em>int</em><ul>
 <li>The index of the column of $\phi$ values in the event array.</li>
+</ul>
+</li>
+<li><strong>empty_policy</strong> : <em>float</em> or <code>'error'</code><ul>
+<li>Controls behavior if an empty event is passed in. When set to
+<code>'error'</code>, a <code>ValueError</code> is raised if an empty event is
+encountered. If set to a float, that value is returned is returned
+instead on an empty event.</li>
 </ul>
 </li>
 </ul>
@@ -334,6 +360,21 @@ and particle j in <code>ev1</code>.</li>
  computing the EMD.</li>
 </ul>
 </li>
+<li><strong>measure</strong> : <em>str</em><ul>
+<li>Controls which metric is used to calculate the ground distances
+ between particles. <code>'euclidean'</code> uses the euclidean metric in
+ however many dimensions are provided and specified by <code>gdim</code>.
+ <code>'spherical'</code> uses the opening angle between particles on the
+ sphere (note that this is not fully tested and should be used
+ cautiously).</li>
+</ul>
+</li>
+<li><strong>coords</strong> : <em>str</em><ul>
+<li>Only has an effect if <code>measure='spherical'</code>, in which case it
+ controls if <code>'hadronic'</code> coordinates <code>(pT,y,phi,[m])</code> are expected
+ versus <code>'cartesian'</code> coordinates <code>(E,px,py,pz)</code>.</li>
+</ul>
+</li>
 <li><strong>gdim</strong> : <em>int</em><ul>
 <li>The dimension of the ground metric space. Useful for restricting
  which dimensions are considered part of the ground space. Can be
@@ -364,31 +405,40 @@ and particle j in <code>ev1</code>.</li>
 <li>The index of the column of $\phi$ values in the event array.</li>
 </ul>
 </li>
+<li><strong>empty_policy</strong> : <em>float</em> or <code>'error'</code><ul>
+<li>Controls behavior if an empty event is passed in. When set to
+ <code>'error'</code>, a <code>ValueError</code> is raised if an empty event is
+ encountered. If set to a float, that value is returned is returned
+ instead on an empty event.</li>
+</ul>
+</li>
 <li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
-<li>The number of worker processes to use. A value of <code>None</code> will use 
+<li>The number of worker processes to use. A value of <code>None</code> will use
  as many processes as there are CPUs on the machine. Note that for
- smaller numbers of events, a smaller value of <code>n_jobs</code> can be faster.</li>
+ smaller numbers of events, a smaller value of <code>n_jobs</code> can be
+ faster.</li>
 </ul>
 </li>
 <li><strong>verbose</strong> : <em>int</em><ul>
 <li>Controls the verbosity level. A value greater than <code>0</code> will print
- the progress of the computation at intervals specified by <code>print_every</code>.</li>
+ the progress of the computation at intervals specified by
+ <code>print_every</code>.</li>
 </ul>
 </li>
 <li><strong>print_every</strong> : <em>int</em><ul>
-<li>The number of computations to do in between printing the progress.
- Even if the verbosity level is zero, this still plays a role in 
- determining when the worker processes report the results back to the
- main process.</li>
+<li>The number of computations to do in between printing the
+ progress. Even if the verbosity level is zero, this still plays a
+ role in determining when the worker processes report the results
+ back to the main process.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>The EMD values as a two-dimensional array. If <code>X1</code> was <code>None</code>, then 
- the shape will be <code>(len(X0), len(X0))</code> and the array will be symmetric,
- otherwise it will have shape <code>(len(X0), len(X1))</code>.</li>
+<li>The EMD values as a two-dimensional array. If <code>X1</code> was <code>None</code>,
+ then the shape will be <code>(len(X0), len(X0))</code> and the array will be
+ symmetric, otherwise it will have shape <code>(len(X0), len(X1))</code>.</li>
 </ul>
 </li>
 </ul>
@@ -400,10 +450,10 @@ and particle j in <code>ev1</code>.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../measures/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../efps/" class="btn btn-neutral float-right" title="Energy Flow Polynomials">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../archs/" class="btn btn-neutral" title="Architectures"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../datasets/" class="btn btn-neutral" title="Datasets"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -431,10 +481,10 @@ and particle j in <code>ev1</code>.</li>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../archs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../datasets/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../measures/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../efps/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

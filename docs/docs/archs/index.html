@@ -99,10 +99,6 @@
 		
     <span class="caption-text">Documentation</span>
     <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
-                </li>
                 <li class=" current">
                     
     <a class="current" href="./">Architectures</a>
@@ -144,7 +140,15 @@
                 </li>
                 <li class="">
                     
+    <a class="" href="../datasets/">Datasets</a>
+                </li>
+                <li class="">
+                    
     <a class="" href="../emd/">EMD</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -156,11 +160,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../utils/">Utils</a>
+    <a class="" href="../obs/">Observables</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../datasets/">Datasets</a>
+    <a class="" href="../utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -233,7 +237,7 @@ frequently appear in the intersection of particle physics and machine learning.<
 </code></pre>
 
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
-well as hyperparameters common to all EnergyFlow neural network models.</p>
+well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required EFN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
@@ -442,7 +446,7 @@ network, including any dropout layer if present.</p>
 </code></pre>
 
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
-well as hyperparameters common to all EnergyFlow neural network models.</p>
+well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required CNN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_shape</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
@@ -541,7 +545,7 @@ for more detail.</li>
 </code></pre>
 
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
-well as hyperparameters common to all EnergyFlow neural network models.</p>
+well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required DNN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
@@ -591,7 +595,6 @@ $L_2$-regulatization to all layers.</li>
 </li>
 </ul>
 <hr />
-<hr />
 <h3 id="linearclassifier">LinearClassifier</h3>
 <p>Linear classifier that can be either Fisher's linear discriminant
 or logistic regression. Relies on the <a href="https://scikit-learn.org/">scikit-learn</a>
@@ -634,7 +637,6 @@ convergence parameter.</li>
 </ul>
 </li>
 </ul>
-<hr />
 <hr />
 <h3 id="archbase">ArchBase</h3>
 <p>Base class for all architectures contained in EnergyFlow. The mechanism of
@@ -848,10 +850,10 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../emd/" class="btn btn-neutral float-right" title="EMD">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../datasets/" class="btn btn-neutral float-right" title="Datasets">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../efps/" class="btn btn-neutral" title="Energy Flow Polynomials"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../releases/" class="btn btn-neutral" title="Release Notes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -879,10 +881,10 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../efps/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../../releases/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../emd/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../datasets/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

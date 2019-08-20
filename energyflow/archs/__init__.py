@@ -3,7 +3,6 @@ architectures designed for learning from collider events as unordered,
 variable-length sets of particles. Both EFNs and PFNs are parameterized by a
 learnable per-particle function $\Phi$ and latent space function $F$.
 
-
 An EFN takes the following form:
 $$\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)$$
 where $z_i$ is a measure of the energy of particle $i$, such as $z_i=p_{T,i}$,

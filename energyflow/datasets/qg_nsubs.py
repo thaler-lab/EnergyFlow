@@ -1,4 +1,4 @@
-r"""### Quark and Gluon Nsubs
+r"""## Quark and Gluon Nsubs
 
 A dataset consisting of 45 $N$-subjettiness observables for 100k quark and 
 gluon jets generated with Pythia 8.230. Following [1704.08249](https:

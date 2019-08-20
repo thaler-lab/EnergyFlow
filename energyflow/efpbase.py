@@ -13,7 +13,6 @@ from energyflow.algorithms import einsum
 from energyflow.measure import Measure
 from energyflow.utils import create_pool, timing, transfer
 
-
 ###############################################################################
 # EFPBase
 ###############################################################################

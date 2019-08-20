@@ -1,4 +1,4 @@
-r"""<video width="100%" autoplay loop>
+r"""<video width="100%" autoplay loop controls>
     <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
             type="video/mp4">
 </video>
@@ -34,7 +34,6 @@ import itertools
 import multiprocessing
 import sys
 import time
-import warnings
 
 import numpy as np
 
@@ -43,16 +42,27 @@ try:
     from ot.lp import emd_c, check_result
     from scipy.spatial.distance import _distance_wrap # ot imports scipy anyway
 except:
-    warnings.warn('cannot import module \'ot\', module \'emd\' will be empty')
     ot = False
 
 from energyflow.utils import create_pool, p4s_from_ptyphims
 
-__all__ = []
+__all__ = ['emd', 'emds']
 
+# replace public functions with those issuing simple errors
+if not ot:
+
+    def emd(*args, **kwargs):
+        raise NotImplementedError("emd currently requires module 'ot', which is unavailable")
+
+    def emds(*args, **kwargs):
+        raise NotImplementedError("emd currently requires module 'ot', which is unavailable")
+
+# the actual functions for this module
 if ot:
 
-    __all__ = ['emd', 'emds']
+##################
+# HELPER FUNCTIONS
+##################
 
     # parameter checks
     def _check_params(norm, gdim, phi_col, measure, coords, empty_policy):
@@ -83,41 +93,6 @@ if ot:
         # check empty_policy
         if not (isinstance(empty_policy, (int, float)) or empty_policy == 'error'):
             raise ValueError("'empty_policy' must be a number or 'error'")
-
-    # faster than scipy's cdist function because we can avoid their checks
-    def _cdist(X, Y, euclidean, periodic_phi, phi_col):
-
-        if euclidean:
-            
-            if periodic_phi:
-
-                # delta phis (taking into account periodicity)
-                # aleady guaranteed for values to be in [0, 2pi]
-                d_phis = np.pi - np.abs(np.pi - np.abs(X[:,phi_col,None] - Y[:,phi_col]))
-
-                # split out common case of having only one other dimension
-                if X.shape[1] == 2:
-                    non_phi_col = 1 - phi_col
-                    d_ys = X[:,non_phi_col,None] - Y[:,non_phi_col]
-                    out = np.sqrt(d_ys**2 + d_phis**2)
-
-                # general case
-                else:
-                    non_phi_cols = [i for i in range(X.shape[1]) if i != phi_col]
-                    d_others2 = (X[:,None,non_phi_cols] - Y[:,non_phi_cols])**2
-                    out = np.sqrt(d_others2.sum(axis=-1) + d_phis**2)
-
-            else:
-                out = np.empty((len(X), len(Y)), dtype=np.double)
-                _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
-
-        # spherical measure
-        else:
-
-            # add min/max conditions to ensure valid input
-            out = np.arccos(np.fmax(np.fmin(np.tensordot(X, Y, axes=(1, 1)), 1.0), -1.0))
-
-        return out
 
     # process events for EMD calculation
     two_pi = 2*np.pi
@@ -156,7 +131,10 @@ if ot:
 
             # ensure contiguous coords for scipy distance function
             coords = np.ascontiguousarray(coords, dtype=np.double)
-            rs = _cdist(np.zeros((1, coords.shape[1])), coords, euclidean, periodic_phi, phi_col)[0]
+            origin = np.zeros((1, coords.shape[1]))
+
+            # calculate distance from origin
+            rs = _cdist(origin, coords, euclidean, periodic_phi, phi_col)[0]
             rmask = (rs <= R)
 
             # detect when masking actually needs to occur
@@ -181,6 +159,87 @@ if ot:
 
         return (np.ascontiguousarray(pts, dtype=np.double), 
                 np.ascontiguousarray(coords, dtype=np.double))
+
+    # faster than scipy's cdist function because we can avoid their checks
+    def _cdist(X, Y, euclidean, periodic_phi, phi_col):
+
+        if euclidean:
+            
+            if periodic_phi:
+
+                # delta phis (taking into account periodicity)
+                # aleady guaranteed for values to be in [0, 2pi]
+                d_phis = np.pi - np.abs(np.pi - np.abs(X[:,phi_col,None] - Y[:,phi_col]))
+
+                # split out common case of having only one other dimension
+                if X.shape[1] == 2:
+                    non_phi_col = 1 - phi_col
+                    d_ys = X[:,non_phi_col,None] - Y[:,non_phi_col]
+                    out = np.sqrt(d_ys**2 + d_phis**2)
+
+                # general case
+                else:
+                    non_phi_cols = [i for i in range(X.shape[1]) if i != phi_col]
+                    d_others2 = (X[:,None,non_phi_cols] - Y[:,non_phi_cols])**2
+                    out = np.sqrt(d_others2.sum(axis=-1) + d_phis**2)
+
+            else:
+                out = np.empty((len(X), len(Y)), dtype=np.double)
+                _distance_wrap.cdist_euclidean_double_wrap(X, Y, out)
+
+        # spherical measure
+        else:
+
+            # add min/max conditions to ensure valid input
+            out = np.arccos(np.fmax(np.fmin(np.tensordot(X, Y, axes=(1, 1)), 1.0), -1.0))
+
+        return out
+
+    # helper function for pool imap
+    def _emd4map(x):
+        (i, j), ((X0, X1), other_params) = x
+        return _emd(X0[i], X1[j], *other_params)
+
+    # internal use only by emds, makes assumptions about input format
+    def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, 
+             periodic_phi, phi_col, empty_policy):
+
+        pTs0, coords0 = ev0
+        pTs1, coords1 = ev1
+
+        if pTs0 is None or pTs1 is None:
+            return empty_policy
+
+        thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col)/R
+
+        # extra particles (with zero pt) already added if going in here
+        rescale = 1.0
+        if no_norm:
+            pT0, pT1 = pTs0.sum(), pTs1.sum()
+            pTdiff = pT1 - pT0
+            if pTdiff > 0:
+                pTs0[-1] = pTdiff
+            elif pTdiff < 0:
+                pTs1[-1] = -pTdiff
+            thetas[:,-1] = 1.0
+            thetas[-1,:] = 1.0
+
+            # change units for numerical stability
+            rescale = max(pT0, pT1)
+
+        # compute the emd with POT
+        _, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
+        check_result(result_code)
+
+        # important! must reset extra particles to have pt zero
+        if no_norm:
+            pTs0[-1] = pTs1[-1] = 0
+
+        return cost * rescale
+
+##################
+# PUBLIC FUNCTIONS
+##################
 
     def emd(ev0, ev1, R=1.0, norm=False, measure='euclidean', coords='hadronic',
                       return_flow=False, gdim=None, mask=False, n_iter_max=100000,
@@ -209,6 +268,17 @@ if ot:
         - **norm** : _bool_
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
+        - **measure** : _str_
+            - Controls which metric is used to calculate the ground distances
+            between particles. `'euclidean'` uses the euclidean metric in
+            however many dimensions are provided and specified by `gdim`.
+            `'spherical'` uses the opening angle between particles on the
+            sphere (note that this is not fully tested and should be used
+            cautiously).
+        - **coords** : _str_
+            - Only has an effect if `measure='spherical'`, in which case it
+            controls if `'hadronic'` coordinates `(pT,y,phi,[m])` are expected
+            versus `'cartesian'` coordinates `(E,px,py,pz)`.
         - **return_flow** : _bool_
             - Whether or not to return the flow matrix describing the optimal 
             transport found during the computation of the EMD. Note that since
@@ -235,6 +305,11 @@ if ot:
             where all $\phi$ differences are less than or equal to $\pi$.
         - **phi_col** : _int_
             - The index of the column of $\phi$ values in the event array.
+        - **empty_policy** : _float_ or `'error'`
+            - Controls behavior if an empty event is passed in. When set to
+            `'error'`, a `ValueError` is raised if an empty event is
+            encountered. If set to a float, that value is returned is returned
+            instead on an empty event.
 
         **Returns**
 
@@ -313,48 +388,6 @@ if ot:
         else:
             return cost * rescale
 
-    # helper function for pool imap
-    def _emd4map(x):
-        (i, j), ((X0, X1), other_params) = x
-        return _emd(X0[i], X1[j], *other_params)
-
-    # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, 
-             periodic_phi, phi_col, empty_policy):
-
-        pTs0, coords0 = ev0
-        pTs1, coords1 = ev1
-
-        if pTs0 is None or pTs1 is None:
-            return empty_policy
-
-        thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col)/R
-
-        # extra particles (with zero pt) already added if going in here
-        rescale = 1.0
-        if no_norm:
-            pT0, pT1 = pTs0.sum(), pTs1.sum()
-            pTdiff = pT1 - pT0
-            if pTdiff > 0:
-                pTs0[-1] = pTdiff
-            elif pTdiff < 0:
-                pTs1[-1] = -pTdiff
-            thetas[:,-1] = 1.0
-            thetas[-1,:] = 1.0
-
-            # change units for numerical stability
-            rescale = max(pT0, pT1)
-
-        # compute the emd with POT
-        _, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
-        check_result(result_code)
-
-        # important! must reset extra particles to have pt zero
-        if no_norm:
-            pTs0[-1] = pTs1[-1] = 0
-
-        return cost * rescale
-
     def emds(X0, X1=None, R=1.0, norm=False, measure='euclidean', coords='hadronic', 
                           gdim=None, mask=False, n_iter_max=100000, 
                           periodic_phi=False, phi_col=2, empty_policy='error',
@@ -387,6 +420,17 @@ if ot:
         - **norm** : _bool_
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
+        - **measure** : _str_
+            - Controls which metric is used to calculate the ground distances
+            between particles. `'euclidean'` uses the euclidean metric in
+            however many dimensions are provided and specified by `gdim`.
+            `'spherical'` uses the opening angle between particles on the
+            sphere (note that this is not fully tested and should be used
+            cautiously).
+        - **coords** : _str_
+            - Only has an effect if `measure='spherical'`, in which case it
+            controls if `'hadronic'` coordinates `(pT,y,phi,[m])` are expected
+            versus `'cartesian'` coordinates `(E,px,py,pz)`.
         - **gdim** : _int_
             - The dimension of the ground metric space. Useful for restricting
             which dimensions are considered part of the ground space. Can be
@@ -407,25 +451,32 @@ if ot:
             where all $\phi$ differences are less than or equal to $\pi$.
         - **phi_col** : _int_
             - The index of the column of $\phi$ values in the event array.
+        - **empty_policy** : _float_ or `'error'`
+            - Controls behavior if an empty event is passed in. When set to
+            `'error'`, a `ValueError` is raised if an empty event is
+            encountered. If set to a float, that value is returned is returned
+            instead on an empty event.
         - **n_jobs** : _int_ or `None`
-            - The number of worker processes to use. A value of `None` will use 
+            - The number of worker processes to use. A value of `None` will use
             as many processes as there are CPUs on the machine. Note that for
-            smaller numbers of events, a smaller value of `n_jobs` can be faster.
+            smaller numbers of events, a smaller value of `n_jobs` can be
+            faster.
         - **verbose** : _int_
             - Controls the verbosity level. A value greater than `0` will print
-            the progress of the computation at intervals specified by `print_every`.
+            the progress of the computation at intervals specified by
+            `print_every`.
         - **print_every** : _int_
-            - The number of computations to do in between printing the progress.
-            Even if the verbosity level is zero, this still plays a role in 
-            determining when the worker processes report the results back to the
-            main process.
+            - The number of computations to do in between printing the
+            progress. Even if the verbosity level is zero, this still plays a
+            role in determining when the worker processes report the results
+            back to the main process.
 
         **Returns**
 
         - _numpy.ndarray_
-            - The EMD values as a two-dimensional array. If `X1` was `None`, then 
-            the shape will be `(len(X0), len(X0))` and the array will be symmetric,
-            otherwise it will have shape `(len(X0), len(X1))`.
+            - The EMD values as a two-dimensional array. If `X1` was `None`,
+            then the shape will be `(len(X0), len(X0))` and the array will be
+            symmetric, otherwise it will have shape `(len(X0), len(X1))`.
         """
 
         _check_params(norm, gdim, phi_col, measure, coords, empty_policy)

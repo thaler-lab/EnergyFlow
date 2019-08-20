@@ -1,4 +1,4 @@
-""""""
+"""### FastJet Tools"""
 from __future__ import absolute_import, division, print_function
 
 from energyflow.utils.generic_utils import import_fastjet
@@ -12,6 +12,7 @@ if fj:
     __all__ = ['pjs_from_ptyphims', 'cluster', 'softdrop']
 
     def pjs_from_ptyphims(ptyphims):
+        """"""
 
         pjs = []
         for ptyphim in ptyphims:
@@ -22,6 +23,7 @@ if fj:
         return pjs
 
     def cluster(pjs, algorithm='ca', R=fj.JetDefinition.max_allowable_R):
+        """"""
 
         algorithm_l = algorithm.lower()
         if algorithm_l  == 'kt':
@@ -36,6 +38,7 @@ if fj:
         return fj.JetDefinition(jet_alg, R)(pjs)
 
     def softdrop(jet, zcut=0.1, beta=0, R=1.0):
+        """"""
 
         parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
         if not jet.has_parents(parent1, parent2):

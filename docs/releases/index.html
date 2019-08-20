@@ -93,6 +93,9 @@
     <a class="current" href="./">Release Notes</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#013x">0.13.x</a></li>
+    
+
     <li class="toctree-l3"><a href="#012x">0.12.x</a></li>
     
 
@@ -116,15 +119,19 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../docs/efps/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="../docs/archs/">Architectures</a>
                 </li>
                 <li class="">
                     
+    <a class="" href="../docs/datasets/">Datasets</a>
+                </li>
+                <li class="">
+                    
     <a class="" href="../docs/emd/">EMD</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../docs/efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -136,11 +143,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../docs/utils/">Utils</a>
+    <a class="" href="../docs/obs/">Observables</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../docs/datasets/">Datasets</a>
+    <a class="" href="../docs/utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -185,9 +192,10 @@
             <div class="section">
               
                 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
-<h3 id="012x">0.12.x</h3>
-<p><strong>0.12.4</strong></p>
+<h3 id="013x">0.13.x</h3>
+<p><strong>0.13.0</strong></p>
 <ul>
+<li>Added support for downloading and reading MOD datasets containing CMS Open Data and Simulation from Zenodo.</li>
 <li>Added particle utility functions to map PDG IDs to electric charges.</li>
 <li>A <code>~</code> is now expanded to the user's home directory properly in the <code>filepath</code> option to architectures.</li>
 <li>Added <code>sum_ptyphims</code> and <code>sum_ptyphipids</code> functions to sum four-vectors in hadronic coordinates.</li>
@@ -197,8 +205,10 @@
 <code>rotate_ptyphims</code> and <code>reflect_ptyphims</code>.</li>
 <li>Added <code>h5py</code> install dependency for MOD Datasets.</li>
 <li>Improved binder environment with latex and default matplotlib settings.</li>
-<li>Added observables submodule which includes image_activity </li>
+<li>Added observables submodule which currently includes image_activity and zg.</li>
+<li>EMD module now imported when importing toplevel energyflow.</li>
 </ul>
+<h3 id="012x">0.12.x</h3>
 <p><strong>0.12.3</strong></p>
 <ul>
 <li>Set allow_pickle to True explicitly in Generator (recently changed default in NumPy).</li>
@@ -293,7 +303,7 @@ the <a href="https://pot.readthedocs.io">Python Optimal Transport</a> library an
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../docs/efps/" class="btn btn-neutral float-right" title="Energy Flow Polynomials">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../docs/archs/" class="btn btn-neutral float-right" title="Architectures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../faqs/" class="btn btn-neutral" title="FAQs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -327,7 +337,7 @@ the <a href="https://pot.readthedocs.io">Python Optimal Transport</a> library an
         <span><a href="../faqs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../docs/efps/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../docs/archs/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

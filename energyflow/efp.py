@@ -21,8 +21,8 @@ import numpy as np
 from energyflow.algorithms import VariableElimination, einsum_path
 from energyflow.efpbase import EFPBase, EFPElem
 from energyflow.gen import Generator
-from energyflow.utils import concat_specs, explicit_comp, kwargs_check, DEFAULT_EFP_FILE
-from energyflow.utils.graph_utils import graph_union
+from energyflow.utils import (concat_specs, explicit_comp, graph_union, 
+                              kwargs_check, DEFAULT_EFP_FILE)
 
 __all__ = ['EFP', 'EFPSet']
 
@@ -44,22 +44,22 @@ class EFP(EFPBase):
         - **edges** : _list_
             - Edges of the EFP graph specified by pairs of vertices.
         - **measure** : {`'hadr'`, `'hadrdot'`, `'ee'`}
-            - The choice of measure. See [Measures](../measures) 
-            for additional info.
+            - The choice of measure. See [Measures](../measures) for additional
+            info.
         - **beta** : _float_
-            - The parameter $\\beta$ appearing in the measure.
-            Must be greater than zero.
+            - The parameter $\\beta$ appearing in the measure. Must be greater
+            than zero.
         - **kappa** : {_float_, `'pf'`}
-            - If a number, the energy weighting parameter $\\kappa$.
-            If `'pf'`, use $\\kappa=v-1$ where $v$ is the valency of the vertex.
+            - If a number, the energy weighting parameter $\\kappa$. If `'pf'`,
+            use $\\kappa=v-1$ where $v$ is the valency of the vertex.
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume
-            the first input type.
+            - Whether to check the type of the input each time or assume the
+            first input type.
         - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
             - The `optimize` keyword of `numpy.einsum_path`.
         """
@@ -78,7 +78,7 @@ class EFP(EFPBase):
 
             
     #===============
-    # public methods
+    # PUBLIC METHODS
     #===============
 
     # compute(event=None, zs=None, thetas=None)
@@ -91,11 +91,11 @@ class EFP(EFPBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in place 
-            of the energies of an event.
+            - If present, `thetas` must also be present, and `zs` is used in
+            place of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in place 
-            of the pairwise angles of an event.
+            - If present, `zs` must also be present, and `thetas` is used in
+            place of the pairwise angles of an event.
 
         **Returns**
 
@@ -107,7 +107,7 @@ class EFP(EFPBase):
         return self.efpelem.compute(zs, thetas_dict)
 
     #===========
-    # properties
+    # PROPERTIES
     #===========
 
     @property
@@ -178,21 +178,23 @@ class EFP(EFPBase):
 
 class EFPSet(EFPBase):
 
-    """A class that holds a collection of EFPs and computes their values on events.
-    Note that all keyword arguments are stored as properties of the `EFPSet` instance.
+    """A class that holds a collection of EFPs and computes their values on
+    events. Note that all keyword arguments are stored as properties of the
+    `EFPSet` instance.
     """
 
-    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=True, 
-    #        coords='ptyphim', check_input=True, verbose=False)
+    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, 
+    #        normed=True, coords='ptyphim', check_input=True, verbose=False)
     def __init__(self, *args, **kwargs):
-        r"""EFPSet can be initialized in one of three ways (in order of precedence):
+        r"""`EFPSet` can be initialized in one of three ways (in order of
+        precedence):
 
         1. **Default** - Use the ($d\le10$) EFPs that come installed with the
         `EnergFlow` package.
-        2. **Generator** - Pass in a custom `Generator` object as the
-        first positional argument.
-        3. **Custom File** - Pass in the name of a `.npz` file saved
-        with a custom `Generator`.
+        2. **Generator** - Pass in a custom `Generator` object as the first
+        positional argument.
+        3. **Custom File** - Pass in the name of a `.npz` file saved with a
+        custom `Generator`.
 
         To control which EFPs are included, `EFPSet` accepts an arbitrary
         number of specifications (see [`sel`](#sel)) and only EFPs meeting each
@@ -201,28 +203,28 @@ class EFPSet(EFPBase):
         **Arguments**
 
         - ***args** : _arbitrary positional arguments_
-            - If the first positional argument is a `Generator` instance,
-            it is used for initialization. The remaining positional
-            arguments must be valid arguments to `sel`.
+            - If the first positional argument is a `Generator` instance, it is
+            used for initialization. The remaining positional arguments must be
+            valid arguments to `sel`.
         - **filename** : _string_
             - Path to a `.npz` file which has been saved by a valid
             `energyflow.Generator`.
         - **measure** : {`'hadr'`, `'hadr-dot'`, `'ee'`}
             - See [Measures](../measures) for additional info.
         - **beta** : _float_
-            - The parameter $\\beta$ appearing in the measure.
-            Must be greater than zero.
+            - The parameter $\\beta$ appearing in the measure. Must be greater
+            than zero.
         - **kappa** : {_float_, `'pf'`}
-            - If a number, the energy weighting parameter $\\kappa$.
-            If `'pf'`, use $\\kappa=v-1$ where $v$ is the valency of the vertex.
+            - If a number, the energy weighting parameter $\\kappa$. If `'pf'`,
+            use $\\kappa=v-1$ where $v$ is the valency of the vertex.
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume
-            the first input type.
+            - Whether to check the type of the input each time or assume the
+            first input type.
         - **verbose** : _bool_
             - Controls printed output when initializing EFPSet.
         """
@@ -330,13 +332,12 @@ class EFPSet(EFPBase):
         **Arguments**
 
         - **X** : _numpy.ndarray_
-            - Array of connected EFPs. Rows are different events, columns 
-            are the different EFPs. Can handle a single event (a 1-dim array) 
-            as input. EFPs are assumed to be in the order expected by the 
-            instance of `EFPSet`; the safest way to ensure this is to use 
-            the same `EFPSet` to calculate both connected and disconnected 
-            EFPs. This function is used internally in `compute` and 
-            `batch_compute`.
+            - Array of connected EFPs. Rows are different events, columns are
+            the different EFPs. Can handle a single event (a 1-dim array) as
+            input. EFPs are assumed to be in the order expected by the instance
+            of `EFPSet`; the safest way to ensure this is to use the same
+            `EFPSet` to calculate both connected and disconnected EFPs. This
+            function is used internally in `compute` and `batch_compute`.
 
         **Returns**
 
@@ -365,11 +366,11 @@ class EFPSet(EFPBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in place 
-            of the energies of an event.
+            - If present, `thetas` must also be present, and `zs` is used in
+            place of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in place 
-            of the pairwise angles of an event.
+            - If present, `zs` must also be present, and `thetas` is used in
+            place of the pairwise angles of an event.
 
         **Returns**
 
@@ -394,8 +395,8 @@ class EFPSet(EFPBase):
             - The events as an array of arrays of particles in coordinates
             matching those anticipated by `coords`.
         - **n_jobs** : _int_ or `None`
-            - The number of worker processes to use. A value of `None` will attempt
-            to use as many processes as there are CPUs on the machine.
+            - The number of worker processes to use. A value of `None` will
+            attempt to use as many processes as there are CPUs on the machine.
 
         **Returns**
 
@@ -413,17 +414,15 @@ class EFPSet(EFPBase):
         **Arguments**
 
         - ***args** : arbitrary positional arguments
-            - Each argument can be either a string or a length-two 
-            iterable. If the argument is a string, it should consist 
-            of three parts: a character which is a valid element of 
-            `cols`, a comparison operator (one of `<`, `>`, `<=`, 
-            `>=`, `==`, `!=`), and a number. Whitespace between the 
-            parts does not matter. If the argument is a tuple, the 
-            first element should be a string containing a column 
-            header character and a comparison operator; the second 
-            element is the value to be compared. The tuple version 
-            is useful when the value is a variable that changes 
-            (such as in a list comprehension).
+            - Each argument can be either a string or a length-two iterable. If
+            the argument is a string, it should consist of three parts: a
+            character which is a valid element of `cols`, a comparison
+            operator (one of `<`, `>`, `<=`, `>=`, `==`, `!=`), and a number.
+            Whitespace between the parts does not matter. If the argument is a
+            tuple, the first element should be a string containing a column
+            header character and a comparison operator; the second element is
+            the value to be compared. The tuple version is useful when the
+            value is a variable that changes (such as in a list comprehension).
 
         **Returns**
 
@@ -511,7 +510,8 @@ class EFPSet(EFPBase):
         - _list_, if single integer argument is given
             - The list of edges corresponding to the specified graph
         - _1-d numpy.ndarray_, otherwise
-            - An array of graphs (as lists of edges) matching the specifications.
+            - An array of graphs (as lists of edges) matching the
+            specifications.
         """
 
         # if we haven't extracted the graphs, do it now
@@ -540,7 +540,8 @@ class EFPSet(EFPBase):
         - _list_, if single integer argument is given
             - The list of edges corresponding to the specified simple graph
         - _1-d numpy.ndarray_, otherwise
-            - An array of simple graphs (as lists of edges) matching the specifications.
+            - An array of simple graphs (as lists of edges) matching the
+            specifications.
         """
 
         # is we haven't extracted the simple graphs, do it now
@@ -573,7 +574,7 @@ class EFPSet(EFPBase):
         return efp_times
 
     #===========
-    # properties
+    # PROPERTIES
     #===========
 
     @property

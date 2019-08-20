@@ -1,4 +1,4 @@
-r"""### Quark and Gluon Jets
+r"""## Quark and Gluon Jets
 
 Four datasets of quark and gluon jets, each having two million total jets, have
 been generated with [Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and
@@ -57,6 +57,8 @@ from energyflow.utils.data_utils import _get_filepath
 
 __all__ = ['load']
 
+NUM_PER_FILE = 100000
+MAX_NUM_FILES = 20
 URLS = {
     'pythia': {
         'nobc': {
@@ -445,8 +447,6 @@ HASHES = {
     },
 }
 
-NUM_PER_FILE = 100000
-MAX_NUM_FILES = 20
 GENERATORS = frozenset(URLS.keys())
 SOURCES = ['dropbox', 'zenodo']
 

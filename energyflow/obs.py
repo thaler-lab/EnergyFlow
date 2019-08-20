@@ -1,4 +1,7 @@
-""""""
+"""Implementations of some observables that are not covered by other portions
+of EnergyFlow. Some observables require the [FastJet](http://fastjet.fr/)
+Python interface to be importable; if it's not no warnings or errors will be
+issued, the observables will simply not be included in this module."""
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
@@ -11,7 +14,8 @@ fj = import_fastjet()
 
 __all__ = ['image_activity']
 
-def image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None, reg=10**-30):
+def image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None):
+    """"""
 
     # make bins
     bins = np.linspace(-R, R, npix + 1)
@@ -29,7 +33,7 @@ def image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None, reg=
     pixels = np.histogram2d(ptyphis[:,1], ptyphis[:,2], weights=ptyphis[:,0], bins=bins)[0].flatten()
 
     # calcualte image activity
-    nf = np.argmax(np.cumsum(np.sort(pixels/(pixels.sum() + reg))[::-1]) >= f) + 1
+    nf = np.argmax(np.cumsum(np.sort(pixels/(pixels.sum() + 10**-30))[::-1]) >= f) + 1
 
     return nf
 
@@ -38,6 +42,7 @@ if fj:
     __all__ += ['zg', 'zg_from_pj']
 
     def zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0):
+        """"""
 
         sd_jet = softdrop(pseudojet, zcut=zcut, beta=beta, R=R)
 
@@ -51,4 +56,6 @@ if fj:
         return 0. if ptsum == 0. else min(pt1, pt2)/ptsum
 
     def zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca'):
+        """"""
+        
         return zg_from_pj(cluster(pjs_from_ptyphims(ptyphims), algorithm=algorithm)[0], zcut=zcut, beta=beta, R=R)

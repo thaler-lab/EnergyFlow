@@ -99,6 +99,18 @@
 		
     <span class="caption-text">Documentation</span>
     <ul class="subnav">
+                <li class="">
+                    
+    <a class="" href="../archs/">Architectures</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../datasets/">Datasets</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../emd/">EMD</a>
+                </li>
                 <li class=" current">
                     
     <a class="current" href="./">Energy Flow Polynomials</a>
@@ -140,14 +152,6 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../archs/">Architectures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../emd/">EMD</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="../measures/">Measures</a>
                 </li>
                 <li class="">
@@ -156,11 +160,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../utils/">Utils</a>
+    <a class="" href="../obs/">Observables</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="../datasets/">Datasets</a>
+    <a class="" href="../utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -228,18 +232,18 @@ keyword arguments are stored as properties of the <code>EFP</code> instance.</p>
 </ul>
 </li>
 <li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'ee'</code>}<ul>
-<li>The choice of measure. See <a href="../measures">Measures</a> 
-for additional info.</li>
+<li>The choice of measure. See <a href="../measures">Measures</a> for additional
+info.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure.
-Must be greater than zero.</li>
+<li>The parameter $\beta$ appearing in the measure. Must be greater
+than zero.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$.
-If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
+use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -252,8 +256,8 @@ If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</
 </ul>
 </li>
 <li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume
-the first input type.</li>
+<li>Whether to check the type of the input each time or assume the
+first input type.</li>
 </ul>
 </li>
 <li><strong>np_optimize</strong> : {<code>True</code>, <code>False</code>, <code>'greedy'</code>, <code>'optimal'</code>}<ul>
@@ -274,13 +278,13 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
-of the energies of an event.</li>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in
+place of the energies of an event.</li>
 </ul>
 </li>
 <li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
-of the pairwise angles of an event.</li>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in
+place of the pairwise angles of an event.</li>
 </ul>
 </li>
 </ul>
@@ -344,19 +348,21 @@ represented by a list of edges.</p>
 <p>VE complexity $\chi$ of this EFP.</p>
 <hr />
 <h3 id="efpset">EFPSet</h3>
-<p>A class that holds a collection of EFPs and computes their values on events.
-Note that all keyword arguments are stored as properties of the <code>EFPSet</code> instance.</p>
+<p>A class that holds a collection of EFPs and computes their values on
+events. Note that all keyword arguments are stored as properties of the
+<code>EFPSet</code> instance.</p>
 <pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=True, coords='ptyphim', check_input=True, verbose=False)
 </code></pre>
 
-<p>EFPSet can be initialized in one of three ways (in order of precedence):</p>
+<p><code>EFPSet</code> can be initialized in one of three ways (in order of
+precedence):</p>
 <ol>
 <li><strong>Default</strong> - Use the ($d\le10$) EFPs that come installed with the
 <code>EnergFlow</code> package.</li>
-<li><strong>Generator</strong> - Pass in a custom <code>Generator</code> object as the
-first positional argument.</li>
-<li><strong>Custom File</strong> - Pass in the name of a <code>.npz</code> file saved
-with a custom <code>Generator</code>.</li>
+<li><strong>Generator</strong> - Pass in a custom <code>Generator</code> object as the first
+positional argument.</li>
+<li><strong>Custom File</strong> - Pass in the name of a <code>.npz</code> file saved with a
+custom <code>Generator</code>.</li>
 </ol>
 <p>To control which EFPs are included, <code>EFPSet</code> accepts an arbitrary
 number of specifications (see <a href="#sel"><code>sel</code></a>) and only EFPs meeting each
@@ -364,9 +370,9 @@ specification are included in the set.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
-<li>If the first positional argument is a <code>Generator</code> instance,
-it is used for initialization. The remaining positional
-arguments must be valid arguments to <code>sel</code>.</li>
+<li>If the first positional argument is a <code>Generator</code> instance, it is
+used for initialization. The remaining positional arguments must be
+valid arguments to <code>sel</code>.</li>
 </ul>
 </li>
 <li><strong>filename</strong> : <em>string</em><ul>
@@ -379,13 +385,13 @@ arguments must be valid arguments to <code>sel</code>.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure.
-Must be greater than zero.</li>
+<li>The parameter $\beta$ appearing in the measure. Must be greater
+than zero.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$.
-If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
+use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -398,8 +404,8 @@ If <code>'pf'</code>, use $\kappa=v-1$ where $v$ is the valency of the vertex.</
 </ul>
 </li>
 <li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume
-the first input type.</li>
+<li>Whether to check the type of the input each time or assume the
+first input type.</li>
 </ul>
 </li>
 <li><strong>verbose</strong> : <em>bool</em><ul>
@@ -420,13 +426,13 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
-of the energies of an event.</li>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in
+place of the energies of an event.</li>
 </ul>
 </li>
 <li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
-of the pairwise angles of an event.</li>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in
+place of the pairwise angles of an event.</li>
 </ul>
 </li>
 </ul>
@@ -450,8 +456,8 @@ matching those anticipated by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
-<li>The number of worker processes to use. A value of <code>None</code> will attempt
-to use as many processes as there are CPUs on the machine.</li>
+<li>The number of worker processes to use. A value of <code>None</code> will
+attempt to use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
@@ -471,13 +477,12 @@ specifications using the connected EFPs provided as input.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>X</strong> : <em>numpy.ndarray</em><ul>
-<li>Array of connected EFPs. Rows are different events, columns 
-are the different EFPs. Can handle a single event (a 1-dim array) 
-as input. EFPs are assumed to be in the order expected by the 
-instance of <code>EFPSet</code>; the safest way to ensure this is to use 
-the same <code>EFPSet</code> to calculate both connected and disconnected 
-EFPs. This function is used internally in <code>compute</code> and 
-<code>batch_compute</code>.</li>
+<li>Array of connected EFPs. Rows are different events, columns are
+the different EFPs. Can handle a single event (a 1-dim array) as
+input. EFPs are assumed to be in the order expected by the instance
+of <code>EFPSet</code>; the safest way to ensure this is to use the same
+<code>EFPSet</code> to calculate both connected and disconnected EFPs. This
+function is used internally in <code>compute</code> and <code>batch_compute</code>.</li>
 </ul>
 </li>
 </ul>
@@ -497,17 +502,15 @@ specifications provided by the <code>args</code>. </p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>*args</strong> : arbitrary positional arguments<ul>
-<li>Each argument can be either a string or a length-two 
-iterable. If the argument is a string, it should consist 
-of three parts: a character which is a valid element of 
-<code>cols</code>, a comparison operator (one of <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, 
-<code>&gt;=</code>, <code>==</code>, <code>!=</code>), and a number. Whitespace between the 
-parts does not matter. If the argument is a tuple, the 
-first element should be a string containing a column 
-header character and a comparison operator; the second 
-element is the value to be compared. The tuple version 
-is useful when the value is a variable that changes 
-(such as in a list comprehension).</li>
+<li>Each argument can be either a string or a length-two iterable. If
+the argument is a string, it should consist of three parts: a
+character which is a valid element of <code>cols</code>, a comparison
+operator (one of <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>==</code>, <code>!=</code>), and a number.
+Whitespace between the parts does not matter. If the argument is a
+tuple, the first element should be a string containing a column
+header character and a comparison operator; the second element is
+the value to be compared. The tuple version is useful when the
+value is a variable that changes (such as in a list comprehension).</li>
 </ul>
 </li>
 </ul>
@@ -558,7 +561,8 @@ the index of a particular graph.</li>
 </ul>
 </li>
 <li><em>1-d numpy.ndarray</em>, otherwise<ul>
-<li>An array of graphs (as lists of edges) matching the specifications.</li>
+<li>An array of graphs (as lists of edges) matching the
+specifications.</li>
 </ul>
 </li>
 </ul>
@@ -582,7 +586,8 @@ the index of particular simple graph.</li>
 </ul>
 </li>
 <li><em>1-d numpy.ndarray</em>, otherwise<ul>
-<li>An array of simple graphs (as lists of edges) matching the specifications.</li>
+<li>An array of simple graphs (as lists of edges) matching the
+specifications.</li>
 </ul>
 </li>
 </ul>
@@ -621,10 +626,10 @@ Those of primary interest are listed below.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../archs/" class="btn btn-neutral float-right" title="Architectures">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../measures/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../releases/" class="btn btn-neutral" title="Release Notes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../emd/" class="btn btn-neutral" title="EMD"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -652,10 +657,10 @@ Those of primary interest are listed below.</p>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../../releases/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../emd/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../archs/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../measures/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

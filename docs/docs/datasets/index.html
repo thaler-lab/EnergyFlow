@@ -101,15 +101,55 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="../archs/">Architectures</a>
+                </li>
+                <li class=" current">
+                    
+    <a class="current" href="./">Datasets</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#moddataset">MODDataset</a></li>
+        
+            <li><a class="toctree-l4" href="#load">load</a></li>
+        
+            <li><a class="toctree-l4" href="#filter_particles">filter_particles</a></li>
+        
+            <li><a class="toctree-l4" href="#kfactors">kfactors</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#quark-and-gluon-jets">Quark and Gluon Jets</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#load_1">load</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#quark-and-gluon-nsubs">Quark and Gluon Nsubs</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#load_2">load</a></li>
+        
+        </ul>
+    
+
+    </ul>
                 </li>
                 <li class="">
                     
     <a class="" href="../emd/">EMD</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -121,32 +161,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../utils/">Utils</a>
+    <a class="" href="../obs/">Observables</a>
                 </li>
-                <li class=" current">
+                <li class="">
                     
-    <a class="current" href="./">Datasets</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#quark-and-gluon-jets">Quark and Gluon Jets</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#load">load</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#quark-and-gluon-nsubs">Quark and Gluon Nsubs</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#load_1">load</a></li>
-        
-        </ul>
-    
-
-    </ul>
+    <a class="" href="../utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -190,7 +209,559 @@
           <div role="main">
             <div class="section">
               
-                <h3 id="quark-and-gluon-jets">Quark and Gluon Jets</h3>
+                <h2 id="cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</h2>
+<p>Starting in 2014, the CMS Collaboration began to release research-grade
+recorded and simulated datasets on the <a href="http://opendata.
+cern.ch/">CERN Open Data Portal</a>. These fantastic resources provide a unique opportunity for
+researchers with diverse connections to the hep-ex world to engage with cutting
+edge particle physics by developing tools and testing novel strategies on
+actual LHC data. Our goal in making portions of the CMS Open Data available in
+a reprocessed format is to ease as best as possible the technical complications
+that have thus far been present when attempting to use Open Data (see also
+<a href="http://opendata.cern.ch/docs/cms-
+releases-open-data-for-machine-learning">recent efforts by the CMS Collaboration</a> to make the data more accessible).</p>
+<p>To facilitate access to Open Data, we have developed a format utilizing the
+widespread <a href="https://www.hdfgroup.org/solutions/hdf5/">HDF5 file format</a> that
+stores essential information for some particle physics analyses, such as the
+ones in <em>Exploring the Space of Jets with CMS Open Data</em>. This "MOD HDF5
+Format" is currently optimized for studies based on jets, but may be updated
+in the future to support other types of analyses.</p>
+<p>To further the goals of Open Data, we have made our reprocessed samples
+available on the <a href="https://zenodo.org/">Zenodo platform</a>. Currently, the only
+"collection" (in the parlance used below by the functions and classes that load
+and read MOD HDF5 files) of datasets that is available is the <code>CMS2011AJets</code>
+collection, which was used in <em>Exploring the Space of Jets with CMS Open Data</em>
+for <a href="/docs/emd">EMD</a>-based studies. More collections may be added in the future 
+as our research group completes more studies with the Open Data.</p>
+<p>For now, this page focuses on the <code>CMS2011AJets</code> collection. This collection
+of datasets includes jets recorded by the CMS detector, as well as
+CMS-generated Pythia samples that are further passed through full CMS detector
+simulation. Hence, the datasets are refered to as CMS, SIM, and GEN (or in code
+as <code>'cms'</code>, <code>'sim'</code>, <code>'gen'</code>) for these three different ways of obtaining jets.
+The datasets include all available jets above 375 GeV, which is where the
+Jet300 trigger was found to be fully efficient in both data and simulation.
+Note that the pT values references in the name of the SIM/GEN datasets are
+those of the generator-level hard parton. The DOIs of <code>CMS2011AJets</code> MOD HDF5
+datasets are:</p>
+<p><a href="https://
+doi.org/10.5281/zenodo.3340205"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3340205.svg" /></a> - CMS 2011A Jets, pT &gt; 375 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341500"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341500.svg" /></a> - SIM/GEN QCD Jets 170-300 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341498"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341498.svg" /></a> - SIM/GEN QCD Jets 300-470 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341419"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341419.svg" /></a> - SIM/GEN QCD Jets 470-600 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3364139"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3364139.svg" /></a> - SIM/GEN QCD Jets 600-800 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341413"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341413.svg" /></a> - SIM/GEN QCD Jets 800-1000 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341502"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341502.svg" /></a> - SIM/GEN QCD Jets 1000-1400 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341770"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341770.svg" /></a> - SIM/GEN QCD Jets 1400-1800 GeV
+<br>
+<a href="https://
+doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341772.svg" /></a> - SIM/GEN QCD Jets 1800-$\infty$ GeV</p>
+<p>For more details regarding the creation of these samples, as well as for the
+DOIs of the original CMS Open Datasets, see <em>Exploring the Space of Jets with
+CMS Open Data</em>.</p>
+<hr />
+<h3 id="moddataset">MODDataset</h3>
+<p>Loads and provides access to datasets in MOD HDF5 format. Jets can be
+selected while loading from file according to a number of kinematic
+attributes. MOD HDF5 datasets are created via the <a href="#save"><code>save</code></a> method.</p>
+<p>Currently, the MOD HDF5 format consists of an HDF5 file with the following
+arrays, each of which are stored as properties of the <code>MODDataset</code>:</p>
+<ul>
+<li><code>/jets_i</code> - <em>int64</em><ul>
+<li>An array of integer jet attributes, which are currently:<ul>
+<li><code>fn</code> : The file number of the jet, used to index the
+<a href="#filenames"><code>filenames</code></a> array.</li>
+<li><code>rn</code> : The run number of the jet.</li>
+<li><code>lbn</code> : The lumiblock number (or lumisection) of the jet.</li>
+<li><code>evn</code> : The event number of the jet.</li>
+<li><code>npv</code> (CMS/SIM only) : The number of primary vertices of the
+event containing the jet.</li>
+<li><code>quality</code> (CMS/SIM only) : The quality of the jet, where <code>0</code>
+means no quality, <code>1</code> is "loose", <code>2</code> is "medium", and <code>3</code> is
+"strict".</li>
+<li><code>hard_pid</code> (SIM/GEN only) : The particle ID of the hard parton
+associated to the jet (<code>0</code> if not associated).</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>/jets_f</code> - <em>float64</em><ul>
+<li>An array of floating point jet attributes, which are currently:<ul>
+<li><code>jet_pt</code> : Transverse momentum of the jet.</li>
+<li><code>jet_y</code> : Rapidity of the jet.</li>
+<li><code>jet_phi</code> : Azimuthal angle of the jet.</li>
+<li><code>jet_m</code> : Mass of the jet.</li>
+<li><code>jet_eta</code> : Pseudorapidity of the jet.</li>
+<li><code>jec</code> (CMS/SIM only) : Jet energy correction.</li>
+<li><code>jet_area</code> (CMS/SIM only) : Area of the jet.</li>
+<li><code>jet_max_nef</code> (CMS/SIM only) : Maximum of the hadronic and
+electromagnetic energy fractions of the jet.</li>
+<li><code>gen_jet_pt</code> (SIM only) : Transverse momentum of an associated
+GEN jet. <code>-1</code> if not associated.</li>
+<li><code>gen_jet_y</code> (SIM only) : Rapidity of an associated GEN jet. <code>-1</code>
+if not associated.</li>
+<li><code>gen_jet_phi</code> (SIM only) : Azimuthal angle of an associated GEN
+jet. <code>-1</code> if not associated.</li>
+<li><code>gen_jet_m</code> (SIM only) : Mass of an associated GEN jet. <code>-1</code> if
+not associated.</li>
+<li><code>gen_jet_eta</code> (SIM only) : Pseudorapidity of an associated GEN
+jet. <code>-1</code> if not associated.</li>
+<li><code>hard_pt</code> (SIM/GEN only) : Transverse momentum of an associated
+hard parton. <code>-1</code> if not associated.</li>
+<li><code>hard_y</code> (SIM/GEN only) : Rapidity of an associated hard parton.
+<code>-1</code> if not associated.</li>
+<li><code>hard_phi</code> (SIM/GEN only) : Azimuthal angle of an associated hard
+parton. <code>-1</code> if not associated.</li>
+<li><code>weight</code> :  Contribution of this jet to the cross-section, in
+nanobarns.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>/pfcs</code> - <em>float64</em> (CMS/SIM only)<ul>
+<li>An array of all particle flow candidates, with attributes listed
+below. There is a separate <code>/pfcs_index</code> array in the file which
+contains information for <code>MODDataset</code> to separate these particles into
+separate jets. The columns of the array are currently:<ul>
+<li><code>pt</code> : Transverse momentum of the PFC.</li>
+<li><code>y</code> : Rapidity of the PFC.</li>
+<li><code>phi</code> : Azimuthal angle of the PFC.</li>
+<li><code>m</code> : Mass of the PFC.</li>
+<li><code>pid</code> : PDG ID of the PFC.</li>
+<li><code>vertex</code> : Vertex ID of the PFC. <code>0</code> is leading vertex, <code>&gt;0</code> is
+a pileup vertex, and <code>-1</code> is unknown. Neutral particles are
+assigned to the leading vertex.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>/gens</code> - <em>float64</em> (SIM/GEN only)<ul>
+<li>An array of all generator-level particles, currently with the same 
+columns as the <code>pfcs</code> array (the vertex column contains all <code>0</code>s). For
+the SIM dataset, these are the particles of jets associated to the SIM
+jets which are described in the <code>jets_i</code> and <code>jets_f</code> arrays. As with
+<code>pfcs</code>, there is a separate <code>gens_index</code> array which tells <code>MODDataset</code>
+how to separate these gen particles into distinct jets.</li>
+</ul>
+</li>
+<li><code>/filenames</code> - <em>str</em><ul>
+<li>An array of strings indexed by the <code>fn</code> attribute of each jet. For
+CMS, this array is one dimensional and contains the CMS-provided
+filenames. For SIM/GEN, this array is two dimensional where the first
+column is the pT value that appears in the name of the dataset and the
+second column is the CMS-provided filename. In all cases, indexing this
+array with the <code>fn</code> attribute of a jet gives the file information in
+which the event containing that jet is to be found.</li>
+</ul>
+</li>
+</ul>
+<p>Note that the column names of the <code>jets_i</code>, <code>jets_f</code>, <code>pfcs</code>, and <code>gens</code>
+arrays are stored as lists of strings in the attributes <code>jets_i_cols</code>,
+<code>jets_f_cols</code>, <code>pfcs_cols</code>, and <code>gens_cols</code>.</p>
+<p>For each of the above arrays, <code>MODDataset</code> stores the index of the column
+as an attribute with the same name as the column. For example, for an
+instance called <code>modds</code>, <code>modds.fn</code> has a value of <code>0</code> since it is the
+first column in the <code>jets_i</code> array, <code>modds.jet_phi</code> has a value of <code>2</code>,
+<code>modds.m</code> has a value of <code>3</code>, etc.</p>
+<p>Even more helpfully, a view of each column of the jets arrays is stored
+as an attribute as well, so that <code>modds.jet_pts</code> is the same as
+<code>modds.jets_f[:,modds.jet_pt]</code>, <code>modds.evns</code> is the same as 
+<code>modds.jets_i[:,modds.evn]</code>, etc. Additionally, one special view is stored,
+<code>corr_jet_pts</code>, which is equal to the product of the jet pTs and the JECs,
+i.e. <code>modds.jet_pts*modds.jecs</code>.</p>
+<p><code>MODDataset</code> supports the builtin <code>len()</code> method, which returns the number
+of jets currently stored in the dataset, as well as the <code>print()</code> method,
+which prints a summary of the dataset.</p>
+<pre><code class="python">energyflow.datasets.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, store_pfcs=True, store_gens=True)
+</code></pre>
+
+<p><code>MODDataset</code> can be initialized from a MOD HDF5 file or from a list
+of existing <code>MODDataset</code>s. In the first case, the filename should be
+given as the first positional argument. In the second case, the 
+<code>datasets</code> keyword argument should be set to a list of <code>MODDataset</code>
+objects.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
+<li>Each argument specifies a requirement for an event to be selected
+and kept in the <code>MODDataset</code>. All requirements are ANDed together.
+Each specification can be a string or a tuple/list of objects that
+will be converted to strings and concatenated together. Each string
+specifies the name of one of the columns of one of the jets arrays
+(<code>'corr_jet_pts'</code> is also accepted, see above, as well as
+<code>'abs_jet_eta'</code>, <code>'abs_gen_jet_y'</code>, etc, which use the absolute
+values of the [pseudo]rapidities of the jets) as well as one or
+more comparisons to be performed using the values of that column
+and the given values in the string. For example,
+<code>('corr_jet_pts &gt;', 400)</code>, which is the same as
+<code>'corr_jet_pts&gt;400'</code>, will select jets with a corrected pT above
+400 GeV. Ampersands may be used within one string to indicated
+multiple requirements, e.g. <code>'corr_jet_pts &gt; 400 &amp; abs_jet_eta'</code>,
+which has the same effect as using multiple arguements each with a
+single requirement.</li>
+</ul>
+</li>
+<li><strong>datasets</strong> : {<em>tuple</em>, <em>list</em>} of <code>MODDataset</code> instances or <code>None</code><ul>
+<li><code>MODDataset</code>s from which to initialize this dataset. Effectively
+what this does is to concatenate the arrays held by the datasets.
+Should always be <code>None</code> when initializing from an existing file.</li>
+</ul>
+</li>
+<li><strong>path</strong> : <em>str</em> or <code>None</code><ul>
+<li>If not <code>None</code>, then <code>path</code> is prepended to the filename when
+initializing from file. Has no effect when initializing from
+existing datasets.</li>
+</ul>
+</li>
+<li><strong>num</strong> : <em>int</em><ul>
+<li>The number of events or jets to keep after subselections are
+applied. A value of <code>-1</code> keeps the entire dataset. The weights
+are properly rescaled to preserve the total cross section of the
+selection.</li>
+</ul>
+</li>
+<li><strong>shuffle</strong> : <em>bool</em><ul>
+<li>When subselecting a fraction of the dataset (i.e. <code>num!=-1</code>),
+if <code>False</code> the first <code>num</code> events passing cuts will be kept, if
+<code>True</code> then a random subset of <code>num</code> events will be kept. Note that
+this has no effect when <code>num</code> is <code>-1</code>, and also that this flag only
+affects which events are selected and does not randomize the order
+of the events that are ultimately stored by the <code>MODDataset</code> object.</li>
+</ul>
+</li>
+<li><strong>store_pfcs</strong> : <em>bool</em><ul>
+<li>Whether or not to store PFCs if they are present in the dataset.</li>
+</ul>
+</li>
+<li><strong>store_gens</strong> : <em>bool</em><ul>
+<li>Whether or not to store gen-level particles (referred to as
+"gens") if they are present in the dataset.</li>
+</ul>
+</li>
+</ul>
+<h4 id="sel">sel</h4>
+<pre><code class="python">sel(args, kwargs)
+</code></pre>
+
+<p>Returns a boolean mask that selects jets according to the specified
+requirements.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
+<li>Used to specify cuts to be made to the dataset while loading; see
+the detailed description of the positional arguments accepted by
+<a href="#moddataset"><code>MODDataset</code></a>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em> of type <em>bool</em><ul>
+<li>A boolean mask that will select jets that pass all of the
+specified requirements.</li>
+</ul>
+</li>
+</ul>
+<h4 id="apply_mask">apply_mask</h4>
+<pre><code class="python">apply_mask(mask, preserve_total_weight=False)
+</code></pre>
+
+<p>Subselects jets held by the <code>MODDataset</code> according to a boolean
+mask.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>mask</strong> : <em>numpy.ndarray</em> or type <em>bool</em><ul>
+<li>A boolean mask used to select which jets are to be kept. Should
+be the same length as the <code>MODDataset</code> object.</li>
+</ul>
+</li>
+<li><strong>preserve_total_weight</strong> : <em>bool</em><ul>
+<li>Whether or not to keep the cross section of the <code>MODDataset</code>
+fixed after the selection.</li>
+</ul>
+</li>
+</ul>
+<h4 id="save">save</h4>
+<pre><code class="python">save(filepath, npf=-1, compression=None, verbose=1, n_jobs=1)
+</code></pre>
+
+<p>Saves a <code>MODDataset</code> in the MOD HDF5 format.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>filepath</strong> : <em>str</em><ul>
+<li>The filepath (with or without the <code>'.h5'</code> suffix) where the saved
+file will be located.</li>
+</ul>
+</li>
+<li><strong>npf</strong> : <em>int</em><ul>
+<li>The number of jets per file. If not <code>-1</code>, multiple files will be
+created with <code>npf</code> jets as the maximum number stored in each file,
+in which case <code>'_INDEX'</code>, where <code>INDEX</code> is the index of that file,
+will be appended to the filename.</li>
+</ul>
+</li>
+<li><strong>compression</strong> : <em>int</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the gzip compression level to use when saving the
+arrays in the HDF5 file. If not <code>None</code>, <code>'_compressed'</code> will be
+appended to the end of the filename.</li>
+</ul>
+</li>
+<li><strong>verbose</strong> : <em>int</em><ul>
+<li>Verbosity level to use when saving the files.</li>
+</ul>
+</li>
+<li><strong>n_jobs</strong> : <em>int</em><ul>
+<li>The number of processes to use when saving the files; only
+relevant when <code>npf!=-1</code>.</li>
+</ul>
+</li>
+</ul>
+<h4 id="close">close</h4>
+<pre><code class="python">close()
+</code></pre>
+
+<p>Closes the underlying HDF5 file, if one is associated with the
+<code>MODDataset</code> object. Note that associated HDF5 files are closed by
+default when the <code>MODDataset</code> object is deleted.</p>
+<h5 id="jets_i">jets_i</h5>
+<pre><code class="python">jets_i
+</code></pre>
+
+<p>The <code>jets_i</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
+<h5 id="jets_f">jets_f</h5>
+<pre><code class="python">jets_f
+</code></pre>
+
+<p>The <code>jets_f</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
+<h5 id="pfcs">pfcs</h5>
+<pre><code class="python">pfcs
+</code></pre>
+
+<p>The <code>pfcs</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
+<h5 id="gens">gens</h5>
+<pre><code class="python">gens
+</code></pre>
+
+<p>The <code>gens</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
+<h5 id="particles">particles</h5>
+<pre><code class="python">particles
+</code></pre>
+
+<p>If this is a CMS or SIM dataset, <code>particles</code> is the same as <code>pfcs</code>;
+for GEN it is the same as <code>gens</code>.</p>
+<h5 id="filenames">filenames</h5>
+<pre><code class="python">filenames
+</code></pre>
+
+<p>The <code>filenames</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
+<h5 id="hf">hf</h5>
+<pre><code class="python">hf
+</code></pre>
+
+<p>The underlying HDF5 file, if one is associated to the <code>MODDataset</code>.</p>
+<hr />
+<h3 id="load">load</h3>
+<pre><code class="python">energyflow.datasets.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', dataset='cms', subdatasets=None, validate_files=False, store_pfcs=True, store_gens=True, verbose=0)
+</code></pre>
+
+<p>Loads samples from the specified MOD dataset. Any file that is needed
+that has not been cached will be automatically downloaded from Zenodo.
+Downloaded files are cached for later use. File checksums are optionally
+validated to ensure dataset fidelity.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
+<li>Used to specify cuts to be made to the dataset while loading; see
+the detailed description of the positional arguments accepted by
+<a href="#moddataset"><code>MODDataset</code></a>.</li>
+</ul>
+</li>
+<li><strong>amount</strong> : <em>int</em> or <em>float</em><ul>
+<li>Approximate amount of the dataset to load. If an integer, this is the
+number of files to load (a warning is issued if more files are
+requested than are available). If a float, this is the fraction of the
+number of available files to load, rounded up to the nearest whole
+number. Note that since ints and floats are treated different, a value
+of <code>1</code> loads one file whereas <code>1.0</code> loads the entire dataset. A value
+of <code>-1</code> also loads the entire dataset. </li>
+</ul>
+</li>
+<li><strong>cache_dir</strong> : <em>str</em><ul>
+<li>The directory where to store/look for the files. Note that 
+<code>'datasets'</code> is automatically appended to the end of this path, as well
+as the collection name. For example, the default is to download/look
+for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>.</li>
+</ul>
+</li>
+<li><strong>collection</strong> : <em>str</em><ul>
+<li>Name of the collection of datasets to consider. Currently the only
+collection is <code>'CMS2011AJets'</code>, though more may be added in the future.</li>
+</ul>
+</li>
+<li><strong>dataset</strong> : <em>str</em><ul>
+<li>Which dataset in the collection to load. Currently the
+<code>'CMS2011AJets'</code> collection has <code>'cms'</code>, <code>'sim'</code>, and <code>'gen'</code> datasets.</li>
+</ul>
+</li>
+<li><strong>subdatasets</strong> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or <code>None</code><ul>
+<li>The names of subdatasets to use. A value of <code>None</code> uses all available
+subdatasets. Currently, for the <code>'CMS2011AJets'</code> collection, the
+<code>'cms'</code> dataset has one subdataset, <code>'CMS_Jet300_pT375-infGeV'</code>, the
+<code>'sim'</code> dataset has eight subdatasets arrange according to generator
+$\hat p_T$, e.g. <code>'SIM470_Jet300_pT375-infGeV'</code>, and the <code>'gen'</code>
+dataset also has eight subdatasets arranged similaraly, e.g.
+<code>'GEN470_pT375-infGeV'</code>.</li>
+</ul>
+</li>
+<li><strong>validate_files</strong> : <em>bool</em><ul>
+<li>Whether or not to validate files according to their MD5 hashes. It
+is a good idea to set this to <code>True</code> when first downloading the files
+from Zenodo in order to ensure they downloaded properly.</li>
+</ul>
+</li>
+<li><strong>store_pfcs</strong> : <em>bool</em><ul>
+<li>Whether or not to store PFCs if they are present in the dataset.</li>
+</ul>
+</li>
+<li><strong>store_gens</strong> : <em>bool</em><ul>
+<li>Whether or not to store gen-level particles (referred to as
+"gens") if they are present in the dataset.</li>
+</ul>
+</li>
+<li><strong>verbose</strong> : <em>int</em><ul>
+<li>Verbosity level to use when loading. <code>0</code> is the least verbose, <code>1</code>
+is more verbose, and <code>2</code> is the most verbose.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>MODDataset</em><ul>
+<li>A <code>MODDataset</code> object containing the selected events or jets from the
+specified collection, dataset, and subdatasets.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="filter_particles">filter_particles</h3>
+<pre><code class="python">energyflow.datasets.mod.filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5)
+</code></pre>
+
+<p>Constructs a mask that will select particles according to specified
+properties. Currently supported are selecting particles according to their
+charge, removing particles associated to a pileup vertex, and implementing
+a minimum particle-level pT cut</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>particles</strong> : <em>numpy.ndarray</em><ul>
+<li>Two-dimensional array of particles.</li>
+</ul>
+</li>
+<li><strong>which</strong> : {<code>'all'</code>, <code>'charged'</code>, <code>'neutral'</code>}<ul>
+<li>Selects particles according to their charge.</li>
+</ul>
+</li>
+<li><strong>pt_cut</strong> : <em>float</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the minimum transverse momentum a particle can have to
+be selected.</li>
+</ul>
+</li>
+<li><strong>chs</strong> : <em>bool</em><ul>
+<li>Whether or not to implement charged hadron subtraction (CHS), which
+removes particles associated to a non-leading vertex (i.e. with vertex
+ids greater than or equal to 1).</li>
+</ul>
+</li>
+<li><strong>pt_i</strong> : <em>int</em><ul>
+<li>Column index of the transverse momentum values of the particles.</li>
+</ul>
+</li>
+<li><strong>pid_i</strong> : <em>int</em><ul>
+<li>Column index of the particle IDs (used to select by charge).</li>
+</ul>
+</li>
+<li><strong>vertex_i</strong> : <em>int</em><ul>
+<li>Column index of the vertex IDs (used to implement CHS).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>A boolean mask which selects the specified particles, i.e.
+<code>particles[filter_particles(particles, ...)]</code> will be an array of only
+those particles passing the specified cuts.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="kfactors">kfactors</h3>
+<pre><code class="python">energyflow.datasets.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True)
+</code></pre>
+
+<p>Evaluates k-factors used by a particular collection. Currently, since
+CMS2011AJets is the only supported collection, some of the arguments are
+specific to the details of this collection (such as the use of jet pTs) and
+may change in future versions of this function.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>dataset</strong> : {<code>'sim'</code>, <code>'gen'</code>}<ul>
+<li>Specifies which type of k-factor to use. <code>'sim'</code> includes a reweighting
+to match the distribution of the number of primary vertices between
+the simulation dataset and the CMS data whereas <code>'gen'</code> does not.</li>
+</ul>
+</li>
+<li><strong>pts</strong> : <em>numpy.ndarray</em><ul>
+<li>The transverse momenta of the jets, used to determine the
+pT-dependent k-factor due to using only leading order matrix elements
+in the event generation. For the CMS2011AJets collection, these are
+derived from Figure 5 of <a href="https://doi.org/10.1016/j.
+physletb.2014.01.034">this reference</a>.</li>
+</ul>
+</li>
+<li><strong>npvs</strong> : <em>numpy.ndarray</em> of integer type or <code>None</code><ul>
+<li>The number of primary vertices of a simulated event, used to
+reweight a simulated event to match the pileup distribution of data.
+Should be the same length as <code>pts</code> and correspond to the same events.
+Not used if <code>dataset</code> is <code>'gen'</code>.</li>
+</ul>
+</li>
+<li><strong>collection</strong> : <em>str</em><ul>
+<li>Name of the collection of datasets to consider. Currently the only
+collection is <code>'CMS2011AJets'</code>, though more may be added in the future.</li>
+</ul>
+</li>
+<li><strong>apply_residual_correction</strong> : <em>bool</em><ul>
+<li>Whether or not to apply a residual correction derived from the first
+bin of the pT spectrum that corrects for the remaining difference
+between data and simulation.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of k-factors corresponding to the events specified by the
+<code>pts</code> and (optionally) the <code>npvs</code> arrays. These should be multiplied
+into any existing weight for the simulated or generated event.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="quark-and-gluon-jets">Quark and Gluon Jets</h2>
 <p>Four datasets of quark and gluon jets, each having two million total jets, have
 been generated with <a href="http://home.thep.lu.se/~torbjorn/Pythia.html">Pythia</a> and
 <a href="https://herwig.hepforge.org/">Herwig</a> and are accessible through this
@@ -234,7 +805,7 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <br>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
-<h4 id="load">load</h4>
+<h3 id="load_1">load</h3>
 <pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
 
@@ -283,7 +854,7 @@ each of which is a 2-d ndarray.</li>
 </li>
 </ul>
 <hr />
-<h3 id="quark-and-gluon-nsubs">Quark and Gluon Nsubs</h3>
+<h2 id="quark-and-gluon-nsubs">Quark and Gluon Nsubs</h2>
 <p>A dataset consisting of 45 $N$-subjettiness observables for 100k quark and 
 gluon jets generated with Pythia 8.230. Following <a href="https:
 //arxiv.org/abs/1704.08249">1704.08249</a>, the observables are in the following order:</p>
@@ -299,7 +870,7 @@ gluon jets generated with Pythia 8.230. Following <a href="https:
 that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
-<h4 id="load_1">load</h4>
+<h3 id="load_2">load</h3>
 <pre><code class="python">energyflow.datasets.qg_nsubs.load(num_data=-1, cache_dir=None)
 </code></pre>
 
@@ -332,8 +903,10 @@ prior to redownloading.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../emd/" class="btn btn-neutral float-right" title="EMD">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../utils/" class="btn btn-neutral" title="Utils"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href="../archs/" class="btn btn-neutral" title="Architectures"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -361,8 +934,10 @@ prior to redownloading.</p>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../utils/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../archs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../emd/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

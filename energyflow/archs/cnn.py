@@ -8,7 +8,6 @@ from energyflow.utils import iter_or_rep
 
 __all__ = ['CNN']
 
-
 ###############################################################################
 # CNN
 ###############################################################################
@@ -20,7 +19,7 @@ class CNN(NNBase):
     # CNN(*args, **kwargs)
     def _process_hps(self):
         """See [`ArchBase`](#archbase) for how to pass in hyperparameters as
-        well as hyperparameters common to all EnergyFlow neural network models.
+        well as defaults common to all EnergyFlow neural network models.
 
         **Required CNN Hyperparameters**
 

@@ -26,7 +26,7 @@ __all__ = [
 # get access to the data directory of the installed package and the default efp file
 EF_DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.npz')
-
+REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 COMP_MAP = {
     '>':  '__gt__', 
     '<':  '__lt__', 
@@ -35,8 +35,6 @@ COMP_MAP = {
     '==': '__eq__', 
     '!=': '__ne__'
 }
-
-REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 
 # handle pickling methods in python 2
 if sys.version_info[0] == 2:

@@ -101,15 +101,19 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
     <a class="" href="../archs/">Architectures</a>
                 </li>
                 <li class="">
                     
+    <a class="" href="../datasets/">Datasets</a>
+                </li>
+                <li class="">
+                    
     <a class="" href="../emd/">EMD</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efps/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -118,6 +122,10 @@
                 <li class="">
                     
     <a class="" href="../gen/">Multigraph Generation</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../obs/">Observables</a>
                 </li>
                 <li class=" current">
                     
@@ -218,11 +226,20 @@
         </ul>
     
 
+    <li class="toctree-l3"><a href="#fastjet-tools">FastJet Tools</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#pjs_from_ptyphims">pjs_from_ptyphims</a></li>
+        
+            <li><a class="toctree-l4" href="#cluster">cluster</a></li>
+        
+            <li><a class="toctree-l4" href="#softdrop">softdrop</a></li>
+        
+        </ul>
+    
+
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../datasets/">Datasets</a>
                 </li>
     </ul>
 	    </li>
@@ -1222,6 +1239,23 @@ to zero center. <code>None</code> is interpretted to mean every channel.</li>
 </li>
 </ul>
 <hr />
+<h3 id="fastjet-tools">FastJet Tools</h3>
+<hr />
+<h4 id="pjs_from_ptyphims">pjs_from_ptyphims</h4>
+<pre><code class="python">energyflow.utils.pjs_from_ptyphims(ptyphims)
+</code></pre>
+
+<hr />
+<h4 id="cluster">cluster</h4>
+<pre><code class="python">energyflow.utils.cluster(pjs, algorithm='ca', R=1000.0)
+</code></pre>
+
+<hr />
+<h4 id="softdrop">softdrop</h4>
+<pre><code class="python">energyflow.utils.softdrop(jet, zcut=0.1, beta=0, R=1.0)
+</code></pre>
+
+<hr />
               
             </div>
           </div>
@@ -1229,10 +1263,8 @@ to zero center. <code>None</code> is interpretted to mean every channel.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../datasets/" class="btn btn-neutral float-right" title="Datasets">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-      
-        <a href="../gen/" class="btn btn-neutral" title="Multigraph Generation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../obs/" class="btn btn-neutral" title="Observables"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -1260,10 +1292,8 @@ to zero center. <code>None</code> is interpretted to mean every channel.</li>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../gen/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../obs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
-      
-        <span style="margin-left: 15px"><a href="../datasets/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

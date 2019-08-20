@@ -1,17 +1,16 @@
 """The EnergyFlow package."""
 from __future__ import absolute_import
 
-# import toplevel submodules
 from . import algorithms
 from . import datasets
 from . import efp
 from . import efpbase
+from . import emd
 from . import gen
 from . import measure
 from . import obs
 from . import utils
 
-# import toplevel attributes
 from .datasets import *
 from .efp import *
 from .gen import *

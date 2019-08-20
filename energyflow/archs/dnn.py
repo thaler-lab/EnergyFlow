@@ -9,7 +9,6 @@ from energyflow.utils import iter_or_rep
 
 __all__ = ['DNN']
 
-
 ###############################################################################
 # DNN
 ###############################################################################
@@ -21,7 +20,7 @@ class DNN(NNBase):
     # DNN(*args, **kwargs)
     def _process_hps(self):
         """See [`ArchBase`](#archbase) for how to pass in hyperparameters as
-        well as hyperparameters common to all EnergyFlow neural network models.
+        well as defaults common to all EnergyFlow neural network models.
 
         **Required DNN Hyperparameters**
 
