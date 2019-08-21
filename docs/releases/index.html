@@ -193,6 +193,11 @@
               
                 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
 <h3 id="013x">0.13.x</h3>
+<p><strong>0.13.1</strong></p>
+<ul>
+<li>When loading MOD HDF5 files, jets are now made from copies of the particle arrays rather than from views, 
+enabling the large arrays to be freed and only the selected jets to remain in memory (which can have substantial memory savings).</li>
+</ul>
 <p><strong>0.13.0</strong></p>
 <ul>
 <li>Added support for downloading and reading MOD datasets containing CMS Open Data and Simulation from Zenodo.</li>
