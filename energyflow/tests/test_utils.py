@@ -307,12 +307,27 @@ def test_ms_from_ps(dim, nevents, nparticles):
 @pytest.mark.parametrize('scheme', ['escheme', 'ptscheme'])
 @pytest.mark.parametrize('nparticles', [1, 20])
 def test_sum_ptyphims(nparticles, scheme):
-    events = ef.ptyphims_from_p4s(ef.gen_random_events(10, nparticles, dim=4, mass='random'))
+    p4s = ef.gen_random_events(10, nparticles, dim=4, mass='random')
+    ptyphims = ef.ptyphims_from_p4s(p4s)
 
-    for event in events:
-        tot = ef.sum_ptyphims(event, scheme=scheme)
+    if scheme == 'escheme':
 
-        assert len(tot) == (3 if scheme == 'ptscheme' else 4)
+        for ev_p4s,ev_ptyphims in zip(p4s, ptyphims):
+            tot = ef.p4s_from_ptyphims(ef.sum_ptyphims(ev_ptyphims, scheme=scheme))
+            tot_p4 = ev_p4s.sum(axis=0)
+
+            assert epsilon_diff(tot, tot_p4, 10**-12)
+
+    elif scheme == 'ptscheme':
+
+        for ev_ptyphims in ptyphims:
+            tot = ef.sum_ptyphims(ev_ptyphims, scheme=scheme)
+
+            pt = ev_ptyphims[:,0].sum()
+            y = np.sum(ev_ptyphims[:,0]*ev_ptyphims[:,1])/pt
+            phi = np.sum(ev_ptyphims[:,0]*ev_ptyphims[:,2])/pt
+
+            assert epsilon_diff(tot, np.array([pt,y,phi]), 10**-12)
 
 @pytest.mark.utils 
 @pytest.mark.parametrize('nparticles', [1, 20])

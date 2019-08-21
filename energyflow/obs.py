@@ -1,6 +1,6 @@
 """Implementations of some observables that are not covered by other portions
 of EnergyFlow. Some observables require the [FastJet](http://fastjet.fr/)
-Python interface to be importable; if it's not no warnings or errors will be
+Python interface to be importable; if it's not, no warnings or errors will be
 issued, the observables will simply not be included in this module."""
 from __future__ import absolute_import, division, print_function
 

@@ -570,7 +570,7 @@ if ot:
 
                 if verbose >= 1 and ((k+1) % print_every) == 0:
                     args = (k+1, (k+1)/npairs*100, time.time() - start)
-                    print('Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
+                    print('  Computed {} EMDs, {:.2f}% done in {:.2f}s'.format(*args))
 
         # unrecognized n_jobs value
         else:

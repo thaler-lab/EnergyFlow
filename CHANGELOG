@@ -3,15 +3,15 @@
 **0.13.0**
 
 - Added support for downloading and reading MOD datasets containing CMS Open Data and Simulation from Zenodo.
-- Added particle utility functions to map PDG IDs to electric charges.
-- A `~` is now expanded to the user's home directory properly in the `filepath` option to architectures.
-- Added `sum_ptyphims` and `sum_ptyphipids` functions to sum four-vectors in hadronic coordinates.
 - EMD module now has support for spherical measure.
+- Added particle utility functions to map PDG IDs to electric charges.
+- Added `sum_ptyphims` and `sum_ptyphipids` functions to sum four-vectors given in hadronic coordinates.
 - Added scheme choices for summing four-vectors of particles.
 - Added preprocessing functions to particle utilities, including `center_ptyphims`, 
 `rotate_ptyphims` and `reflect_ptyphims`.
+- A `~` is now expanded to the user's home directory properly in the `filepath` option to architectures.
 - Added `h5py` install dependency for MOD Datasets.
-- Improved binder environment with latex and default matplotlib settings.
+- Improved binder environment with fastjet, latex, and default matplotlib settings.
 - Added observables submodule which currently includes image_activity and zg.
 - EMD module now imported when importing toplevel energyflow.
 

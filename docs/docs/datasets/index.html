@@ -213,36 +213,33 @@
 <p>Starting in 2014, the CMS Collaboration began to release research-grade
 recorded and simulated datasets on the <a href="http://opendata.
 cern.ch/">CERN Open Data Portal</a>. These fantastic resources provide a unique opportunity for
-researchers with diverse connections to the hep-ex world to engage with cutting
-edge particle physics by developing tools and testing novel strategies on
-actual LHC data. Our goal in making portions of the CMS Open Data available in
-a reprocessed format is to ease as best as possible the technical complications
-that have thus far been present when attempting to use Open Data (see also
-<a href="http://opendata.cern.ch/docs/cms-
-releases-open-data-for-machine-learning">recent efforts by the CMS Collaboration</a> to make the data more accessible).</p>
+researchers with diverse connections to experimental particle phyiscs world to
+engage with cutting edge particle physics by developing tools and testing novel
+strategies on actual LHC data. Our goal in making portions of the CMS Open
+Data available in a reprocessed format is to ease as best as possible the
+technical complications that have thus far been present when attempting to use
+Open Data (see also <a href="http://opendata.
+cern.ch/docs/cms-releases-open-data-for-machine-learning">recent efforts by the CMS Collaboration</a> to make the data more
+accessible).</p>
 <p>To facilitate access to Open Data, we have developed a format utilizing the
 widespread <a href="https://www.hdfgroup.org/solutions/hdf5/">HDF5 file format</a> that
-stores essential information for some particle physics analyses, such as the
-ones in <em>Exploring the Space of Jets with CMS Open Data</em>. This "MOD HDF5
-Format" is currently optimized for studies based on jets, but may be updated
-in the future to support other types of analyses.</p>
+stores essential information for some particle physics analyses. This "MOD HDF5
+Format" is currently optimized for studies based on jets, but may be updated in
+the future to support other types of analyses.</p>
 <p>To further the goals of Open Data, we have made our reprocessed samples
 available on the <a href="https://zenodo.org/">Zenodo platform</a>. Currently, the only
-"collection" (in the parlance used below by the functions and classes that load
-and read MOD HDF5 files) of datasets that is available is the <code>CMS2011AJets</code>
-collection, which was used in <em>Exploring the Space of Jets with CMS Open Data</em>
-for <a href="/docs/emd">EMD</a>-based studies. More collections may be added in the future 
-as our research group completes more studies with the Open Data.</p>
+"collection" of datasets that is available is <code>CMS2011AJets</code>, which was used in
+<em>Exploring the Space of Jets with CMS Open Data</em> for <a href="/docs/emd">EMD</a>-based
+studies. More collections may be added in the future as our research group
+completes more studies with the Open Data.</p>
 <p>For now, this page focuses on the <code>CMS2011AJets</code> collection. This collection
-of datasets includes jets recorded by the CMS detector, as well as
-CMS-generated Pythia samples that are further passed through full CMS detector
-simulation. Hence, the datasets are refered to as CMS, SIM, and GEN (or in code
-as <code>'cms'</code>, <code>'sim'</code>, <code>'gen'</code>) for these three different ways of obtaining jets.
-The datasets include all available jets above 375 GeV, which is where the
-HLT_Jet300 trigger was found to be fully efficient in both data and simulation.
-Note that the pT values referenced in the name of the SIM/GEN datasets are
-those of the generator-level hard parton. The DOIs of <code>CMS2011AJets</code> MOD HDF5
-datasets are:</p>
+includes datasets of jets that are CMS-recorded (CMS), Pythia-generated (GEN),
+and detector-simulated (SIM), or in code <code>'cms'</code>, <code>'gen'</code>, <code>'sim'</code>,
+respectively. The datasets include all available jets above 375 GeV, which is
+where the HLT_Jet300 trigger was found to be fully efficient in both data and
+simulation. Note that the pT values referenced in the name of the SIM/GEN
+datasets are those of the generator-level hard parton. The DOIs of
+<code>CMS2011AJets</code> MOD HDF5 datasets are:</p>
 <p><a href="https://
 doi.org/10.5281/zenodo.3340205"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3340205.svg" /></a> - CMS 2011A Jets, pT &gt; 375 GeV
 <br>
@@ -271,7 +268,9 @@ doi.org/10.5281/zenodo.3341770"><img alt="DOI" src="https://zenodo.org/badge/DOI
 doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3341772.svg" /></a> - SIM/GEN QCD Jets 1800-$\infty$ GeV</p>
 <p>For more details regarding the creation of these samples, as well as for the
 DOIs of the original CMS Open Datasets, see <em>Exploring the Space of Jets with
-CMS Open Data</em>.</p>
+CMS Open Data</em>. To get started using the samples, see the
+<a href="/demos/#mod-jet-demo">MOD Jet Demo</a> which makes use of the<a href="#load"><code>load</code></a>
+function.</p>
 <hr />
 <h3 id="moddataset">MODDataset</h3>
 <p>Loads and provides access to datasets in MOD HDF5 format. Jets can be
@@ -385,7 +384,7 @@ i.e. <code>modds.jet_pts*modds.jecs</code>.</p>
 <p><code>MODDataset</code> supports the builtin <code>len()</code> method, which returns the number
 of jets currently stored in the dataset, as well as the <code>print()</code> method,
 which prints a summary of the dataset.</p>
-<pre><code class="python">energyflow.datasets.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, store_pfcs=True, store_gens=True)
+<pre><code class="python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, store_pfcs=True, store_gens=True)
 </code></pre>
 
 <p><code>MODDataset</code> can be initialized from a MOD HDF5 file or from a list
@@ -574,7 +573,7 @@ for GEN it is the same as <code>gens</code>.</p>
 <p>The underlying HDF5 file, if one is associated to the <code>MODDataset</code>.</p>
 <hr />
 <h3 id="load">load</h3>
-<pre><code class="python">energyflow.datasets.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', dataset='cms', subdatasets=None, validate_files=False, store_pfcs=True, store_gens=True, verbose=0)
+<pre><code class="python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', dataset='cms', subdatasets=None, validate_files=False, store_pfcs=True, store_gens=True, verbose=0)
 </code></pre>
 
 <p>Loads samples from the specified MOD dataset. Any file that is needed
@@ -657,7 +656,7 @@ specified collection, dataset, and subdatasets.</li>
 </ul>
 <hr />
 <h3 id="filter_particles">filter_particles</h3>
-<pre><code class="python">energyflow.datasets.mod.filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5)
+<pre><code class="python">energyflow.mod.filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5)
 </code></pre>
 
 <p>Constructs a mask that will select particles according to specified
@@ -709,7 +708,7 @@ those particles passing the specified cuts.</li>
 </ul>
 <hr />
 <h3 id="kfactors">kfactors</h3>
-<pre><code class="python">energyflow.datasets.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True)
+<pre><code class="python">energyflow.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True)
 </code></pre>
 
 <p>Evaluates k-factors used by a particular collection. Currently, since
@@ -806,7 +805,7 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
 <h3 id="load_1">load</h3>
-<pre><code class="python">energyflow.datasets.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
+<pre><code class="python">energyflow.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
 
 <p>Loads samples from the dataset (which in total is contained in twenty 
@@ -871,7 +870,7 @@ that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy ar
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h3 id="load_2">load</h3>
-<pre><code class="python">energyflow.datasets.qg_nsubs.load(num_data=-1, cache_dir=None)
+<pre><code class="python">energyflow.qg_nsubs.load(num_data=-1, cache_dir=None)
 </code></pre>
 
 <p>Loads the dataset. The first time this is called, it will automatically

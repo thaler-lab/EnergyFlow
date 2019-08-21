@@ -3,39 +3,36 @@ r"""## CMS Open Data and the MOD HDF5 Format
 Starting in 2014, the CMS Collaboration began to release research-grade
 recorded and simulated datasets on the [CERN Open Data Portal](http://opendata.
 cern.ch/). These fantastic resources provide a unique opportunity for
-researchers with diverse connections to the hep-ex world to engage with cutting
-edge particle physics by developing tools and testing novel strategies on
-actual LHC data. Our goal in making portions of the CMS Open Data available in
-a reprocessed format is to ease as best as possible the technical complications
-that have thus far been present when attempting to use Open Data (see also
-[recent efforts by the CMS Collaboration](http://opendata.cern.ch/docs/cms-
-releases-open-data-for-machine-learning) to make the data more accessible).
+researchers with diverse connections to experimental particle phyiscs world to
+engage with cutting edge particle physics by developing tools and testing novel
+strategies on actual LHC data. Our goal in making portions of the CMS Open
+Data available in a reprocessed format is to ease as best as possible the
+technical complications that have thus far been present when attempting to use
+Open Data (see also [recent efforts by the CMS Collaboration](http://opendata.
+cern.ch/docs/cms-releases-open-data-for-machine-learning) to make the data more
+accessible).
 
 To facilitate access to Open Data, we have developed a format utilizing the
 widespread [HDF5 file format](https://www.hdfgroup.org/solutions/hdf5/) that
-stores essential information for some particle physics analyses, such as the
-ones in _Exploring the Space of Jets with CMS Open Data_. This "MOD HDF5
-Format" is currently optimized for studies based on jets, but may be updated
-in the future to support other types of analyses.
+stores essential information for some particle physics analyses. This "MOD HDF5
+Format" is currently optimized for studies based on jets, but may be updated in
+the future to support other types of analyses.
 
 To further the goals of Open Data, we have made our reprocessed samples
 available on the [Zenodo platform](https://zenodo.org/). Currently, the only
-"collection" (in the parlance used below by the functions and classes that load
-and read MOD HDF5 files) of datasets that is available is the `CMS2011AJets`
-collection, which was used in _Exploring the Space of Jets with CMS Open Data_
-for [EMD](/docs/emd)-based studies. More collections may be added in the future 
-as our research group completes more studies with the Open Data.
+"collection" of datasets that is available is `CMS2011AJets`, which was used in
+_Exploring the Space of Jets with CMS Open Data_ for [EMD](/docs/emd)-based
+studies. More collections may be added in the future as our research group
+completes more studies with the Open Data.
 
 For now, this page focuses on the `CMS2011AJets` collection. This collection
-of datasets includes jets recorded by the CMS detector, as well as
-CMS-generated Pythia samples that are further passed through full CMS detector
-simulation. Hence, the datasets are refered to as CMS, SIM, and GEN (or in code
-as `'cms'`, `'sim'`, `'gen'`) for these three different ways of obtaining jets.
-The datasets include all available jets above 375 GeV, which is where the
-HLT_Jet300 trigger was found to be fully efficient in both data and simulation.
-Note that the pT values referenced in the name of the SIM/GEN datasets are
-those of the generator-level hard parton. The DOIs of `CMS2011AJets` MOD HDF5
-datasets are:
+includes datasets of jets that are CMS-recorded (CMS), Pythia-generated (GEN),
+and detector-simulated (SIM), or in code `'cms'`, `'gen'`, `'sim'`,
+respectively. The datasets include all available jets above 375 GeV, which is
+where the HLT_Jet300 trigger was found to be fully efficient in both data and
+simulation. Note that the pT values referenced in the name of the SIM/GEN
+datasets are those of the generator-level hard parton. The DOIs of
+`CMS2011AJets` MOD HDF5 datasets are:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3340205.svg)](https://
 doi.org/10.5281/zenodo.3340205) - CMS 2011A Jets, pT > 375 GeV
@@ -66,7 +63,9 @@ doi.org/10.5281/zenodo.3341772) - SIM/GEN QCD Jets 1800-$\infty$ GeV
 
 For more details regarding the creation of these samples, as well as for the
 DOIs of the original CMS Open Datasets, see _Exploring the Space of Jets with
-CMS Open Data_.
+CMS Open Data_. To get started using the samples, see the
+[MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the[`load`](#load)
+function.
 """
 from __future__ import absolute_import, division, print_function
 

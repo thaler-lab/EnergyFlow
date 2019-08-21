@@ -658,7 +658,9 @@ three-vector consisting of the jet <code>[pT,y,phi]</code> with no mass value.</
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>Array of summed four-vectors, in hadronic coordinates.</li>
+<li>Array of summed four-vectors, in hadronic coordinates. Note that when
+<code>scheme</code> is <code>'escheme'</code>, the $\phi$ value of the hardest particle is
+used as the <code>phi_ref</code> when converting back to hadronic coordinates.</li>
 </ul>
 </li>
 </ul>
@@ -688,7 +690,9 @@ is replaced by the PDG ID of the particle.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>Array of summed four-vectors, in hadronic coordinates.</li>
+<li>Array of summed four-vectors, in hadronic coordinates. Note that when
+<code>scheme</code> is <code>'escheme'</code>, the $\phi$ value of the hardest particle is
+used as the <code>phi_ref</code> when converting back to hadronic coordinates.</li>
 </ul>
 </li>
 </ul>
@@ -734,9 +738,10 @@ the origin.</li>
 </code></pre>
 
 <p>Rotate a collection of four-vectors to vertically align the principal
-component of the energy-flow tensor. The principal component is obtained
-as the eigenvector of the energy-flow tensor with the largest eigenvalue.
-It is only defined up to a sign, however it is ensured that </p>
+component of the energy flow. The principal component is obtained as the
+eigenvector of the energy flow with the largest eigenvalue. It is only
+defined up to a sign, however it is ensured that there is more total pT in 
+the top half of the rapidity-azimuth plane.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>

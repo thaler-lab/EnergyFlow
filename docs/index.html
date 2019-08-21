@@ -186,24 +186,27 @@
                 <h1 id="welcome-to-energyflow">Welcome to EnergyFlow</h1>
 <p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/QG_256_plain.jpg" width="47.5%"/>
 <img src="https://github.com/pkomiske/EnergyFlow/raw/images/JetCustom_29522924_24981665_EMD.jpg" width="47.5%"/></p>
-<p>EnergyFlow is a Python package containing a suite of particle physics tools. Originally designed to compute Energy Flow Polynomials (EFPs), as of version <code>0.10.0</code> the package expanded to include implementations of Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs). As of version <code>0.11.0</code>, functions for facilitating the computation of the Energy Mover's Distance (EMD) on particle physics events are included. To summarize the main features:</p>
+<p>EnergyFlow is a Python package containing a suite of particle physics tools:</p>
 <ul>
 <li><a href="docs/efps">Energy Flow Polynomials</a>: EFPs are a collection of jet substructure observables which form a complete linear basis of IRC-safe observables. EnergyFlow provides tools to compute EFPs on events for several energy and angular measures as well as custom measures.
 <br><br></li>
-<li><a href="docs/archs">Energy Flow Networks</a>: EFNs are infrared- and collinear-safe models designed for learning from collider events as unordered, variable-length sets of particles. EnergyFlow contains customizable Keras implementations of EFNs.
+<li><a href="docs/archs">Energy Flow Networks</a>: EFNs are infrared- and collinear-safe models designed for learning from collider events as unordered, variable-length sets of particles. EnergyFlow contains customizable Keras implementations of EFNs. Available from version <code>0.10.0</code> onward.
 <br><br></li>
-<li><a href="docs/archs">Particle Flow Networks</a>: PFNs are general models designed for learning from collider events as unordered, variable-length sets of particles, based on the <a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework. EnergyFlow contains customizable Keras implementations of PFNs.
+<li><a href="docs/archs">Particle Flow Networks</a>: PFNs are general models designed for learning from collider events as unordered, variable-length sets of particles, based on the <a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework. EnergyFlow contains customizable Keras implementations of PFNs. Available from version <code>0.10.0</code> onward.
 <br><br></li>
-<li><a href="docs/emd">Energy Mover's Distance</a>: The EMD is a common metric between probability distributions that has been adapted for use as a metric between collider events. EnergyFlow contains code to facilitate the computation of the EMD between events based on an underlying implementation provided by the <a href="https://pot.readthedocs.io">Python Optimal Transport (POT)</a> library.</li>
+<li><a href="docs/emd">Energy Mover's Distance</a>: The EMD is a common metric between probability distributions that has been adapted for use as a metric between collider events. EnergyFlow contains code to facilitate the computation of the EMD between events based on an underlying implementation provided by the <a href="https://pot.readthedocs.io">Python Optimal Transport (POT)</a> library. Available from version <code>0.11.0</code> onward.</li>
 </ul>
-<p>Beyond the primary functions described above, the EnergyFlow package also provides useful supplementary features.
-These include a large quark/gluon jet dataset, implementations of additional machine learning architectures useful for collider physics, and many examples exhibiting the usage of the package.</p>
+<p>The EnergyFlow package also provides easy access to particle phyiscs datasets and useful supplementary features:</p>
 <ul>
-<li><a href="docs/datasets">Jet Tagging Datasets</a>: A dataset of 2 million simulated quark and gluon jets is provided.
+<li><a href="docs/datasets/#cms-open-data-and-the-mod-hdf5-format">CMS Open Data in MOD HDF5 Format</a>: Reprocessed datasets from the <a href="http://opendata.cern.ch/docs/cms-guide-for-research">CMS Open Data</a>, currently including jets with $p_T&gt;375$ GeV and associated detector-level and generator-level Monte Carlo samples. EnergyFlow provides tools for downloading, reading, and manipulating these datasets. 
+<br><br></li>
+<li><a href="docs/datasets/#quark-and-gluon-jets">Jet Tagging Datasets</a>: Datasets of Pythia 8 and Herwig 7.1 simulated quark and gluon jets are provided, along with tools for downloading and reading them.
 <br><br></li>
 <li><a href="docs/archs">Additional Architectures</a>: Implementations of other architectures useful for particle physics are also provided, such as convolutional neural networks (CNNs) for jet images.
 <br><br></li>
-<li><a href="examples">Detailed Examples</a>: Examples showcasing EFPs, EFNs, PFNs, EMDs, and more. Also see the <a href="demos">demos</a>.</li>
+<li><a href="demos">Demos</a>: Jupyter notebook demos that can run in your browser (without any installation) via <a href="https://mybinder.org">Binder</a>.
+<br><br></li>
+<li><a href="examples">Detailed Examples</a>: Examples showcasing EFPs, EFNs, PFNs, EMDs, and more.</li>
 </ul>
 <p>The current version is <code>0.13.0</code>. Changes are summarized in the <a href="releases">Release Notes</a>. Using the most up-to-date version is recommended. As of version <code>0.7.0</code>, tests have been written covering the majority of the EFP and EMD code. The architectures code is currently tested by running the examples. The source code can be found on <a href="https://github.com/pkomiske/EnergyFlow">GitHub</a>.</p>
 <p>Get started by <a href="installation">installing EnergyFlow</a>, <a href="demos">exploring the demos</a>, and <a href="examples">running the examples</a>!</p>
@@ -265,5 +268,5 @@ These include a large quark/gluon jet dataset, implementations of additional mac
 
 <!--
 MkDocs version : 1.0.4
-Build Date UTC : 2019-08-21 04:19:09
+Build Date UTC : 2019-08-21 20:23:43
 -->

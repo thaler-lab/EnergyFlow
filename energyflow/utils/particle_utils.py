@@ -502,7 +502,7 @@ def p4s_from_ptyphipids(ptyphipids, error_on_unknown=False):
     return p4s
 
 def sum_ptyphims(ptyphims, scheme='escheme'):
-    """Add a collection of four-vectors that are expressed in hadronic
+    r"""Add a collection of four-vectors that are expressed in hadronic
     coordinates by first converting to Cartesian coordinates and then summing.
 
     **Arguments**
@@ -521,16 +521,15 @@ def sum_ptyphims(ptyphims, scheme='escheme'):
     **Returns**
 
     - _numpy.ndarray_
-        - Array of summed four-vectors, in hadronic coordinates.
+        - Array of summed four-vectors, in hadronic coordinates. Note that when
+        `scheme` is `'escheme'`, the $\phi$ value of the hardest particle is
+        used as the `phi_ref` when converting back to hadronic coordinates.
     """
 
     ptyphims = np.asarray(ptyphims, dtype=float)
 
-    if ptyphims.ndim <= 1:
+    if ptyphims.ndim <= 1 or ptyphims.size == 0:
         return ptyphims
-
-    if ptyphims.shape[0] == 0:
-        return np.zeros(ptyphims.shape[1])
 
     if scheme == 'escheme':
         phi = ptyphims[np.argmax(ptyphims[:,0]),2]
@@ -538,15 +537,14 @@ def sum_ptyphims(ptyphims, scheme='escheme'):
         return ptyphims_from_p4s(sum_p4, phi_ref=phi)
 
     elif scheme == 'ptscheme':
-        pt = np.sum(ptyphims[:,0])
         y, phi = np.average(ptyphims[:,1:3], weights=ptyphims[:,0], axis=0)
-        return np.asarray([pt, y, phi])
+        return np.asarray([np.sum(ptyphims[:,0]), y, phi])
 
     else:
         raise ValueError('Unknown recombination scheme {}'.format(scheme))
 
 def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
-    """Add a collection of four-vectors that are expressed as
+    r"""Add a collection of four-vectors that are expressed as
     `[pT,y,phi,pdgid]`.
 
     **Arguments**
@@ -562,16 +560,15 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     **Returns**
 
     - _numpy.ndarray_
-        - Array of summed four-vectors, in hadronic coordinates.
+        - Array of summed four-vectors, in hadronic coordinates. Note that when
+        `scheme` is `'escheme'`, the $\phi$ value of the hardest particle is
+        used as the `phi_ref` when converting back to hadronic coordinates.
     """
 
     ptyphipids = np.asarray(ptyphipids, dtype=float)
 
-    if ptyphipids.ndim <= 1:
+    if ptyphipids.ndim <= 1 or ptyphipids.size == 0:
         return ptyphipids
-
-    if ptyphipids.shape[0] == 0:
-        return np.zeros(ptyphipids.shape[1])
 
     if scheme == 'escheme':
         phi = ptyphipids[np.argmax(ptyphipids[:,0]),2]
@@ -623,9 +620,10 @@ def _do_reflection(zs, coords):
 
 def rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True):
     """Rotate a collection of four-vectors to vertically align the principal
-    component of the energy-flow tensor. The principal component is obtained
-    as the eigenvector of the energy-flow tensor with the largest eigenvalue.
-    It is only defined up to a sign, however it is ensured that 
+    component of the energy flow. The principal component is obtained as the
+    eigenvector of the energy flow with the largest eigenvalue. It is only
+    defined up to a sign, however it is ensured that there is more total pT in 
+    the top half of the rapidity-azimuth plane.
 
     **Arguments**
 
@@ -708,6 +706,7 @@ def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
 
 # masses (in GeV) of particles by pdgid
 # obtained from the Pythia8 Particle Data page
+# http://home.thep.lu.se/~torbjorn/pythia82html/ParticleData.html
 # includes fundamental particles and most ground state uds mesons and baryons
 PARTICLE_MASSES = {
     0:    0.,      # void
@@ -889,7 +888,8 @@ def ischrgd(pids, ignored_pids=None):
     if ignored_pids is None:
         charged = np.asarray([pid in CHARGED_PIDS for pid in abspids], dtype=bool)
     else:
-        charged = np.asarray([(pid in CHARGED_PIDS) and (pid not in ignored_pids) for pid in abspids], dtype=bool)
+        charged = np.asarray([(pid in CHARGED_PIDS) and (pid not in ignored_pids) 
+                              for pid in abspids], dtype=bool)
 
     return charged.reshape(orig_shape)
 
@@ -913,4 +913,5 @@ def flat_metric(dim):
 
     if dim <= 101:
         return LONG_METRIC[:dim]
+
     return np.asarray([1.] + [-1.]*(dim-1))
