@@ -194,16 +194,135 @@ issued, the observables will simply not be included in this module.</p>
 <pre><code class="python">energyflow.image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None)
 </code></pre>
 
+<p>Image activity, also known as $N_f$, is the minimum number of pixels
+in an image that contain a fraction $f$ of the total pT.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphis</strong> : <em>2d numpy.ndarray</em><ul>
+<li>Array of particles in hadronic coordinates; the mass is optional
+since it is not used in the computation of this observable.</li>
+</ul>
+</li>
+<li><strong>f</strong> : <em>float</em><ul>
+<li>The fraction $f$ of total pT that is to be contained by the pixels.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>Half of the length of one side of the square space to tile with
+pixels when forming the image. For a conical jet, this should typically
+be the jet radius.</li>
+</ul>
+</li>
+<li><strong>npix</strong> : <em>int</em><ul>
+<li>The number of pixels along one dimension of the image, such that the
+image has shape <code>(npix,npix)</code>.</li>
+</ul>
+</li>
+<li><strong>center</strong> : <em>str</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the centering scheme to use to center the particles
+prior to calculating the image activity. See the option of the same
+name for <a href="/docs/utils/#center_ptyphims"><code>center_ptyphims</code></a>.</li>
+</ul>
+</li>
+<li><strong>axis</strong> : <em>numpy.ndarray</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the <code>[y,phi]</code> values to use for centering. If <code>None</code>,
+the center of the image will be at <code>(0,0)</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>int</em><ul>
+<li>The image activity defined for the specified image paramters.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h3 id="zg">zg</h3>
 <pre><code class="python">energyflow.zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca')
 </code></pre>
 
+<p>Groomed momentum fraction of a jet, as calculated on an array of
+particles in hadronic coordinates. First, the particles are converted
+to FastJet PseudoJets and clustered according to the specified
+algorithm. Second, the jet is groomed according to the specified
+SoftDrop parameters and the momentum fraction of the surviving pair of
+Pseudojets is computed. See the <a href="https://arxiv.org/abs/
+1402.2657">SoftDrop paper</a> for a complete description of SoftDrop.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em><ul>
+<li>An array of particles in hadronic coordinates that will be
+clustered into a single jet and groomed.</li>
+</ul>
+</li>
+<li><strong>zcut</strong> : <em>float</em><ul>
+<li>The $z_{\rm cut}$ parameter of SoftDrop. Should be between <code>0</code>
+and <code>1</code>.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
+<li>The $\beta$ parameter of SoftDrop.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The jet radius to use for the grooming. Only relevant if <code>beta!=0</code>.</li>
+</ul>
+</li>
+<li><strong>algorithm</strong> : {'kt', 'ca', 'antikt'}<ul>
+<li>The jet algorithm to use when clustering the particles. Same as
+the argument of the same name of <a href="/docs/utils/#cluster"><code>cluster</code></a>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>float</em><ul>
+<li>The groomed momentum fraction of the given jet.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h3 id="zg_from_pj">zg_from_pj</h3>
 <pre><code class="python">energyflow.zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
 
+<p>Groomed momentum fraction $z_g$, as calculated on an ungroomed (but
+already clustered) FastJet PseudoJet object. First, the jet is groomed
+according to the specified SoftDrop parameters and then the momentum
+fraction of the surviving pair of Pseudojets is computed. See the
+<a href="https://arxiv.org/abs/1402.2657">SoftDrop paper</a> for a complete
+description of SoftDrop. This version of $z_g$ is provided in addition
+to the above function so that a jet does not need to be reclustered if
+multiple grooming parameters are to be used.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pseudojet</strong> : <em>fastjet.PseudoJet</em><ul>
+<li>A FastJet PseudoJet that has been obtained from a suitable
+clustering (typically Cambridge/Aachen for SoftDrop).</li>
+</ul>
+</li>
+<li><strong>zcut</strong> : <em>float</em><ul>
+<li>The $z_{\rm cut}$ parameter of SoftDrop. Should be between <code>0</code>
+and <code>1</code>.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
+<li>The $\beta$ parameter of SoftDrop.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The jet radius to use for the grooming. Only relevant if <code>beta!=0</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>float</em><ul>
+<li>The groomed momentum fraction of the given jet.</li>
+</ul>
+</li>
+</ul>
 <hr />
               
             </div>

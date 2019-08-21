@@ -677,7 +677,7 @@ is replaced by the PDG ID of the particle.</li>
 </ul>
 </li>
 <li><strong>scheme</strong> : <em>str</em><ul>
-<li>See the argument of the same name <a href="#sum_ptyphims"><code>here</code></a>.</li>
+<li>See the argument of the same name of <a href="#sum_ptyphims"><code>sum_ptyphims</code></a>.</li>
 </ul>
 </li>
 <li><strong>error_on_unknown</strong> : <em>bool</em><ul>
@@ -712,7 +712,7 @@ out will be taken to be zero.</li>
 </li>
 <li><strong>center</strong> : <em>str</em><ul>
 <li>The centering scheme to be used. Valid options are the same as the
-<code>scheme</code> argument <a href="#sum_ptyphims"><code>here</code></a>.</li>
+<code>scheme</code> argument of <a href="#sum_ptyphims"><code>sum_ptyphims</code></a>.</li>
 </ul>
 </li>
 <li><strong>copy</strong> : <em>bool</em><ul>
@@ -774,6 +774,30 @@ the origin.</li>
 <pre><code class="python">energyflow.reflect_ptyphims(ptyphims, which='both', center=None, copy=True)
 </code></pre>
 
+<p>Reflect a collection of four-vectors to arrange the highest-pT
+half or quadrant to have positive rapidity-azimuth coordinates.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em><ul>
+<li>An event in hadronic coordinates. The mass is optional and is not
+used as a part of this function.</li>
+</ul>
+</li>
+<li><strong>which</strong> : {<code>'both'</code>, <code>'x'</code>, <code>'y'</code>}<ul>
+<li>Controls which axes to consider reflecting over. <code>'both'</code> includes
+<code>'x'</code> and <code>'y'</code>.</li>
+</ul>
+</li>
+<li><strong>center</strong> : <em>str</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the centering scheme to use prior to performing
+reflections.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input array.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="pids2ms">pids2ms</h4>
 <pre><code class="python">energyflow.pids2ms(pids, error_on_unknown=False)
@@ -834,6 +858,27 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 <pre><code class="python">energyflow.ischrgd(pids, ignored_pids=None)
 </code></pre>
 
+<p>Compute a boolean mask according to if the given PDG ID corresponds
+to a particle of non-zero charge.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pids</strong> : <em>numpy.ndarray</em><ul>
+<li>An array of numeric (float or integer) PDG ID values.</li>
+</ul>
+</li>
+<li><strong>ignored_pids</strong> : <em>numpy.ndarray</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the PDG IDs in this array will not be considered
+charged, for instance to avoid counting quarks as charged particles.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>A boolean mask corresponding to which particles are charged.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="phi_fix">phi_fix</h4>
 <pre><code class="python">energyflow.phi_fix(phis, phi_ref, copy=True)
@@ -1240,21 +1285,120 @@ to zero center. <code>None</code> is interpretted to mean every channel.</li>
 </ul>
 <hr />
 <h3 id="fastjet-tools">FastJet Tools</h3>
+<p>The <a href="http://fastjet.fr/">FastJet package</a> provides, among other things, fast
+jet clustering utilities. It is written in C++ and includes a Python interface
+that is easily installed at compile time by passing the <code>--enable-pyext</code> flag
+to <code>configure</code>. If you use this module for published research, please <a href="http://fastjet.fr/about.html">cite
+FastJet appropriately</a>.</p>
+<p>The core of EnergyFlow does not rely on FastJet, and hence it is not required
+to be installed, but the following utilities are available assuming that
+<code>import fastjet</code> succeeds in your Python environment (if not, no warnings or
+errors will be issued but this module will not be usable).</p>
 <hr />
 <h4 id="pjs_from_ptyphims">pjs_from_ptyphims</h4>
 <pre><code class="python">energyflow.utils.pjs_from_ptyphims(ptyphims)
 </code></pre>
 
+<p>Converts particles in hadronic coordinates to FastJet PseudoJets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>2d numpy.ndarray</em><ul>
+<li>An array of particles in hadronic coordinates.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of PseudoJets corresponding to the particles in the given
+array.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="cluster">cluster</h4>
 <pre><code class="python">energyflow.utils.cluster(pjs, algorithm='ca', R=1000.0)
 </code></pre>
 
+<p>Clusters a list of PseudoJets according to a specified jet
+algorithm and jet radius.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of Pseudojets representing particles or other kinematic
+objects that are to be clustered into jets.</li>
+</ul>
+</li>
+<li><strong>algorithm</strong> : {'kt', 'antikt', 'ca', 'cambridge', 'cambridge_aachen'}<ul>
+<li>The jet algorithm to use during the clustering. Note that the
+last three options all refer to the same strategy and are provided
+because they are all used by the FastJet Python package.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The jet radius. The default value corresponds to
+<code>max_allowable_R</code> as defined by the FastJet python package.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of PseudoJets corresponding to the clustered jets.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h4 id="softdrop">softdrop</h4>
 <pre><code class="python">energyflow.utils.softdrop(jet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
 
+<p>Implements the SoftDrop grooming algorithm on a jet that has been
+found via clustering. Specifically, given a jet, it is recursively
+declustered and the softer branch removed until the SoftDrop condition
+is satisfied:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} > z_{\rm cut}
+\left(\frac{\Delta R_{12}}{R}\right)^\beta
+</script>
+</p>
+<p>where $1$ and $2$ refer to the two PseudoJets declustered at this stage.
+See the <a href="https://arxiv.org/abs/1402.2657">SoftDrop paper</a> for a
+complete description of SoftDrop. If you use this function for your
+research, please cite <a href="https://doi.org/10.1007/
+JHEP05(2014)146">1402.2657</a>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>jet</strong> : <em>fastjet.PseudoJet</em><ul>
+<li>A FastJet PseudoJet that has been obtained from a suitable
+clustering (typically Cambridge/Aachen).</li>
+</ul>
+</li>
+<li><strong>zcut</strong> : <em>float</em><ul>
+<li>The $z_{\rm cut}$ parameter of SoftDrop. Should be between <code>0</code>
+and <code>1</code>.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
+<li>The $\beta$ parameter of SoftDrop.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The jet radius to use for the grooming. Only relevant if <code>beta!=0</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>fastjet.PseudoJet</em><ul>
+<li>The groomed jet. Note that it will not necessarily have all of
+the same associated structure as the original jet, but it is
+suitable for obtaining kinematic quantities, e.g. <a href="/docs/
+obs/#zg_from_pj">$z_g$</a>.</li>
+</ul>
+</li>
+</ul>
 <hr />
               
             </div>

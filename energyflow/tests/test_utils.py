@@ -72,8 +72,8 @@ def test_shapes_from_p4s(method, nevents, nparticles):
 @pytest.mark.utils
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
-@pytest.mark.parametrize('method', ['p4s_from_ptyphims', 'p4s_from_ptyphipids', 
-                                    'sum_ptyphims', 'sum_ptyphipids'])
+@pytest.mark.parametrize('method', ['p4s_from_ptyphims', 'p4s_from_ptyphipids',])
+                                    #'sum_ptyphims', 'sum_ptyphipids'])
 def test_shapes_from_ptyphis(method, nevents, nparticles):
     p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
     ptyphims = ef.ptyphims_from_p4s(p4s)

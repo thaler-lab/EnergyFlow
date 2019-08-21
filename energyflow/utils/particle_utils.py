@@ -555,7 +555,7 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
         - A single particle or event in hadronic coordinates where the mass
         is replaced by the PDG ID of the particle.
     - **scheme** : _str_
-        - See the argument of the same name [`here`](#sum_ptyphims).
+        - See the argument of the same name of [`sum_ptyphims`](#sum_ptyphims).
     - **error_on_unknown** : _bool_
         - See the corresponding argument of [`pids2ms`](#pids2ms).
 
@@ -597,7 +597,7 @@ def center_ptyphims(ptyphims, axis=None, center='escheme', copy=True):
         - If not `None`, the `[y,phi]` values to use for centering.
     - **center** : _str_
         - The centering scheme to be used. Valid options are the same as the
-        `scheme` argument [`here`](#sum_ptyphims).
+        `scheme` argument of [`sum_ptyphims`](#sum_ptyphims).
     - **copy** : _bool_
         - Whether or not to copy the input array.
 
@@ -673,7 +673,23 @@ def rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True):
     return ptyphims
 
 def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
-    """"""
+    """Reflect a collection of four-vectors to arrange the highest-pT
+    half or quadrant to have positive rapidity-azimuth coordinates.
+
+    **Arguments**
+
+    - **ptyphims** : _numpy.ndarray_
+        - An event in hadronic coordinates. The mass is optional and is not
+        used as a part of this function.
+    - **which** : {`'both'`, `'x'`, `'y'`}
+        - Controls which axes to consider reflecting over. `'both'` includes
+        `'x'` and `'y'`.
+    - **center** : _str_ or `None`
+        - If not `None`, the centering scheme to use prior to performing
+        reflections.
+    - **copy** : _bool_
+        - Whether or not to copy the input array.
+    """
 
     if copy:
         ptyphims = np.copy(ptyphims)
@@ -849,7 +865,22 @@ def pids2chrgs(pids, error_on_unknown=False):
     return signs * np.asarray(charges, dtype=float).reshape(orig_shape)
 
 def ischrgd(pids, ignored_pids=None):
-    """"""
+    """Compute a boolean mask according to if the given PDG ID corresponds
+    to a particle of non-zero charge.
+
+    **Arguments**
+
+    - **pids** : _numpy.ndarray_
+        - An array of numeric (float or integer) PDG ID values.
+    - **ignored_pids** : _numpy.ndarray_ or `None`
+        - If not `None`, the PDG IDs in this array will not be considered
+        charged, for instance to avoid counting quarks as charged particles.
+
+    **Returns**
+
+    - _numpy.ndarray_
+        - A boolean mask corresponding to which particles are charged.
+    """
     
     abspids = np.abs(np.asarray(pids, dtype=int))
     orig_shape = abspids.shape

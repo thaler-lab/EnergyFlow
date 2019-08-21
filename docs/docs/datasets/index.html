@@ -239,8 +239,8 @@ CMS-generated Pythia samples that are further passed through full CMS detector
 simulation. Hence, the datasets are refered to as CMS, SIM, and GEN (or in code
 as <code>'cms'</code>, <code>'sim'</code>, <code>'gen'</code>) for these three different ways of obtaining jets.
 The datasets include all available jets above 375 GeV, which is where the
-Jet300 trigger was found to be fully efficient in both data and simulation.
-Note that the pT values references in the name of the SIM/GEN datasets are
+HLT_Jet300 trigger was found to be fully efficient in both data and simulation.
+Note that the pT values referenced in the name of the SIM/GEN datasets are
 those of the generator-level hard parton. The DOIs of <code>CMS2011AJets</code> MOD HDF5
 datasets are:</p>
 <p><a href="https://
@@ -275,7 +275,7 @@ CMS Open Data</em>.</p>
 <hr />
 <h3 id="moddataset">MODDataset</h3>
 <p>Loads and provides access to datasets in MOD HDF5 format. Jets can be
-selected while loading from file according to a number of kinematic
+selected when loading from file according to a number of kinematic
 attributes. MOD HDF5 datasets are created via the <a href="#save"><code>save</code></a> method.</p>
 <p>Currently, the MOD HDF5 format consists of an HDF5 file with the following
 arrays, each of which are stored as properties of the <code>MODDataset</code>:</p>
@@ -291,7 +291,7 @@ arrays, each of which are stored as properties of the <code>MODDataset</code>:</
 event containing the jet.</li>
 <li><code>quality</code> (CMS/SIM only) : The quality of the jet, where <code>0</code>
 means no quality, <code>1</code> is "loose", <code>2</code> is "medium", and <code>3</code> is
-"strict".</li>
+"tight".</li>
 <li><code>hard_pid</code> (SIM/GEN only) : The particle ID of the hard parton
 associated to the jet (<code>0</code> if not associated).</li>
 </ul>
