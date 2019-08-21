@@ -17,23 +17,24 @@ cat $IPYTHON_KERNEL_CONFIG ${REPO_DIR}/binder/ef_ipython_kernel_config.py > ./tm
 mv -v ./tmp_kernel_config.py $IPYTHON_KERNEL_CONFIG
 
 # get CMS2011AJets in MOD HDF5 Format
-python ${REPO_DIR}/binder/download_CMS2011AJets.py 0.01
+#python ${REPO_DIR}/binder/download_CMS2011AJets.py 0.01
 
 # install fastjet
-_PTK_START_DIR=$(pwd)
+#_PTK_START_DIR=$(pwd)
 
-cd ${REPO_DIR}/.local
-wget -O fastjet.tar.gz http://fastjet.fr/repo/fastjet-3.3.2.tar.gz
-tar xf fastjet.tar.gz
-rm fastjet.tar.gz
-cd fastjet-3.3.2
+#mkdir ${REPO_DIR}/.local
+#cd ${REPO_DIR}/.local
+#wget -O fastjet.tar.gz http://fastjet.fr/repo/fastjet-3.3.2.tar.gz
+#tar xf fastjet.tar.gz
+#rm fastjet.tar.gz
+#cd fastjet-3.3.2
 
-./configure --prefix=${REPO_DIR}/.local --enable-pyext --disable-allplugins --disable-monolithic PYTHON=python PYTHON_CONFIG=python3-config
-make install
+#./configure --prefix=${REPO_DIR}/.local --enable-pyext --disable-allplugins --disable-monolithic PYTHON=python PYTHON_CONFIG=python3-config
+#make
+#make install
 
-export PYTHONPATH="$PYTHONPATH:${REPO_DIR}/.local/lib/python3.7/site-packages"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${REPO_DIR}/.local/lib"
-ldconfig
+#export PYTHONPATH="$PYTHONPATH:${REPO_DIR}/.local/lib/python3.7/site-packages"
+#export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${REPO_DIR}/.local/lib"
 
-cd $_PTK_START_DIR
-unset _PTK_START_DIR
+#cd $_PTK_START_DIR
+#unset _PTK_START_DIR

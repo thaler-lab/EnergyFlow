@@ -459,7 +459,7 @@ def _get_dataset_info(cname):
 def _cols_str(cols, nspaces=4):
     return str(cols).replace('\n', '\n' + nspaces*' ')
 
-def _separate_particle_arrays(particles, particles_index, mask):
+def _separate_particle_arrays(particles, particles_index, mask, copy=True):
     
     # array to hold particles
     particles_array = np.zeros(np.count_nonzero(mask), dtype='O')
@@ -468,7 +468,7 @@ def _separate_particle_arrays(particles, particles_index, mask):
     n = 0
     for start, end, m in zip(particles_index[:-1], particles_index[1:], mask):
         if m:
-            particles_array[n] = particles[start:end]
+            particles_array[n] = np.array(particles[start:end], copy=copy)
             n += 1
         
     return particles_array
