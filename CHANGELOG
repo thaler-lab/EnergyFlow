@@ -1,5 +1,10 @@
 ### 0.13.x
 
+**0.13.1**
+
+- When loading MOD HDF5 files, jets are now made from copies of the particle arrays rather than from views, 
+enabling the large arrays to be freed and only the selected jets to remain in memory (which can have substantial memory savings).
+
 **0.13.0**
 
 - Added support for downloading and reading MOD datasets containing CMS Open Data and Simulation from Zenodo.
