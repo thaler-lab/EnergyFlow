@@ -34,3 +34,6 @@ ldconfig
 
 cd $_PTK_START_DIR
 unset _PTK_START_DIR
+
+# get CMS2011AJets in MOD HDF5 Format
+python download_CMS2011AJets.py 0.01
