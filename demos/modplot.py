@@ -173,22 +173,18 @@ def stamp(left_x, top_y,
 # function for saving plots and optionally adding watermark     
 def save(fig, name, add_watermark=True, **kwargs):
     name = name.replace(' ', '').replace('$', '')
-    fig.savefig('../plots/bare/{}.pdf'.format(name), bbox_inches='tight')
+    fig.savefig(name + '_bare.pdf', bbox_inches='tight')
     if add_watermark:
-        watermark('{}.pdf'.format(name), **kwargs)
+        watermark(name, **kwargs)
         
-def watermark(plot_file, scale=0.12, tx=44, ty=251,
-                         in_plots_dir='../plots/bare',
-                         out_plots_dir='../plots',
-                         logo_fpath='../plots/bare/MODLogo.pdf',
-                         **kwargs):
+def watermark(plot_file, scale=0.12, tx=44, ty=251, plots_dir='.', **kwargs):
 
-    # ensure out_plots_dir exists
-    os.makedirs(out_plots_dir, exist_ok=True)
+    # ensure plots_dir exists
+    os.makedirs(plots_dir, exist_ok=True)
     
     # open files for bare plot and the logo
-    bare_plot = open(os.path.join(in_plots_dir, plot_file), 'rb')
-    logo = open(logo_fpath, 'rb')
+    bare_plot = open(os.path.join(plots_dir, plot_file + '_bare.pdf'), 'rb')
+    logo = open(os.path.join(plots_dir, 'MODLogo.pdf'), 'rb')
     
     # extract pdf pages for bare plot and the logo
     plot_page = PyPDF2.PdfFileReader(bare_plot).getPage(0)
@@ -202,7 +198,7 @@ def watermark(plot_file, scale=0.12, tx=44, ty=251,
     out_plot_pdf.addPage(plot_page)
     
     # write new plot to PDF
-    out_plot = open(os.path.join(out_plots_dir, plot_file), 'wb')
+    out_plot = open(os.path.join(plots_dir, plot_file + '.pdf'), 'wb')
     out_plot_pdf.write(out_plot)
     
     # close all files
