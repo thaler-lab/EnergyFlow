@@ -2,7 +2,7 @@
 ![alt-text](https://travis-ci.org/pkomiske/EnergyFlow.svg?branch=master "Travis-CI Build Status")
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pkomiske/EnergyFlow/master)
 
-EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) defined in Ref. [1], implements Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) defined in Ref. [2], and computes Energy Mover's Distances as defined in Ref. [3].
+EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) as defined in Ref. [1], implements Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) as defined in Ref. [2], computes Energy Mover's Distances as defined in Ref. [3], and provides access to some particle physics [datasets hosted on Zenodo](https://zenodo.org/search?page=1&size=20&q=komiske&sort=title) including the jet datasets in MOD HDF5 format used in Ref. [4].
 
 #### Installation
 
