@@ -4,6 +4,7 @@ from abc import abstractmethod, abstractproperty
 
 import numpy as np
 
+from keras import __version__ as __keras_version__
 from keras import backend as K
 from keras.layers import Dense, Dot, Dropout, Input, Lambda, TimeDistributed
 from keras.models import Model
@@ -26,6 +27,13 @@ __all__ = [
     # full model classes
     'EFN', 'PFN'
 ]
+
+###############################################################################
+# Keras 2.2.5 fixes bug in 2.2.4 that affects our usage of the Dot layer
+###############################################################################
+
+keras_version_tuple = tuple(map(int, __keras_version__.split('.')))
+DOT_AXIS = 0 if keras_version_tuple <= (2, 2, 4) else 1
 
 ###############################################################################
 # INPUT FUNCTIONS
@@ -117,7 +125,7 @@ def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
     """"""
 
     # lists of layers and tensors
-    layers = [Dot(0, name=name)]
+    layers = [Dot(DOT_AXIS, name=name)]
     tensors = [layers[-1]([weight_tensor, input_tensor])]
 
     # apply dropout if specified

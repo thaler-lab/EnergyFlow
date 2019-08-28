@@ -1,5 +1,9 @@
 ### 0.13.x
 
+**0.13.2**
+
+- Keras 2.2.5 fixes a bug in their `batch_dot` function that is used by their `Dot` layer which is used by the `EFN` and `PFN` classes. This necessitates adjusting our code to account for the new behavior.
+
 **0.13.1**
 
 - When loading MOD HDF5 files, jets are now made from copies of the particle arrays rather than from views, 

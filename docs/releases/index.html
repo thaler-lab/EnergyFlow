@@ -193,6 +193,10 @@
               
                 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
 <h3 id="013x">0.13.x</h3>
+<p><strong>0.13.2</strong></p>
+<ul>
+<li>Keras 2.2.5 fixes a bug in their <code>batch_dot</code> function that is used by their <code>Dot</code> layer which is used by the <code>EFN</code> and <code>PFN</code> classes. This necessitates adjusting our code to account for the new behavior.</li>
+</ul>
 <p><strong>0.13.1</strong></p>
 <ul>
 <li>When loading MOD HDF5 files, jets are now made from copies of the particle arrays rather than from views, 
