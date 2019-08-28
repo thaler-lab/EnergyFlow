@@ -21,9 +21,9 @@ the future to support other types of analyses.
 To further the goals of Open Data, we have made our reprocessed samples
 available on the [Zenodo platform](https://zenodo.org/). Currently, the only
 "collection" of datasets that is available is `CMS2011AJets`, which was used in
-_Exploring the Space of Jets with CMS Open Data_ for [EMD](/docs/emd)-based
-studies. More collections may be added in the future as our research group
-completes more studies with the Open Data.
+[Exploring the Space of Jets with CMS Open Data](https://arxiv.org/abs/
+1908.08542) for [EMD](/docs/emd)-based studies. More collections may be added
+in the future as our research group completes more studies with the Open Data.
 
 For now, this page focuses on the `CMS2011AJets` collection. This collection
 includes datasets of jets that are CMS-recorded (CMS), Pythia-generated (GEN),
@@ -62,10 +62,10 @@ doi.org/10.5281/zenodo.3341770) - SIM/GEN QCD Jets 1400-1800 GeV
 doi.org/10.5281/zenodo.3341772) - SIM/GEN QCD Jets 1800-$\infty$ GeV
 
 For more details regarding the creation of these samples, as well as for the
-DOIs of the original CMS Open Datasets, see _Exploring the Space of Jets with
-CMS Open Data_. To get started using the samples, see the
-[MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the[`load`](#load)
-function.
+DOIs of the original CMS Open Datasets, see [Exploring the Space of Jets with
+CMS Open Data](https://arxiv.org/abs/1908.08542). To get started using the
+samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the 
+[`load`](#load) function.
 """
 from __future__ import absolute_import, division, print_function
 

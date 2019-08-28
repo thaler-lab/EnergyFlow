@@ -22,3 +22,5 @@ The documentation is maintained at [https://energyflow.network](https://energyfl
 [2] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Networks: Deep Sets for Particle Jets_, _[JHEP __01__ (2019) 121](https://doi.org/10.1007/JHEP01(2019)121)_ [[1810.05165](https://arxiv.org/abs/1810.05165)].
 
 [3] P. T. Komiske, E. M. Metodiev, and J. Thaler, _The Metric Space of Collider Events_, [Phys. Rev. Lett. __123__ (2019) 041801](https://doi.org/10.1103/PhysRevLett.123.041801) [[1902.02346](https://arxiv.org/abs/1902.02346)].
+
+[4] P. T. Komiske, R. Mastandrea, E. M. Metodiev, P. Naik, and J. Thaler, _Exploring the Space of Jets with CMS Open Data_, [1908.08542](https://arxiv.org/abs/1908.08542).
