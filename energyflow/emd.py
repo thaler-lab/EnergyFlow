@@ -150,7 +150,7 @@ if ot:
                 
         # handle norming pts or adding extra zeros to event
         if norm:
-            pts /= pts.sum()
+            pts = pts/pts.sum()
         elif norm is None:
             pass
         else:
@@ -197,8 +197,8 @@ if ot:
 
     # helper function for pool imap
     def _emd4map(x):
-        (i, j), ((X0, X1), other_params) = x
-        return _emd(X0[i], X1[j], *other_params)
+        (i, j), params = x
+        return _emd(_X0[i], _X1[j], *params)
 
     # internal use only by emds, makes assumptions about input format
     def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, 
@@ -373,13 +373,8 @@ if ot:
             # change units for numerical stability
             rescale = max(pT0, pT1)
 
-        try:
-            G, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
-            check_result(result_code)
-        except:
-            print(ev0, ev1)
-            print(np.sum(pTs0), np.sum(pTs1))
-            raise
+        G, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
+        check_result(result_code)
 
         # need to change units back
         if return_flow:
@@ -394,7 +389,7 @@ if ot:
                           n_jobs=None, verbose=0, print_every=10**6):
         r"""Compute the EMD between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
-        two difference sets.
+        two different sets.
 
         **Arguments**
 
@@ -491,23 +486,24 @@ if ot:
         phi_col_m1 = phi_col - 1
 
         # process events into convenient form for EMD
+        global _X0, _X1
         start = time.time()
         args = (norm, gdim, periodic_phi, phi_col_m1, 
                 mask, R, hadr2cart, euclidean, error_on_empty)
-        X0 = [_process_for_emd(x, *args) for x in X0]
-        X1 = X0 if sym else [_process_for_emd(x, *args) for x in X1]
+        _X0 = [_process_for_emd(x, *args) for x in X0]
+        _X1 = _X0 if sym else [_process_for_emd(x, *args) for x in X1]
 
         # begin printing
         if verbose >= 1:
-            n = len(X0) if sym else len(X0) + len(X1)
+            n = len(_X0) if sym else len(_X0) + len(_X1)
             s = 'symmetric' if sym else 'asymmetric'
             t = time.time() - start
             print('Processed {} events for {} EMD computation in {:.3f}s'.format(n, s, t))
 
         # get iterator for indices
-        pairs = (itertools.combinations(range(len(X0)), r=2) if sym else 
-                 itertools.product(range(len(X0)), range(len(X1))))
-        npairs = len(X0)*(len(X0)-1)//2 if sym else len(X0)*len(X1)
+        pairs = (itertools.combinations(range(len(_X0)), r=2) if sym else 
+                 itertools.product(range(len(_X0)), range(len(_X1))))
+        npairs = len(_X0)*(len(_X0)-1)//2 if sym else len(_X0)*len(_X1)
 
         # handle kwarg options
         if isinstance(print_every, float):
@@ -516,7 +512,7 @@ if ot:
             n_jobs = multiprocessing.cpu_count() or 1
 
         # setup container for EMDs
-        emds = np.zeros((len(X0), len(X1)))
+        emds = np.zeros((len(_X0), len(_X1)))
 
         # use some number of worker processes to calculate EMDs
         start = time.time()
@@ -530,10 +526,8 @@ if ot:
             # create process pool
             with create_pool(n_jobs) as pool:
                 
-                Xarrs = (X0, X1)
-                other_params = (R, no_norm, euclidean, n_iter_max, 
-                                periodic_phi, phi_col_m1, empty_policy)
-                params = (Xarrs, other_params)
+                params = (R, no_norm, euclidean, n_iter_max, 
+                          periodic_phi, phi_col_m1, empty_policy)
                 map_args = ((pair, params) for pair in pairs)
 
                 # iterate over pairs of events
@@ -565,7 +559,7 @@ if ot:
         # run EMDs in this process
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
-                emds[i, j] = _emd(X0[i], X1[j], R, no_norm, euclidean, 
+                emds[i, j] = _emd(_X0[i], _X1[j], R, no_norm, euclidean, 
                                   n_iter_max, periodic_phi, phi_col_m1, empty_policy)
 
                 if verbose >= 1 and ((k+1) % print_every) == 0:
@@ -579,5 +573,7 @@ if ot:
         # if doing an array with itself, symmetrize the distance matrix
         if sym:
             emds += emds.T
+
+        del _X0, _X1
 
         return emds
