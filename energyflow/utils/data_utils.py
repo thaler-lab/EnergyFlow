@@ -101,7 +101,7 @@ def data_split(*args, **kwargs):
         set. If an integer, the number of elements to include in the
         test set.
     - **shuffle** : _bool_
-        - A flag to control whether the dataset is shuffle prior to 
+        - A flag to control whether the dataset is shuffled prior to
         being split into parts.
 
     **Returns**

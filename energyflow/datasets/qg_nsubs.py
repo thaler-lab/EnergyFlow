@@ -23,7 +23,7 @@ from energyflow.utils.data_utils import _get_filepath
 
 __all__ = ['load']
 
-def load(num_data=-1, cache_dir=None):
+def load(num_data=-1, cache_dir='~/.energyflow'):
     """Loads the dataset. The first time this is called, it will automatically
     download the dataset. Future calls will attempt to use the cached dataset 
     prior to redownloading.

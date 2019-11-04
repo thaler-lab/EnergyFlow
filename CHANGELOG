@@ -1,5 +1,9 @@
 ### 0.13.x
 
+- Fixed bug in qg_nsubs where `cache_dir` was set to `None` which caused an error.
+- Fixed bug where `emd` module could modify the inputs in place.
+- Changed the `emds` function to use global arrays in order to consume (vastly) less memory when using multiple jobs.
+
 **0.13.2**
 
 - Keras 2.2.5 fixes a bug in their `batch_dot` function that is used by their `Dot` layer which is used by the `EFN` and `PFN` classes. This necessitates adjusting our code to account for the new behavior.

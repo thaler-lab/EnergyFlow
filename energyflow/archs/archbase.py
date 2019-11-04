@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+import gc
 import os
 import sys
 import warnings
@@ -332,6 +333,9 @@ class NNBase(ArchBase):
                 self.model.save_weights(self.filepath)
             else:
                 self.model.save(self.filepath)
+
+        # take out the trash
+        gc.collect()
 
         return hist
 

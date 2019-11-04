@@ -570,10 +570,11 @@ if ot:
         else:
             raise ValueError('n_jobs must be a positive integer or -1')
 
+        # delete global arrays
+        del _X0, _X1
+
         # if doing an array with itself, symmetrize the distance matrix
         if sym:
             emds += emds.T
-
-        del _X0, _X1
 
         return emds
