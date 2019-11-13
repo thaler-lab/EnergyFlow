@@ -6,9 +6,9 @@ import itertools
 
 __all__ = [
     'import_igraph', 
+    'get_components',
     'get_valency_structure',
-    'graph_union', 
-    'num_valency_ones',
+    'graph_union',
     'nvert', 
     'valencies'
 ]
@@ -33,9 +33,33 @@ def import_igraph():
 # each of the functions below operates on graphs assumed
 # to be in this standard form
 
+def get_components(graph):
+    """Returns a list of lists of vertices in each connected component of the
+    graph.
+    """
+
+    vds = get_valency_structure(graph)
+
+    verts = set(vds.keys())
+    components = []
+    while len(verts):
+        i = 0
+        component = [verts.pop()]
+        while i < len(component):
+            
+            # append all vertices touched by the present one that haven't already been visited
+            for v in vds[component[i]]:
+                if v in verts:
+                    verts.remove(v)
+                    component.append(v)      
+            i += 1                
+        components.append(component)
+
+    return components
+
 def get_valency_structure(graph):
     """Turn graph into a dictionary where the keys are the vertices
-    and the values are dictionaries where the keys are again vertices 
+    and the values are dictionaries where the keys are again vertices
     and the values are the number of edges shared by those vertices.
     """
 
@@ -52,9 +76,6 @@ def graph_union(*graphs):
     adds = [sum(ns[:i]) for i in range(1,len(graphs))]
     new_comps = [[tuple(a+v for v in edge) for edge in graph] for a,graph in zip(adds,graphs[1:])]
     return list(itertools.chain(graphs[0], *new_comps))
-
-def num_valency_ones(graph):
-    return Counter(valencies(graph).values())[1]
 
 def nvert(graph):
     """Gets the number of vertices, |V|, in the graph."""

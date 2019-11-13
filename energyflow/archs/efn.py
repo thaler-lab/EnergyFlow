@@ -528,14 +528,18 @@ class EFN(SymmetricPerParticleNN):
         # construct grid of inputs
         xs, ys = np.linspace(xmin, xmax, nx), np.linspace(ymin, ymax, ny)
         X, Y = np.meshgrid(xs, ys, indexing='ij')
-        XY = np.asarray([X, Y]).reshape((2, nx*ny)).T
+        XY = np.asarray([X, Y]).reshape((1, 2, nx*ny)).transpose((0, 2, 1))
 
-        # construct function 
-        kf = K.function([self.inputs[1]], [self._tensors[self._tensor_inds['latent'][0] - 1]])
+        # handle weirdness of Keras/tensorflow
+        old_keras = (keras_version_tuple <= (2, 2, 5))
+        s = self.Phi_sizes[-1] if len(self.Phi_sizes) else self.input_dim
+        in_t, out_t = self.inputs[1], self._tensors[self._tensor_inds['latent'][0] - 1]
+
+        # construct function
+        kf = K.function([in_t] if old_keras else in_t, [out_t] if old_keras else out_t)
 
         # evaluate function
-        s = self.Phi_sizes[-1] if len(self.Phi_sizes) else self.input_dim
-        Z = kf([[XY]])[0][0].reshape(nx, ny, s).transpose((2,0,1))
+        Z = kf([XY] if old_keras else XY)[0].reshape(nx, ny, s).transpose((2, 0, 1))
 
         # prune filters that are off
         if prune:

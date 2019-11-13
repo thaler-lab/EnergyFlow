@@ -122,7 +122,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
+    <a class="" href="../efm/">Energy Flow Moments</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efp/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -202,13 +206,13 @@ in one event to particle $j$ in the other:
 <script type="math/tex; mode=display">
 \text{EMD}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\}}\sum_{ij}f_{ij}\frac{
 \theta_{ij}}{R} + \left|\sum_iE_i-\sum_jE^\prime_j\right|,\\
-f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E^\prime_j, \quad 
+f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E^\prime_j, \quad
 \sum_{ij}f_{ij}=E_\text{min},
 </script>
 where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
 $\theta_{ij}$ is an angular distance between particles, and 
 $E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE^\prime_j\right)$ is the smaller
-of the two total energies. In a hadronic context, transverse momenta are used 
+of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
@@ -327,7 +331,7 @@ and particle j in <code>ev1</code>.</li>
 
 <p>Compute the EMD between collections of events. This can be used to
  compute EMDs between all pairs of events in a set or between events in
- two difference sets.</p>
+ two different sets.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>X0</strong> : <em>list</em><ul>
@@ -450,7 +454,7 @@ and particle j in <code>ev1</code>.</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../efps/" class="btn btn-neutral float-right" title="Energy Flow Polynomials">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../efm/" class="btn btn-neutral float-right" title="Energy Flow Moments">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../datasets/" class="btn btn-neutral" title="Datasets"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -484,7 +488,7 @@ and particle j in <code>ev1</code>.</li>
         <span><a href="../datasets/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../efps/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../efm/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

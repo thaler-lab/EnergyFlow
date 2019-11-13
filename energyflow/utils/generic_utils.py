@@ -9,6 +9,7 @@ import sys
 import time
 
 import numpy as np
+import six
 
 __all__ = [
     'DEFAULT_EFP_FILE', 
@@ -19,6 +20,7 @@ __all__ = [
     'import_fastjet',
     'iter_or_rep', 
     'kwargs_check',
+    'sel_arg_check',
     'timing', 
     'transfer'
 ]
@@ -110,6 +112,11 @@ def kwargs_check(name, kwargs, allowed=None):
         if k in allowed:
             continue
         raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
+
+# check that an argument is well-formed to EFPSet.sel
+def sel_arg_check(arg):
+    return (isinstance(arg, six.string_types) or 
+            (len(arg) == 2 and isinstance(arg[0], six.string_types)))
 
 # timing meta-decorator
 def timing(obj, func):

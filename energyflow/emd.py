@@ -19,13 +19,13 @@ in one event to particle $j$ in the other:
 $$
 \text{EMD}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\}}\sum_{ij}f_{ij}\frac{
 \theta_{ij}}{R} + \left|\sum_iE_i-\sum_jE^\prime_j\right|,\\
-f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E^\prime_j, \quad 
+f_{ij}\ge 0, \quad \sum_jf_{ij}\le E_i, \quad \sum_if_{ij}\le E^\prime_j, \quad
 \sum_{ij}f_{ij}=E_\text{min},
 $$
 where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
 $\theta_{ij}$ is an angular distance between particles, and 
 $E_\text{min}=\min\left(\sum_iE_i,\,\sum_jE^\prime_j\right)$ is the smaller
-of the two total energies. In a hadronic context, transverse momenta are used 
+of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.
 """
 from __future__ import absolute_import, division, print_function

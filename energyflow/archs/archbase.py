@@ -249,7 +249,7 @@ class NNBase(ArchBase):
         # compilation
         self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
                              'optimizer': self._proc_arg('optimizer', default='adam'),
-                             'metrics': self._proc_arg('metrics', default=['accuracy'])}
+                             'metrics': self._proc_arg('metrics', default=['acc'])}
         self.compile_opts.update(self._proc_arg('compile_opts', default={}))
 
         # add these attributes for historical reasons

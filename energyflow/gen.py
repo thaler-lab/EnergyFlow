@@ -1,4 +1,4 @@
-"""Implementation of EFP Generator class."""
+"""Implementation of EFP/EFM Generator class."""
 from __future__ import absolute_import, division, print_function
 
 from collections import Counter
@@ -8,7 +8,8 @@ import time
 import numpy as np
 
 from energyflow.algorithms import *
-from energyflow.efpbase import EFPElem
+from energyflow.efm import efp2efms
+from energyflow.efp import EFP
 from energyflow.utils import concat_specs, DEFAULT_EFP_FILE, transfer
 from energyflow.utils.graph_utils import *
 
@@ -32,9 +33,9 @@ class Generator(object):
     """Generates non-isomorphic multigraphs according to provided specifications."""
 
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
-                       filename=None, np_optimize='greedy', verbose=False):
-        r"""Doing a fresh generation of connected multigraphs (`filename=None`) requires
-        that `igraph` be installed.
+                      filename=None, gen_efms=True, np_optimize='greedy', verbose=False):
+        r"""Doing a fresh generation of connected multigraphs (`filename=None`)
+        requires that `igraph` be installed.
 
         **Arguments**
 
@@ -43,23 +44,29 @@ class Generator(object):
         - **nmax** : _int_
             - The maximum number of vertices of the generated connected graphs.
         - **emax** : _int_
-            - The maximum number of edges of the generated connected simple graphs.
+            - The maximum number of edges of the generated connected simple
+            graphs.
         - **cmax** : _int_
-            - The maximum VE complexity $\chi$ of the generated connected graphs.
+            - The maximum VE complexity $\chi$ of the generated connected
+            graphs.
         - **vmax** : _int_
             - The maximum valency of the generated connected graphs.
         - **comp_dmaxs** : {_dict_, _int_}
-            - If an integer, the maximum number of edges of the generated disconnected 
-            graphs. If a dictionary, the keys are numbers of vertices and the values are
-            the maximum number of edges of the generated disconnected graphs with that
-            number of vertices.
+            - If an integer, the maximum number of edges of the generated
+            disconnected graphs. If a dictionary, the keys are numbers of
+            vertices and the values are the maximum number of edges of the
+            generated disconnected graphs with that number of vertices.
         - **filename** : _str_
-            - If `None`, do a complete generation from scratch. If set to a string, 
-            read in connected graphs from the file given, restrict them according to 
-            the various 'max' parameters, and do a fresh disconnected generation. The special
-            value `filename='default'` means to read in graphs from the default file. This
-            is useful when various disconnected graph parameters are to be varied since the 
-            generation of large simple graphs is the most computationlly intensive part.
+            - If `None`, do a complete generation from scratch. If set to a
+            string, read in connected graphs from the file given, restrict them
+            according to the various 'max' parameters, and do a fresh
+            disconnected generation. The special value `filename='default'`
+            means to read in graphs from the default file. This is useful when
+            various disconnected graph parameters are to be varied since the
+            generation of large simple graphs is the most computationlly
+            intensive part.
+        - **gen_efms** : _bool_
+            - Controls whether EFM information is generated.
         - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
             - The `optimize` keyword of `numpy.einsum_path`.
         - **verbose** : _bool_
@@ -76,10 +83,11 @@ class Generator(object):
 
             # set options
             self.np_optimize = np_optimize
+            self.gen_efms = gen_efms
 
             # get prime generator instance
             self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
-                                         self.np_optimize, verbose, start)
+                                         self.gen_efms, self.np_optimize, verbose, start)
             self.cols = self.pr_gen.cols
             self._set_col_inds()
 
@@ -103,7 +111,7 @@ class Generator(object):
             # get maxs from file and passed in options
             c_specs = file['c_specs']
             local_vars = locals()
-            for m in ['dmax', 'nmax', 'emax', 'cmax', 'vmax']:
+            for m in ['dmax','nmax','emax','cmax','vmax']:
                 setattr(self, m, min(file[m], none2inf(local_vars[m])))
 
             # select connected specs based on maxs
@@ -117,9 +125,11 @@ class Generator(object):
             self.np_optimize = file['np_optimize']
 
             # get lists of important quantities
+            self.gen_efms = file['gen_efms'] and gen_efms
             for attr in (self._prime_attrs()):
                 setattr(self, attr, [x for x,m in zip(file[attr],mask) if m])
             self.c_specs = c_specs[mask]
+
 
         # setup generator of disconnected graphs
         self._set_comp_dmaxs(comp_dmaxs)
@@ -130,7 +140,6 @@ class Generator(object):
 
         # get results and store
         transfer(self, self.comp_gen, self._comp_attrs())
-
 
     #################
     # PRIVATE METHODS
@@ -160,8 +169,9 @@ class Generator(object):
             if comp_dmaxs >= 2:
                 self.comp_dmaxs = {n: comp_dmaxs for n in range(4, 2*comp_dmaxs+1)}
 
-    def _prime_attrs(self):
-        attrs = set(['edges', 'weights', 'einstrs', 'einpaths', 'c_specs'])
+    def _prime_attrs(self, no_global=False):
+        attrs = set(['edges', 'weights', 'einstrs', 'einpaths', 'c_specs',
+                     'efm_einstrs', 'efm_einpaths', 'efm_specs'])
         return attrs
 
     def _comp_attrs(self):
@@ -181,9 +191,9 @@ class Generator(object):
         """
         
         arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
-                    'cols', 'np_optimize'])
+                    'cols', 'np_optimize', 'gen_efms'])
         arrs |= self._prime_attrs() | self._comp_attrs()
-        np.savez(filename, **{arr: getattr(self, arr) for arr in arrs})
+        np.savez_compressed(filename, **{arr: getattr(self, arr) for arr in arrs})
 
     @property
     def specs(self):
@@ -193,7 +203,6 @@ class Generator(object):
         if not hasattr(self, '_specs'):
             self._specs = concat_specs(self.c_specs, self.disc_specs)
         return self._specs
-
 
 ###############################################################################
 # PrimeGenerator
@@ -213,7 +222,7 @@ class PrimeGenerator(object):
     """
     cols = ['n','e','d','v','k','c','p','h']
 
-    def __init__(self, dmax, nmax, emax, cmax, vmax, np_optimize, verbose, start):
+    def __init__(self, dmax, nmax, emax, cmax, vmax, gen_efms, np_optimize, verbose, start):
         """PrimeGenerator __init__."""
 
         if not igraph:
@@ -222,7 +231,7 @@ class PrimeGenerator(object):
         self.ve = VariableElimination(np_optimize)
 
         # store parameters
-        transfer(self, locals(), ['dmax', 'nmax', 'emax', 'cmax', 'vmax',])
+        transfer(self, locals(), ['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'gen_efms'])
 
         # setup N and e values to be used
         self.ns = list(range(1, self.nmax+1))
@@ -250,6 +259,13 @@ class PrimeGenerator(object):
 
         # flatten structures
         self._flatten_structures()
+        if verbose:
+            print('Finished flattening data structures in {:.3f}.'.format(time.time() - start))
+
+        # efms
+        self._generate_efms()
+        if verbose:
+            print('Finished generating EFMs in {:.3f}.'.format(time.time() - start))
 
     #################
     # PRIVATE METHODS
@@ -389,7 +405,7 @@ class PrimeGenerator(object):
                     d = sum(w)
                     k = ks.setdefault((n,d), 0)
                     ks[(n,d)] += 1
-                    vs = valencies(EFPElem(edgs, weights=w).edges).values()
+                    vs = valencies(EFP(edgs, weights=w).graph).values()
                     v = max(vs)
                     h = Counter(vs)[1]
                     c_specs.append([n, e, d, v, k, c, 1, h])
@@ -399,6 +415,16 @@ class PrimeGenerator(object):
                     self.einpaths.append(ep)
         self.c_specs = np.asarray(c_specs)
 
+    def _generate_efms(self):
+        self.efm_einstrs, self.efm_specs, self.efm_einpaths = [], [], []
+        if self.gen_efms:
+            for edgs,ws in zip(self.edges, self.weights):
+                einstr, efm_spec = efp2efms(EFP(edgs, weights=ws).graph)
+                self.efm_einstrs.append(einstr)
+                self.efm_specs.append(efm_spec)
+                self.efm_einpaths.append(np.einsum_path(einstr, 
+                                                        *[np.empty([4]*sum(s)) for s in efm_spec],
+                                                        optimize=self.ve.np_optimize)[0])
 
 ###############################################################################
 # CompositeGenerator

@@ -1,28 +1,32 @@
-r"""The Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
-multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
-observables.
+r"""Energy Flow Polynomials (EFPs) are a set of observables, indexed by
+non-isomorphic multigraphs, which linearly span the space of infrared and
+collinear (IRC) safe observables.
 
 An EFP, indexed by a multigraph $G$, takes the following form:
 $$\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
 \prod_{(k,\ell)\in G}\theta_{i_ki_\ell}$$
-where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a measure 
-of the angular separation between particles $i$ and $j$. The specific choices for "energy"
-and "angular" measure depend on the collider context and are discussed in the 
-[Measures](../measures) section.
+where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a
+measure of the angular separation between particles $i$ and $j$. The specific
+choices for "energy" and "angular" measure depend on the collider context and
+are discussed in the [Measures](../measures) section.
 """
 from __future__ import absolute_import, division, print_function
 
-from  itertools import chain, repeat
+from collections import Counter
+import itertools
 import re
 import warnings
 
 import numpy as np
+import six
 
-from energyflow.algorithms import VariableElimination, einsum_path
-from energyflow.efpbase import EFPBase, EFPElem
-from energyflow.gen import Generator
-from energyflow.utils import (concat_specs, explicit_comp, graph_union, 
-                              kwargs_check, DEFAULT_EFP_FILE)
+from energyflow.algorithms import VariableElimination, einsum_path, einsum
+from energyflow.base import EFPBase
+from energyflow.efm import EFMSet, efp2efms
+from energyflow.measure import PF_MARKER
+from energyflow.utils import (DEFAULT_EFP_FILE, concat_specs, create_pool,
+                              explicit_comp, kwargs_check, sel_arg_check)
+from energyflow.utils.graph_utils import *
 
 __all__ = ['EFP', 'EFPSet']
 
@@ -32,26 +36,27 @@ __all__ = ['EFP', 'EFPSet']
 
 class EFP(EFPBase):
 
-    """A class for representing and computing a single EFP. Note that all
-    keyword arguments are stored as properties of the `EFP` instance.
-    """
+    """A class for representing and computing a single EFP."""
 
-    def __init__(self, edges, measure='hadr', beta=1, kappa=1, normed=True, coords=None, 
-                              check_input=True, np_optimize='greedy'):
-        """
+    # EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
+    #     check_input=True, np_optimize=True)
+    def __init__(self, edges, efpset_args=None, np_optimize=True, **kwargs):
+        r"""Since a standalone EFP defines and holds a `Measure` instance, all
+        `Measure` keywords are accepted.
+
         **Arguments**
 
         - **edges** : _list_
             - Edges of the EFP graph specified by pairs of vertices.
-        - **measure** : {`'hadr'`, `'hadrdot'`, `'ee'`}
+        - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
             - The choice of measure. See [Measures](../measures) for additional
             info.
         - **beta** : _float_
-            - The parameter $\\beta$ appearing in the measure. Must be greater
+            - The parameter $\beta$ appearing in the measure. Must be greater
             than zero.
         - **kappa** : {_float_, `'pf'`}
-            - If a number, the energy weighting parameter $\\kappa$. If `'pf'`,
-            use $\\kappa=v-1$ where $v$ is the valency of the vertex.
+            - If a number, the energy weighting parameter $\kappa$. If `'pf'`,
+            use $\kappa=v-1$ where $v$ is the valency of the vertex.
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
@@ -64,25 +69,100 @@ class EFP(EFPBase):
             - The `optimize` keyword of `numpy.einsum_path`.
         """
 
-        # initialize EFPBase
-        super(EFP, self).__init__(measure, beta, kappa, normed, coords, check_input)
+        # initialize base class
+        super(EFP, self).__init__(kwargs)
 
-        # store these edges as an EFPElem
-        self.efpelem = EFPElem(edges)
+        # store options
         self._np_optimize = np_optimize
+        self._weights = None
 
-        # setup ve for standard efp compute
-        (self.efpelem.einstr, 
-         self.efpelem.einpath, 
-         self.chi) = VariableElimination(np_optimize).einspecs(self.simple_graph, self.n)
+        # generate our own information from the edges
+        if efpset_args is not None:
+            (self._weights, self._einstr, self._einpath, self._spec,
+             self._efm_einstr, self._efm_einpath, self._efm_spec) = efpset_args
 
+        # process edges
+        self._process_edges(edges, self.weights)
+
+        # compute specs if needed
+        if efpset_args is None:
+
+            # compute EFM specs
+            self._efm_einstr, self._efm_spec = efp2efms(self.graph)
+
+            # only store an EFMSet if this is an external EFP using EFMs
+            if self.has_measure and self.use_efms:
+                self._efmset = EFMSet(self._efm_spec, subslicing=self.subslicing, no_measure=True)
+            args = [np.empty([4]*sum(s)) for s in self._efm_spec]
+            self._efm_einpath = einsum_path(self._efm_einstr, *args, optimize=np_optimize)[0]
             
+            # setup traditional VE computation
+            ve = VariableElimination(self.np_optimize)
+            (self._einstr, self._einpath, self._c) = ve.einspecs(self.simple_graph, self.n)
+
+            # compute and store spec information
+            vs = valencies(self.graph).values()
+            self._e = len(self.simple_graph)
+            self._d = sum(self.weights)
+            self._v = max(vs) if len(vs) else 0
+            self._k = -1
+            self._p = len(get_components(self.simple_graph)) if self.d > 0 else 1
+            self._h = Counter(vs)[1]
+            self._spec = np.array([self.n, self.e, self.d, self.v, self.k, self.c, self.p, self.h])
+
+        # store properties from given spec
+        else:
+            self._e, self._d, self._v, self._k, self._c, self._p, self._h = self.spec[1:]
+            assert self.n == self.spec[0], 'n from spec does not match internally computed n'
+
+    #================
+    # PRIVATE METHODS
+    #================
+
+    def _process_edges(self, edges, weights):
+
+        # deal with arbitrary vertex labels
+        vertex_set = frozenset(v for edge in edges for v in edge)
+        vertices = {v: i for i,v in enumerate(vertex_set)}
+        
+        # determine number of vertices, empty edges are interpretted as graph with one vertex
+        self._n = len(vertices) if len(vertices) > 0 else 1
+
+        # construct new edges with remapped vertices
+        self._edges = [tuple(vertices[v] for v in sorted(edge)) for edge in edges]
+
+        # handle weights
+        if weights is None:
+            self._simple_edges = list(frozenset(self._edges))
+            counts = Counter(self._edges)
+            self._weights = tuple(counts[edge] for edge in self._simple_edges)
+
+            # invalidate einsum quantities because edges got reordered
+            self._einstr = self._einpath = None
+
+        else:
+            if len(weights) != len(self._edges):
+                raise ValueError('length of weights is not number of edges')
+            self._simple_edges = self._edges
+            self._weights = tuple(weights)
+
+        self._edges = [e for w,e in zip(self._weights, self._simple_edges) for i in range(w)]
+        self._weight_set = frozenset(self._weights)
+
+    def _efp_compute(self, zs, thetas_dict):
+        einsum_args = [thetas_dict[w] for w in self.weights] + self._n*[zs]
+        return einsum(self.einstr, *einsum_args, optimize=self.einpath)
+
+    def _efm_compute(self, efms_dict):
+        einsum_args = [efms_dict[sig] for sig in self.efm_spec]
+        return einsum(self.efm_einstr, *einsum_args, optimize=self.efm_einpath)
+
     #===============
     # PUBLIC METHODS
     #===============
 
-    # compute(event=None, zs=None, thetas=None)
-    def compute(self, event=None, zs=None, thetas=None, batch_call=None):
+    # compute(event=None, zs=None, thetas=None, nhats=None)
+    def compute(self, event=None, zs=None, thetas=None, nhats=None, batch_call=None):
         """Computes the value of the EFP on a single event.
 
         **Arguments**
@@ -91,11 +171,15 @@ class EFP(EFPBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in
-            place of the energies of an event.
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in
-            place of the pairwise angles of an event.
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+        - **nhats** : 2-d array like
+            - If present, `zs` must also be present, and `nhats` is used in place
+            of the scaled particle momenta. Only applicable when EFMs are being
+            used.
 
         **Returns**
 
@@ -103,30 +187,75 @@ class EFP(EFPBase):
             - The EFP value.
         """
 
-        zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
-        return self.efpelem.compute(zs, thetas_dict)
+        if self.use_efms:
+            return self._efm_compute(self.compute_efms(event, zs, nhats))
+        else:
+            return self._efp_compute(*self.get_zs_thetas_dict(event, zs, thetas))
 
     #===========
     # PROPERTIES
     #===========
 
     @property
-    def _weight_set(self):
-        """Set of edge weights for the graph of this EFP."""
+    def graph(self):
+        """Graph of this EFP represented by a list of edges."""
 
-        return self.efpelem.weight_set
+        return self._edges
 
     @property
-    def _einstr(self):
+    def simple_graph(self):
+        """Simple graph of this EFP (forgetting all multiedges)
+        represented by a list of edges."""
+
+        return self._simple_edges
+
+    @property
+    def weights(self):
+        """Edge weights (counts) for the graph of this EFP."""
+
+        return self._weights
+
+    @property
+    def weight_set(self):
+        """Set of edge weights (counts) for the graph of this EFP."""
+
+        return self._weight_set
+
+    @property
+    def einstr(self):
         """Einstein summation string for the EFP computation."""
 
-        return self.efpelem.einstr
+        return self._einstr
 
     @property
-    def _einpath(self):
-        """Numpy einsum path specification for EFP computation."""
+    def einpath(self):
+        """NumPy einsum path specification for EFP computation."""
 
-        return self.efpelem.einpath
+        return self._einpath
+
+    @property
+    def efm_spec(self):
+        """List of EFM signatures corresponding to efm_einstr."""
+
+        return self._efm_spec
+
+    @property
+    def efm_einstr(self):
+        """Einstein summation string for the EFM computation."""
+
+        return self._efm_einstr
+
+    @property
+    def efm_einpath(self):
+        """NumPy einsum path specification for EFM computation."""
+
+        return self._efm_einpath
+
+    @property
+    def efmset(self):
+        """Instance of `EFMSet` help by this EFP if using EFMs."""
+
+        return self._efmset if (self.has_measure and self.use_efms) else None
 
     @property
     def np_optimize(self):
@@ -135,42 +264,66 @@ class EFP(EFPBase):
         return self._np_optimize
 
     @property
-    def graph(self):
-        """Graph of this EFP represented by a list of edges."""
-
-        return self.efpelem.edges
-
-    @property
-    def simple_graph(self):
-        """Simple graph of this EFP (forgetting all multiedges)
-        represented by a list of edges."""
-
-        return self.efpelem.simple_edges
-
-    @property
     def n(self):
         """Number of vertices in the graph of this EFP."""
 
-        return self.efpelem.n
-
-    @property
-    def d(self):
-        """Degree, or number of edges, in the graph of this EFP."""
-
-        return self.efpelem.d
+        return self._n
 
     @property
     def e(self):
         """Number of edges in the simple graph of this EFP."""
 
-        return self.efpelem.e
+        return self._e
+
+    @property
+    def d(self):
+        """Degree, or number of edges, in the graph of this EFP."""
+
+        return self._d
+
+    @property
+    def v(self):
+        """Maximum valency of any vertex in the graph."""
+
+        return self._v
+
+    @property
+    def k(self):
+        r"""Index of this EFP. Determined by EFPSet or -1 otherwise."""
+
+        return self._k
 
     @property
     def c(self):
-        """VE complexity $\\chi$ of this EFP."""
+        r"""VE complexity $\chi$ of this EFP."""
 
-        return self.chi
+        return self._c
 
+    @property
+    def p(self):
+        """Number of connected components of this EFP. Note that the empty
+        graph conventionally has one connected component."""
+
+        return self._p
+
+    @property
+    def h(self):
+        """Number of valency 1 vertices ('hanging chads) of this EFP."""
+
+        return self._h
+
+    @property
+    def spec(self):
+        """Specification array for this EFP."""
+
+        return self._spec
+
+    @property
+    def ndk(self):
+        """Tuple of `n`, `d`, and `k` values which form a unique identifier of
+        this EFP within an `EFPSet`."""
+
+        return (self.n, self.d, self.k)
 
 ###############################################################################
 # EFPSet
@@ -183,40 +336,49 @@ class EFPSet(EFPBase):
     `EFPSet` instance.
     """
 
-    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, 
-    #        normed=True, coords='ptyphim', check_input=True, verbose=False)
+    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
+    #               coords=None, check_input=True, verbose=0)
     def __init__(self, *args, **kwargs):
         r"""`EFPSet` can be initialized in one of three ways (in order of
         precedence):
 
-        1. **Default** - Use the ($d\le10$) EFPs that come installed with the
-        `EnergFlow` package.
+        1. **Graphs** - Pass in graphs as lists of edges, just as for
+        individual EFPs.
         2. **Generator** - Pass in a custom `Generator` object as the first
         positional argument.
         3. **Custom File** - Pass in the name of a `.npz` file saved with a
         custom `Generator`.
+        4. **Default** - Use the $d\le10$ EFPs that come installed with the
+        `EnergFlow` package.
 
         To control which EFPs are included, `EFPSet` accepts an arbitrary
         number of specifications (see [`sel`](#sel)) and only EFPs meeting each
-        specification are included in the set.
+        specification are included in the set. Note that no specifications
+        should be passed in when initializing from explicit graphs.
+
+        Since an EFP defines and holds a `Measure` instance, all `Measure`
+        keywords are accepted.
 
         **Arguments**
 
         - ***args** : _arbitrary positional arguments_
-            - If the first positional argument is a `Generator` instance, it is
-            used for initialization. The remaining positional arguments must be
-            valid arguments to `sel`.
+            - Depending on the method of initialization, these can be either
+            1) graphs to store, as lists of edges 2) a Generator instance
+            followed by some number of valid arguments to `sel` or 3,4) valid
+            arguments to `sel`. When passing in specific graphs, no arguments
+            to `sel` should be given.
         - **filename** : _string_
             - Path to a `.npz` file which has been saved by a valid
-            `energyflow.Generator`.
+            `energyflow.Generator`. A value of `None` will use the provided
+            graphs, if a file is needed at all.
         - **measure** : {`'hadr'`, `'hadr-dot'`, `'ee'`}
             - See [Measures](../measures) for additional info.
         - **beta** : _float_
-            - The parameter $\\beta$ appearing in the measure. Must be greater
+            - The parameter $\beta$ appearing in the measure. Must be greater
             than zero.
         - **kappa** : {_float_, `'pf'`}
-            - If a number, the energy weighting parameter $\\kappa$. If `'pf'`,
-            use $\\kappa=v-1$ where $v$ is the valency of the vertex.
+            - If a number, the energy weighting parameter $\kappa$. If `'pf'`,
+            use $\kappa=v-1$ where $v$ is the valency of the vertex.
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
@@ -225,109 +387,118 @@ class EFPSet(EFPBase):
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
             first input type.
-        - **verbose** : _bool_
-            - Controls printed output when initializing EFPSet.
+        - **verbose** : _int_
+            - Controls printed output when initializing `EFPSet` from a file or
+            `Generator`.
         """
 
-        default_kwargs = {'filename': None,
-                          'measure': 'hadr',
-                          'beta': 1,
-                          'kappa': 1,
-                          'normed': True,
-                          'coords': None,
-                          'check_input': True,
-                          'verbose': False}
-        measure_kwargs = ['measure', 'beta', 'kappa', 'normed', 'coords', 'check_input']
-
         # process arguments
-        for k,v in default_kwargs.items():
+        for k,v in {'filename': None, 'verbose': 0}.items():
             if k not in kwargs:
                 kwargs[k] = v
-            if k not in measure_kwargs:
-                setattr(self, k, kwargs.pop(k))
-
-        kwargs_check('__init__', kwargs, allowed=measure_kwargs)
+            setattr(self, k, kwargs.pop(k))
 
         # initialize EFPBase
-        super(EFPSet, self).__init__(*[kwargs[k] for k in measure_kwargs])
+        super(EFPSet, self).__init__(kwargs)
 
         # handle different methods of initialization
         maxs = ['nmax', 'emax', 'dmax', 'cmax', 'vmax', 'comp_dmaxs']
         elemvs = ['edges', 'weights', 'einstrs', 'einpaths']
-        if len(args) >= 1 and isinstance(args[0], Generator):
-            constructor_attrs = maxs + elemvs + ['cols', 'c_specs', 'disc_specs', 'disc_formulae']
+        efmvs = ['efm_einstrs', 'efm_einpaths', 'efm_specs']
+        miscattrs = ['cols', 'gen_efms', 'c_specs', 'disc_specs', 'disc_formulae']
+        if len(args) >= 1 and not sel_arg_check(args[0]) and not isinstance(args[0], Generator):
+            gen = False
+        elif len(args) >= 1 and isinstance(args[0], Generator):
+            constructor_attrs = maxs + elemvs + efmvs + miscattrs
             gen = {attr: getattr(args[0], attr) for attr in constructor_attrs}
             args = args[1:]
+
         elif self.filename is not None:
             self.filename += '.npz' if not self.filename.endswith('.npz') else ''
             gen = np.load(self.filename, allow_pickle=True)
         else:
             gen = np.load(DEFAULT_EFP_FILE, allow_pickle=True)
 
-        # compile regular expression for use in sel()
-        self.SEL_RE = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
-        
-        # put column headers and indices into namespace
-        self._cols = gen['cols']
-        self._set_col_inds()
+        # compiled regular expression for use in sel()
+        self._sel_re = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
+        self._cols = np.array(['n', 'e', 'd', 'v', 'k', 'c', 'p', 'h'])
+        self.__dict__.update({col+'_ind': i for i,col in enumerate(self._cols)})
 
-        # put gen maxs into dict
-        self.gen_maxs = {m: gen[m] for m in maxs}
+        # initialize from given graphs
+        if not gen:
+            self._disc_col_inds = None
+            self._efps = [EFP(graph, no_measure=True) for graph in args]
+            self._cspecs = self._specs = np.asarray([efp.spec for efp in self.efps])
 
-        # get disc formulae and disc mask
-        orig_disc_specs = gen['disc_specs']
-        disc_mask = self.sel(*args, specs=orig_disc_specs)
-        self.disc_formulae = gen['disc_formulae'][disc_mask]
+        # initialize from a generator
+        else:
 
-        # get connected specs and full specs
-        orig_c_specs = gen['c_specs']
-        c_mask = self.sel(*args, specs=orig_c_specs)
-        self._cspecs = orig_c_specs[c_mask]
-        self._specs = concat_specs(self._cspecs, orig_disc_specs[disc_mask])
+            # handle not having efm generation
+            if not gen['gen_efms'] and self.use_efms:
+                raise ValueError('Cannot use efm measure without providing efm generation.')
+            
+            # verify columns with generator
+            assert np.all(self._cols == gen['cols'])
 
-        # make EFPElem list
-        z = zip(*([gen[v] for v in elemvs] + [orig_c_specs[:,self.k_ind]]))
-        self.efpelems = [EFPElem(*args) for m,args in enumerate(z) if c_mask[m]]
+            # get disc formulae and disc mask
+            orig_disc_specs = gen['disc_specs']
+            disc_mask = self.sel(*args, specs=orig_disc_specs)
+            disc_formulae = gen['disc_formulae'][disc_mask]
+
+            # get connected specs and full specs
+            orig_c_specs = gen['c_specs']
+            c_mask = self.sel(*args, specs=orig_c_specs)
+            self._cspecs = orig_c_specs[c_mask]
+            self._specs = concat_specs(self._cspecs, orig_disc_specs[disc_mask])
+
+            # make EFP list
+            z = zip(*([gen[v] for v in elemvs] + [orig_c_specs] +
+                      [gen[v] if self.use_efms else itertools.repeat(None) for v in efmvs]))
+            self._efps = [EFP(args[0], no_measure=True, efpset_args=args[1:]) 
+                          for m,args in enumerate(z) if c_mask[m]]
+
+            # get col indices for disconnected formulae
+            connected_ndk = {efp.ndk: i for i,efp in enumerate(self.efps)}
+            self._disc_col_inds = []
+            for formula in disc_formulae:
+                try:
+                    self._disc_col_inds.append([connected_ndk[factor] for factor in formula])
+                except KeyError:
+                    warnings.warn('connected efp needed for {} not found'.format(formula))
+
+            # handle printing
+            if self.verbose > 0:
+                print('Originally Available EFPs:')
+                self.print_stats(specs=concat_specs(orig_c_specs, orig_disc_specs), lws=2)
+                if len(args) > 0:
+                    print('Current Stored EFPs:')
+                    self.print_stats(lws=2)
+
+        # setup EFMs
+        if self.use_efms:
+            efm_specs = set(itertools.chain(*[efp.efm_spec for efp in self.efps]))
+            self._efmset = EFMSet(efm_specs, subslicing=self.subslicing)
 
         # union over all weights needed
-        self.__weight_set = frozenset(w for efpelem in self.efpelems for w in efpelem.weight_set)
-
-        # get col indices for disconnected formulae
-        connected_ndk = {efpelem.ndk: i for i,efpelem in enumerate(self.efpelems)}
-        self.disc_col_inds = []
-        for formula in self.disc_formulae:
-            try:
-                self.disc_col_inds.append([connected_ndk[factor] for factor in formula])
-            except KeyError:
-                warnings.warn('connected efp needed for {} not found'.format(formula))
-
-        # handle printing
-        if self.verbose:
-            print('Originally Available EFPs:')
-            self.print_stats(specs=concat_specs(orig_c_specs, orig_disc_specs), lws=2)
-            if len(args) > 0:
-                print('Currently Stored EFPs:')
-                self.print_stats(lws=2)
+        self._weight_set = frozenset(w for efp in self.efps for w in efp.weight_set)
 
     #================
     # PRIVATE METHODS
     #================
 
-    def _set_col_inds(self):
-        self.__dict__.update({col+'_ind': i for i,col in enumerate(self.cols)})
-
     def _make_graphs(self, connected_graphs):
-        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self.disc_col_inds]
+        disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self._disc_col_inds]
         return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
 
     #===============
     # PUBLIC METHODS
     #===============
 
-    # calc_disc(X)
     def calc_disc(self, X):
         """Computes disconnected EFPs according to the internal 
-        specifications using the connected EFPs provided as input.
+        specifications using the connected EFPs provided as input. Note that
+        this function has no effect if the `EFPSet` was initialized with
+        specific graphs.
 
         **Arguments**
 
@@ -345,19 +516,19 @@ class EFPSet(EFPBase):
             - A concatenated array of the connected and disconnected EFPs.
         """
 
-        if len(self.disc_col_inds) == 0:
+        if self._disc_col_inds is None or len(self._disc_col_inds) == 0:
             return np.asarray(X)
 
         X = np.atleast_2d(X)
 
-        results = np.empty((len(X), len(self.disc_col_inds)), dtype=float)
-        for i,formula in enumerate(self.disc_col_inds):
+        results = np.empty((len(X), len(self._disc_col_inds)), dtype=float)
+        for i,formula in enumerate(self._disc_col_inds):
             results[:,i] = np.prod(X[:,formula], axis=1)
 
         return np.squeeze(np.concatenate((X, results), axis=1))
 
-    # compute(event=None, zs=None, thetas=None)
-    def compute(self, event=None, zs=None, thetas=None, batch_call=False):
+    # compute(event=None, zs=None, thetas=None, nhats=None)
+    def compute(self, event=None, zs=None, thetas=None, nhats=None, batch_call=False):
         """Computes the values of the stored EFPs on a single event.
 
         **Arguments**
@@ -366,20 +537,28 @@ class EFPSet(EFPBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in
-            place of the energies of an event.
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in
-            place of the pairwise angles of an event.
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+        - **nhats** : 2-d array like
+            - If present, `zs` must also be present, and `nhats` is used in place
+            of the scaled particle momenta. Only applicable when EFMs are being
+            used.
 
         **Returns**
 
         - _1-d numpy.ndarray_
             - A vector of the EFP values.
         """
-        
-        zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
-        results = [efpelem.compute(zs, thetas_dict) for efpelem in self.efpelems]
+
+        if self.use_efms:
+            efms_dict = self.compute_efms(event, zs, nhats)
+            results = [efp._efm_compute(efms_dict) for efp in self._efps]
+        else:
+            zs, thetas_dict = self.get_zs_thetas_dict(event, zs, thetas)
+            results = [efp._efp_compute(zs, thetas_dict) for efp in self._efps]
 
         if batch_call:
             return results
@@ -443,18 +622,20 @@ class EFPSet(EFPBase):
         for arg in args:
 
             # parse arg
-            if isinstance(arg, str):
-                s = arg.replace(' ', '')
+            if isinstance(arg, six.string_types):
+                s = arg
             elif hasattr(arg, '__getitem__'):
                 if len(arg) == 2:
-                    s = arg[0].replace(' ', '') + str(arg[1])
+                    s = arg[0] + str(arg[1])
                 else:
                     raise ValueError('{} is not length 2'.format(arg))
             else:
-                raise TypeError('invalid type for {}'.format(arg))
+                raise TypeError('invalid argument {}'.format(arg))
+
+            s = s.replace(' ', '')
 
             # match string to pattern
-            match = self.SEL_RE.match(s)
+            match = self._sel_re.match(s)
             if match is None:
                 raise ValueError('could not understand \'{}\''.format(arg))
 
@@ -467,7 +648,7 @@ class EFPSet(EFPBase):
             comp, val = match.group(2, 3)
 
             # AND the selection with mask
-            mask &= explicit_comp(specs[:,getattr(self, var+'_ind')], comp, int(val))
+            mask &= explicit_comp(specs[:,getattr(self, var + '_ind')], comp, int(val))
             
         return mask
 
@@ -516,7 +697,10 @@ class EFPSet(EFPBase):
 
         # if we haven't extracted the graphs, do it now
         if not hasattr(self, '_graphs'):
-            self._graphs = self._make_graphs([elem.edges for elem in self.efpelems])
+            if self._disc_col_inds is None:
+                self._graphs = np.asarray([efp.graph for efp in self.efps])
+            else:
+                self._graphs = self._make_graphs([efp.graph for efp in self.efps])
 
         # handle case of single graph
         if len(args) and isinstance(args[0], int):
@@ -544,9 +728,12 @@ class EFPSet(EFPBase):
             specifications.
         """
 
-        # is we haven't extracted the simple graphs, do it now
+        # if we haven't extracted the simple graphs, do it now
         if not hasattr(self, '_simple_graphs'):
-            self._simple_graphs = self._make_graphs([elem.simple_edges for elem in self.efpelems])
+            if self._disc_col_inds is None:
+                self._simple_graphs = np.asarray([efp.simple_graph for efp in self.efps])
+            else:
+                self._simple_graphs = self._make_graphs([efp.simple_graph for efp in self.efps])
 
         # handle case of single graph
         if len(args) and isinstance(args[0], int):
@@ -566,11 +753,15 @@ class EFPSet(EFPBase):
         print(pad + 'Total: ', num_prime+num_composite)
 
     def set_timers(self):
+        if self.use_efms:
+            self.efmset.set_timers()
         for efpelem in self.efpelems:
             efpelem.set_timer()
 
     def get_times(self):
         efp_times = np.asarray([elem.times for elem in self.efpelems])
+        if self.use_efms:
+            return efp_times, self.efmset.get_times()
         return efp_times
 
     #===========
@@ -578,25 +769,16 @@ class EFPSet(EFPBase):
     #===========
 
     @property
-    def _weight_set(self):
-        return self.__weight_set
+    def efps(self):
+        """List of EFPs held by the `EFPSet`."""
+
+        return self._efps
 
     @property
-    def cols(self):
-        """Column labels for `specs`. 
-        Those of primary interest are listed below.
+    def efmset(self):
+        """The `EFMSet` held by the `EFPSet`, if using EFMs."""
 
-        - `n` : Number of vertices.
-        - `e` : Number of simple edges.
-        - `d` : Degree, or number of multiedges.
-        - `v` : Maximum valency (number of edges touching a vertex).
-        - `k` : Unique identifier within EFPs of this (n,d).
-        - `c` : VE complexity $\\chi$.
-        - `p` : Number of prime factors (or connected components).
-        - `h` : Number of valency 1 vertices (a.k.a. 'hanging chads').
-        """
-
-        return self._cols
+        return self._efmset if self.use_efms else None
 
     @property
     def specs(self):
@@ -610,3 +792,30 @@ class EFPSet(EFPBase):
         """Specification array for connected EFPs."""
 
         return self._cspecs
+
+    @property
+    def weight_set(self):
+        """The union of all weights needed by the EFPs stored by the 
+        `EFPSet`."""
+
+        return self._weight_set
+
+    @property
+    def cols(self):
+        """Column labels for `specs`. Each EFP has a property corresponding to
+        each column.
+
+        - `n` : Number of vertices.
+        - `e` : Number of simple edges.
+        - `d` : Degree, or number of multiedges.
+        - `v` : Maximum valency (number of edges touching a vertex).
+        - `k` : Unique identifier within EFPs of this (n,d).
+        - `c` : VE complexity $\\chi$.
+        - `p` : Number of prime factors (or connected components).
+        - `h` : Number of valency 1 vertices (a.k.a. 'hanging chads').
+        """
+
+        return self._cols
+
+# put gen import here so it succeeds
+from energyflow.gen import Generator

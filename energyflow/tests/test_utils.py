@@ -12,7 +12,8 @@ def epsilon_diff(X, Y, epsilon=10**-14):
 def epsilon_percent(X, Y, epsilon=10**-14):
     return np.all(2*np.abs(X - Y)/(np.abs(X) + np.abs(Y)) < epsilon)
 	
-# test fake event generation
+# test event utils
+
 @pytest.mark.utils
 @pytest.mark.gen_random
 @pytest.mark.parametrize('nparticles', [10, 100])
@@ -375,3 +376,13 @@ def test_pids2chrgs(nevents, nparticles):
     # pion
     assert ef.pids2chrgs(211) == 1.
     assert ef.pids2chrgs(-211) == -1.
+
+# test graph utils
+
+@pytest.mark.utils
+def test_get_graph_components():
+    efpset = ef.EFPSet()
+    ps = np.array([len(ef.utils.get_components(graph)) for graph in efpset.graphs()])
+
+    # note that the empty graph is recorded as having 1 connected component by EFPSet
+    assert np.all(ps[1:] == efpset.specs[1:,-2])

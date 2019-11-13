@@ -19,8 +19,8 @@
   <script>
     // Current page data
     var mkdocs_page_name = "Energy Flow Polynomials";
-    var mkdocs_page_input_path = "docs/efps.md";
-    var mkdocs_page_url = "/docs/efps/";
+    var mkdocs_page_input_path = "docs/efp.md";
+    var mkdocs_page_url = "/docs/efp/";
   </script>
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
@@ -111,6 +111,10 @@
                     
     <a class="" href="../emd/">EMD</a>
                 </li>
+                <li class="">
+                    
+    <a class="" href="../efm/">Energy Flow Moments</a>
+                </li>
                 <li class=" current">
                     
     <a class="current" href="./">Energy Flow Polynomials</a>
@@ -138,6 +142,8 @@
             <li><a class="toctree-l4" href="#calc_disc">calc_disc</a></li>
         
             <li><a class="toctree-l4" href="#sel">sel</a></li>
+        
+            <li><a class="toctree-l4" href="#csel">csel</a></li>
         
             <li><a class="toctree-l4" href="#count">count</a></li>
         
@@ -198,7 +204,7 @@
     <li>Energy Flow Polynomials</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/efps.md"
+        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/efp.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -208,30 +214,31 @@
           <div role="main">
             <div class="section">
               
-                <p>The Energy Flow Polynomials (EFPs) are a set of observables, indexed by non-isomorphic 
-multigraphs, which linearly span the space of infrared and collinear safe (IRC-safe) 
-observables.</p>
+                <p>Energy Flow Polynomials (EFPs) are a set of observables, indexed by
+non-isomorphic multigraphs, which linearly span the space of infrared and
+collinear (IRC) safe observables.</p>
 <p>An EFP, indexed by a multigraph $G$, takes the following form:
 <script type="math/tex; mode=display">\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
 \prod_{(k,\ell)\in G}\theta_{i_ki_\ell}</script>
-where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a measure 
-of the angular separation between particles $i$ and $j$. The specific choices for "energy"
-and "angular" measure depend on the collider context and are discussed in the 
-<a href="../measures">Measures</a> section.</p>
+where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a
+measure of the angular separation between particles $i$ and $j$. The specific
+choices for "energy" and "angular" measure depend on the collider context and
+are discussed in the <a href="../measures">Measures</a> section.</p>
 <hr />
 <h3 id="efp">EFP</h3>
-<p>A class for representing and computing a single EFP. Note that all
-keyword arguments are stored as properties of the <code>EFP</code> instance.</p>
-<pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=True, coords=None, check_input=True, np_optimize='greedy')
+<p>A class for representing and computing a single EFP.</p>
+<pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None, check_input=True, np_optimize=True)
 </code></pre>
 
+<p>Since a standalone EFP defines and holds a <code>Measure</code> instance, all
+<code>Measure</code> keywords are accepted.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>edges</strong> : <em>list</em><ul>
 <li>Edges of the EFP graph specified by pairs of vertices.</li>
 </ul>
 </li>
-<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'ee'</code>}<ul>
+<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
 <li>The choice of measure. See <a href="../measures">Measures</a> for additional
 info.</li>
 </ul>
@@ -266,7 +273,7 @@ first input type.</li>
 </li>
 </ul>
 <h4 id="compute">compute</h4>
-<pre><code class="python">compute(event=None, zs=None, thetas=None)
+<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
 <p>Computes the value of the EFP on a single event.</p>
@@ -278,13 +285,19 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in
-place of the energies of an event.</li>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+of the energies of an event.</li>
 </ul>
 </li>
 <li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in
-place of the pairwise angles of an event.</li>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>nhats</strong> : 2-d array like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
+of the scaled particle momenta. Only applicable when EFMs are being
+used.</li>
 </ul>
 </li>
 </ul>
@@ -331,53 +344,143 @@ use as many processes as there are CPUs on the machine.</li>
 
 <p>Simple graph of this EFP (forgetting all multiedges)
 represented by a list of edges.</p>
+<h5 id="weights">weights</h5>
+<pre><code class="python">weights
+</code></pre>
+
+<p>Edge weights (counts) for the graph of this EFP.</p>
+<h5 id="weight_set">weight_set</h5>
+<pre><code class="python">weight_set
+</code></pre>
+
+<p>Set of edge weights (counts) for the graph of this EFP.</p>
+<h5 id="einstr">einstr</h5>
+<pre><code class="python">einstr
+</code></pre>
+
+<p>Einstein summation string for the EFP computation.</p>
+<h5 id="einpath">einpath</h5>
+<pre><code class="python">einpath
+</code></pre>
+
+<p>NumPy einsum path specification for EFP computation.</p>
+<h5 id="efm_spec">efm_spec</h5>
+<pre><code class="python">efm_spec
+</code></pre>
+
+<p>List of EFM signatures corresponding to efm_einstr.</p>
+<h5 id="efm_einstr">efm_einstr</h5>
+<pre><code class="python">efm_einstr
+</code></pre>
+
+<p>Einstein summation string for the EFM computation.</p>
+<h5 id="efm_einpath">efm_einpath</h5>
+<pre><code class="python">efm_einpath
+</code></pre>
+
+<p>NumPy einsum path specification for EFM computation.</p>
+<h5 id="efmset">efmset</h5>
+<pre><code class="python">efmset
+</code></pre>
+
+<p>Instance of <code>EFMSet</code> help by this EFP if using EFMs.</p>
+<h5 id="np_optimize">np_optimize</h5>
+<pre><code class="python">np_optimize
+</code></pre>
+
+<p>The np_optimize keyword argument that initialized this EFP instance.</p>
 <h5 id="n">n</h5>
 <pre><code class="python">n
 </code></pre>
 
 <p>Number of vertices in the graph of this EFP.</p>
+<h5 id="e">e</h5>
+<pre><code class="python">e
+</code></pre>
+
+<p>Number of edges in the simple graph of this EFP.</p>
 <h5 id="d">d</h5>
 <pre><code class="python">d
 </code></pre>
 
 <p>Degree, or number of edges, in the graph of this EFP.</p>
+<h5 id="v">v</h5>
+<pre><code class="python">v
+</code></pre>
+
+<p>Maximum valency of any vertex in the graph.</p>
+<h5 id="k">k</h5>
+<pre><code class="python">k
+</code></pre>
+
+<p>Index of this EFP. Determined by EFPSet or -1 otherwise.</p>
 <h5 id="c">c</h5>
 <pre><code class="python">c
 </code></pre>
 
 <p>VE complexity $\chi$ of this EFP.</p>
+<h5 id="p">p</h5>
+<pre><code class="python">p
+</code></pre>
+
+<p>Number of connected components of this EFP. Note that the empty
+graph conventionally has one connected component.</p>
+<h5 id="h">h</h5>
+<pre><code class="python">h
+</code></pre>
+
+<p>Number of valency 1 vertices ('hanging chads) of this EFP.</p>
+<h5 id="spec">spec</h5>
+<pre><code class="python">spec
+</code></pre>
+
+<p>Specification array for this EFP.</p>
+<h5 id="ndk">ndk</h5>
+<pre><code class="python">ndk
+</code></pre>
+
+<p>Tuple of <code>n</code>, <code>d</code>, and <code>k</code> values which form a unique identifier of
+this EFP within an <code>EFPSet</code>.</p>
 <hr />
 <h3 id="efpset">EFPSet</h3>
 <p>A class that holds a collection of EFPs and computes their values on
 events. Note that all keyword arguments are stored as properties of the
 <code>EFPSet</code> instance.</p>
-<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=True, coords='ptyphim', check_input=True, verbose=False)
+<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, coords=None, check_input=True, verbose=0)
 </code></pre>
 
 <p><code>EFPSet</code> can be initialized in one of three ways (in order of
 precedence):</p>
 <ol>
-<li><strong>Default</strong> - Use the ($d\le10$) EFPs that come installed with the
-<code>EnergFlow</code> package.</li>
+<li><strong>Graphs</strong> - Pass in graphs as lists of edges, just as for
+individual EFPs.</li>
 <li><strong>Generator</strong> - Pass in a custom <code>Generator</code> object as the first
 positional argument.</li>
 <li><strong>Custom File</strong> - Pass in the name of a <code>.npz</code> file saved with a
 custom <code>Generator</code>.</li>
+<li><strong>Default</strong> - Use the $d\le10$ EFPs that come installed with the
+<code>EnergFlow</code> package.</li>
 </ol>
 <p>To control which EFPs are included, <code>EFPSet</code> accepts an arbitrary
 number of specifications (see <a href="#sel"><code>sel</code></a>) and only EFPs meeting each
-specification are included in the set.</p>
+specification are included in the set. Note that no specifications
+should be passed in when initializing from explicit graphs.</p>
+<p>Since an EFP defines and holds a <code>Measure</code> instance, all <code>Measure</code>
+keywords are accepted.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
-<li>If the first positional argument is a <code>Generator</code> instance, it is
-used for initialization. The remaining positional arguments must be
-valid arguments to <code>sel</code>.</li>
+<li>Depending on the method of initialization, these can be either
+1) graphs to store, as lists of edges 2) a Generator instance
+followed by some number of valid arguments to <code>sel</code> or 3,4) valid
+arguments to <code>sel</code>. When passing in specific graphs, no arguments
+to <code>sel</code> should be given.</li>
 </ul>
 </li>
 <li><strong>filename</strong> : <em>string</em><ul>
 <li>Path to a <code>.npz</code> file which has been saved by a valid
-<code>energyflow.Generator</code>.</li>
+<code>energyflow.Generator</code>. A value of <code>None</code> will use the provided
+graphs, if a file is needed at all.</li>
 </ul>
 </li>
 <li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadr-dot'</code>, <code>'ee'</code>}<ul>
@@ -408,13 +511,14 @@ use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
 first input type.</li>
 </ul>
 </li>
-<li><strong>verbose</strong> : <em>bool</em><ul>
-<li>Controls printed output when initializing EFPSet.</li>
+<li><strong>verbose</strong> : <em>int</em><ul>
+<li>Controls printed output when initializing <code>EFPSet</code> from a file or
+<code>Generator</code>.</li>
 </ul>
 </li>
 </ul>
 <h4 id="compute_1">compute</h4>
-<pre><code class="python">compute(event=None, zs=None, thetas=None)
+<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
 <p>Computes the values of the stored EFPs on a single event.</p>
@@ -426,13 +530,19 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in
-place of the energies of an event.</li>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+of the energies of an event.</li>
 </ul>
 </li>
 <li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in
-place of the pairwise angles of an event.</li>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>nhats</strong> : 2-d array like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
+of the scaled particle momenta. Only applicable when EFMs are being
+used.</li>
 </ul>
 </li>
 </ul>
@@ -473,7 +583,9 @@ attempt to use as many processes as there are CPUs on the machine.</li>
 </code></pre>
 
 <p>Computes disconnected EFPs according to the internal 
-specifications using the connected EFPs provided as input.</p>
+specifications using the connected EFPs provided as input. Note that
+this function has no effect if the <code>EFPSet</code> was initialized with
+specific graphs.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>X</strong> : <em>numpy.ndarray</em><ul>
@@ -521,6 +633,11 @@ value is a variable that changes (such as in a list comprehension).</li>
 </ul>
 </li>
 </ul>
+<h4 id="csel">csel</h4>
+<pre><code class="python">csel(*args)
+</code></pre>
+
+<p>Same as <code>sel</code> except using <code>cspecs</code> to select from.</p>
 <h4 id="count">count</h4>
 <pre><code class="python">count(*args)
 </code></pre>
@@ -591,6 +708,16 @@ specifications.</li>
 </ul>
 </li>
 </ul>
+<h5 id="efps">efps</h5>
+<pre><code class="python">efps
+</code></pre>
+
+<p>List of EFPs held by the <code>EFPSet</code>.</p>
+<h5 id="efmset_1">efmset</h5>
+<pre><code class="python">efmset
+</code></pre>
+
+<p>The <code>EFMSet</code> held by the <code>EFPSet</code>, if using EFMs.</p>
 <h5 id="specs">specs</h5>
 <pre><code class="python">specs
 </code></pre>
@@ -602,12 +729,18 @@ and the columns represent the quantities indicated by <code>cols</code>.</p>
 </code></pre>
 
 <p>Specification array for connected EFPs.</p>
+<h5 id="weight_set_1">weight_set</h5>
+<pre><code class="python">weight_set
+</code></pre>
+
+<p>The union of all weights needed by the EFPs stored by the 
+<code>EFPSet</code>.</p>
 <h5 id="cols">cols</h5>
 <pre><code class="python">cols
 </code></pre>
 
-<p>Column labels for <code>specs</code>. 
-Those of primary interest are listed below.</p>
+<p>Column labels for <code>specs</code>. Each EFP has a property corresponding to
+each column.</p>
 <ul>
 <li><code>n</code> : Number of vertices.</li>
 <li><code>e</code> : Number of simple edges.</li>
@@ -629,7 +762,7 @@ Those of primary interest are listed below.</p>
         <a href="../measures/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../emd/" class="btn btn-neutral" title="EMD"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../efm/" class="btn btn-neutral" title="Energy Flow Moments"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -657,7 +790,7 @@ Those of primary interest are listed below.</p>
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
-        <span><a href="../emd/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../efm/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../measures/" style="color: #fcfcfc">Next &raquo;</a></span>

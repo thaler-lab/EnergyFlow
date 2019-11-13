@@ -131,7 +131,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../docs/efps/">Energy Flow Polynomials</a>
+    <a class="" href="../docs/efm/">Energy Flow Moments</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../docs/efp/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -193,6 +197,14 @@
               
                 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
 <h3 id="013x">0.13.x</h3>
+<ul>
+<li>Reintroduced EFMs, with full documentation, testing, and integration with the core EFP code.</li>
+<li>Fixed bug in qg_nsubs where <code>cache_dir</code> was set to <code>None</code> which caused an error. Thanks to Serhii Kryhin for catching this!</li>
+<li>Fixed bug where <code>emd</code> module could modify the inputs in place.</li>
+<li>Changed the <code>emds</code> function to use global arrays in order to consume (vastly) less memory when using multiple jobs.</li>
+<li>Updated the <code>eval_filters</code> method of the <code>EFN</code> class to adjust for new Keras behavior.</li>
+<li>Implemented the <code>D2</code>, <code>C2</code>, and <code>C3</code> observables using EFPs.</li>
+</ul>
 <p><strong>0.13.2</strong></p>
 <ul>
 <li>Keras 2.2.5 fixes a bug in their <code>batch_dot</code> function that is used by their <code>Dot</code> layer which is used by the <code>EFN</code> and <code>PFN</code> classes. This necessitates adjusting our code to account for the new behavior.</li>

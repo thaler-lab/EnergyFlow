@@ -113,7 +113,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
+    <a class="" href="../efm/">Energy Flow Moments</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efp/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -128,6 +132,15 @@
     <a class="current" href="./">Observables</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#d2">D2</a></li>
+    
+
+    <li class="toctree-l3"><a href="#c2">C2</a></li>
+    
+
+    <li class="toctree-l3"><a href="#c3">C3</a></li>
+    
+
     <li class="toctree-l3"><a href="#image_activity">image_activity</a></li>
     
 
@@ -185,10 +198,28 @@
           <div role="main">
             <div class="section">
               
-                <p>Implementations of some observables that are not covered by other portions
-of EnergyFlow. Some observables require the <a href="http://fastjet.fr/">FastJet</a>
-Python interface to be importable; if it's not, no warnings or errors will be
-issued, the observables will simply not be included in this module.</p>
+                <p>Implementations of certain specific observables. Some observables require
+the <a href="http://fastjet.fr/">FastJet</a> Python interface to be importable; if it's
+not, no warnings or errors will be issued, the observables will simply not be
+included in this module.</p>
+<hr />
+<h3 id="d2">D2</h3>
+<pre><code class="python">energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0.0, kwargs)
+</code></pre>
+
+<p>Base class for observables such as D2, C2, and C3.</p>
+<hr />
+<h3 id="c2">C2</h3>
+<pre><code class="python">energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0.0, kwargs)
+</code></pre>
+
+<p>Base class for observables such as D2, C2, and C3.</p>
+<hr />
+<h3 id="c3">C3</h3>
+<pre><code class="python">energyflow.C3(measure='hadr', beta=2, reg=0.0, kwargs)
+</code></pre>
+
+<p>Base class for observables such as D2, C2, and C3.</p>
 <hr />
 <h3 id="image_activity">image_activity</h3>
 <pre><code class="python">energyflow.image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None)

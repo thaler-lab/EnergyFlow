@@ -113,7 +113,11 @@
                 </li>
                 <li class="">
                     
-    <a class="" href="../efps/">Energy Flow Polynomials</a>
+    <a class="" href="../efm/">Energy Flow Moments</a>
+                </li>
+                <li class="">
+                    
+    <a class="" href="../efp/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
@@ -1110,7 +1114,7 @@ test set.</li>
 </ul>
 </li>
 <li><strong>shuffle</strong> : <em>bool</em><ul>
-<li>A flag to control whether the dataset is shuffle prior to 
+<li>A flag to control whether the dataset is shuffled prior to
 being split into parts.</li>
 </ul>
 </li>
@@ -1301,7 +1305,7 @@ to be installed, but the following utilities are available assuming that
 errors will be issued but this module will not be usable).</p>
 <hr />
 <h4 id="pjs_from_ptyphims">pjs_from_ptyphims</h4>
-<pre><code class="python">energyflow.utils.pjs_from_ptyphims(ptyphims)
+<pre><code class="python">energyflow.pjs_from_ptyphims(ptyphims)
 </code></pre>
 
 <p>Converts particles in hadronic coordinates to FastJet PseudoJets.</p>
@@ -1322,7 +1326,7 @@ array.</li>
 </ul>
 <hr />
 <h4 id="cluster">cluster</h4>
-<pre><code class="python">energyflow.utils.cluster(pjs, algorithm='ca', R=1000.0)
+<pre><code class="python">energyflow.cluster(pjs, algorithm='ca', R=1000.0)
 </code></pre>
 
 <p>Clusters a list of PseudoJets according to a specified jet
@@ -1355,7 +1359,7 @@ because they are all used by the FastJet Python package.</li>
 </ul>
 <hr />
 <h4 id="softdrop">softdrop</h4>
-<pre><code class="python">energyflow.utils.softdrop(jet, zcut=0.1, beta=0, R=1.0)
+<pre><code class="python">energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
 
 <p>Implements the SoftDrop grooming algorithm on a jet that has been

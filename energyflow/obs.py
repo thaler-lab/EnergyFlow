@@ -1,18 +1,136 @@
-"""Implementations of some observables that are not covered by other portions
-of EnergyFlow. Some observables require the [FastJet](http://fastjet.fr/)
-Python interface to be importable; if it's not, no warnings or errors will be
-issued, the observables will simply not be included in this module."""
+"""Implementations of come collider physics observables. Some observables
+require the [FastJet](http://fastjet.fr/) Python interface to be importable;
+if it's not, no warnings or errors will be issued, the observables will simply
+not be included in this module."""
 from __future__ import absolute_import, division, print_function
 
-import numpy as np
+from abc import abstractmethod
 
-from energyflow.utils import import_fastjet
+import numpy as np
+from numpy.core.multiarray import c_einsum
+
+from energyflow.base import SingleEnergyCorrelatorBase
+from energyflow.utils import import_fastjet, transfer
 from energyflow.utils.fastjet_utils import *
 from energyflow.utils.particle_utils import *
 
 fj = import_fastjet()
 
-__all__ = ['image_activity']
+__all__ = ['D2', 'C2', 'C3', 'image_activity']
+
+###############################################################################
+# D2
+###############################################################################
+
+class D2(SingleEnergyCorrelatorBase):
+
+    """Ratio of Energy Correlation Functions designed to tag two prong signals."""
+
+    # line and triangle EFPs
+    graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
+    
+    def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
+        """"""
+
+        # initialize base class
+        super(D2, self).__init__(self.graphs, measure, beta, strassen, kwargs)
+        self.reg = reg
+
+    def _strassen_compute(self, event, zs, thetas):
+
+        # evaluate the measure and get the zs and thetas
+        zs, thetas = super(D2, self)._strassen_compute(event, zs, thetas)
+        zthetas = thetas * zs
+        zthetas2 = np.dot(zthetas, zthetas)
+
+        dot = 1. if self.normed else np.sum(zs)
+        line = np.dot(zs, zthetas)
+        triangle = np.sum(zthetas2 * zthetas.T)
+
+        return triangle * dot**3/(line**3 + self.reg)
+
+    def _efp_compute(self, event, zs, thetas, nhats):
+
+        # get EFPset results
+        line, triangle = super(D2, self)._efp_compute(event, zs, thetas, nhats)
+        dot = 1. if self.normed else np.sum(zs)
+
+        # implement D2 formula
+        return triangle * dot**3/(line**3 + reg)
+
+###############################################################################
+# C2
+###############################################################################
+
+class C2(SingleEnergyCorrelatorBase):
+
+    """Ratio of Energy Correlation Functions designed to tag two prong signals."""
+
+    # line and triangle EFPs
+    graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
+    
+    def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
+        """"""
+
+        # initialize base class
+        super(C2, self).__init__(self.graphs, measure, beta, strassen, kwargs)
+        self.reg = reg
+
+    def _strassen_compute(self, event, zs, thetas):
+
+        # evaluate the measure and get the zs and thetas
+        zs, thetas = super(C2, self)._strassen_compute(event, zs, thetas)
+        zthetas = thetas * zs
+        zthetas2 = np.dot(zthetas, zthetas)
+
+        dot = 1. if self.normed else np.sum(zs)
+        line = np.dot(zs, zthetas)
+        triangle = np.sum(zthetas2 * zthetas.T)
+
+        return triangle * dot/(line**2 + self.reg)
+
+    def _efp_compute(self, event, zs, thetas, nhats):
+
+        # get EFPset results
+        line, triangle = super(C2, self)._efp_compute(event, zs, thetas, nhats)
+        dot = 1. if self.normed else np.sum(zs)
+
+        # implement D2 formula
+        return triangle * dot/(line**2 + reg)
+
+###############################################################################
+# C3
+###############################################################################
+
+class C3(SingleEnergyCorrelatorBase):
+
+    """Ratio of Energy Correlation Functions designed to tag three prong
+    signals."""
+
+    # line, triangle, and kite EFPs
+    graphs = [[(0,1)], [(0,1),(1,2),(2,0)], [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]]
+    
+    def __init__(self, measure='hadr', beta=2, reg=0., **kwargs):
+        """"""
+
+        # initialize base class
+        super(C3, self).__init__(self.graphs, measure, beta, False, kwargs)
+        self.reg = reg
+
+    def _strassen_compute(self, *args, **kwargs):
+        raise NotImplementedError('no strassen implementation for C3')
+
+    def _efp_compute(self, event, zs, thetas, nhats):
+
+        # get EFPset results
+        results = super(C3, self)._efp_compute(event, zs, thetas, nhats)
+
+        # implement D2 formula
+        return results[2]*results[0]/(results[1]**2 + reg)
+
+###############################################################################
+# Image Activity (a.k.a. N95)
+###############################################################################
 
 def image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None):
     """Image activity, also known as $N_f$, is the minimum number of pixels
@@ -65,6 +183,10 @@ def image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None):
     nf = np.argmax(np.cumsum(np.sort(pixels/(pixels.sum() + 10**-30))[::-1]) >= f) + 1
 
     return nf
+
+###############################################################################
+# Observables relying on FastJet
+###############################################################################
 
 if fj:
 
