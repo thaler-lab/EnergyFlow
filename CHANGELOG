@@ -1,12 +1,16 @@
 ### 1.0.x
 
+**1.0.0**
+
 - Reintroduced EFMs, with full documentation, testing, and integration with the core EFP code.
 - Fixed bug in qg_nsubs where `cache_dir` was set to `None` which caused an error. Thanks to Serhii Kryhin for catching this!
 - Fixed bug where `emd` module could modify the inputs in place.
-- Changed the `emds` function to use global arrays in order to consume (vastly) less memory when using multiple jobs.
+- Changed the `emds` function to use global arrays in order to consume less memory when using multiple jobs.
 - Updated the `eval_filters` method of the `EFN` class to adjust for new Keras behavior.
 - Implemented the `D2`, `C2`, and `C3` observables using EFPs.
-- Two new demos, [EFM Demo](/demos/#efm-demo) and [Counting Leafless Multigaphs with Nauty](/demos/#counting-leafless-multigaphs-with-nauty)
+- Two new demos, [EFM Demo](/demos/#efm-demo) and [Counting Leafless Multigaphs with Nauty](/demos/#counting-leafless-multigaphs-with-nauty).
+
+### 0.13.x
 
 **0.13.2**
 
