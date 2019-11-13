@@ -252,7 +252,8 @@ class EFM(EFMBase):
     #===============
 
     def compute(self, event=None, zs=None, nhats=None):
-        """Evaluates the EFM on a single event.
+        """Evaluates the EFM on a single event. Note that `EFM` also is
+        callable, in which case this method is invoked.
 
         **Arguments**
 
@@ -495,7 +496,8 @@ class EFMSet(EFMBase):
 
     def compute(self, event=None, zs=None, nhats=None):
         """Evaluates the EFMs held by this `EFMSet` according to the
-        predetermined strategy on a single event.
+        predetermined strategy on a single event. Note that `EFMSet` also is
+        callable, in which case this method is invoked.
 
         **Arguments**
 

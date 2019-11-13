@@ -13,6 +13,7 @@ install:
   - pip install pytest
   - pip install keras
   - pip install tensorflow
+  - pip install scikit-learn
   - pip install .
 script: 
   - pytest -v

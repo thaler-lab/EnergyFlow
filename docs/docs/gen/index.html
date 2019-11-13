@@ -258,7 +258,7 @@ intensive part.</li>
 </li>
 </ul>
 <h4 id="save">save</h4>
-<pre><code class="python">save(filename)
+<pre><code class="python">save(filename, protocol='npz', compression=True)
 </code></pre>
 
 <p>Save the current generator to file.</p>
@@ -266,6 +266,14 @@ intensive part.</li>
 <ul>
 <li><strong>filename</strong> : <em>str</em><ul>
 <li>The path to save the file.</li>
+</ul>
+</li>
+<li><strong>protocol</strong> : {<code>'npz'</code>, <code>'json'</code>}<ul>
+<li>The file format to be used.</li>
+</ul>
+</li>
+<li><strong>compression</strong> : <em>bool</em><ul>
+<li>Whether to compress the resulting file or not.R</li>
 </ul>
 </li>
 </ul>

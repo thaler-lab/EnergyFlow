@@ -184,13 +184,16 @@ class SingleEnergyCorrelatorBase(EFBase):
 
         kwargs.setdefault('measure', measure)
         kwargs.setdefault('beta', beta)
-        super(SingleEnergyCorrelator, self).__init__(kwargs)
+        super(SingleEnergyCorrelatorBase, self).__init__(kwargs)
 
         # use strassen if requested and it's possible
-        self.strassen = (strassen and self.measure != 'hadr')
-        if self.strassen and 'efm' in self.measure:
-            raise ValueError('strassen cannot be True when using an EFM measure. '
-                             "Use the 'hadrdot' or 'ee' measures to use strassen with beta=2.")
+        self.strassen = strassen
+        if self.strassen and ('efm' in self.measure or self.measure == 'hadr'):
+            raise ValueError("strassen cannot be True when using 'hadr' or an EFM measure.")
+
+        # include dot as the last graph if not normed
+        if not self.normed:
+            graphs.append([])
 
         # prepare EFPSet
         if not self.strassen:
@@ -214,7 +217,9 @@ class SingleEnergyCorrelatorBase(EFBase):
         return self.efpset.compute(event, zs, thetas, nhats)
 
     def compute(self, event=None, zs=None, thetas=None, nhats=None):
-        """Computes the value of the observable on a single event.
+        """Computes the value of the observable on a single event. Note that
+        the observable object is also callable, in which case this method is
+        invoked.
 
         **Arguments**
 
@@ -240,12 +245,15 @@ class SingleEnergyCorrelatorBase(EFBase):
 
 
         if self.strassen:
-            return self._strassen_compute(event, zs, thetas, nhats)
+            return self._strassen_compute(event, zs, thetas)
         else:
-            return self._efp_compute(event, zs, thetas)
+            return self._efp_compute(event, zs, thetas, nhats)
 
     @property
     def efpset(self):
         """`EFPSet` held by the object to compute fundamental EFP values."""
 
         return None if self.strassen else self._efpset
+
+# put EFPSet import here do it succeeds
+from energyflow.efp import EFPSet

@@ -82,19 +82,22 @@ class D2(SingleEnergyCorrelatorBase):
         zthetas2 = np.dot(zthetas, zthetas)
 
         dot = 1. if self.normed else np.sum(zs)
-        line = np.dot(zs, zthetas)
+        line = np.sum(zs[:,np.newaxis] * zthetas)
         triangle = np.sum(zthetas2 * zthetas.T)
+
+        print(triangle, dot, line)
 
         return triangle * dot**3/(line**3 + self.reg)
 
     def _efp_compute(self, event, zs, thetas, nhats):
 
         # get EFPset results
-        line, triangle = super(D2, self)._efp_compute(event, zs, thetas, nhats)
-        dot = 1. if self.normed else np.sum(zs)
+        results = super(D2, self)._efp_compute(event, zs, thetas, nhats)
+        line, triangle = results[:2]
+        dot = 1. if self.normed else results[-1]
 
         # implement D2 formula
-        return triangle * dot**3/(line**3 + reg)
+        return triangle * dot**3/(line**3 + self.reg)
 
 ###############################################################################
 # C2
@@ -160,7 +163,7 @@ class C2(SingleEnergyCorrelatorBase):
         zthetas2 = np.dot(zthetas, zthetas)
 
         dot = 1. if self.normed else np.sum(zs)
-        line = np.dot(zs, zthetas)
+        line = np.sum(zs[:,np.newaxis] * zthetas)
         triangle = np.sum(zthetas2 * zthetas.T)
 
         return triangle * dot/(line**2 + self.reg)
@@ -168,11 +171,12 @@ class C2(SingleEnergyCorrelatorBase):
     def _efp_compute(self, event, zs, thetas, nhats):
 
         # get EFPset results
-        line, triangle = super(C2, self)._efp_compute(event, zs, thetas, nhats)
-        dot = 1. if self.normed else np.sum(zs)
+        results = super(C2, self)._efp_compute(event, zs, thetas, nhats)
+        line, triangle = results[:2]
+        dot = 1. if self.normed else results[-1]
 
         # implement D2 formula
-        return triangle * dot/(line**2 + reg)
+        return triangle * dot/(line**2 + self.reg)
 
 ###############################################################################
 # C3
@@ -236,7 +240,7 @@ class C3(SingleEnergyCorrelatorBase):
         results = super(C3, self)._efp_compute(event, zs, thetas, nhats)
 
         # implement D2 formula
-        return results[2]*results[0]/(results[1]**2 + reg)
+        return results[2]*results[0]/(results[1]**2 + self.reg)
 
 ###############################################################################
 # Image Activity (a.k.a. N95)

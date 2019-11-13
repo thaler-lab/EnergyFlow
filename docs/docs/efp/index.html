@@ -242,6 +242,10 @@ are discussed in the <a href="../measures">Measures</a> section.</p>
 <li>Edges of the EFP graph specified by pairs of vertices.</li>
 </ul>
 </li>
+<li><strong>weights</strong> : <em>list</em> of <em>int</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the multiplicities of each edge.</li>
+</ul>
+</li>
 <li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
 <li>The choice of measure. See <a href="../measures">Measures</a> for additional
 info.</li>
@@ -280,7 +284,8 @@ first input type.</li>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
-<p>Computes the value of the EFP on a single event.</p>
+<p>Computes the value of the EFP on a single event. Note that <code>EFP</code>
+also is callable, in which case this method is invoked.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
@@ -525,7 +530,8 @@ first input type.</li>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
-<p>Computes the values of the stored EFPs on a single event.</p>
+<p>Computes the values of the stored EFPs on a single event. Note that
+<code>EFPSet</code> also is callable, in which case this method is invoked.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>

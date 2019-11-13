@@ -286,7 +286,8 @@ first input type.</li>
 <pre><code class="python">compute(event=None, zs=None, nhats=None)
 </code></pre>
 
-<p>Evaluates the EFM on a single event.</p>
+<p>Evaluates the EFM on a single event. Note that <code>EFM</code> also is
+callable, in which case this method is invoked.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
@@ -423,7 +424,8 @@ first input type.</li>
 </code></pre>
 
 <p>Evaluates the EFMs held by this <code>EFMSet</code> according to the
-predetermined strategy on a single event.</p>
+predetermined strategy on a single event. Note that <code>EFMSet</code> also is
+callable, in which case this method is invoked.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>

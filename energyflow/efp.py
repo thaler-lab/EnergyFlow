@@ -83,6 +83,10 @@ class EFP(EFPBase):
             (self._einstr, self._einpath, self._spec, self._efm_einstr,
              self._efm_einpath, self._efm_spec) = efpset_args
 
+            # ensure that EFM spec is a list of tuples
+            if self.efm_spec is not None:
+                self._efm_spec = list(map(tuple, self.efm_spec))
+
         # process edges
         self._process_edges(edges, self.weights)
 
@@ -165,7 +169,8 @@ class EFP(EFPBase):
 
     # compute(event=None, zs=None, thetas=None, nhats=None)
     def compute(self, event=None, zs=None, thetas=None, nhats=None, batch_call=None):
-        """Computes the value of the EFP on a single event.
+        """Computes the value of the EFP on a single event. Note that `EFP`
+        also is callable, in which case this method is invoked.
 
         **Arguments**
 
@@ -527,7 +532,8 @@ class EFPSet(EFPBase):
 
     # compute(event=None, zs=None, thetas=None, nhats=None)
     def compute(self, event=None, zs=None, thetas=None, nhats=None, batch_call=False):
-        """Computes the values of the stored EFPs on a single event.
+        """Computes the values of the stored EFPs on a single event. Note that
+        `EFPSet` also is callable, in which case this method is invoked.
 
         **Arguments**
 
