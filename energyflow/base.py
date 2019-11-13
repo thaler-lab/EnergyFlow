@@ -68,7 +68,7 @@ class EFBase(six.with_metaclass(ABCMeta, object)):
         return self.compute(event)
 
     def batch_compute(self, events, n_jobs=None):
-        """Computes the value of the EFP on several events.
+        """Computes the value of the observable on several events.
 
         **Arguments**
 
@@ -82,7 +82,7 @@ class EFBase(six.with_metaclass(ABCMeta, object)):
         **Returns**
 
         - _1-d numpy.ndarray_
-            - A vector of the EFP value for each event.
+            - A vector of the observable values for each event.
         """
 
         if n_jobs is None:
@@ -214,7 +214,30 @@ class SingleEnergyCorrelatorBase(EFBase):
         return self.efpset.compute(event, zs, thetas, nhats)
 
     def compute(self, event=None, zs=None, thetas=None, nhats=None):
-        """"""
+        """Computes the value of the observable on a single event.
+
+        **Arguments**
+
+        - **event** : 2-d array_like or `fastjet.PseudoJet`
+            - The event as an array of particles in the coordinates specified
+            by `coords`.
+        - **zs** : 1-d array_like
+            - If present, `thetas` must also be present, and `zs` is used in place 
+            of the energies of an event.
+        - **thetas** : 2-d array_like
+            - If present, `zs` must also be present, and `thetas` is used in place 
+            of the pairwise angles of an event.
+        - **nhats** : 2-d array like
+            - If present, `zs` must also be present, and `nhats` is used in place
+            of the scaled particle momenta. Only applicable when EFMs are being
+            used.
+
+        **Returns**
+
+        - _float_
+            - The observable value.
+        """
+
 
         if self.strassen:
             return self._strassen_compute(event, zs, thetas, nhats)
@@ -223,6 +246,6 @@ class SingleEnergyCorrelatorBase(EFBase):
 
     @property
     def efpset(self):
-        """"""
+        """`EFPSet` held by the object to compute fundamental EFP values."""
 
         return None if self.strassen else self._efpset

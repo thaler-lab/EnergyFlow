@@ -27,15 +27,48 @@ class D2(SingleEnergyCorrelatorBase):
     """Ratio of EFPs (specifically, energy correlation functions) designed to
     tag two prong signals. In graphs, the formula is:
 
-    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" class="obs_center"/>
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" 
+    class="obs_center" width="20%"/>
 
+    For additional information, see the [original paper](https://arxiv.org/
+    abs/1409.6298).
     """
 
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
     
+    # D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=None,
+    #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
-        """"""
+        r"""Since a `D2` defines and holds a `Measure` instance, all `Measure`
+        keywords are accepted.
+
+        **Arguments**
+
+        - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
+            - The choice of measure. See [Measures](../measures) for additional
+            info.
+        - **beta** : _float_
+            - The parameter $\beta$ appearing in the measure. Must be greater
+            than zero.
+        - **strassen** : _bool_
+            - Whether to use matrix multiplication to speed up the evaluation.
+            Not recommended when $\beta=2$ since EFMs are faster.
+        - **reg** : _float_
+            - A regularizing value to be added to the denominator in the event
+            that it is zero. Should typically be something less than 1e-30.
+        - **kappa** : {_float_, `'pf'`}
+            - If a number, the energy weighting parameter $\kappa$. If `'pf'`,
+            use $\kappa=v-1$ where $v$ is the valency of the vertex.
+        - **normed** : _bool_
+            - Controls normalization of the energies in the measure.
+        - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
+            - Controls which coordinates are assumed for the input. See 
+            [Measures](../measures) for additional info.
+        - **check_input** : _bool_
+            - Whether to check the type of the input each time or assume the
+            first input type.
+        """
 
         # initialize base class
         super(D2, self).__init__(self.graphs, measure, beta, strassen, kwargs)
@@ -72,13 +105,48 @@ class C2(SingleEnergyCorrelatorBase):
     """Ratio of Energy Correlation Functions designed to tag two prong signals.
     In graphs, the formula is:
 
-    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" class="obs_center"/>"""
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" 
+    class="obs_center" width="20%"/>
+
+    For additional information, see the [original paper](https://arxiv.org/
+    abs/1305.0007).
+    """
 
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
     
+    # C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=None,
+    #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
-        """"""
+        r"""Since a `C2` defines and holds a `Measure` instance, all `Measure`
+        keywords are accepted.
+
+        **Arguments**
+
+        - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
+            - The choice of measure. See [Measures](../measures) for additional
+            info.
+        - **beta** : _float_
+            - The parameter $\beta$ appearing in the measure. Must be greater
+            than zero.
+        - **strassen** : _bool_
+            - Whether to use matrix multiplication to speed up the evaluation.
+            Not recommended when $\beta=2$ since EFMs are faster.
+        - **reg** : _float_
+            - A regularizing value to be added to the denominator in the event
+            that it is zero. Should typically be something less than 1e-30.
+        - **kappa** : {_float_, `'pf'`}
+            - If a number, the energy weighting parameter $\kappa$. If `'pf'`,
+            use $\kappa=v-1$ where $v$ is the valency of the vertex.
+        - **normed** : _bool_
+            - Controls normalization of the energies in the measure.
+        - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
+            - Controls which coordinates are assumed for the input. See 
+            [Measures](../measures) for additional info.
+        - **check_input** : _bool_
+            - Whether to check the type of the input each time or assume the
+            first input type.
+        """
 
         # initialize base class
         super(C2, self).__init__(self.graphs, measure, beta, strassen, kwargs)
@@ -115,13 +183,45 @@ class C3(SingleEnergyCorrelatorBase):
     """Ratio of Energy Correlation Functions designed to tag three prong
     signals. In graphs, the formula is:
 
-    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" class="obs_center"/>"""
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" 
+    class="obs_center" width="30%"/>
+
+    For additional information, see the [original paper](https://arxiv.org/
+    abs/1305.0007).
+    """
 
     # line, triangle, and kite EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)], [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]]
     
+    # C3(measure='hadr', beta=2, reg=0., kappa=1, normed=None,
+    #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, reg=0., **kwargs):
-        """"""
+        r"""Since a `D2` defines and holds a `Measure` instance, all `Measure`
+        keywords are accepted.
+
+        **Arguments**
+
+        - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
+            - The choice of measure. See [Measures](../measures) for additional
+            info.
+        - **beta** : _float_
+            - The parameter $\beta$ appearing in the measure. Must be greater
+            than zero.
+        - **reg** : _float_
+            - A regularizing value to be added to the denominator in the event
+            that it is zero. Should typically be something less than 1e-30.
+        - **kappa** : {_float_, `'pf'`}
+            - If a number, the energy weighting parameter $\kappa$. If `'pf'`,
+            use $\kappa=v-1$ where $v$ is the valency of the vertex.
+        - **normed** : _bool_
+            - Controls normalization of the energies in the measure.
+        - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
+            - Controls which coordinates are assumed for the input. See 
+            [Measures](../measures) for additional info.
+        - **check_input** : _bool_
+            - Whether to check the type of the input each time or assume the
+            first input type.
+        """
 
         # initialize base class
         super(C3, self).__init__(self.graphs, measure, beta, False, kwargs)
