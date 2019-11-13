@@ -11,7 +11,7 @@ install:
   - pip install cython
   - pip install pot
   - pip install pytest
-  - pip install keras==2.2.4
+  - pip install keras
   - pip install tensorflow
   - pip install .
 script: 

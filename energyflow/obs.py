@@ -24,7 +24,12 @@ __all__ = ['D2', 'C2', 'C3', 'image_activity']
 
 class D2(SingleEnergyCorrelatorBase):
 
-    """Ratio of Energy Correlation Functions designed to tag two prong signals."""
+    """Ratio of EFPs (specifically, energy correlation functions) designed to
+    tag two prong signals. In graphs, the formula is:
+
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" class="obs_center"/>
+
+    """
 
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
@@ -64,7 +69,10 @@ class D2(SingleEnergyCorrelatorBase):
 
 class C2(SingleEnergyCorrelatorBase):
 
-    """Ratio of Energy Correlation Functions designed to tag two prong signals."""
+    """Ratio of Energy Correlation Functions designed to tag two prong signals.
+    In graphs, the formula is:
+
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" class="obs_center"/>"""
 
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
@@ -105,7 +113,9 @@ class C2(SingleEnergyCorrelatorBase):
 class C3(SingleEnergyCorrelatorBase):
 
     """Ratio of Energy Correlation Functions designed to tag three prong
-    signals."""
+    signals. In graphs, the formula is:
+
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" class="obs_center"/>"""
 
     # line, triangle, and kite EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)], [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]]
