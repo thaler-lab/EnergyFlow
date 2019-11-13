@@ -9,7 +9,7 @@ python:
 install:
   - pip install -U scipy
   - pip install cython
-  - pip install pot --no-binary
+  - pip install pot --no-binary pot
   - pip install pytest
   - pip install keras
   - pip install tensorflow
