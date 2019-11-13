@@ -108,10 +108,9 @@ class Generator(object):
             self._set_col_inds()
 
             # get maxs from file and passed in options
-            c_specs = file['c_specs']
-            local_vars = locals()
+            c_specs = np.asarray(file['c_specs'])
             for m in ['dmax','nmax','emax','cmax','vmax']:
-                setattr(self, m, min(file[m], none2inf(local_vars[m])))
+                setattr(self, m, min(file[m], none2inf(locals()[m])))
 
             # select connected specs based on maxs
             mask = ((c_specs[:,self.d_ind] <= self.dmax) & 

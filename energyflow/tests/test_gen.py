@@ -23,6 +23,7 @@ table2b = [
 [0,0,0,0,0,0,0,0,0,0,235]
 ]
 
+@pytest.mark.gen
 def test_gen_matches_file():
     pytest.importorskip('igraph')
     g_7 = ef.Generator(dmax=7)
@@ -33,6 +34,8 @@ g_10_default = ef.Generator(dmax=10, filename='default')
 
 sp = g_10_default.specs
 c_sp = g_10_default.c_specs
+
+@pytest.mark.gen
 def test_table2a():
     for d in range(11):
         num_prime = np.count_nonzero(c_sp[:,g_10_default.d_ind] == d)
@@ -40,6 +43,7 @@ def test_table2a():
         assert num_prime == table2a['prime'][d]
         assert num_comp == table2a['all'][d]
 
+@pytest.mark.gen
 def test_table2b():
     for d in range(11):
         dmask = c_sp[:,g_10_default.d_ind] == d
