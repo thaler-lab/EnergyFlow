@@ -7,17 +7,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
-  <link rel="shortcut icon" href="img/favicon.ico">
-  <title>EnergyFlow</title>
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>News - EnergyFlow</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
-  <link rel="stylesheet" href="css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="css/eftheme.css" rel="stylesheet">
+  <link href="../css/eftheme.css" rel="stylesheet">
   
-  <script src="js/jquery-2.1.1.min.js" defer></script>
-  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script>
+    // Current page data
+    var mkdocs_page_name = "News";
+    var mkdocs_page_input_path = "news.md";
+    var mkdocs_page_url = "/news/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
@@ -40,9 +47,13 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
       <div class="wy-side-nav-search">
-        <a href="." class="icon icon-home"> EnergyFlow</a>
+        <a href="..">
+            <div class="eflogo">
+                <img src="../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+            </div>
+        </a>
         <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="/search.html" method="get">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
   </form>
 </div>
@@ -54,7 +65,7 @@
           
             <li class="toctree-l1">
 		
-    <a class="" href=".">Home</a>
+    <a class="" href="..">Home</a>
 	    </li>
           
             <li class="toctree-l1">
@@ -63,27 +74,33 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="installation/">Installation</a>
+    <a class="" href="../installation/">Installation</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="demos/">Demos</a>
+    <a class="" href="../demos/">Demos</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="examples/">Examples</a>
+    <a class="" href="../examples/">Examples</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="faqs/">FAQs</a>
+    <a class="" href="../faqs/">FAQs</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="releases/">Release Notes</a>
+    <a class="" href="../releases/">Release Notes</a>
                 </li>
-                <li class="">
+                <li class=" current">
                     
-    <a class="" href="news/">News</a>
+    <a class="current" href="./">News</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l3"><a href="#emd-media-coverage">EMD Media Coverage</a></li>
+    
+
+    </ul>
                 </li>
     </ul>
 	    </li>
@@ -94,39 +111,39 @@
     <ul class="subnav">
                 <li class="">
                     
-    <a class="" href="docs/archs/">Architectures</a>
+    <a class="" href="../docs/archs/">Architectures</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/datasets/">Datasets</a>
+    <a class="" href="../docs/datasets/">Datasets</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/emd/">EMD</a>
+    <a class="" href="../docs/emd/">EMD</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/efm/">Energy Flow Moments</a>
+    <a class="" href="../docs/efm/">Energy Flow Moments</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/efp/">Energy Flow Polynomials</a>
+    <a class="" href="../docs/efp/">Energy Flow Polynomials</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/measures/">Measures</a>
+    <a class="" href="../docs/measures/">Measures</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/gen/">Multigraph Generation</a>
+    <a class="" href="../docs/gen/">Multigraph Generation</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/obs/">Observables</a>
+    <a class="" href="../docs/obs/">Observables</a>
                 </li>
                 <li class="">
                     
-    <a class="" href="docs/utils/">Utils</a>
+    <a class="" href="../docs/utils/">Utils</a>
                 </li>
     </ul>
 	    </li>
@@ -141,7 +158,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href=".">EnergyFlow</a>
+        <a href="..">EnergyFlow</a>
       </nav>
 
       
@@ -149,10 +166,19 @@
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".">Docs</a> &raquo;</li>
+    <li><a href="..">Docs</a> &raquo;</li>
     
+      
+        
+          <li>Getting Started &raquo;</li>
+        
+      
     
+    <li>News</li>
     <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/news.md"
+          class="icon icon-github"> Edit on GitHub</a>
       
     </li>
   </ul>
@@ -161,15 +187,33 @@
           <div role="main">
             <div class="section">
               
-
-  <h1 id="404-page-not-found">404</h1>
-
-  <p><strong>Page not found</strong></p>
-
-
+                <h1 id="emd-media-coverage">EMD Media Coverage</h1>
+<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/MIT-Particle-Networking.jpg" width="80%"/>
+<br/>
+Image: Chelsea Turner, MIT</p>
+<p><a href="http://news.mit.edu/2019/new-physics-anomalous-particles-0726"><strong>Seeking new physics, scientists borrow from social networks</strong></a><br />
+<em>MIT News</em>, Jennifer Chu. July 25, 2019.</p>
+<p><a href="https://physics.aps.org/articles/v12/85"><strong>Viewpoint: Putting Distance Between Collider Events</strong></a><br />
+<em>Physics</em>, Michael Schmitt. July 26, 2019.</p>
+<p><a href="https://arstechnica.com/science/2019/07/mit-physicists-social-networks-could-hold-the-key-to-finding-new-particles/"><strong>MIT Physicists: Social networks could hold the key to finding new particles</strong></a><br />
+<em>Ars Technica</em>, Jennifer Ouellette. July 31, 2019.</p>
+<p><a href="https://phys.org/news/2019-08-metric-capture-similarity-collider-events.html"><strong>A new metric to capture the similarity between collider events</strong></a><br />
+<em>Phys.org</em> Feature, Ingrid Fadelli. August 9, 2019.</p>
+<p><a href="https://physicsworld.com/a/social-networks-could-tease-new-particles-out-of-collider-data/"><strong>'Social Networks' could tease new particles out of collider data</strong></a><br />
+<em>Physics World</em>, Sam Jarman. August 19, 2019.</p>
+              
             </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../docs/archs/" class="btn btn-neutral float-right" title="Architectures">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../releases/" class="btn btn-neutral" title="Release Notes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -195,14 +239,18 @@
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
+        <span><a href="../releases/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../docs/archs/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
-    <script>var base_url = '';</script>
-    <script src="js/theme.js" defer></script>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
-      <script src="js/eftheme.js" defer></script>
-      <script src="search/main.js" defer></script>
+      <script src="../js/eftheme.js" defer></script>
+      <script src="../search/main.js" defer></script>
 
 </body>
 </html>

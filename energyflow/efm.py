@@ -518,7 +518,7 @@ class EFMSet(EFMBase):
         zsnhats = super(EFMSet, self).compute(event, zs, nhats)
 
         efm_dict = {}
-        for sig in self.sorted_efms:
+        for sig in self._sorted_efms:
             arg = self._args[sig]
             data_arg = zsnhats if arg == 'r' else efm_dict[arg]
             efm_dict[sig] = self.efms[sig]._construct(data_arg)

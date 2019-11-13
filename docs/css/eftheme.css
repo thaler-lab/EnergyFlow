@@ -70,6 +70,12 @@ a:visited code {
     display: none;
 }
 
+.obs_center {
+    display: block;
+      margin-left: auto;
+      margin-right: auto;
+}
+
 /*.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
     list-style: none;
 }

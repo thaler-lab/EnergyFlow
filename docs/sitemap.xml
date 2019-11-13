@@ -31,6 +31,11 @@
      <changefreq>daily</changefreq>
     </url>
     <url>
+     <loc>https://energyflow.network/news/</loc>
+     <lastmod>2019-11-12</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
      <loc>https://energyflow.network/docs/archs/</loc>
      <lastmod>2019-11-12</lastmod>
      <changefreq>daily</changefreq>
