@@ -9,7 +9,7 @@ import pytest
 import energyflow as ef
 from test_utils import epsilon_percent, epsilon_diff
 
-@pytest.mark.slow
+@pytest.mark.efm
 @pytest.mark.obs
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('beta', [.5, 1, 2])

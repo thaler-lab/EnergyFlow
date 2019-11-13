@@ -69,6 +69,7 @@ def test_efp_asymbox(zs, thetas, beta):
 
 @pytest.mark.slow
 @pytest.mark.efp
+@pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
@@ -89,6 +90,7 @@ def test_batch_compute_vs_compute(measure, beta, kappa, normed):
 # test that efpset matches efps
 @pytest.mark.slow
 @pytest.mark.efp
+@pytest.mark.efm
 @pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])

@@ -186,7 +186,8 @@ class EFM(EFMBase):
             # determine einstr    
             diff = self.nup - self._rl_from[0]
             self._rl_diff = abs(diff)
-            i_start, i_end = (self._rl_from[0], self.nup) if diff > 0 else (self.nup, self._rl_from[0])
+            i_start, i_end = ((self._rl_from[0], self.nup) if diff > 0 else 
+                              (self.nup, self._rl_from[0]))
             self.rl_einstr = ','.join([I[:self.v]] + list(I[i_start:i_end])) + '->' + I[:self.v]
 
             self._construct = self._rl_construct
@@ -207,9 +208,8 @@ class EFM(EFMBase):
             if sys.version_info[0] > 2:
                 self.subslice = tuple([0]*num_up_subslices + [Ellipsis] + [0]*num_low_subslices)
             else:
-                ns = self.v - num_up_subslices - num_low_subslices
-                self.subslice = tuple([0]*num_up_subslices + ns*[slice(None)] + [0]*num_low_subslices)
-
+                self.subslice = tuple([0]*num_up_subslices + self.v*[slice(None)] + 
+                                      [0]*num_low_subslices)
 
             self._pow2 = 2**(-(num_up_subslices + num_low_subslices)/2)
             self._construct = self._subslice_construct
@@ -242,13 +242,15 @@ class EFM(EFMBase):
 
         # if no lowering is needed
         if self.nlow == 0:
-            return self._pow2 * einsum(self.raw_einstr, zs, *[nhats]*self.v, optimize=self.raw_einpath)
+            return self._pow2 * einsum(self.raw_einstr, zs, *[nhats]*self.v, 
+                                       optimize=self.raw_einpath)
 
         # lowering nhats first is better
         elif M*dim < dim**self.v:
             low_nhats = nhats * (flat_metric(dim)[np.newaxis])
             einsum_args = [nhats]*self.nup + [low_nhats]*self.nlow
-            return self._pow2 * einsum(self.raw_einstr, zs, *einsum_args, optimize=self.raw_einpath)
+            return self._pow2 * einsum(self.raw_einstr, zs, *einsum_args, 
+                                       optimize=self.raw_einpath)
 
         # lowering EFM is better    
         else:

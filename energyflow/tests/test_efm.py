@@ -45,8 +45,7 @@ def test_efms(v, measure, normed, M):
         else:
             s_ans = slow_efm(zs, nhats, v)
             assert epsilon_percent(s_ans, e_ans, 10**-13)
-            
-            
+  
 @pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
@@ -75,8 +74,8 @@ def test_efm_vs_efmset_compute(sigs, M, measure, normed):
     for event in ef.gen_random_events(2, M):
         efm_dict = efmset.compute(event)
         for sig,efm in zip(sigs,efms):
+            print(sig, np.max(np.abs(efm_dict[sig] - efm.compute(event))))
             assert epsilon_percent(efm_dict[sig], efm.compute(event), 10**-10)
-
 
 @pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
