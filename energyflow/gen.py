@@ -2,7 +2,9 @@
 from __future__ import absolute_import, division, print_function
 
 from collections import Counter
+import gzip
 import itertools
+import json
 import time
 
 import numpy as np
@@ -10,7 +12,7 @@ import numpy as np
 from energyflow.algorithms import *
 from energyflow.efm import efp2efms
 from energyflow.efp import EFP
-from energyflow.utils import concat_specs, DEFAULT_EFP_FILE, transfer
+from energyflow.utils import concat_specs, load_efp_file, transfer
 from energyflow.utils.graph_utils import *
 
 igraph = import_igraph()
@@ -99,10 +101,7 @@ class Generator(object):
 
         # if filename is set, read in file
         else:
-            if filename is None or filename == 'default':
-                filename = DEFAULT_EFP_FILE
-
-            file = np.load(filename + ('' if filename.endswith('.npz') else '.npz'), allow_pickle=True)
+            file = load_efp_file(filename)
 
             # setup cols and col inds
             self.cols = file['cols']
@@ -181,19 +180,44 @@ class Generator(object):
     # PUBLIC METHODS
     ################
 
-    def save(self, filename):
+    def save(self, filename, protocol='npz', compression=True):
         """Save the current generator to file.
 
         **Arguments**
 
         - **filename** : _str_
             - The path to save the file.
+        - **protocol** : {`'npz'`, `'json'`}
+            - The file format to be used.
+        - **compression** : _bool_
+            - Whether to compress the resulting file or not.R
         """
         
         arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
                     'cols', 'np_optimize', 'gen_efms'])
         arrs |= self._prime_attrs() | self._comp_attrs()
-        np.savez_compressed(filename, **{arr: getattr(self, arr) for arr in arrs})
+        d = {arr: getattr(self, arr) for arr in arrs}
+
+        if protocol == 'npz':
+            if compression:
+                np.savez_compressed(filename, **d)
+            else:
+                np.savez(filename, **d)
+        elif protocol == 'json':
+            for arr in ['c_specs', 'disc_formulae', 'disc_specs']:
+                d[arr] = d[arr].tolist()
+
+            if compression:
+                if not filename.endswith('.gz'):
+                    filename += '.gz'
+
+                with gzip.open(filename, 'wt') as f:
+                    json.dump(d, f)
+            else:
+                with open(filename, 'wt') as f:
+                    json.dump(d, f)
+        else:
+            raise ValueError('protocol {} not allowed'.format(protocol))
 
     @property
     def specs(self):

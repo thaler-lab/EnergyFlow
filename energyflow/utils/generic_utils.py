@@ -2,7 +2,9 @@ from __future__ import absolute_import, division, print_function
 
 import contextlib
 from functools import wraps
+import gzip
 from itertools import repeat
+import json
 from multiprocessing import Pool
 import os
 import sys
@@ -12,7 +14,6 @@ import numpy as np
 import six
 
 __all__ = [
-    'DEFAULT_EFP_FILE', 
     'EF_DATA_DIR',
     'concat_specs',
     'create_pool',
@@ -20,6 +21,7 @@ __all__ = [
     'import_fastjet',
     'iter_or_rep', 
     'kwargs_check',
+    'load_efp_file',
     'sel_arg_check',
     'timing', 
     'transfer'
@@ -27,7 +29,7 @@ __all__ = [
 
 # get access to the data directory of the installed package and the default efp file
 EF_DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
-DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.npz')
+DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.json.gz')
 REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 COMP_MAP = {
     '>':  '__gt__', 
@@ -112,6 +114,24 @@ def kwargs_check(name, kwargs, allowed=None):
         if k in allowed:
             continue
         raise TypeError(name + '() got an unexpected keyword argument \'{}\''.format(k))
+
+# load EFP file
+def load_efp_file(filename):
+    if filename is None or filename == 'default':
+        filename = DEFAULT_EFP_FILE
+
+    if filename.endswith('.npz'):
+        return np.load(filename, allow_pickle=True)
+
+    if '.json' in filename:
+        if '.gz' in filename:
+            with gzip.open(filename, 'rt') as f:
+                return json.load(f)
+        else:
+            with open(filename, 'rt') as f:
+                return json.load(f)
+
+    return None
 
 # check that an argument is well-formed to EFPSet.sel
 def sel_arg_check(arg):

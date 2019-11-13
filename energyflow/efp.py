@@ -24,8 +24,8 @@ from energyflow.algorithms import VariableElimination, einsum_path, einsum
 from energyflow.base import EFPBase
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.measure import PF_MARKER
-from energyflow.utils import (DEFAULT_EFP_FILE, concat_specs, create_pool,
-                              explicit_comp, kwargs_check, sel_arg_check)
+from energyflow.utils import (concat_specs, create_pool, explicit_comp,
+                              kwargs_check, load_efp_file, sel_arg_check)
 from energyflow.utils.graph_utils import *
 
 __all__ = ['EFP', 'EFPSet']
@@ -40,7 +40,7 @@ class EFP(EFPBase):
 
     # EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
     #     check_input=True, np_optimize=True)
-    def __init__(self, edges, efpset_args=None, np_optimize=True, **kwargs):
+    def __init__(self, edges, weights=None, efpset_args=None, np_optimize=True, **kwargs):
         r"""Since a standalone EFP defines and holds a `Measure` instance, all
         `Measure` keywords are accepted.
 
@@ -48,6 +48,8 @@ class EFP(EFPBase):
 
         - **edges** : _list_
             - Edges of the EFP graph specified by pairs of vertices.
+        - **weights** : _list_ of _int_ or `None`
+            - If not `None`, the multiplicities of each edge.
         - **measure** : {`'hadr'`, `'hadrdot'`, `'hadrefm'`, `'ee'`, `'eeefm'`}
             - The choice of measure. See [Measures](../measures) for additional
             info.
@@ -74,12 +76,12 @@ class EFP(EFPBase):
 
         # store options
         self._np_optimize = np_optimize
-        self._weights = None
+        self._weights = weights
 
         # generate our own information from the edges
         if efpset_args is not None:
-            (self._weights, self._einstr, self._einpath, self._spec,
-             self._efm_einstr, self._efm_einpath, self._efm_spec) = efpset_args
+            (self._einstr, self._einpath, self._spec, self._efm_einstr,
+             self._efm_einpath, self._efm_spec) = efpset_args
 
         # process edges
         self._process_edges(edges, self.weights)
@@ -412,12 +414,8 @@ class EFPSet(EFPBase):
             constructor_attrs = maxs + elemvs + efmvs + miscattrs
             gen = {attr: getattr(args[0], attr) for attr in constructor_attrs}
             args = args[1:]
-
-        elif self.filename is not None:
-            self.filename += '.npz' if not self.filename.endswith('.npz') else ''
-            gen = np.load(self.filename, allow_pickle=True)
         else:
-            gen = np.load(DEFAULT_EFP_FILE, allow_pickle=True)
+            gen = load_efp_file(self.filename)
 
         # compiled regular expression for use in sel()
         self._sel_re = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
@@ -441,12 +439,12 @@ class EFPSet(EFPBase):
             assert np.all(self._cols == gen['cols'])
 
             # get disc formulae and disc mask
-            orig_disc_specs = gen['disc_specs']
+            orig_disc_specs = np.asarray(gen['disc_specs'])
             disc_mask = self.sel(*args, specs=orig_disc_specs)
-            disc_formulae = gen['disc_formulae'][disc_mask]
+            disc_formulae = np.asarray(gen['disc_formulae'])[disc_mask]
 
             # get connected specs and full specs
-            orig_c_specs = gen['c_specs']
+            orig_c_specs = np.asarray(gen['c_specs'])
             c_mask = self.sel(*args, specs=orig_c_specs)
             self._cspecs = orig_c_specs[c_mask]
             self._specs = concat_specs(self._cspecs, orig_disc_specs[disc_mask])
@@ -454,7 +452,7 @@ class EFPSet(EFPBase):
             # make EFP list
             z = zip(*([gen[v] for v in elemvs] + [orig_c_specs] +
                       [gen[v] if self.use_efms else itertools.repeat(None) for v in efmvs]))
-            self._efps = [EFP(args[0], no_measure=True, efpset_args=args[1:]) 
+            self._efps = [EFP(args[0], weights=args[1], no_measure=True, efpset_args=args[2:]) 
                           for m,args in enumerate(z) if c_mask[m]]
 
             # get col indices for disconnected formulae
@@ -462,7 +460,7 @@ class EFPSet(EFPBase):
             self._disc_col_inds = []
             for formula in disc_formulae:
                 try:
-                    self._disc_col_inds.append([connected_ndk[factor] for factor in formula])
+                    self._disc_col_inds.append([connected_ndk[tuple(factor)] for factor in formula])
                 except KeyError:
                     warnings.warn('connected efp needed for {} not found'.format(formula))
 

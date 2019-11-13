@@ -262,7 +262,7 @@ def test_coordinate_transforms(nevents, nparticles):
     ptyphims = ef.ptyphims_from_p4s(p4s)
     new_p4s = ef.p4s_from_ptyphims(ptyphims)
 
-    assert epsilon_diff(p4s, new_p4s, 1e-12)
+    assert epsilon_diff(p4s, new_p4s, 1e-11)
 
 @pytest.mark.utils 
 @pytest.mark.parametrize('nparticles', [1, 500])
