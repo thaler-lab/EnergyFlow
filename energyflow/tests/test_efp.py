@@ -204,7 +204,7 @@ def test_linear_relations(measure):
     # compute the value of all of the EFPs on this event
     d = {name: ef.EFP(graph, measure=measure, coords='epxpypz')(event) for name,graph in graphs.items()}
 
-    eps = 10**-10
+    eps = 10**-8
     
     # check that the identities in the EFM paper are valid (i.e. = 0)
     assert epsilon_diff(2 * d['wedge'] - d['dumbbell'], 0, eps)

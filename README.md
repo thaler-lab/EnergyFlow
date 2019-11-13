@@ -24,3 +24,5 @@ The documentation is maintained at [https://energyflow.network](https://energyfl
 [3] P. T. Komiske, E. M. Metodiev, and J. Thaler, _The Metric Space of Collider Events_, [Phys. Rev. Lett. __123__ (2019) 041801](https://doi.org/10.1103/PhysRevLett.123.041801) [[1902.02346](https://arxiv.org/abs/1902.02346)].
 
 [4] P. T. Komiske, R. Mastandrea, E. M. Metodiev, P. Naik, and J. Thaler, _Exploring the Space of Jets with CMS Open Data_, [1908.08542](https://arxiv.org/abs/1908.08542).
+
+[5] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Cutting Multiparticle Correlators Down to Size_, [1911.04491](https://arxiv.org/abs/1911.04491).
