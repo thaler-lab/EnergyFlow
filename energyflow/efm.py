@@ -24,6 +24,7 @@ from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict
 from operator import itemgetter
+import sys
 
 import numpy as np
 from numpy.core.multiarray import c_einsum
@@ -202,7 +203,14 @@ class EFM(EFMBase):
                 m = 'invalid subslicing from {} to {}'.format(self.subslicing_from, self.spec)
                 raise ValueError(m)
 
-            self.subslice = tuple([0]*num_up_subslices + [Ellipsis] + [0]*num_low_subslices)
+            # note that python 2 doesn't support pickling ellipsis
+            if sys.version_info[0] > 2:
+                self.subslice = tuple([0]*num_up_subslices + [Ellipsis] + [0]*num_low_subslices)
+            else:
+                ns = self.v - num_up_subslices - num_low_subslices
+                self.subslice = tuple([0]*num_up_subslices + ns*[slice(None)] + [0]*num_low_subslices)
+
+
             self._pow2 = 2**(-(num_up_subslices + num_low_subslices)/2)
             self._construct = self._subslice_construct
 
