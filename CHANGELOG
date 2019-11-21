@@ -1,5 +1,10 @@
 ### 1.0.x
 
+**1.0.1**
+
+- Added Pythia/Herwig + Delphes samples used for OmniFold unfolding study to the `datasets` submodule of EnergyFlow.
+- Added `beta` option to EMD module.
+
 **1.0.0**
 
 - Reintroduced EFMs, with full documentation, testing, and integration with the core EFP code.

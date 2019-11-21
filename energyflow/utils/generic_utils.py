@@ -14,7 +14,11 @@ import numpy as np
 import six
 
 __all__ = [
+    'COMP_MAP',
+    'DEFAULT_EFP_FILE',
     'EF_DATA_DIR',
+    'REVERSE_COMPS',
+    'ZENODO_URL_PATTERN',
     'concat_specs',
     'create_pool',
     'explicit_comp',
@@ -39,6 +43,9 @@ COMP_MAP = {
     '==': '__eq__', 
     '!=': '__ne__'
 }
+
+# zenodo URL pattern
+ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
 
 # handle pickling methods in python 2
 if sys.version_info[0] == 2:

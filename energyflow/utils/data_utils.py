@@ -246,6 +246,18 @@ if sys.version_info[0] == 2:
 else:
     from six.moves.urllib.request import urlretrieve
 
+def _pad_events_axis1(events, axis1_shape):
+    """Pads the first axis of the NumPy array `events` with zero subarrays
+    such that the first dimension of the results has size `axis1_shape`.
+    """
+
+    num_zeros = axis1_shape - events.shape[1]
+    if num_zeros > 0:
+        zeros = np.zeros([num_zeros if i == 1 else s for i,s in enumerate(events.shape)])
+        return np.concatenate((events, zeros), axis=1)
+
+    return events
+
 def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     """Calculates a file sha256 or md5 hash.
     # Example

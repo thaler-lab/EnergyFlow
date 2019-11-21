@@ -172,7 +172,7 @@ def test_emd_byhand_1_1(gdim, norm, R):
             assert abs(ef_emd - byhand_emd) < 10**-15
 
 # compare to function used in paper (which is off by a factor of R)
-def emde(ev0, ev1, R=1.0, return_flow=False):
+def emde(ev0, ev1, R=1.0, beta=1.0, return_flow=False):
     pTs0, pTs1 = np.asarray(ev0[:,0], order='c'), np.asarray(ev1[:,0], order='c')
     thetas = ot.dist(np.vstack((ev0[:,1:3], np.zeros(2))), 
                      np.vstack((ev1[:,1:3], np.zeros(2))), metric='euclidean')
@@ -185,6 +185,8 @@ def emde(ev0, ev1, R=1.0, return_flow=False):
     # make its distance R to all particles in the other event
     thetas[:,-1] = R
     thetas[-1,:] = R
+
+    thetas **= beta
     
     if return_flow:
         G, log = ot.emd(pTs0, pTs1, thetas, log=True)
@@ -193,20 +195,21 @@ def emde(ev0, ev1, R=1.0, return_flow=False):
         return ot.emd2(pTs0, pTs1, thetas)
 
 @pytest.mark.emd
+@pytest.mark.parametrize('beta', [0.5, 1, 2])
 @pytest.mark.parametrize('R', [np.sqrt(2)/2, 1.0, 2])
 @pytest.mark.parametrize('M', [1,5,25])
-def test_emde(M, R):
+def test_emde(M, R, beta):
     events1 = np.random.rand(nev, M, 3)
     events2 = np.random.rand(nev, M, 3)
 
     for ev1 in events1:
         for ev2 in events2:
-            ef_emd = emd.emd(ev1, ev2, R=R)
-            emde_emd = emde(ev1, ev2, R=R)/R
+            ef_emd = emd.emd(ev1, ev2, R=R, beta=beta)
+            emde_emd = emde(ev1, ev2, R=R, beta=beta)/R**beta
             assert abs(ef_emd - emde_emd) < 10**-14
 
     for i,ev1 in enumerate(events1):
         for j in range(i):
-            ef_emd = emd.emd(ev1, events1[j], R=R)
-            emde_emd = emde(ev1, events1[j], R=R)/R
+            ef_emd = emd.emd(ev1, events1[j], R=R, beta=beta)
+            emde_emd = emde(ev1, events1[j], R=R, beta=beta)/R**beta
             assert abs(ef_emd - emde_emd) < 10**-14

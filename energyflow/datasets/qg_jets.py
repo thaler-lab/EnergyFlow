@@ -53,7 +53,7 @@ import warnings
 
 import numpy as np
 
-from energyflow.utils.data_utils import _get_filepath
+from energyflow.utils.data_utils import _get_filepath, _pad_events_axis1
 
 __all__ = ['load']
 
@@ -547,16 +547,4 @@ def load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir
         X, y = X[:num_data], y[:num_data]
 
     return X, y
-
-def _pad_events_axis1(events, axis1_shape):
-    """Pads the first axis of the NumPy array `events` with zero subarrays
-    such that the first dimension of the results has size `axis1_shape`.
-    """
-
-    num_zeros = axis1_shape - events.shape[1]
-    if num_zeros > 0:
-        zeros = np.zeros([num_zeros if i == 1 else s for i,s in enumerate(events.shape)])
-        return np.concatenate((events, zeros), axis=1)
-
-    return events
     

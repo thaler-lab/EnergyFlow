@@ -201,7 +201,7 @@ if ot:
         return _emd(_X0[i], _X1[j], *params)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, no_norm, euclidean, n_iter_max, 
+    def _emd(ev0, ev1, R, no_norm, beta, euclidean, n_iter_max, 
              periodic_phi, phi_col, empty_policy):
 
         pTs0, coords0 = ev0
@@ -211,6 +211,10 @@ if ot:
             return empty_policy
 
         thetas = _cdist(coords0, coords1, euclidean, periodic_phi, phi_col)/R
+
+        # implement angular exponent
+        if beta != 1:
+            thetas **= beta
 
         # extra particles (with zero pt) already added if going in here
         rescale = 1.0
@@ -241,7 +245,7 @@ if ot:
 # PUBLIC FUNCTIONS
 ##################
 
-    def emd(ev0, ev1, R=1.0, norm=False, measure='euclidean', coords='hadronic',
+    def emd(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
                       return_flow=False, gdim=None, mask=False, n_iter_max=100000,
                       periodic_phi=False, phi_col=2, empty_policy='error'):
         r"""Compute the EMD between two events.
@@ -265,6 +269,10 @@ if ot:
             importance of the two terms. Must be greater than or equal to half 
             of the maximum ground distance in the space in order for the EMD 
             to be a valid metric.
+        - **beta** : _float_
+            - The angular weighting exponent. The internal pairwsie distance
+            matrix is raised to this power priot to solving the optimal
+            transport problem.
         - **norm** : _bool_
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
@@ -373,6 +381,10 @@ if ot:
             # change units for numerical stability
             rescale = max(pT0, pT1)
 
+        # implement angular exponent
+        if beta != 1:
+            thetas **= beta
+
         G, cost, _, _, result_code = emd_c(pTs0/rescale, pTs1/rescale, thetas, n_iter_max)
         check_result(result_code)
 
@@ -383,7 +395,7 @@ if ot:
         else:
             return cost * rescale
 
-    def emds(X0, X1=None, R=1.0, norm=False, measure='euclidean', coords='hadronic', 
+    def emds(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
                           gdim=None, mask=False, n_iter_max=100000, 
                           periodic_phi=False, phi_col=2, empty_policy='error',
                           n_jobs=None, verbose=0, print_every=10**6):
@@ -415,6 +427,10 @@ if ot:
         - **norm** : _bool_
             - Whether or not to normalize the pT values of the events prior to 
             computing the EMD.
+        - **beta** : _float_
+            - The angular weighting exponent. The internal pairwsie distance
+            matrix is raised to this power priot to solving the optimal
+            transport problem.
         - **measure** : _str_
             - Controls which metric is used to calculate the ground distances
             between particles. `'euclidean'` uses the euclidean metric in
@@ -526,7 +542,7 @@ if ot:
             # create process pool
             with create_pool(n_jobs) as pool:
                 
-                params = (R, no_norm, euclidean, n_iter_max, 
+                params = (R, no_norm, beta, euclidean, n_iter_max, 
                           periodic_phi, phi_col_m1, empty_policy)
                 map_args = ((pair, params) for pair in pairs)
 
@@ -559,7 +575,7 @@ if ot:
         # run EMDs in this process
         elif n_jobs == 1:
             for k,(i,j) in enumerate(pairs):
-                emds[i, j] = _emd(_X0[i], _X1[j], R, no_norm, euclidean, 
+                emds[i, j] = _emd(_X0[i], _X1[j], R, no_norm, beta, euclidean, 
                                   n_iter_max, periodic_phi, phi_col_m1, empty_policy)
 
                 if verbose >= 1 and ((k+1) % print_every) == 0:

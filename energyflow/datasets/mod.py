@@ -83,12 +83,11 @@ import numpy as np
 import six
 
 from energyflow.utils.data_utils import _get_filepath
-from energyflow.utils.generic_utils import COMP_MAP, EF_DATA_DIR, REVERSE_COMPS
-from energyflow.utils import create_pool, explicit_comp, ischrgd
+from energyflow.utils import (COMP_MAP, EF_DATA_DIR, REVERSE_COMPS, ZENODO_URL_PATTERN,
+                              create_pool, explicit_comp, ischrgd)
 
 __all__ = ['MODDataset', 'load', 'filter_particles', 'kfactors']
 
-ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
 COLLECTIONS = {
     'CMS2011AJets': {
         'cms': {
