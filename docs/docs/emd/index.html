@@ -220,7 +220,7 @@ of the two total energies. In a hadronic context, transverse momenta are used
 instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, measure='euclidean', coords='hadronic', return_flow=False, gdim=None, mask=False, n_iter_max=100000, periodic_phi=False, phi_col=2, empty_policy='error')
+<pre><code class="python">energyflow.emd.emd(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic', return_flow=False, gdim=None, mask=False, n_iter_max=100000, periodic_phi=False, phi_col=2, empty_policy='error')
 </code></pre>
 
 <p>Compute the EMD between two events.</p>
@@ -247,6 +247,12 @@ and <code>phi</code> is the azimuthal angle.</li>
 importance of the two terms. Must be greater than or equal to half 
 of the maximum ground distance in the space in order for the EMD 
 to be a valid metric.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>float</em><ul>
+<li>The angular weighting exponent. The internal pairwsie distance
+matrix is raised to this power priot to solving the optimal
+transport problem.</li>
 </ul>
 </li>
 <li><strong>norm</strong> : <em>bool</em><ul>
@@ -330,7 +336,7 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds">emds</h3>
-<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, measure='euclidean', coords='hadronic', gdim=None, mask=False, n_iter_max=100000, periodic_phi=False, phi_col=2, empty_policy='error', n_jobs=None, verbose=0, print_every=1000000)
+<pre><code class="python">energyflow.emd.emds(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic', gdim=None, mask=False, n_iter_max=100000, periodic_phi=False, phi_col=2, empty_policy='error', n_jobs=None, verbose=0, print_every=1000000)
 </code></pre>
 
 <p>Compute the EMD between collections of events. This can be used to
@@ -366,6 +372,12 @@ and particle j in <code>ev1</code>.</li>
 <li><strong>norm</strong> : <em>bool</em><ul>
 <li>Whether or not to normalize the pT values of the events prior to 
  computing the EMD.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>float</em><ul>
+<li>The angular weighting exponent. The internal pairwsie distance
+ matrix is raised to this power priot to solving the optimal
+ transport problem.</li>
 </ul>
 </li>
 <li><strong>measure</strong> : <em>str</em><ul>

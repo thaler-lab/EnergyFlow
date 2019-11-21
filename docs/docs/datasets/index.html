@@ -127,7 +127,7 @@
         </ul>
     
 
-    <li class="toctree-l3"><a href="#quark-and-gluon-jets">Quark and Gluon Jets</a></li>
+    <li class="toctree-l3"><a href="#z-jets-with-delphes-simulation">Z + Jets with Delphes Simulation</a></li>
     
         <ul>
         
@@ -136,11 +136,20 @@
         </ul>
     
 
-    <li class="toctree-l3"><a href="#quark-and-gluon-nsubs">Quark and Gluon Nsubs</a></li>
+    <li class="toctree-l3"><a href="#quark-and-gluon-jets">Quark and Gluon Jets</a></li>
     
         <ul>
         
             <li><a class="toctree-l4" href="#load_2">load</a></li>
+        
+        </ul>
+    
+
+    <li class="toctree-l3"><a href="#quark-and-gluon-nsubs">Quark and Gluon Nsubs</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l4" href="#load_3">load</a></li>
         
         </ul>
     
@@ -768,6 +777,72 @@ into any existing weight for the simulated or generated event.</li>
 </li>
 </ul>
 <hr />
+<h2 id="z-jets-with-delphes-simulation">Z + Jets with Delphes Simulation</h2>
+<p><a href="https://doi.org/10.5281/zenodo.3548091"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3548091.svg" /></a> - Pythia/Herwig + Delphes samples</p>
+<hr />
+<h3 id="load_1">load</h3>
+<pre><code class="python">energyflow.zjets_delphes.load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo', which='all', include_keys=None, exclude_keys=None)
+</code></pre>
+
+<p>Loads in the Z+jet Pythia/Herwig + Delphes datasets. Any file that is
+needed that has not been cached will be automatically downloaded.
+Downloaded files are cached for later use. Checksum verification is
+performed.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>datasets</strong>: {<code>'Herwig'</code>, <code>'Pythia21'</code>, <code>'Pythia25'</code>, <code>'Pythia26'</code>}<ul>
+<li>The dataset (specified by which generator/tune was used to produce
+it) to load. Note that this argument is not sensitive to
+capitalization.</li>
+</ul>
+</li>
+<li><strong>num_data</strong>: <em>int</em><ul>
+<li>The number of events to read in. A value of <code>-1</code> means to load all
+available events.</li>
+</ul>
+</li>
+<li><strong>pad</strong>: <em>bool</em><ul>
+<li>Whether to pad the particles with zeros in order to form contiguous
+arrays.</li>
+</ul>
+</li>
+<li><strong>cache_dir</strong>: <em>str</em><ul>
+<li>Path to the directory where the dataset files should be stored.</li>
+</ul>
+</li>
+<li><strong>source</strong>: {<code>'dropbox'</code>, <code>'zenodo'</code>}<ul>
+<li>Which location to obtain the files from.</li>
+</ul>
+</li>
+<li><strong>which</strong>: {<code>'gen'</code>, <code>'sim'</code>, <code>'all'</code>}<ul>
+<li>Which type(s) of events to read in. Each dataset has corresponding
+generated events at particle-level and simulated events at
+detector-level.</li>
+</ul>
+</li>
+<li><strong>include_keys</strong>: <em>list</em> or_tuple_ of <em>str</em>, or <code>None</code><ul>
+<li>If not <code>None</code>, load these keys from the dataset files. A value of
+<code>None</code> uses all available keys (the <code>KEYS</code> global variable of this
+module contains the available keys as keys of the dictionary and
+brief descriptions as values). Note that keys do not have 'sim' or
+'gen' prepended to the front yet.</li>
+</ul>
+</li>
+<li><strong>exclude_keys</strong>: <em>list</em> or <em>tuple</em> or <em>str</em>, or <code>None</code><ul>
+<li>Any keys to exclude from loading. Most useful when a small number of
+keys should be excluded from the default set of keys.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>dict</em> of _numpy.ndarray_s<ul>
+<li>A dictionary of the jet, particle, and observable arrays for the
+specified dataset.</li>
+</ul>
+</li>
+</ul>
+<hr />
 <h2 id="quark-and-gluon-jets">Quark and Gluon Jets</h2>
 <p>Four datasets of quark and gluon jets, each having two million total jets, have
 been generated with <a href="http://home.thep.lu.se/~torbjorn/Pythia.html">Pythia</a> and
@@ -812,7 +887,7 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <br>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
-<h3 id="load_1">load</h3>
+<h3 id="load_2">load</h3>
 <pre><code class="python">energyflow.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
 
@@ -877,7 +952,7 @@ gluon jets generated with Pythia 8.230. Following <a href="https:
 that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
-<h3 id="load_2">load</h3>
+<h3 id="load_3">load</h3>
 <pre><code class="python">energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
 </code></pre>
 
