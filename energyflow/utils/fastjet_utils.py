@@ -13,6 +13,8 @@ errors will be issued but this module will not be usable).
 """
 from __future__ import absolute_import, division, print_function
 
+import numpy as np
+
 from energyflow.utils.generic_utils import import_fastjet
 
 fj = import_fastjet()
@@ -21,7 +23,7 @@ __all__ = []
 
 if fj:
 
-    __all__ = ['pjs_from_ptyphims', 'cluster', 'softdrop']
+    __all__ = ['pjs_from_ptyphims', 'ptyphims_from_pjs', 'cluster', 'softdrop']
 
     def pjs_from_ptyphims(ptyphims):
         """Converts particles in hadronic coordinates to FastJet PseudoJets.
@@ -45,6 +47,28 @@ if fj:
             pjs.append(pj)
 
         return pjs
+
+    def ptyphims_from_pjs(pjs, mass=True):
+        """Extracts hadronic four-vectors from FastJet PseudoJets.
+
+        **Arguments**
+
+        - **pjs** : _list_ of _fastjet.PseudoJet_
+            - An iterable of PseudoJets.
+        - **mass** : _bool_
+            - Whether or not to include the mass in the extracted four-vectors.
+
+        **Returns**
+
+        - _numpy.ndarray_
+            - An array of four-vectors corresponding to the given PseudoJets as
+            `[pT, y, phi, m]`, where the mass is optional.
+        """
+
+        if mass:
+            return np.asarray([[pj.pt(), pj.rap(), pj.phi(), pj.m()] for pj in pjs])
+        else:
+            return np.asarray([[pj.pt(), pj.rap(), pj.phi()] for pj in pjs])
 
     def cluster(pjs, algorithm='ca', R=fj.JetDefinition.max_allowable_R):
         """Clusters a list of PseudoJets according to a specified jet

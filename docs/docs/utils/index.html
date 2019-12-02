@@ -240,6 +240,8 @@
         
             <li><a class="toctree-l4" href="#pjs_from_ptyphims">pjs_from_ptyphims</a></li>
         
+            <li><a class="toctree-l4" href="#ptyphims_from_pjs">ptyphims_from_pjs</a></li>
+        
             <li><a class="toctree-l4" href="#cluster">cluster</a></li>
         
             <li><a class="toctree-l4" href="#softdrop">softdrop</a></li>
@@ -1329,6 +1331,31 @@ array.</li>
 </li>
 </ul>
 <hr />
+<h4 id="ptyphims_from_pjs">ptyphims_from_pjs</h4>
+<pre><code class="python">energyflow.ptyphims_from_pjs(pjs, mass=True)
+</code></pre>
+
+<p>Extracts hadronic four-vectors from FastJet PseudoJets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>An iterable of PseudoJets.</li>
+</ul>
+</li>
+<li><strong>mass</strong> : <em>bool</em><ul>
+<li>Whether or not to include the mass in the extracted four-vectors.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of four-vectors corresponding to the given PseudoJets as
+<code>[pT, y, phi, m]</code>, where the mass is optional.</li>
+</ul>
+</li>
+</ul>
+<hr />
 <h4 id="cluster">cluster</h4>
 <pre><code class="python">energyflow.cluster(pjs, algorithm='ca', R=1000.0)
 </code></pre>
@@ -1456,7 +1483,7 @@ obs/#zg_from_pj">$z_g$</a>.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
       <script src="../../search/main.js" defer></script>
 

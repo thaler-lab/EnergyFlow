@@ -1,5 +1,10 @@
 ### 1.0.x
 
+**1.0.2**
+
+- Added `ptyphims_from_pjs` function in fastjet_utils.
+- Removed eroneous print statement in `D2` when using strassen.
+
 **1.0.1**
 
 - Added Pythia/Herwig + Delphes samples used for OmniFold unfolding study to the `datasets` submodule of EnergyFlow.

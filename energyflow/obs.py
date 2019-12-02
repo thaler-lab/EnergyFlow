@@ -85,8 +85,6 @@ class D2(SingleEnergyCorrelatorBase):
         line = np.sum(zs[:,np.newaxis] * zthetas)
         triangle = np.sum(zthetas2 * zthetas.T)
 
-        print(triangle, dot, line)
-
         return triangle * dot**3/(line**3 + self.reg)
 
     def _efp_compute(self, event, zs, thetas, nhats):

@@ -83,7 +83,7 @@ def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source=
 
     **Returns**
 
-    - _dict_ of _numpy.ndarray_s
+    - _dict_ of _numpy.ndarray_
         - A dictionary of the jet, particle, and observable arrays for the
         specified dataset.
     """
