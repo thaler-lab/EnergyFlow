@@ -31,7 +31,8 @@ if fj:
         **Arguments**
 
         - **ptyphims** : _2d numpy.ndarray_
-            - An array of particles in hadronic coordinates.
+            - An array of particles in hadronic coordinates. The mass is
+            optional and will be taken to be zero if not present.
 
         **Returns**
 
@@ -40,11 +41,12 @@ if fj:
             array.
         """
 
-        pjs = []
-        for ptyphim in ptyphims:
-            pj = fj.PseudoJet()
-            pj.reset_PtYPhiM(*ptyphim[:4])
-            pjs.append(pj)
+        pjs = [fj.PseudoJet() for i in range(len(ptyphims))]
+        for pj,ptyphim in zip(pjs, ptyphims):
+            if len(ptyphim) >= 4:
+                pj.reset_PtYPhiM(ptyphim[0], ptyphim[1], ptyphim[2], ptyphim[3])
+            else:
+                pj.reset_PtYPhiM(ptyphim[0], ptyphim[1], ptyphim[2])
 
         return pjs
 

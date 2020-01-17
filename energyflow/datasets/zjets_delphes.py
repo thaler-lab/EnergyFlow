@@ -1,6 +1,63 @@
 r"""## Z + Jets with Delphes Simulation
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3548091.svg)](https://doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
+Datasets of QCD jets used for studying unfolding in [OmniFold: A Method to
+Simultaneously Unfold All Observables](https://arxiv.org/abs/1911.09107). Four
+different datasets are present:
+
+- Herwig 7.1.5 with the default tune
+- Pythia 8.243 with tune 21 (ATLAS A14 central tune with NNPDF2.3LO)
+- Pythia 8.243 with tune 25 (ATLAS A14 variation 2+ of tune 21)
+- Pythia 8.243 with tune 26 (ATLAS A14 variation 2- of tune 21)
+
+$Z$ + jet events (with the $Z$ set to be stable) were generated for each of the
+above generator/tune pairs with the $Z$ boson $\hat p_T^\text{min} > 150$ GeV
+and $\sqrt{s}=14$ TeV. Events were then passed through the Delphes 3.4.2 fast
+detector simulation of the CMS detector. Jets with radius parameter $R=0.4$
+were found with the anti-kt algorithm at both particle level ("gen"), where all
+non-neutrino, non-$Z$ particle are used, and detector level ("sim"), where
+reconstructed energy flow objects (tracks, electromagnetic calorimeter cells,
+and hadronic calorimeter cells) are used. Only jets with transverse momentum
+greater than  are kept (note that sim jets have a simple jet energy correction
+applied by Delphes). The hardest jet from events with a $Z$ boson with a final
+transverse momentum of 200 GeV or greater are kept, yielding approximately 1.6
+million jets at both gen-level and sim-level for each generator/tune pair.
+
+Each zipped NumPy file consists of several arrays, the names of which begin
+with either 'gen_' or 'sim_' depending on which set of jets they correspond
+to. The name of each array ends in a key word indicating what it contains. With
+the exception of 'gen_Zs' (which contains the $(p_T,\,y,\,\phi)$ of the final
+$Z$ boson), there is both a gen and sim version of each array. The included
+arrays are (listed by their key words):
+
+- `'jets'` - The jet axis four vector, as $(p_T^\text{jet},\,y^\text{jet},\,
+\phi^\text{jet},\,m^\text{jet})$ where $y^\text{jet}$ is the jet rapidity,
+$\phi^\text{jet}$ is the jet azimuthal angle, and $m^\text{jet}$ is the jet
+mass.
+- `'particles'` - The rescaled and translated constituents of the jets as $(p_T/100,\,y-y^\text{jet},\,\phi-\phi^\text{jet},\,f_\text{PID})$ where
+$f_\text{PID}$ is a small float corresponding to the PDG ID of the particle.
+The PIDs are remapped according to $22\to0.0$, $211\to0.1$, $-211\to0.2$, $130
+\to0.3$, $11\to0.4$, $-11\to0.5$, $13\to0.6$, $-13\to0.7$, $321\to0.8$, $-321
+\to0.9$, $2212\to1.0$, $-2212\to1.1$, $2112\to1.2$, $-2112\to1.3$. Note that
+ECAL cells are treated as photons (id 22) and HCAL cells are treated as 
+$K_L^0$ (id 130). 
+- `'mults'` - The constituent multiplicity of the jet.
+- `'lhas'` - The Les Houches ($\beta=1/2$) angularity.
+- `'widths'` - The jet width ($\beta=1 angularity).
+- `'ang2s'` - The $\beta=2$ angularity (note that this is very similar to the jet
+mass, but does not depend on particle masses).
+- `'tau2s'` - The 2-subjettiness value with $\beta=1$.
+- `'sdms'` - The groomed mass with Soft Drop parameters $z_\text{cut}=0.1$ and
+$\beta=0$.
+- `'zgs'` - The groomed momentum fraction (same Soft Drop parameters as above).
+
+If you use this dataset, please cite the Zenodo record as well as the
+corresponding paper:
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3548091.svg)](https://
+doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
+
+- A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
+OmniFold: A Method to Simultaneously Unfold All Observables, [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 """
 from __future__ import absolute_import, division, print_function
 

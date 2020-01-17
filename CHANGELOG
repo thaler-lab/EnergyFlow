@@ -1,5 +1,7 @@
 ### 1.0.x
 
+- Increased the speed `pjs_from_ptyphims`.
+
 **1.0.2**
 
 - Added `ptyphims_from_pjs` function in fastjet_utils.

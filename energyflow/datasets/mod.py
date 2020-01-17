@@ -684,6 +684,7 @@ class MODDataset(object):
         """
 
         default_kwargs = {
+            'copy_particles': True,
             'datasets': None,
             'num': -1,
             'path': None,
@@ -698,6 +699,7 @@ class MODDataset(object):
                 kwargs[k] = v
         
         # store options
+        self.copy_particles = kwargs.pop('copy_particles')
         self.num = kwargs.pop('num')
         self.shuffle = kwargs.pop('shuffle')
         self.store_pfcs = kwargs.pop('store_pfcs')
@@ -919,7 +921,7 @@ class MODDataset(object):
             self.pfcs_index = self.hf['pfcs_index'][:]
 
             # store pfcs as separate arrays
-            self._pfcs = _separate_particle_arrays(self.hf['pfcs'][:], self.pfcs_index, self._mask)
+            self._pfcs = _separate_particle_arrays(self.hf['pfcs'][:], self.pfcs_index, self._mask, copy=self.copy_particles)
 
             # store pfcs cols
             self._store_cols('pfcs')
@@ -930,7 +932,7 @@ class MODDataset(object):
             self.gens_index = self.hf['gens_index'][:]
 
             # store gens as separate arrays
-            self._gens = _separate_particle_arrays(self.hf['gens'][:], self.gens_index, self._mask)
+            self._gens = _separate_particle_arrays(self.hf['gens'][:], self.gens_index, self._mask, copy=self.copy_particles)
 
             # store gens cols
             self._store_cols('gens', allow_multiple=self.store_pfcs)
