@@ -14,6 +14,7 @@ import numpy as np
 import six
 
 __all__ = [
+    'ALL_EXAMPLES',
     'COMP_MAP',
     'DEFAULT_EFP_FILE',
     'EF_DATA_DIR',
@@ -29,6 +30,16 @@ __all__ = [
     'sel_arg_check',
     'timing', 
     'transfer'
+]
+
+# list of examples
+ALL_EXAMPLES = [
+    'efn_example.py',
+    'pfn_example.py',
+    'cnn_example.py',
+    'dnn_example.py',
+    'efp_example.py',
+    'animation_example.py',
 ]
 
 # get access to the data directory of the installed package and the default efp file

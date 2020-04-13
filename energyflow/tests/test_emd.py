@@ -206,10 +206,10 @@ def test_emde(M, R, beta):
         for ev2 in events2:
             ef_emd = emd.emd(ev1, ev2, R=R, beta=beta)
             emde_emd = emde(ev1, ev2, R=R, beta=beta)/R**beta
-            assert abs(ef_emd - emde_emd) < 10**-14
+            assert abs(ef_emd - emde_emd) < 10**-13
 
     for i,ev1 in enumerate(events1):
         for j in range(i):
             ef_emd = emd.emd(ev1, events1[j], R=R, beta=beta)
             emde_emd = emde(ev1, events1[j], R=R, beta=beta)/R**beta
-            assert abs(ef_emd - emde_emd) < 10**-14
+            assert abs(ef_emd - emde_emd) < 10**-13

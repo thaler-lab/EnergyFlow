@@ -13,6 +13,8 @@ import sys
 import numpy as np
 from six.moves.urllib.error import HTTPError, URLError
 
+from energyflow.utils.generic_utils import ALL_EXAMPLES
+
 __all__ = [
     'get_examples', 
     'data_split', 
@@ -37,13 +39,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
     """
 
     # all current examples 
-    all_examples = {
-        'efn_example.py',
-        'pfn_example.py',
-        'cnn_example.py',
-        'dnn_example.py',
-        'efp_example.py',
-    }
+    all_examples = set(ALL_EXAMPLES)
 
     # process which examples are selected
     if which == 'all':

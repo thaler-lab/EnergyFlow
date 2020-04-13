@@ -85,9 +85,6 @@
     <a class="current" href="./">Examples</a>
     <ul class="subnav">
             
-    <li class="toctree-l3"><a href="#efp_examplepy">efp_example.py</a></li>
-    
-
     <li class="toctree-l3"><a href="#efn_examplepy">efn_example.py</a></li>
     
 
@@ -98,6 +95,9 @@
     
 
     <li class="toctree-l3"><a href="#dnn_examplepy">dnn_example.py</a></li>
+    
+
+    <li class="toctree-l3"><a href="#efp_examplepy">efp_example.py</a></li>
     
 
     <li class="toctree-l3"><a href="#animation_examplepy">animation_example.py</a></li>
@@ -204,130 +204,10 @@
               
                 <p>There are currently 6 examples provided for the EnergyFlow package. They currently focus on demonstrating the various architectures included as part of EnergyFlow (see <a href="../docs/archs">Architectures</a>). For examples involving the computation of EFPs or EMDs, see the <a href="/demos">demos</a>.</p>
 <p>To install the examples to the default directory, <code>~/.energyflow/examples/</code>, simply run </p>
-<pre><code class="python">python -c &quot;import energyflow; energyflow.utils.get_examples()&quot;
+<pre><code class="python">python3 -c &quot;import energyflow; energyflow.utils.get_examples()&quot;
 </code></pre>
 
 <p>See the <a href="../docs/utils/#get_examples"><code>get_examples</code></a> function for more detailed information.</p>
-<h3 id="efp_examplepy">efp_example.py</h3>
-<p>An example involving Energy Flow Polynomials (EFPs) and a linear
-classifier (Fisher's Linear Discriminant by default). First, the 
-<a href="../docs/efp/#efpset"><code>EFPSet</code></a> class is used to compute the EFPs
-up to the specified <code>dmax</code>, the default being <code>dmax=5</code>. Then linear
-classifiers are trained for different numbers of EFPs as input, 
-determined by taking all EFPs up to degree <code>d</code> with <code>d</code> from <code>1</code> 
-to <code>dmax</code>. The output of the example is a plot of the ROC curves
-for the classifiers with different numbers of EFP inputs.</p>
-<pre><code class="python"># standard library imports
-from __future__ import absolute_import, division, print_function
-
-# standard numerical library imports
-import numpy as np
-
-# energyflow imports
-import energyflow as ef
-from energyflow.archs import LinearClassifier
-from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, standardize, to_categorical
-
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
-
-################################### SETTINGS ###################################
-
-# data controls
-num_data = 20000
-test_frac = 0.2
-
-# efp parameters
-dmax = 5
-measure = 'hadr'
-beta = 0.5
-
-# plotting
-colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
-
-################################################################################
-
-# load data
-X, y = qg_jets.load(num_data)
-
-print('Loaded quark and gluon jets')
-
-# calculate EFPs
-print('Calculating d &lt;= {} EFPs for {} jets... '.format(dmax, num_data), end='')
-efpset = ef.EFPSet(('d&lt;=', dmax), measure='hadr', beta=beta)
-masked_X = [x[x[:,0] &gt; 0] for x in X]
-X = efpset.batch_compute(masked_X)
-print('Done')
-
-# train models with different numbers of EFPs as input
-rocs = []
-for d in range(1, dmax+1):
-
-    # build architecture
-    model = LinearClassifier(linclass_type='lda')
-
-    # select EFPs with degree &lt;= d
-    X_d = X[:,efpset.sel(('d&lt;=', d))]
-
-    # do train/val/test split 
-    (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
-    print('Done train/val/test split')
-
-    # train model
-    model.fit(X_train, y_train)
-
-    # get predictions on test data
-    preds = model.predict(X_test)
-
-    # get ROC curve if we have sklearn
-    if roc_curve:
-        rocs.append(roc_curve(y_test, preds[:,1]))
-
-        # get area under the ROC curve
-        auc = roc_auc_score(y_test, preds[:,1])
-        print()
-        print('EFPs d &lt;= {} AUC:'.format(d), auc)
-        print()
-
-# make ROC curve plot if we have matplotlib
-if plt:
-
-    # some nicer plot settings 
-    plt.rcParams['figure.figsize'] = (4,4)
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['figure.autolayout'] = True
-
-    # iterate over the ROC curves and plot them
-    for i,d in enumerate(range(1, dmax+1)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
-                                                label='LDA: d &lt;= {} EFPs'.format(d))
-
-    # axes labels
-    plt.xlabel('Quark Jet Efficiency')
-    plt.ylabel('Gluon Jet Rejection')
-
-    # axes limits
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-
-    # make legend and show plot
-    plt.legend(loc='lower left', frameon=False)
-    plt.show()
-
-</code></pre>
-
 <h3 id="efn_examplepy">efn_example.py</h3>
 <p>An example involving Energy Flow Networks (EFNs), which were introduced
 in <a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. The <a href="../docs/
@@ -892,6 +772,126 @@ if plt:
     for i in range(len(rocs)):
         plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
                                                 label='DNN: {} N-subs'.format(num_nsubs[i]))
+
+    # axes labels
+    plt.xlabel('Quark Jet Efficiency')
+    plt.ylabel('Gluon Jet Rejection')
+
+    # axes limits
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    # make legend and show plot
+    plt.legend(loc='lower left', frameon=False)
+    plt.show()
+
+</code></pre>
+
+<h3 id="efp_examplepy">efp_example.py</h3>
+<p>An example involving Energy Flow Polynomials (EFPs) and a linear
+classifier (Fisher's Linear Discriminant by default). First, the 
+<a href="../docs/efp/#efpset"><code>EFPSet</code></a> class is used to compute the EFPs
+up to the specified <code>dmax</code>, the default being <code>dmax=5</code>. Then linear
+classifiers are trained for different numbers of EFPs as input, 
+determined by taking all EFPs up to degree <code>d</code> with <code>d</code> from <code>1</code> 
+to <code>dmax</code>. The output of the example is a plot of the ROC curves
+for the classifiers with different numbers of EFP inputs.</p>
+<pre><code class="python"># standard library imports
+from __future__ import absolute_import, division, print_function
+
+# standard numerical library imports
+import numpy as np
+
+# energyflow imports
+import energyflow as ef
+from energyflow.archs import LinearClassifier
+from energyflow.datasets import qg_jets
+from energyflow.utils import data_split, standardize, to_categorical
+
+# attempt to import sklearn
+try:
+    from sklearn.metrics import roc_auc_score, roc_curve
+except:
+    print('please install scikit-learn in order to make ROC curves')
+    roc_curve = False
+
+# attempt to import matplotlib
+try:
+    import matplotlib.pyplot as plt
+except:
+    print('please install matploltib in order to make plots')
+    plt = False
+
+################################### SETTINGS ###################################
+
+# data controls
+num_data = 20000
+test_frac = 0.2
+
+# efp parameters
+dmax = 5
+measure = 'hadr'
+beta = 0.5
+
+# plotting
+colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
+
+################################################################################
+
+# load data
+X, y = qg_jets.load(num_data)
+
+print('Loaded quark and gluon jets')
+
+# calculate EFPs
+print('Calculating d &lt;= {} EFPs for {} jets... '.format(dmax, num_data), end='')
+efpset = ef.EFPSet(('d&lt;=', dmax), measure='hadr', beta=beta)
+masked_X = [x[x[:,0] &gt; 0] for x in X]
+X = efpset.batch_compute(masked_X)
+print('Done')
+
+# train models with different numbers of EFPs as input
+rocs = []
+for d in range(1, dmax+1):
+
+    # build architecture
+    model = LinearClassifier(linclass_type='lda')
+
+    # select EFPs with degree &lt;= d
+    X_d = X[:,efpset.sel(('d&lt;=', d))]
+
+    # do train/val/test split 
+    (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
+    print('Done train/val/test split')
+
+    # train model
+    model.fit(X_train, y_train)
+
+    # get predictions on test data
+    preds = model.predict(X_test)
+
+    # get ROC curve if we have sklearn
+    if roc_curve:
+        rocs.append(roc_curve(y_test, preds[:,1]))
+
+        # get area under the ROC curve
+        auc = roc_auc_score(y_test, preds[:,1])
+        print()
+        print('EFPs d &lt;= {} AUC:'.format(d), auc)
+        print()
+
+# make ROC curve plot if we have matplotlib
+if plt:
+
+    # some nicer plot settings 
+    plt.rcParams['figure.figsize'] = (4,4)
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['figure.autolayout'] = True
+
+    # iterate over the ROC curves and plot them
+    for i,d in enumerate(range(1, dmax+1)):
+        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                                label='LDA: d &lt;= {} EFPs'.format(d))
 
     # axes labels
     plt.xlabel('Quark Jet Efficiency')

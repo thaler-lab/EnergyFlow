@@ -8,7 +8,7 @@ EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) as d
 
 To install EnergyFlow with pip, simply execute:
 ```sh
-pip install energyflow
+pip3 install energyflow
 ```
 
 #### Documentation
@@ -17,12 +17,12 @@ The documentation is maintained at [https://energyflow.network](https://energyfl
 
 ##### References
 
-[1] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Polynomials: A complete linear basis for jet substructure_, _[JHEP __04__ (2018) 013](https://doi.org/10.1007/JHEP04(2018)013)_ [[1712.07124](https://arxiv.org/abs/1712.07124)].
+[1] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Polynomials: A complete linear basis for jet substructure_, [JHEP __04__ (2018) 013](https://doi.org/10.1007/JHEP04(2018)013) [[1712.07124](https://arxiv.org/abs/1712.07124)].
 
-[2] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Networks: Deep Sets for Particle Jets_, _[JHEP __01__ (2019) 121](https://doi.org/10.1007/JHEP01(2019)121)_ [[1810.05165](https://arxiv.org/abs/1810.05165)].
+[2] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Networks: Deep Sets for Particle Jets_, [JHEP __01__ (2019) 121](https://doi.org/10.1007/JHEP01(2019)121) [[1810.05165](https://arxiv.org/abs/1810.05165)].
 
 [3] P. T. Komiske, E. M. Metodiev, and J. Thaler, _The Metric Space of Collider Events_, [Phys. Rev. Lett. __123__ (2019) 041801](https://doi.org/10.1103/PhysRevLett.123.041801) [[1902.02346](https://arxiv.org/abs/1902.02346)].
 
-[4] P. T. Komiske, R. Mastandrea, E. M. Metodiev, P. Naik, and J. Thaler, _Exploring the Space of Jets with CMS Open Data_, [1908.08542](https://arxiv.org/abs/1908.08542).
+[4] P. T. Komiske, R. Mastandrea, E. M. Metodiev, P. Naik, and J. Thaler, _Exploring the Space of Jets with CMS Open Data_, [Phys. Rev. D **101** (2020) 034009](https://doi.org/10.1103/PhysRevD.101.034009) [[1908.08542](https://arxiv.org/abs/1908.08542)].
 
-[5] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Cutting Multiparticle Correlators Down to Size_, [1911.04491](https://arxiv.org/abs/1911.04491).
+[5] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Cutting Multiparticle Correlators Down to Size_, [Phys. Rev. D **101** (2020) 036019](https://doi.org/10.1103/PhysRevD.101.036019) [[1911.04491](https://arxiv.org/abs/1911.04491)].
