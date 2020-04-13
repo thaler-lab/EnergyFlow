@@ -84,7 +84,7 @@ import six
 
 from energyflow.utils.data_utils import _get_filepath
 from energyflow.utils import (COMP_MAP, EF_DATA_DIR, REVERSE_COMPS, ZENODO_URL_PATTERN,
-                              create_pool, explicit_comp, ischrgd)
+                              create_pool, explicit_comp, ischrgd, kwargs_check)
 
 __all__ = ['MODDataset', 'load', 'filter_particles', 'kfactors']
 
@@ -204,6 +204,7 @@ def load(*args, **kwargs):
     for k,v in default_kwargs.items():
         if k not in kwargs:
             kwargs[k] = v
+    kwargs_check('load', kwargs, default_kwargs.keys())
 
     # store arguments
     amount = kwargs['amount']

@@ -114,8 +114,7 @@ def iter_or_rep(arg):
 
 # raises TypeError if unexpected keyword left in kwargs
 def kwargs_check(name, kwargs, allowed=None):
-    if allowed is None:
-        allowed = set()
+    allowed = frozenset() if allowed is None else frozenset(allowed)
         
     for k in kwargs:
         if k in allowed:
