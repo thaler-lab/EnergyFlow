@@ -1227,7 +1227,8 @@ particles. Requires that <code>pid</code> information be given.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>3-d numpy.ndarray</em><ul>
-<li>The jet image as a <code>(nb_chan, npix, npix)</code> array.</li>
+<li>The jet image as a <code>(npix, npix, nb_chan)</code> array. Note that the order
+of the channels changed in version 1.0.3.</li>
 </ul>
 </li>
 </ul>
@@ -1237,7 +1238,8 @@ particles. Requires that <code>pid</code> information be given.</li>
 </code></pre>
 
 <p>Normalizes each argument by the standard deviation of the pixels in 
-arg[0]. The expected use case would be <code>standardize(X_train, X_val, X_test)</code>.</p>
+args[0]. The expected use case would be <code>standardize(X_train, X_val, 
+X_test)</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
@@ -1246,7 +1248,7 @@ the same shape in all but the first axis.</li>
 </ul>
 </li>
 <li><strong>channels</strong> : <em>int</em><ul>
-<li>A list of which channels (assumed to be the second axis)
+<li>A list of which channels (assumed to be the last axis)
 to standardize. <code>None</code> is interpretted to mean every channel.</li>
 </ul>
 </li>
@@ -1282,7 +1284,7 @@ the same shape in all but the first axis.</li>
 </ul>
 </li>
 <li><strong>channels</strong> : <em>int</em><ul>
-<li>A list of which channels (assumed to be the second axis)
+<li>A list of which channels (assumed to be the last axis)
 to zero center. <code>None</code> is interpretted to mean every channel.</li>
 </ul>
 </li>

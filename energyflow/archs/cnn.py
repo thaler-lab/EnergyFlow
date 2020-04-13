@@ -81,8 +81,10 @@ class CNN(NNBase):
             - Controls how the filters are convoled with the inputs. See
             the [Keras Conv2D layer](https://keras.io/layers/convolutional/#conv2d) 
             for more detail.
-        - **data_format**=`'channels_first'` : {`'channels_first'`, `'channels_last'`}
+        - **data_format**=`'channels_last'` : {`'channels_first'`, `'channels_last'`}
             - Sets which axis is expected to contain the different channels.
+            `'channels_first'` appears to have issues with newer versions of 
+            tensorflow, so prefer `'channels_last'`.
         """
 
         # process generic NN hps
@@ -118,7 +120,7 @@ class CNN(NNBase):
 
         # padding
         self.paddings = iter_or_rep(self._proc_arg('padding', default='valid'))
-        self.data_format = self._proc_arg('data_format', default='channels_first')
+        self.data_format = self._proc_arg('data_format', default='channels_last')
 
         self._verify_empty_hps()
 
@@ -144,7 +146,8 @@ class CNN(NNBase):
 
             # add pooling layer if we have a non-zero pool size
             if pool_size > 0:
-                self.model.add(MaxPooling2D(pool_size=pool_size, name=self._proc_name('max_pool_'+str(i))))
+                self.model.add(MaxPooling2D(pool_size=pool_size, data_format=self.data_format, 
+                                            name=self._proc_name('max_pool_'+str(i))))
 
             # add dropout layer if we have a non-zero dropout rate
             if dropout > 0.:

@@ -52,7 +52,8 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
     **Returns**
 
     - _3-d numpy.ndarray_
-        - The jet image as a `(nb_chan, npix, npix)` array.
+        - The jet image as a `(npix, npix, nb_chan)` array. Note that the order
+        of the channels changed in version 1.0.3.
     """
 
     # set columns
@@ -60,7 +61,7 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
 
     # the image is (img_width x img_width) in size
     pix_width = img_width / npix
-    jet_image = np.zeros((nb_chan, npix, npix))
+    jet_image = np.zeros((npix, npix, nb_chan))
 
     # remove particles with zero pt
     jet = jet[jet[:,pT_i] > 0]
@@ -87,36 +88,37 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
     # construct grayscale image
     if nb_chan == 1: 
         for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices): 
-            jet_image[0, phi, y] += pt
+            jet_image[phi, y, 0] += pt
 
     # construct two-channel image
     elif nb_chan == 2:
         if charged_counts_only:
             for pt,y,phi,pid in zip(jet[:,pT_i][mask], rap_indices, 
                                     phi_indices, jet[:,pid_i][mask].astype(int)):
-                jet_image[0, phi, y] += pt
-                jet_image[1, phi, y] += pid2abschg_mapping.get(pid, 0)
+                jet_image[phi, y, 0] += pt
+                jet_image[phi, y, 1] += pid2abschg_mapping.get(pid, 0)
         else:
             for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices): 
-                jet_image[0, phi, y] += pt
-                jet_image[1, phi, y] += 1
+                jet_image[phi, y, 0] += pt
+                jet_image[phi, y, 1] += 1
     else:
         raise ValueError('nb_chan must be 1 or 2')
 
     # L1-normalize the pt channels of the jet image
     if norm:
-        normfactor = np.sum(jet_image[0])
+        normfactor = np.sum(jet_image[...,0])
         if normfactor == 0:
             raise FloatingPointError('Image had no particles!')
         else: 
-            jet_image[0] /= normfactor
+            jet_image[...,0] /= normfactor
 
     return jet_image
 
 # standardize(*args, channels=None, copy=False, reg=10**-10)
 def standardize(*args, **kwargs):
     """Normalizes each argument by the standard deviation of the pixels in 
-    arg[0]. The expected use case would be `standardize(X_train, X_val, X_test)`.
+    args[0]. The expected use case would be `standardize(X_train, X_val, 
+    X_test)`.
 
     **Arguments**
 
@@ -124,7 +126,7 @@ def standardize(*args, **kwargs):
         - An arbitrary number of datasets, each required to have
         the same shape in all but the first axis.
     - **channels** : _int_
-        - A list of which channels (assumed to be the second axis)
+        - A list of which channels (assumed to be the last axis)
         to standardize. `None` is interpretted to mean every channel.
     - **copy** : _bool_
         - Whether or not to copy the input arrays before modifying them.
@@ -149,7 +151,7 @@ def standardize(*args, **kwargs):
 
     # treat channels properly
     if channels is None: 
-        channels = np.arange(args[0].shape[1])
+        channels = np.arange(args[0].shape[-1])
 
     # compute stds
     stds = np.std(args[0], axis=0) + reg
@@ -163,7 +165,7 @@ def standardize(*args, **kwargs):
     # iterate through arguments and channels
     for x in X: 
         for chan in channels: 
-            x[:,chan] /= stds[chan]
+            x[...,chan] /= stds[...,chan]
     return X
 
 def zero_center(*args, **kwargs):
@@ -176,7 +178,7 @@ def zero_center(*args, **kwargs):
         - An arbitrary number of datasets, each required to have
         the same shape in all but the first axis.
     - **channels** : _int_
-        - A list of which channels (assumed to be the second axis)
+        - A list of which channels (assumed to be the last axis)
         to zero center. `None` is interpretted to mean every channel.
     - **copy** : _bool_
         - Whether or not to copy the input arrays before modifying them.
@@ -197,7 +199,7 @@ def zero_center(*args, **kwargs):
 
     # treat channels properly
     if channels is None: 
-        channels = np.arange(args[0].shape[1])
+        channels = np.arange(args[0].shape[-1])
 
     # compute mean of the first argument
     mean = np.mean(args[0], axis=0)
@@ -211,6 +213,6 @@ def zero_center(*args, **kwargs):
     # iterate through arguments and channels
     for x in X: 
         for chan in channels: 
-            x[:,chan] -= mean[chan]
+            x[...,chan] -= mean[...,chan]
 
     return X

@@ -541,8 +541,10 @@ the <a href="https://keras.io/layers/convolutional/#conv2d">Keras Conv2D layer</
 for more detail.</li>
 </ul>
 </li>
-<li><strong>data_format</strong>=<code>'channels_first'</code> : {<code>'channels_first'</code>, <code>'channels_last'</code>}<ul>
-<li>Sets which axis is expected to contain the different channels.</li>
+<li><strong>data_format</strong>=<code>'channels_last'</code> : {<code>'channels_first'</code>, <code>'channels_last'</code>}<ul>
+<li>Sets which axis is expected to contain the different channels.
+<code>'channels_first'</code> appears to have issues with newer versions of 
+tensorflow, so prefer <code>'channels_last'</code>.</li>
 </ul>
 </li>
 </ul>

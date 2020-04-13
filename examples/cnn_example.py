@@ -58,7 +58,7 @@ nb_chan = 2
 norm = True
 
 # required network architecture parameters
-input_shape = (nb_chan, npix, npix)
+input_shape = (npix, npix, nb_chan)
 filter_sizes = [8, 4, 4]
 num_filters = [8, 8, 8] # very small so can run on non-GPUs in reasonable time
 
