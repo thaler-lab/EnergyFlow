@@ -909,9 +909,9 @@ if plt:
 
 <h3 id="animation_examplepy">animation_example.py</h3>
 <p>An example that makes an animation between two events using the EMD. Note
-that ffmpeg must be installed in order for matplotlib to be able to render the
-animation. Strange errors may result if there is an issue with the presence of
-required software components.</p>
+that <code>ffmpeg</code> must be installed in order for matplotlib to be able to render
+the animation. Strange errors may result if there is an issue with the presence
+of required software components.</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -943,7 +943,8 @@ def merge(ev0, ev1, R=1, lamb=0.5):
     for i in range(len(ev0)):
         for j in range(len(ev1)):
             if G[i, j] &gt; 0:
-                merged.append([G[i,j], ((lamb)*ev0[i,1]+(1-lamb)*ev1[j,1]), ((lamb)*ev0[i,2]+(1-lamb)*ev1[j,2])])
+                merged.append([G[i,j], lamb*ev0[i,1] + (1-lamb)*ev1[j,1], 
+                                       lamb*ev0[i,2] + (1-lamb)*ev1[j,2]])
 
     # detect which event has more pT
     if np.sum(ev0[:,0]) &gt; np.sum(ev1[:,0]):

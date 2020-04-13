@@ -35,7 +35,8 @@ def merge(ev0, ev1, R=1, lamb=0.5):
     for i in range(len(ev0)):
         for j in range(len(ev1)):
             if G[i, j] > 0:
-                merged.append([G[i,j], ((lamb)*ev0[i,1]+(1-lamb)*ev1[j,1]), ((lamb)*ev0[i,2]+(1-lamb)*ev1[j,2])])
+                merged.append([G[i,j], lamb*ev0[i,1] + (1-lamb)*ev1[j,1], 
+                                       lamb*ev0[i,2] + (1-lamb)*ev1[j,2]])
 
     # detect which event has more pT
     if np.sum(ev0[:,0]) > np.sum(ev1[:,0]):

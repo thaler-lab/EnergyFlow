@@ -3,6 +3,7 @@
 - Increased the speed of `pjs_from_ptyphims`.
 - Channels now default to the last axis for images to accomodate the limitations of newer versions of Keras/Tensorflow.
 - `pixelate`, `standardize`, `zero_center` functions now designed to work with `channels_last`.
+- Added EMD animation example.
 
 **1.0.2**
 
