@@ -98,7 +98,7 @@ if fj:
         algorithm_l = algorithm.lower()
         if algorithm_l  == 'kt':
             jet_alg = fj.kt_algorithm
-        elif algorithm_l == 'antikt':
+        elif algorithm_l == 'antikt' or algorithm_l == 'akt':
             jet_alg = fj.antikt_algorithm
         elif algorithm_l in {'ca', 'cambridge', 'cambridge_aachen'}:
             jet_alg = fj.cambridge_algorithm

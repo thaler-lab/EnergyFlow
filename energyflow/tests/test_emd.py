@@ -174,7 +174,7 @@ def test_emd_byhand_1_1(gdim, norm, R):
 # compare to function used in paper (which is off by a factor of R)
 def emde(ev0, ev1, R=1.0, beta=1.0, return_flow=False):
     pTs0, pTs1 = np.asarray(ev0[:,0], order='c'), np.asarray(ev1[:,0], order='c')
-    thetas = ot.dist(np.vstack((ev0[:,1:3], np.zeros(2))), 
+    thetas = ot.dist(np.vstack((ev0[:,1:3], np.zeros(2))),
                      np.vstack((ev1[:,1:3], np.zeros(2))), metric='euclidean')
     
     # add a fictitious particle to the lower-energy event to balance the energy

@@ -147,7 +147,7 @@ if ot:
                 raise ValueError('empty event encountered, must have at least one particle')
             else:
                 return (None, None)
-                
+
         # handle norming pts or adding extra zeros to event
         if norm:
             pts = pts/pts.sum()
@@ -162,9 +162,7 @@ if ot:
 
     # faster than scipy's cdist function because we can avoid their checks
     def _cdist(X, Y, euclidean, periodic_phi, phi_col):
-
         if euclidean:
-            
             if periodic_phi:
 
                 # delta phis (taking into account periodicity)
@@ -201,7 +199,7 @@ if ot:
         return _emd(_X0[i], _X1[j], *params)
 
     # internal use only by emds, makes assumptions about input format
-    def _emd(ev0, ev1, R, no_norm, beta, euclidean, n_iter_max, 
+    def _emd(ev0, ev1, R, no_norm, beta, euclidean, n_iter_max,
              periodic_phi, phi_col, empty_policy):
 
         pTs0, coords0 = ev0
