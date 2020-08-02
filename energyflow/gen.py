@@ -560,5 +560,5 @@ class CompositeGenerator(object):
         mask = [not(form in disc_form_set or disc_form_set.add(form)) for form in disc_formulae]
 
         # store as numpy arrays
-        self.disc_formulae = np.asarray(disc_formulae)[mask]
+        self.disc_formulae = np.asarray(disc_formulae, dtype='O')[mask]
         self.disc_specs = np.asarray(disc_specs)[mask]

@@ -270,7 +270,7 @@ def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     # Returns
         The file hash
     """
-    if (algorithm is 'sha256') or (algorithm is 'auto'):
+    if (algorithm == 'sha256') or (algorithm == 'auto'):
         hasher = hashlib.sha256()
     else:
         hasher = hashlib.md5()
@@ -293,7 +293,7 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=131071):
     # Returns
         Whether the file is valid
     """
-    if ((algorithm is 'sha256') or (algorithm is 'auto' and len(file_hash) is 64)):
+    if ((algorithm == 'sha256') or (algorithm == 'auto' and len(file_hash) == 64)):
         hasher = 'sha256'
     else:
         hasher = 'md5'

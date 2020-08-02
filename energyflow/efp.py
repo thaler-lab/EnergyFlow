@@ -336,6 +336,7 @@ class EFP(EFPBase):
 # EFPSet
 ###############################################################################
 
+EFP_FILE_INFO = None
 class EFPSet(EFPBase):
 
     """A class that holds a collection of EFPs and computes their values on
@@ -420,7 +421,10 @@ class EFPSet(EFPBase):
             gen = {attr: getattr(args[0], attr) for attr in constructor_attrs}
             args = args[1:]
         else:
-            gen = load_efp_file(self.filename)
+            global EFP_FILE_INFO
+            if EFP_FILE_INFO is None:
+                EFP_FILE_INFO = load_efp_file(self.filename)
+            gen = EFP_FILE_INFO
 
         # compiled regular expression for use in sel()
         self._sel_re = re.compile(r'(\w+)(<|>|==|!=|<=|>=)(\d+)$')
@@ -446,7 +450,7 @@ class EFPSet(EFPBase):
             # get disc formulae and disc mask
             orig_disc_specs = np.asarray(gen['disc_specs'])
             disc_mask = self.sel(*args, specs=orig_disc_specs)
-            disc_formulae = np.asarray(gen['disc_formulae'])[disc_mask]
+            disc_formulae = np.asarray(gen['disc_formulae'], dtype='O')[disc_mask]
 
             # get connected specs and full specs
             orig_c_specs = np.asarray(gen['c_specs'])
@@ -491,7 +495,7 @@ class EFPSet(EFPBase):
 
     def _make_graphs(self, connected_graphs):
         disc_comps = [[connected_graphs[i] for i in col_inds] for col_inds in self._disc_col_inds]
-        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps])
+        return np.asarray(connected_graphs + [graph_union(*dc) for dc in disc_comps], dtype='O')
 
     #===============
     # PUBLIC METHODS
@@ -702,7 +706,7 @@ class EFPSet(EFPBase):
         # if we haven't extracted the graphs, do it now
         if not hasattr(self, '_graphs'):
             if self._disc_col_inds is None:
-                self._graphs = np.asarray([efp.graph for efp in self.efps])
+                self._graphs = np.asarray([efp.graph for efp in self.efps], dtype='O')
             else:
                 self._graphs = self._make_graphs([efp.graph for efp in self.efps])
 
@@ -735,7 +739,7 @@ class EFPSet(EFPBase):
         # if we haven't extracted the simple graphs, do it now
         if not hasattr(self, '_simple_graphs'):
             if self._disc_col_inds is None:
-                self._simple_graphs = np.asarray([efp.simple_graph for efp in self.efps])
+                self._simple_graphs = np.asarray([efp.simple_graph for efp in self.efps], dtype='O')
             else:
                 self._simple_graphs = self._make_graphs([efp.simple_graph for efp in self.efps])
 

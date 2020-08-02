@@ -105,7 +105,7 @@ if fj:
         else:
             raise ValueError("algorithm '{}' not understood".format(algorithm))
 
-        return fj.JetDefinition(jet_alg, R)(pjs)
+        return fj.JetDefinition(jet_alg, float(R))(pjs)
 
     def softdrop(jet, zcut=0.1, beta=0, R=1.0):
         r"""Implements the SoftDrop grooming algorithm on a jet that has been

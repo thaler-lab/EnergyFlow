@@ -20,7 +20,7 @@ def slow_efm(zs, nhats, v):
     return (np.sqrt(2)**v) * np.sum([z*rec_outer(nhat, v) for z, nhat in zip(zs, nhats)], axis=0)
 
 @pytest.mark.efm
-@pytest.mark.parametrize('M', [1, 10, 50, 100, 1000])
+@pytest.mark.parametrize('M', [1, 10, 50, 100, 500])
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
 @pytest.mark.parametrize('v', list(range(0,2)))
@@ -49,7 +49,7 @@ def test_efms(v, measure, normed, M):
 @pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
-@pytest.mark.parametrize('M', [1, 10, 50, 100, 1000])
+@pytest.mark.parametrize('M', [1, 10, 50, 100, 500])
 @pytest.mark.parametrize('v', list(range(0,2)))
 def test_efm_batch_compute(v, M, measure, normed):
     events = ef.gen_random_events(2, M)
@@ -63,7 +63,7 @@ def test_efm_batch_compute(v, M, measure, normed):
 @pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
-@pytest.mark.parametrize('M', [1, 10, 50, 100, 1000])
+@pytest.mark.parametrize('M', [1, 10, 50, 100, 500])
 @pytest.mark.parametrize('sigs', [[(1,0),(1,1),(3,2),(0,4),(2,3),(1,2)],
                                   [(0,0),(1,0),(0,2),(1,2),(6,2),(1,5)]])
 def test_efm_vs_efmset_compute(sigs, M, measure, normed):
@@ -80,7 +80,7 @@ def test_efm_vs_efmset_compute(sigs, M, measure, normed):
 @pytest.mark.efm
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
-@pytest.mark.parametrize('M', [1, 10, 50, 100, 1000])
+@pytest.mark.parametrize('M', [1, 10, 50, 100, 500])
 @pytest.mark.parametrize('sigs', [[(1,0),(1,1),(3,2),(0,4),(2,3),(1,2)],
                                   [(0,0),(1,0),(0,2),(1,2),(6,2),(1,5)]])
 def test_efm_vs_efmset_batch_compute(sigs, M, measure, normed):

@@ -37,7 +37,7 @@ class D2(SingleEnergyCorrelatorBase):
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
     
-    # D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=None,
+    # D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
     #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
         r"""Since a `D2` defines and holds a `Measure` instance, all `Measure`
@@ -116,7 +116,7 @@ class C2(SingleEnergyCorrelatorBase):
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
     
-    # C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=None,
+    # C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
     #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
         r"""Since a `C2` defines and holds a `Measure` instance, all `Measure`
@@ -195,7 +195,7 @@ class C3(SingleEnergyCorrelatorBase):
     # line, triangle, and kite EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)], [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]]
     
-    # C3(measure='hadr', beta=2, reg=0., kappa=1, normed=None,
+    # C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
     #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, reg=0., **kwargs):
         r"""Since a `D2` defines and holds a `Measure` instance, all `Measure`

@@ -57,6 +57,10 @@ class EFBase(six.with_metaclass(ABCMeta, object)):
         return self._measure.check_input if self.has_measure else None
 
     @property
+    def kappa_normed_behavior(self):
+        return self._measure.kappa_normed_behavior if self.has_measure else None
+
+    @property
     def subslicing(self):
         return self._measure.subslicing if self.has_measure else None
 

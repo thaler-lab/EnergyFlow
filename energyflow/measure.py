@@ -102,15 +102,16 @@ def _thetas2_from_yphis(yphis):
 def _thetas2_from_p4s(p4s):
     return _thetas2_from_yphis(np.vstack([ys_from_p4s(p4s), phis_from_p4s(p4s)]).T)
 
-# kappa is a number, so raise energies to that number and form phats
-def _kappa_func(Es, ps, kappa):
-    return Es**kappa, ps/Es[:,np.newaxis]
+# phats are normalized by the energies
+def _phat_func(Es, ps):
+    return ps/Es[:,np.newaxis]
 
-# kappa indicates particle flow, so make energies 1 and leave ps alone
-def _pf_func(Es, ps, kappa):
-    return np.ones(Es.shape), ps
+# phats are left alone for particle-flow
+def _pf_phat_func(Es, ps):
+    return ps
 
-MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords', 'check_input'}
+MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords', 
+                  'check_input', 'kappa_normed_behavior'}
 
 ###############################################################################
 # Measure 
@@ -131,7 +132,8 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         else:
             return super(Measure, cls).__new__(cls)
 
-    def __init__(self, measure, beta=1, kappa=1, normed=None, coords=None, check_input=True):
+    def __init__(self, measure, beta=1, kappa=1, normed=True, coords=None,
+                                check_input=True, kappa_normed_behavior='new'):
         r"""Processes inputs according to the measure choice and other options.
 
         **Arguments**
@@ -145,8 +147,7 @@ class Measure(six.with_metaclass(ABCMeta, object)):
             use $\kappa=v$ where $v$ is the valency of the vertex. `'pf'`
             cannot be used with measure `'hadr'`. Only IRC-safe for `kappa=1`.
         - **normed** : bool
-            - Whether or not to use normalized energies/transverse momenta. A
-            value of `None` defaults to `True`.
+            - Whether or not to use normalized energies/transverse momenta.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. If
             `'ptyphim'`, the fourth column (the masses) is optional and
@@ -156,14 +157,24 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         - **check_input** : bool
             - Whether to check the type of input each time or assume the first
             input type.
+        - **kappa_normed_behavior** : {`'new'`, `'orig'`}
+            - Determines how `'kappa'`≠1 interacts with normalization of the
+            energies. A value of `'new'` will ensure that `z` is truly the
+            energy fraction of a particle, so that $\displaystyle z_i=
+            E_i^\kappa/\left(\sum_{i=1}^ME_i\right)^\kappa$. A value of
+            `'orig'` will keep the behavior prior to version `1.1.0`, which
+            used $\displaystyle z_i=E_i^\kappa/\sum_{i=1}^M E_i^\kappa$.
         """
 
         # store parameters
-        transfer(self, locals(), ['measure', 'kappa', 'normed', 'coords', 'check_input'])
+        transfer(self, locals(), ['measure', 'kappa', 'normed', 'coords', 
+                                  'check_input', 'kappa_normed_behavior'])
 
-        # check that coords is appropriate
-        if self.coords not in [None, 'epxpypz', 'ptyphim']:
-            raise ValueError('coords must be one of epxpypz, ptyphim, or None')
+        # check that options are appropriate
+        if self.coords not in {None, 'epxpypz', 'ptyphim'}:
+            raise ValueError("coords must be one of 'epxpypz', 'ptyphim', or None")
+        if self.kappa_normed_behavior not in {'new', 'orig'}:
+            raise ValueError("kappa_normed_behavior must be 'new' or 'orig'")
 
         # verify beta
         self.beta = float(beta)
@@ -173,23 +184,44 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         # measure function is not yet set
         self.need_meas_func = True
 
-        # handle kappa options
-        self._k_func = _kappa_func
+        # handle normed and kappa options
+        self._z_func, self._phat_func = self._z_unnormed_func, _phat_func
         if self.kappa == PF_MARKER:
+            self._phat_func = _pf_phat_func
 
             # cannot subslice when kappa = pf
             self.subslicing = False
 
             # if normed was set to True, warn them about this
             if self.normed:
-                warnings.warn('Normalization not supported when kappa=\'' + PF_MARKER + '\', '
-                              'setting normed=False.')
-                self.normed = False
-            self._k_func = _pf_func
+                raise ValueError("Normalization not supported when kappa='pf'")
 
-        # normed default to True if it's None at this point
-        if self.normed is None:
-            self.normed = True
+            self._z_func = self._pf_z_func
+
+        # we're norming the correlators
+        elif self.normed:
+            if self.kappa_normed_behavior == 'new':
+                self._z_func = self._z_normed_new_func
+            else:
+                self._z_func = self._z_normed_orig_func
+
+    # returns zs for numeric kappa and normed=False
+    def _z_unnormed_func(self, Es):
+        return Es**self.kappa
+
+    # returns zs for numeric kappa and normed=True, original style
+    def _z_normed_orig_func(self, Es):
+        zs = Es**self.kappa
+        return zs/np.sum(zs)
+
+    # returns zs for numeric kappa and normed=True, new style
+    def _z_normed_new_func(self, Es):
+        zs = Es**self.kappa
+        return zs/np.sum(Es)**self.kappa
+
+    # kappa indicates particle flow, so make energies 1
+    def _pf_z_func(self, Es):
+        return np.ones(Es.shape)
 
     def evaluate(self, arg):
         """Evaluate the measure on a set of particles. Returns `zs`, `thetas`
@@ -217,10 +249,8 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         if self.need_meas_func or self.check_input:
             self.set_meas_func(arg)
 
-        # get zs and angles 
-        zs, angles = self.meas_func(arg)
-
-        return (zs/np.sum(zs) if self.normed else zs), angles
+        # get zs and angles (already normalized)
+        return self.meas_func(arg)
 
     def set_meas_func(self, arg):
 
@@ -295,7 +325,10 @@ class HadronicMeasure(Measure):
 
     @abstractmethod
     def ndarray_dim4(self, arg):
-        pass
+        if self.epxpypz:
+            return np.atleast_1d(pts_from_p4s(arg)), arg
+        else:
+            return arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg))
 
     @abstractmethod
     def pseudojet(self, arg):
@@ -356,19 +389,18 @@ class HadronicDefaultMeasure(HadronicMeasure):
             raise ValueError('particle flow not available for HadronicDefaultMeasure')
 
     def ndarray_dim3(self, arg):
-        return arg[:,0]**self.kappa, _thetas2_from_yphis(arg[:,(1,2)])**self.half_beta
+        return self._z_func(arg[:,0]), _thetas2_from_yphis(arg[:,(1,2)])**self.half_beta
 
     def ndarray_dim4(self, arg):
         if self.epxpypz:
-            pts = np.atleast_1d(pts_from_p4s(arg))**self.kappa
-            return pts, _thetas2_from_p4s(arg)**self.half_beta
+            return self._z_func(np.atleast_1d(pts_from_p4s(arg))), _thetas2_from_p4s(arg)**self.half_beta
         else:
             return self.ndarray_dim3(arg[:,:3])
 
     def pseudojet(self, arg):
         pts, constituents = super(HadronicDefaultMeasure, self).pseudojet(arg)
         thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])
-        return pts**self.kappa, thetas**self.beta
+        return self._z_func(pts), thetas**self.beta
 
 ###############################################################################
 # HadronicDotMeasure
@@ -380,21 +412,17 @@ class HadronicDotMeasure(HadronicMeasure):
     metric = flat_metric(4)
 
     def ndarray_dim3(self, arg):
-        pts, p4s = self._k_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)), self.kappa)
-        return pts, self._ps_dot(p4s)**self.half_beta
+        phats = self._phat_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)))
+        return self._z_func(arg[:,0]), self._ps_dot(phats)**self.half_beta
 
     def ndarray_dim4(self, arg):
-        if self.epxpypz:
-            pts, p4s = self._k_func(np.atleast_1d(pts_from_p4s(arg)), arg, self.kappa)
-        else:
-            pts, p4s = self._k_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)), self.kappa)
-        return pts, self._ps_dot(p4s)**self.half_beta
+        pts, ps = super(HadronicDotMeasure, self).ndarray_dim4(arg)
+        return self._z_func(pts), self._ps_dot(self._phat_func(pts, ps))**self.half_beta
 
     def pseudojet(self, arg):
         pts, constituents = super(HadronicDotMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        pts, p4s = self._k_func(pts, p4s, self.kappa)
-        return pts, self._ps_dot(p4s)**self.half_beta
+        return self._z_func(pts), self._ps_dot(self._phat_func(pts, p4s))**self.half_beta
 
 ###############################################################################
 # HadronicEFMMeasure
@@ -409,18 +437,16 @@ class HadronicEFMMeasure(HadronicMeasure):
         self.beta, self.half_beta = 2, 1
 
     def ndarray_dim3(self, arg):
-        return self._k_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)), self.kappa)
+        return self._z_func(arg[:,0]), self._phat_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)))
 
     def ndarray_dim4(self, arg):
-        if self.epxpypz:
-            return self._k_func(np.atleast_1d(pts_from_p4s(arg)), arg, self.kappa)
-        else:
-            return self._k_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)), self.kappa)
+        pts, ps = super(HadronicEFMMeasure, self).ndarray_dim4(arg)
+        return self._z_func(pts), self._phat_func(pts, ps)
 
     def pseudojet(self, arg):
         pts, constituents = super(HadronicEFMMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return self._k_func(pts, p4s, self.kappa)
+        return self._z_func(pts), self._phat_func(pts, p4s)
 
 ###############################################################################
 # EEDefaultMeasure
@@ -432,15 +458,13 @@ class EEDefaultMeasure(EEMeasure):
 
     def ndarray_dim_arb(self, arg):
         if not self.epxpypz:
-            arg = p4s_from_ptyphims(arg)
-        Es, ps = self._k_func(arg[:,0], arg, self.kappa)
-        return Es, self._ps_dot(ps)**self.half_beta
+            arg = np.atleast_2d(p4s_from_ptyphims(arg))
+        return self._z_func(arg[:,0]), self._ps_dot(self._phat_func(arg[:,0], arg))**self.half_beta
 
     def pseudojet(self, arg):
         Es, constituents =  super(EEDefaultMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        Es, p4s = self._k_func(Es, p4s, self.kappa)
-        return Es, self._ps_dot(p4s)**self.half_beta
+        return self._z_func(Es), self._ps_dot(self._phat_func(Es, p4s))**self.half_beta
 
 ###############################################################################
 # EEEFMMeasure
@@ -457,9 +481,9 @@ class EEEFMMeasure(EEMeasure):
     def ndarray_dim_arb(self, arg):
         if not self.epxpypz:
             arg = np.atleast_2d(p4s_from_ptyphims(arg))
-        return self._k_func(arg[:,0], arg, self.kappa)
+        return self._z_func(arg[:,0]), self._phat_func(arg[:,0], arg)
 
     def pseudojet(self, arg):
         Es, constituents = super(EEEFMMeasure, self).pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
-        return self._k_func(Es, p4s, self.kappa)
+        return self._z_func(Es), self._phat_func(Es, p4s)

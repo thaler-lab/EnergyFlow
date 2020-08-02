@@ -537,7 +537,7 @@ def load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir
         max_len_axis1 = max([X.shape[1] for X in Xs])
         X = np.vstack([_pad_events_axis1(x, max_len_axis1) for x in Xs])
     else:
-        X = np.asarray([x[x[:,0]>0] for X in Xs for x in X])
+        X = np.asarray([x[x[:,0]>0] for X in Xs for x in X], dtype='O')
 
     # get y array
     y = np.concatenate(ys)

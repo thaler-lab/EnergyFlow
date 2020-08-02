@@ -317,7 +317,7 @@ class NNBase(ArchBase):
         if self.filepath and self.save_while_training:
             callbacks.append(ModelCheckpoint(self.filepath, **self.modelcheck_opts))
 
-        # do early stopping, which no also handle loading best weights at the end
+        # do early stopping, which now also handle loading best weights at the end
         if self.patience is not None:
             callbacks.append(EarlyStopping(**self.earlystop_opts))
 
