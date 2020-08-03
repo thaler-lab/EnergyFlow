@@ -131,7 +131,7 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed, kappa_normed_behavior
     thetas = np.asarray([[2*abs(phti[0]*phtj[0]-np.dot(phti[1:],phtj[1:])) for phti in phats] for phtj in phats])**(beta/2)
 
     assert epsilon_diff(ezs, zs, 10**-13)
-    assert epsilon_diff(ethetas, thetas, 10**-theta_eps)
+    assert epsilon_percent(ethetas, thetas, 10**-theta_eps)
 
 @pytest.mark.measure
 @pytest.mark.parametrize('check_input', [True, False])
