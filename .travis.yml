@@ -1,10 +1,13 @@
 language: python
 dist: bionic
 
-install:
-  - pip install --upgrade cython scipy
-  - pip install --upgrade pot pytest keras tensorflow scikit-learn
-  - pip install .
+install: |
+  pip install --upgrade cython scipy
+  pip install --upgrade pot pytest keras tensorflow scikit-learn
+  pip install .
+  if [ $(python -c "import sys; print(sys.version_info[0])") -eq 2 ]; then
+    pip install keras==2.2.5
+  fi
 
 script: 
   - pytest -v energyflow

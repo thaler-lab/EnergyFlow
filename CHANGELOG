@@ -5,7 +5,7 @@
 - Changed default EFP behavior when `kappa≠1` and added option to revert to original behavior if desired. See the [EFP Measures](/docs/measures) page for more details.
 - Explicitly cast some numpy arrays as object arrays to avoid deprecation warnings.
 - Cached EFP file info after the first time it is accessed.
-- Added python3.8 to Travis CI.
+- Added Python 3.8 to Travis CI.
 - Deployment to PyPI via Travis CI.
 
 ### 1.0.x
