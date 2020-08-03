@@ -3,11 +3,13 @@ dist: bionic
 
 install: |
   pip install --upgrade cython scipy
-  pip install --upgrade pot pytest keras tensorflow scikit-learn
-  pip install .
+  pip install --upgrade pot pytest scikit-learn
   if [ $(python -c "import sys; print(sys.version_info[0])") -eq 2 ]; then
-    pip install keras==2.2.5
+    pip install keras==2.2.5 tensorflow==1.14
+  else
+    pip install keras tensorflow
   fi
+  pip install .
 
 script: 
   - pytest -v energyflow

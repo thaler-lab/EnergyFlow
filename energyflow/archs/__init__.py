@@ -30,7 +30,7 @@ import warnings
 
 __all__ = []
 
-# requires keras
+# requires keras/tensorflow
 try:
     from . import cnn
     from . import dnn

@@ -19,6 +19,12 @@ control the relative weighting between soft and hard energies. This can be set
 using the `kappa` keyword argument (default is `1`). Only `kappa=1` yields
 collinear-safe observables.
 
+Prior to version `1.1.0`, the interaction of the `kappa` and `normed` options
+resulted in potentially unexpected behavior. As of version `1.1.0`, the flag
+`kappa_normed_behavior` has been added to give the user explicit control over
+the behavior when `normed=True` and `kappa≠1`. See the description of this
+option below for more detailed information.
+
 The usage of EFMs throughout the EnergyFlow package is also controlled through
 the `Measure` interface. There are special measure, `'hadrefm'` and `'eeefm'`
 that are used to deploy EFMs.
@@ -160,10 +166,10 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         - **kappa_normed_behavior** : {`'new'`, `'orig'`}
             - Determines how `'kappa'`≠1 interacts with normalization of the
             energies. A value of `'new'` will ensure that `z` is truly the
-            energy fraction of a particle, so that $\displaystyle z_i=
-            E_i^\kappa/\left(\sum_{i=1}^ME_i\right)^\kappa$. A value of
-            `'orig'` will keep the behavior prior to version `1.1.0`, which
-            used $\displaystyle z_i=E_i^\kappa/\sum_{i=1}^M E_i^\kappa$.
+            energy fraction of a particle, so that $z_i=E_i^\kappa/\left(
+            \sum_{i=1}^ME_i\right)^\kappa$. A value of `'orig'` will keep the
+            behavior prior to version `1.1.0`, which used $z_i=E_i^\kappa/
+            \sum_{i=1}^M E_i^\kappa$.
         """
 
         # store parameters

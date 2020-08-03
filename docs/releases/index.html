@@ -93,6 +93,9 @@
     <a class="current" href="./">Release Notes</a>
     <ul class="subnav">
             
+    <li class="toctree-l3"><a href="#11x">1.1.x</a></li>
+    
+
     <li class="toctree-l3"><a href="#10x">1.0.x</a></li>
     
 
@@ -203,6 +206,15 @@
             <div class="section">
               
                 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
+<h3 id="11x">1.1.x</h3>
+<p><strong>1.1.0</strong></p>
+<ul>
+<li>Changed default EFP behavior when <code>kappa≠1</code> and added option to revert to original behavior if desired. See the <a href="/docs/measures">EFP Measures</a> page for more details.</li>
+<li>Explicitly cast some numpy arrays as object arrays to avoid deprecation warnings.</li>
+<li>Cached EFP file info after the first time it is accessed to improve speed.</li>
+<li>Added Python 3.8 to Travis CI testing.</li>
+<li>Deployment to PyPI via Travis CI.</li>
+</ul>
 <h3 id="10x">1.0.x</h3>
 <p><strong>1.0.3</strong></p>
 <ul>

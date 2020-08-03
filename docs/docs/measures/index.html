@@ -222,6 +222,11 @@ is ignored as EFMs require $\beta=2$. There is also a $\kappa$ parameter to
 control the relative weighting between soft and hard energies. This can be set
 using the <code>kappa</code> keyword argument (default is <code>1</code>). Only <code>kappa=1</code> yields
 collinear-safe observables.</p>
+<p>Prior to version <code>1.1.0</code>, the interaction of the <code>kappa</code> and <code>normed</code> options
+resulted in potentially unexpected behavior. As of version <code>1.1.0</code>, the flag
+<code>kappa_normed_behavior</code> has been added to give the user explicit control over
+the behavior when <code>normed=True</code> and <code>kappa≠1</code>. See the description of this
+option below for more detailed information.</p>
 <p>The usage of EFMs throughout the EnergyFlow package is also controlled through
 the <code>Measure</code> interface. There are special measure, <code>'hadrefm'</code> and <code>'eeefm'</code>
 that are used to deploy EFMs.</p>
@@ -270,7 +275,7 @@ implementation.</p>
 <hr />
 <h3 id="measure">Measure</h3>
 <p>Class for handling measure options, described above.</p>
-<pre><code class="python">energyflow.Measure(measure, beta=1, kappa=1, normed=None, coords=None, check_input=True)
+<pre><code class="python">energyflow.Measure(measure, beta=1, kappa=1, normed=True, coords=None, check_input=True, kappa_normed_behavior='new')
 </code></pre>
 
 <p>Processes inputs according to the measure choice and other options.</p>
@@ -291,8 +296,7 @@ cannot be used with measure <code>'hadr'</code>. Only IRC-safe for <code>kappa=1
 </ul>
 </li>
 <li><strong>normed</strong> : bool<ul>
-<li>Whether or not to use normalized energies/transverse momenta. A
-value of <code>None</code> defaults to <code>True</code>.</li>
+<li>Whether or not to use normalized energies/transverse momenta.</li>
 </ul>
 </li>
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
@@ -306,6 +310,15 @@ coords with be <code>'ptyphim'</code> if using a hadronic measure and
 <li><strong>check_input</strong> : bool<ul>
 <li>Whether to check the type of input each time or assume the first
 input type.</li>
+</ul>
+</li>
+<li><strong>kappa_normed_behavior</strong> : {<code>'new'</code>, <code>'orig'</code>}<ul>
+<li>Determines how <code>'kappa'</code>≠1 interacts with normalization of the
+energies. A value of <code>'new'</code> will ensure that <code>z</code> is truly the
+energy fraction of a particle, so that $z_i=E_i^\kappa/\left(
+\sum_{i=1}^ME_i\right)^\kappa$. A value of <code>'orig'</code> will keep the
+behavior prior to version <code>1.1.0</code>, which used $z_i=E_i^\kappa/
+\sum_{i=1}^M E_i^\kappa$.</li>
 </ul>
 </li>
 </ul>

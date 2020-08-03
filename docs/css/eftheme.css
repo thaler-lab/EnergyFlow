@@ -52,13 +52,13 @@ a:visited code {
     display: none;
 }
 
-/* changes sublist item to nothing*/
-.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+/* changes sublist item to nothing */
+/*.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
     list-style: none;
 }
 
 /* moves menu items left a bit*/
-.wy-menu-vertical .subnav li.current > ul li a {
+/*.wy-menu-vertical .subnav li.current > ul li a {
     padding-left: 2.4em;
 }
 
@@ -76,7 +76,7 @@ a:visited code {
       margin-right: auto;
 }
 
-/*.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
     list-style: none;
 }
 

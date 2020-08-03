@@ -257,7 +257,7 @@ def test_linear_relations(measure):
     d = {name: ef.EFP(graph, measure=measure, coords='epxpypz')(event) for name,graph in graphs.items()}
 
     # check that the identity in the paper is valid (i.e. = 0)
-    assert epsilon_percent(6*d['pentagon']-5*d['triangledumbbell'], 0, 10**-11)
+    assert epsilon_percent(6*d['pentagon'], 5*d['triangledumbbell'], 10**-11)
     
     # count the number of leafless multigraphs (all or just connected) with degree d
     ds = np.arange(11)
