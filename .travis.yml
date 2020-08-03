@@ -2,6 +2,7 @@ language: python
 dist: bionic
 
 install:
+  - pip install --upgrade cython scipy
   - pip install --upgrade pot pytest keras tensorflow scikit-learn
   - pip install .
 
@@ -21,11 +22,20 @@ jobs:
     - stage: deploy
       python: 3.8
       install: pip3 install --upgrade twine
-      script: python3 setup.py sdist bdist_wheel
+      script: |
+        python3 setup.py sdist bdist_wheel
+        if [ "$TWINE_REPOSITORY" = "testpypi" ]; then
+          export TWINE_PASSWORD=$TWINE_PASSWORD_TESTPYPI
+        fi
       after_success: |
-        if [ ! -z $TRAVIS_TAG ]; then
+        if [ ! -z $TRAVIS_TAG ] || [ "$TWINE_REPOSITORY" = "testpypi" ]; then
           python3 -m twine upload --skip-existing dist/*
         fi
+
+env:
+  global:
+    TWINE_USERNAME=__token__
+    TWINE_REPOSITORY=testpypi
 
 branches:
   only:

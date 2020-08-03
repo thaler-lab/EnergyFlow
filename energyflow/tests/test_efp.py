@@ -65,7 +65,7 @@ def test_efp_asymbox(zs, thetas, beta):
     
     asymbox_graph = [(0,1),(0,1),(1,2),(1,2),(1,2),(2,3),(2,3),(2,3),(2,3),(3,0),(0,3),(3,0)]
     efp_result = ef.EFP(asymbox_graph, beta=beta).compute(zs=zs, thetas=thetas)
-    return epsilon_percent(asymbox, efp_result, epsilon=10**-13)
+    assert epsilon_percent(asymbox, efp_result, epsilon=10**-13)
 
 @pytest.mark.slow
 @pytest.mark.efp
@@ -91,7 +91,7 @@ def test_batch_compute_vs_compute(measure, beta, kappa, normed):
 @pytest.mark.slow
 @pytest.mark.efp
 @pytest.mark.efm
-@pytest.mark.parametrize('event', ef.gen_random_events(2, 15))
+@pytest.mark.parametrize('event', ef.gen_random_events(3, 15))
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
@@ -109,6 +109,40 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
     r1 = s1.compute(event)
     r2 = np.asarray([efp.compute(event) for efp in efps])
     assert epsilon_percent(r1, r2, 10**-12)
+
+@pytest.mark.efp
+@pytest.mark.kappa
+@pytest.mark.parametrize('kappa_normed_behavior', ['new', 'orig'])
+@pytest.mark.parametrize('normed', [True, False])
+@pytest.mark.parametrize('kappa', [0, 0.5, 1])
+@pytest.mark.parametrize('beta', [.5, 1, 2])
+@pytest.mark.parametrize('event', ef.gen_random_events(3, 15))
+def test_efp_kappa_hadr(event, beta, kappa, normed, kappa_normed_behavior):
+
+    asymbox_graph = [(0,1),(0,1),(1,2),(1,2),(1,2),(2,3),(2,3),(2,3),(2,3),(3,0),(0,3),(3,0)]
+    efp_result = ef.EFP(asymbox_graph, measure='hadr', beta=beta, kappa=kappa,
+                                       normed=normed, coords='epxpypz',
+                                       kappa_normed_behavior=kappa_normed_behavior).compute(event)
+
+    pts, ys, phis, ms = ef.ptyphims_from_p4s(event).T
+    thetas = np.asarray([[(ys[i]-ys[j])**2 + min(abs(phis[i]-phis[j]), 2*np.pi-abs(phis[i]-phis[j]))**2
+                          for i in range(len(event))] for j in range(len(event))])**(beta/2)
+
+    zs = pts**kappa
+    if normed and kappa_normed_behavior == 'orig':
+        zs /= np.sum(zs)
+    if normed and kappa_normed_behavior == 'new':
+        zs /= np.sum(pts)**kappa
+
+    asymbox = 0
+    for i1 in range(len(zs)):
+        for i2 in range(len(zs)):
+            for i3 in range(len(zs)):
+                for i4 in range(len(zs)):
+                    asymbox += (zs[i1]*zs[i2]*zs[i3]*zs[i4]*thetas[i1,i2]**2*
+                                thetas[i2,i3]**3*thetas[i3,i4]**4*thetas[i1,i4]**3)
+
+    assert epsilon_percent(asymbox, efp_result, epsilon=10**-13)
 
 # test that efps, efms, and naive all agree
 @pytest.mark.efp
