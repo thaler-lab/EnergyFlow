@@ -32,6 +32,8 @@ datasets/
 !EMD Demo.ipynb
 keras/
 *test_model.h5
-fjcontrib/
 Icon?
-
+*.o
+*.so
+*.a
+**/.svn
