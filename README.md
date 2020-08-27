@@ -26,3 +26,5 @@ The documentation is maintained at [https://energyflow.network](https://energyfl
 [4] P. T. Komiske, R. Mastandrea, E. M. Metodiev, P. Naik, and J. Thaler, _Exploring the Space of Jets with CMS Open Data_, [Phys. Rev. D **101** (2020) 034009](https://doi.org/10.1103/PhysRevD.101.034009) [[1908.08542](https://arxiv.org/abs/1908.08542)].
 
 [5] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Cutting Multiparticle Correlators Down to Size_, [Phys. Rev. D **101** (2020) 036019](https://doi.org/10.1103/PhysRevD.101.036019) [[1911.04491](https://arxiv.org/abs/1911.04491)].
+
+[6] A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, and J. Thaler, _OmniFold: A Method to Simultaneously Unfold All Observables_, [Phys. Rev. Lett. __124__ (2020) 182001](https://doi.org/10.1103/PhysRevLett.124.182001) [[1902.02346](https://arxiv.org/abs/1911.09107)].
