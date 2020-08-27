@@ -62,17 +62,21 @@ a:visited code {
     max-width: 900px;
 }
 
-/*.wy-breadcrumbs li.wy-breadcrumbs-aside {
+/*.wy-menu-vertical ul {
+    margin-bottom: 0em;
+}
+
+.wy-breadcrumbs li.wy-breadcrumbs-aside {
     display: none;
 }
 
-/* changes sublist item to nothing */
-/*.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+ changes sublist item to nothing
+.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
     list-style: none;
 }
 
-/* moves menu items left a bit*/
-/*.wy-menu-vertical .subnav li.current > ul li a {
+moves menu items left a bit
+.wy-menu-vertical .subnav li.current > ul li a {
     padding-left: 2.4em;
 }
 

@@ -43,9 +43,9 @@ The samples are also hosted on Zenodo and we ask that you cite them
 appropriately if they are useful to your research. For BibTex entries,
 see the [FAQs](/faqs/#how-do-i-cite-the-energyflow-package).
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3164691.svg)](https://doi.org/10.5281/zenodo.3164691) - Pythia samples
+[![DOI](/img/zenodo.3164691.svg)](https://doi.org/10.5281/zenodo.3164691) - Pythia samples
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg)](https://doi.org/10.5281/zenodo.3066475) - Herwig samples
+[![DOI](/img/zenodo.3066475.svg)](https://doi.org/10.5281/zenodo.3066475) - Herwig samples
 """
 from __future__ import absolute_import, division, print_function
 

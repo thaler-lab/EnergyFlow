@@ -36,31 +36,31 @@ simulation. Note that the pT values referenced in the name of the SIM/GEN
 datasets are those of the generator-level hard parton. The DOIs of
 `CMS2011AJets` MOD HDF5 datasets are:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3340205.svg)](https://
+[![DOI](/img/zenodo.3340205.svg)](https://
 doi.org/10.5281/zenodo.3340205) - CMS 2011A Jets, pT > 375 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341500.svg)](https://
+[![DOI](/img/zenodo.3341500.svg)](https://
 doi.org/10.5281/zenodo.3341500) - SIM/GEN QCD Jets 170-300 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341498.svg)](https://
+[![DOI](/img/zenodo.3341498.svg)](https://
 doi.org/10.5281/zenodo.3341498) - SIM/GEN QCD Jets 300-470 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341419.svg)](https://
+[![DOI](/img/zenodo.3341419.svg)](https://
 doi.org/10.5281/zenodo.3341419) - SIM/GEN QCD Jets 470-600 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3364139.svg)](https://
+[![DOI](/img/zenodo.3364139.svg)](https://
 doi.org/10.5281/zenodo.3364139) - SIM/GEN QCD Jets 600-800 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341413.svg)](https://
+[![DOI](/img/zenodo.3341413.svg)](https://
 doi.org/10.5281/zenodo.3341413) - SIM/GEN QCD Jets 800-1000 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341502.svg)](https://
+[![DOI](/img/zenodo.3341502.svg)](https://
 doi.org/10.5281/zenodo.3341502) - SIM/GEN QCD Jets 1000-1400 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341770.svg)](https://
+[![DOI](/img/zenodo.3341770.svg)](https://
 doi.org/10.5281/zenodo.3341770) - SIM/GEN QCD Jets 1400-1800 GeV
 <br>
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3341772.svg)](https://
+[![DOI](/img/zenodo.3341772.svg)](https://
 doi.org/10.5281/zenodo.3341772) - SIM/GEN QCD Jets 1800-$\infty$ GeV
 
 For more details regarding the creation of these samples, as well as for the

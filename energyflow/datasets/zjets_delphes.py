@@ -53,7 +53,7 @@ $\beta=0$.
 If you use this dataset, please cite the Zenodo record as well as the
 corresponding paper:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3548091.svg)](https://
+[![DOI](/img/zenodo.3548091.svg)](https://
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
 - A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
