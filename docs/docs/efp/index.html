@@ -7,14 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="canonical" href="https://energyflow.network/docs/efp/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Energy Flow Polynomials - EnergyFlow</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../../css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/eftheme.css" rel="stylesheet" />
   
   <script>
     // Current page data
@@ -25,7 +26,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
   <script>
@@ -46,12 +47,13 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../..">
-            <div class="eflogo">
-                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
-            </div>
-        </a>
+  <a href="../..">
+    <div class="eflogo">
+      <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+    </div>
+  </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -60,128 +62,140 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Getting Started</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../installation/">Installation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../demos/">Demos</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../examples/">Examples</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../faqs/">FAQs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../releases/">Release Notes</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../news/">News</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Documentation</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../archs/">Architectures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../datasets/">Datasets</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../emd/">EMD</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efm/">Energy Flow Moments</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Energy Flow Polynomials</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#efp">EFP</a></li>
-    
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../demos/">Demos</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../examples/">Examples</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../faqs/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../releases/">Release Notes</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../news/">News</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../archs/">Architectures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../datasets/">Datasets</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../emd/">EMD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efm/">Energy Flow Moments</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Energy Flow Polynomials</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#efp">EFP</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#compute">compute</a></li>
-        
-            <li><a class="toctree-l4" href="#batch_compute">batch_compute</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#efpset">EFPSet</a></li>
-    
+    <li class="toctree-l3"><a class="reference internal" href="#compute">compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch_compute">batch_compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">properties</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#compute_1">compute</a></li>
-        
-            <li><a class="toctree-l4" href="#batch_compute_1">batch_compute</a></li>
-        
-            <li><a class="toctree-l4" href="#calc_disc">calc_disc</a></li>
-        
-            <li><a class="toctree-l4" href="#sel">sel</a></li>
-        
-            <li><a class="toctree-l4" href="#csel">csel</a></li>
-        
-            <li><a class="toctree-l4" href="#count">count</a></li>
-        
-            <li><a class="toctree-l4" href="#graphs">graphs</a></li>
-        
-            <li><a class="toctree-l4" href="#simple_graphs">simple_graphs</a></li>
-        
+    <li class="toctree-l4"><a class="reference internal" href="#graph">graph</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#simple_graph">simple_graph</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#weights">weights</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#weight_set">weight_set</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#einstr">einstr</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#einpath">einpath</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#efm_spec">efm_spec</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#efm_einstr">efm_einstr</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#efm_einpath">efm_einpath</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#efmset">efmset</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#np_optimize">np_optimize</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#n">n</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#e">e</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#d">d</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#v">v</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#k">k</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#c">c</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#p">p</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#h">h</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#spec">spec</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#ndk">ndk</a>
+    </li>
         </ul>
-    
-
-    </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Multigraph Generation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../obs/">Observables</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utils/">Utils</a>
-                </li>
-    </ul>
-	    </li>
-          
+    </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#efpset">EFPSet</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#compute_1">compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch_compute_1">batch_compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#calc_disc">calc_disc</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sel">sel</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#csel">csel</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#count">count</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#graphs">graphs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#simple_graphs">simple_graphs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_1">properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#efps">efps</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#efmset_1">efmset</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#specs">specs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#cspecs">cspecs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#weight_set_1">weight_set</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#cols">cols</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../measures/">Measures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../gen/">Multigraph Generation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../obs/">Observables</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utils</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -213,12 +227,14 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
-                <p>Energy Flow Polynomials (EFPs) are a set of observables, indexed by
+                <h1 id="energy-flow-polynomials">Energy Flow Polynomials</h1>
+<p>Energy Flow Polynomials (EFPs) are a set of observables, indexed by
 non-isomorphic multigraphs, which linearly span the space of infrared and
 collinear (IRC) safe observables.</p>
 <p>An EFP, indexed by a multigraph $G$, takes the following form:
@@ -229,7 +245,7 @@ measure of the angular separation between particles $i$ and $j$. The specific
 choices for "energy" and "angular" measure depend on the collider context and
 are discussed in the <a href="../measures">Measures</a> section.</p>
 <hr />
-<h3 id="efp">EFP</h3>
+<h2 id="efp">EFP</h2>
 <p>A class for representing and computing a single EFP.</p>
 <pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None, check_input=True, np_optimize=True)
 </code></pre>
@@ -280,7 +296,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h4 id="compute">compute</h4>
+<h3 id="compute">compute</h3>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
@@ -317,7 +333,7 @@ used.</li>
 </ul>
 </li>
 </ul>
-<h4 id="batch_compute">batch_compute</h4>
+<h3 id="batch_compute">batch_compute</h3>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -342,116 +358,117 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
-<h5 id="graph">graph</h5>
+<h3 id="properties">properties</h3>
+<h4 id="graph">graph</h4>
 <pre><code class="python">graph
 </code></pre>
 
 <p>Graph of this EFP represented by a list of edges.</p>
-<h5 id="simple_graph">simple_graph</h5>
+<h4 id="simple_graph">simple_graph</h4>
 <pre><code class="python">simple_graph
 </code></pre>
 
 <p>Simple graph of this EFP (forgetting all multiedges)
 represented by a list of edges.</p>
-<h5 id="weights">weights</h5>
+<h4 id="weights">weights</h4>
 <pre><code class="python">weights
 </code></pre>
 
 <p>Edge weights (counts) for the graph of this EFP.</p>
-<h5 id="weight_set">weight_set</h5>
+<h4 id="weight_set">weight_set</h4>
 <pre><code class="python">weight_set
 </code></pre>
 
 <p>Set of edge weights (counts) for the graph of this EFP.</p>
-<h5 id="einstr">einstr</h5>
+<h4 id="einstr">einstr</h4>
 <pre><code class="python">einstr
 </code></pre>
 
 <p>Einstein summation string for the EFP computation.</p>
-<h5 id="einpath">einpath</h5>
+<h4 id="einpath">einpath</h4>
 <pre><code class="python">einpath
 </code></pre>
 
 <p>NumPy einsum path specification for EFP computation.</p>
-<h5 id="efm_spec">efm_spec</h5>
+<h4 id="efm_spec">efm_spec</h4>
 <pre><code class="python">efm_spec
 </code></pre>
 
 <p>List of EFM signatures corresponding to efm_einstr.</p>
-<h5 id="efm_einstr">efm_einstr</h5>
+<h4 id="efm_einstr">efm_einstr</h4>
 <pre><code class="python">efm_einstr
 </code></pre>
 
 <p>Einstein summation string for the EFM computation.</p>
-<h5 id="efm_einpath">efm_einpath</h5>
+<h4 id="efm_einpath">efm_einpath</h4>
 <pre><code class="python">efm_einpath
 </code></pre>
 
 <p>NumPy einsum path specification for EFM computation.</p>
-<h5 id="efmset">efmset</h5>
+<h4 id="efmset">efmset</h4>
 <pre><code class="python">efmset
 </code></pre>
 
 <p>Instance of <code>EFMSet</code> help by this EFP if using EFMs.</p>
-<h5 id="np_optimize">np_optimize</h5>
+<h4 id="np_optimize">np_optimize</h4>
 <pre><code class="python">np_optimize
 </code></pre>
 
 <p>The np_optimize keyword argument that initialized this EFP instance.</p>
-<h5 id="n">n</h5>
+<h4 id="n">n</h4>
 <pre><code class="python">n
 </code></pre>
 
 <p>Number of vertices in the graph of this EFP.</p>
-<h5 id="e">e</h5>
+<h4 id="e">e</h4>
 <pre><code class="python">e
 </code></pre>
 
 <p>Number of edges in the simple graph of this EFP.</p>
-<h5 id="d">d</h5>
+<h4 id="d">d</h4>
 <pre><code class="python">d
 </code></pre>
 
 <p>Degree, or number of edges, in the graph of this EFP.</p>
-<h5 id="v">v</h5>
+<h4 id="v">v</h4>
 <pre><code class="python">v
 </code></pre>
 
 <p>Maximum valency of any vertex in the graph.</p>
-<h5 id="k">k</h5>
+<h4 id="k">k</h4>
 <pre><code class="python">k
 </code></pre>
 
 <p>Index of this EFP. Determined by EFPSet or -1 otherwise.</p>
-<h5 id="c">c</h5>
+<h4 id="c">c</h4>
 <pre><code class="python">c
 </code></pre>
 
 <p>VE complexity $\chi$ of this EFP.</p>
-<h5 id="p">p</h5>
+<h4 id="p">p</h4>
 <pre><code class="python">p
 </code></pre>
 
 <p>Number of connected components of this EFP. Note that the empty
 graph conventionally has one connected component.</p>
-<h5 id="h">h</h5>
+<h4 id="h">h</h4>
 <pre><code class="python">h
 </code></pre>
 
 <p>Number of valency 1 vertices ('hanging chads) of this EFP.</p>
-<h5 id="spec">spec</h5>
+<h4 id="spec">spec</h4>
 <pre><code class="python">spec
 </code></pre>
 
 <p>Specification array for this EFP.</p>
-<h5 id="ndk">ndk</h5>
+<h4 id="ndk">ndk</h4>
 <pre><code class="python">ndk
 </code></pre>
 
 <p>Tuple of <code>n</code>, <code>d</code>, and <code>k</code> values which form a unique identifier of
 this EFP within an <code>EFPSet</code>.</p>
 <hr />
-<h3 id="efpset">EFPSet</h3>
+<h2 id="efpset">EFPSet</h2>
 <p>A class that holds a collection of EFPs and computes their values on
 events. Note that all keyword arguments are stored as properties of the
 <code>EFPSet</code> instance.</p>
@@ -526,7 +543,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h4 id="compute_1">compute</h4>
+<h3 id="compute_1">compute</h3>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
@@ -563,7 +580,7 @@ used.</li>
 </ul>
 </li>
 </ul>
-<h4 id="batch_compute_1">batch_compute</h4>
+<h3 id="batch_compute_1">batch_compute</h3>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -588,7 +605,7 @@ attempt to use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
-<h4 id="calc_disc">calc_disc</h4>
+<h3 id="calc_disc">calc_disc</h3>
 <pre><code class="python">calc_disc(X)
 </code></pre>
 
@@ -615,7 +632,7 @@ function is used internally in <code>compute</code> and <code>batch_compute</cod
 </ul>
 </li>
 </ul>
-<h4 id="sel">sel</h4>
+<h3 id="sel">sel</h3>
 <pre><code class="python">sel(*args)
 </code></pre>
 
@@ -643,12 +660,12 @@ value is a variable that changes (such as in a list comprehension).</li>
 </ul>
 </li>
 </ul>
-<h4 id="csel">csel</h4>
+<h3 id="csel">csel</h3>
 <pre><code class="python">csel(*args)
 </code></pre>
 
 <p>Same as <code>sel</code> except using <code>cspecs</code> to select from.</p>
-<h4 id="count">count</h4>
+<h3 id="count">count</h3>
 <pre><code class="python">count(*args)
 </code></pre>
 
@@ -668,7 +685,7 @@ of the arguments using <code>sel</code>.</p>
 </ul>
 </li>
 </ul>
-<h4 id="graphs">graphs</h4>
+<h3 id="graphs">graphs</h3>
 <pre><code class="python">graphs(*args)
 </code></pre>
 
@@ -693,7 +710,7 @@ specifications.</li>
 </ul>
 </li>
 </ul>
-<h4 id="simple_graphs">simple_graphs</h4>
+<h3 id="simple_graphs">simple_graphs</h3>
 <pre><code class="python">simple_graphs(*args)
 </code></pre>
 
@@ -718,34 +735,35 @@ specifications.</li>
 </ul>
 </li>
 </ul>
-<h5 id="efps">efps</h5>
+<h3 id="properties_1">properties</h3>
+<h4 id="efps">efps</h4>
 <pre><code class="python">efps
 </code></pre>
 
 <p>List of EFPs held by the <code>EFPSet</code>.</p>
-<h5 id="efmset_1">efmset</h5>
+<h4 id="efmset_1">efmset</h4>
 <pre><code class="python">efmset
 </code></pre>
 
 <p>The <code>EFMSet</code> held by the <code>EFPSet</code>, if using EFMs.</p>
-<h5 id="specs">specs</h5>
+<h4 id="specs">specs</h4>
 <pre><code class="python">specs
 </code></pre>
 
 <p>An array of EFP specifications. Each row represents an EFP 
 and the columns represent the quantities indicated by <code>cols</code>.</p>
-<h5 id="cspecs">cspecs</h5>
+<h4 id="cspecs">cspecs</h4>
 <pre><code class="python">cspecs
 </code></pre>
 
 <p>Specification array for connected EFPs.</p>
-<h5 id="weight_set_1">weight_set</h5>
+<h4 id="weight_set_1">weight_set</h4>
 <pre><code class="python">weight_set
 </code></pre>
 
 <p>The union of all weights needed by the EFPs stored by the 
 <code>EFPSet</code>.</p>
-<h5 id="cols">cols</h5>
+<h4 id="cols">cols</h4>
 <pre><code class="python">cols
 </code></pre>
 
@@ -784,7 +802,7 @@ each column.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -794,7 +812,7 @@ each column.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -809,9 +827,14 @@ each column.</p>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

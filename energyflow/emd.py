@@ -1,4 +1,6 @@
-r"""<video width="100%" autoplay loop controls>
+r"""# Energy Mover's Distance
+
+<video width="100%" autoplay loop controls>
     <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
             type="video/mp4">
 </video>

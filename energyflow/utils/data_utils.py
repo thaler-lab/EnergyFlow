@@ -1,4 +1,4 @@
-"""### Data Tools
+"""## Data Tools
 
 Functions for dealing with datasets. These are not importable from
 the top level `energyflow` module, but must instead be imported 

@@ -7,14 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="canonical" href="https://energyflow.network/docs/archs/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Architectures - EnergyFlow</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../../css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/eftheme.css" rel="stylesheet" />
   
   <script>
     // Current page data
@@ -25,7 +26,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
   <script>
@@ -46,12 +47,13 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../..">
-            <div class="eflogo">
-                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
-            </div>
-        </a>
+  <a href="../..">
+    <div class="eflogo">
+      <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+    </div>
+  </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -60,126 +62,112 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Getting Started</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../installation/">Installation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../demos/">Demos</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../examples/">Examples</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../faqs/">FAQs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../releases/">Release Notes</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../news/">News</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Documentation</span>
-    <ul class="subnav">
-                <li class=" current">
-                    
-    <a class="current" href="./">Architectures</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#efn">EFN</a></li>
-    
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../demos/">Demos</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../examples/">Examples</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../faqs/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../releases/">Release Notes</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../news/">News</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Architectures</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#efn">EFN</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#eval_filters">eval_filters</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#pfn">PFN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#cnn">CNN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#dnn">DNN</a></li>
-    
-
-    <li class="toctree-l3"><a href="#linearclassifier">LinearClassifier</a></li>
-    
-
-    <li class="toctree-l3"><a href="#archbase">ArchBase</a></li>
-    
+    <li class="toctree-l3"><a class="reference internal" href="#eval_filters">eval_filters</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">properties</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#fit">fit</a></li>
-        
-            <li><a class="toctree-l4" href="#predict">predict</a></li>
-        
+    <li class="toctree-l4"><a class="reference internal" href="#inputs">inputs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#weights">weights</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phi">Phi</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#latent">latent</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#f">F</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#output">output</a>
+    </li>
         </ul>
-    
-
-    </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../datasets/">Datasets</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../emd/">EMD</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efp/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Multigraph Generation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../obs/">Observables</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utils/">Utils</a>
-                </li>
-    </ul>
-	    </li>
-          
+    </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pfn">PFN</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_1">properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#inputs_1">inputs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#weights_1">weights</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#phi_1">Phi</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#latent_1">latent</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#f_1">F</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#output_1">output</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cnn">CNN</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dnn">DNN</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#linearclassifier">LinearClassifier</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#archbase">ArchBase</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#fit">fit</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#predict">predict</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_2">properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#model">model</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../datasets/">Datasets</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../emd/">EMD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efm/">Energy Flow Moments</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efp/">Energy Flow Polynomials</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../measures/">Measures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../gen/">Multigraph Generation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../obs/">Observables</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utils</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -211,12 +199,14 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
-                <p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) are model
+                <h1 id="architectures">Architectures</h1>
+<p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) are model
 architectures designed for learning from collider events as unordered,
 variable-length sets of particles. Both EFNs and PFNs are parameterized by a
 learnable per-particle function $\Phi$ and latent space function $F$.</p>
@@ -239,7 +229,7 @@ imported, e.g. <code>from energyflow.archs import *</code>. EnergyFlow also cont
 several additional model architectures for ease of using common models that
 frequently appear in the intersection of particle physics and machine learning.</p>
 <hr />
-<h3 id="efn">EFN</h3>
+<h2 id="efn">EFN</h2>
 <p>Energy Flow Network (EFN) architecture.</p>
 <pre><code class="python">energyflow.archs.EFN(*args, **kwargs)
 </code></pre>
@@ -335,7 +325,7 @@ custom (and correct) manner since version <code>0.12.0</code>.</li>
 </ul>
 </li>
 </ul>
-<h4 id="eval_filters">eval_filters</h4>
+<h3 id="eval_filters">eval_filters</h3>
 <pre><code class="python">eval_filters(patch, n=100, prune=True)
 </code></pre>
 
@@ -372,83 +362,85 @@ filters at each point.</li>
 </ul>
 </li>
 </ul>
-<h5 id="inputs">inputs</h5>
+<h3 id="properties">properties</h3>
+<h4 id="inputs">inputs</h4>
 <pre><code class="python">inputs
 </code></pre>
 
 <p>List of input tensors to the model. EFNs have two input tensors:
 <code>inputs[0]</code> corresponds to the <code>zs</code> input and <code>inputs[1]</code> corresponds
 to the <code>phats</code> input.</p>
-<h5 id="weights">weights</h5>
+<h4 id="weights">weights</h4>
 <pre><code class="python">weights
 </code></pre>
 
 <p>Weight tensor for the model. This is the <code>zs</code> input where entries
 equal to <code>mask_val</code> have been set to zero.</p>
-<h5 id="phi">Phi</h5>
+<h4 id="phi">Phi</h4>
 <pre><code class="python">Phi
 </code></pre>
 
 <p>List of tensors corresponding to the layers in the $\Phi$ network.</p>
-<h5 id="latent">latent</h5>
+<h4 id="latent">latent</h4>
 <pre><code class="python">latent
 </code></pre>
 
 <p>List of tensors corresponding to the summation layer in the
 network, including any dropout layer if present.</p>
-<h5 id="f">F</h5>
+<h4 id="f">F</h4>
 <pre><code class="python">F
 </code></pre>
 
 <p>List of tensors corresponding to the layers in the $F$ network.</p>
-<h5 id="output">output</h5>
+<h4 id="output">output</h4>
 <pre><code class="python">output
 </code></pre>
 
 <p>Output tensor for the model.</p>
 <hr />
-<h3 id="pfn">PFN</h3>
+<h2 id="pfn">PFN</h2>
 <p>Particle Flow Network (PFN) architecture. Accepts the same 
 hyperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
 <pre><code class="python">energyflow.archs.PFN(*args, **kwargs)
 </code></pre>
 
-<h5 id="inputs_1">inputs</h5>
+<h3 id="properties_1">properties</h3>
+<h4 id="inputs_1">inputs</h4>
 <pre><code class="python">inputs
 </code></pre>
 
 <p>List of input tensors to the model. PFNs have one input tensor
 corresponding to the <code>ps</code> input.</p>
-<h5 id="weights_1">weights</h5>
+<h4 id="weights_1">weights</h4>
 <pre><code class="python">weights
 </code></pre>
 
 <p>Weight tensor for the model. A weight of <code>0</code> is assigned to any
 particle which has all features equal to <code>mask_val</code>, and <code>1</code> is
 assigned otherwise.</p>
-<h5 id="phi_1">Phi</h5>
+<h4 id="phi_1">Phi</h4>
 <pre><code class="python">Phi
 </code></pre>
 
 <p>List of tensors corresponding to the layers in the $\Phi$ network.</p>
-<h5 id="latent_1">latent</h5>
+<h4 id="latent_1">latent</h4>
 <pre><code class="python">latent
 </code></pre>
 
 <p>List of tensors corresponding to the summation layer in the
 network, including any dropout layer if present.</p>
-<h5 id="f_1">F</h5>
+<h4 id="f_1">F</h4>
 <pre><code class="python">F
 </code></pre>
 
 <p>List of tensors corresponding to the layers in the $F$ network.</p>
-<h5 id="output_1">output</h5>
+<h4 id="output_1">output</h4>
 <pre><code class="python">output
 </code></pre>
 
 <p>Output tensor for the model.</p>
 <hr />
-<h3 id="cnn">CNN</h3>
+<h2 id="cnn">CNN</h2>
 <p>Convolutional Neural Network architecture.</p>
 <pre><code class="python">energyflow.archs.CNN(*args, **kwargs)
 </code></pre>
@@ -549,7 +541,7 @@ tensorflow, so prefer <code>'channels_last'</code>.</li>
 </li>
 </ul>
 <hr />
-<h3 id="dnn">DNN</h3>
+<h2 id="dnn">DNN</h2>
 <p>Dense Neural Network architecture.</p>
 <pre><code class="python">energyflow.archs.DNN(*args, **kwargs)
 </code></pre>
@@ -605,7 +597,7 @@ $L_2$-regulatization to all layers.</li>
 </li>
 </ul>
 <hr />
-<h3 id="linearclassifier">LinearClassifier</h3>
+<h2 id="linearclassifier">LinearClassifier</h2>
 <p>Linear classifier that can be either Fisher's linear discriminant
 or logistic regression. Relies on the <a href="https://scikit-learn.org/">scikit-learn</a>
 implementations of these classifiers.</p>
@@ -648,7 +640,7 @@ convergence parameter.</li>
 </li>
 </ul>
 <hr />
-<h3 id="archbase">ArchBase</h3>
+<h2 id="archbase">ArchBase</h2>
 <p>Base class for all architectures contained in EnergyFlow. The mechanism of
 specifying hyperparameters for all architectures is described here. Methods
 common to all architectures are documented here. Note that this class cannot
@@ -774,7 +766,7 @@ would be in order to use parts of this model in another model
 </ul>
 </li>
 </ul>
-<h4 id="fit">fit</h4>
+<h3 id="fit">fit</h3>
 <pre><code class="python">fit(X_train, Y_train, **kwargs)
 </code></pre>
 
@@ -804,7 +796,7 @@ on the possible arguments.</li>
 <ul>
 <li>Whatever the underlying model's <code>fit()</code> returns.</li>
 </ul>
-<h4 id="predict">predict</h4>
+<h3 id="predict">predict</h3>
 <pre><code class="python">predict(X_test, **kwargs)
 </code></pre>
 
@@ -830,7 +822,8 @@ predicting on a dataset.</li>
 </ul>
 </li>
 </ul>
-<h5 id="model">model</h5>
+<h3 id="properties_2">properties</h3>
+<h4 id="model">model</h4>
 <pre><code class="python">model
 </code></pre>
 
@@ -875,7 +868,7 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -885,7 +878,7 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -900,9 +893,14 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

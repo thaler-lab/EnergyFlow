@@ -1,4 +1,6 @@
-r"""### Particle Tools
+r"""# Utilities
+
+## Particle Tools
 
 Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, `[e,px,py,pz]` (energy, momentum in `x` direction,

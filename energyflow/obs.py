@@ -1,4 +1,6 @@
-"""Implementations of come collider physics observables. Some observables
+"""# Observables
+
+Implementations of come collider physics observables. Some observables
 require the [FastJet](http://fastjet.fr/) Python interface to be importable;
 if it's not, no warnings or errors will be issued, the observables will simply
 not be included in this module."""

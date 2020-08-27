@@ -1,4 +1,4 @@
-"""### Random Events
+"""## Random Events
 
 Functions to generate random sets of four-vectors. Includes an implementation
 of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for

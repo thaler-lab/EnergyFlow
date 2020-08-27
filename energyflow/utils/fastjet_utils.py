@@ -1,4 +1,4 @@
-"""### FastJet Tools
+"""## FastJet Tools
 
 The [FastJet package](http://fastjet.fr/) provides, among other things, fast
 jet clustering utilities. It is written in C++ and includes a Python interface

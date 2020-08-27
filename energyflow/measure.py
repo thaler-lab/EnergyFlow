@@ -1,4 +1,4 @@
-r"""### Energy and Angular Measures
+r"""# Energy and Angular Measures
 
 The appropriate notions of energy and angle depend on the collider context.
 Typically, one wants to work with observables that respect the appropriate
@@ -34,7 +34,7 @@ measure by passing in $\{z_i\}$ and $\{\theta_{ij}\}$ directly to the EFP
 classes. Custom EFM measures can be implemented by passing in $\{z_i\}$ and
 $\{\hat n_i\}$.
 
-#### Hadronic Measures
+## Hadronic Measures
 
 For hadronic collisions, observables are typically desired to be invariant
 under boosts along the beam direction and rotations about the beam direction.
@@ -60,7 +60,7 @@ The hadronic EFM measure is `'hadrefm'`, which is equivalent to `'hadrdot'`
 with $\beta=2$ when used to compute EFPs, but works with the EFM-based
 implementation.
 
-#### *e+e-* Measures
+## *e+e-* Measures
 
 For $e^+e^-$ collisions, observables are typically desired to be invariant
 under the full group of rotations about the interaction point. Since the center

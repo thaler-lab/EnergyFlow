@@ -1,4 +1,6 @@
-r"""Energy Flow Moments (EFMs) are tensors that can be computed in
+r"""# Energy Flow Moments
+
+Energy Flow Moments (EFMs) are tensors that can be computed in
 $\mathcal O(M)$ where $M$ is the number of particles. They are useful for many
 things, including providing a fast way of computing the $\beta=2$ EFPs, which
 are the scalar contractions of products of EFMs.

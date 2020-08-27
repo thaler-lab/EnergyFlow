@@ -33,6 +33,7 @@ datasets/
 keras/
 *test_model.h5
 Icon?
+fastjet-3.3.4
 *.o
 *.so
 *.a

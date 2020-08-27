@@ -1,6 +1,6 @@
 MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$','$'], ],
-      processEscapes: true
-    }
-  });
+  tex2jax: {
+    inlineMath: [['$','$']],
+    processEscapes: true
+  }
+});

@@ -1,4 +1,6 @@
-r"""## CMS Open Data and the MOD HDF5 Format
+r"""# Datasets
+
+## CMS Open Data and the MOD HDF5 Format
 
 Starting in 2014, the CMS Collaboration began to release research-grade
 recorded and simulated datasets on the [CERN Open Data Portal](http://opendata.

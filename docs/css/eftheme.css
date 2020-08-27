@@ -16,15 +16,19 @@
     margin-bottom: 0;
 }
 
-h1, h2, legend {
-    color: var(--mit-red);
-}
-
 .wy-side-nav-search {
     background: var(--mit-red);
 }
 
+h1, legend {
+    color: var(--mit-red);
+}
+
 .wy-side-nav-search a:hover {
+    background: var(--mit-red);
+}
+
+.wy-nav-top {
     background: var(--mit-red);
 }
 
@@ -36,19 +40,29 @@ a:visited code {
     color: #2980B9;
 }
 
-.wy-nav-top {
-    background: var(--mit-red);
-}
-
 .wy-nav-top a {
     color: white;
 }
+
 
 .wy-menu-vertical a {
     color: #b3b3b3;
 }
 
-.wy-breadcrumbs li.wy-breadcrumbs-aside {
+.wy-menu-vertical .toctree-l1 {
+    padding-left: 1em;
+}
+
+.toctree-l5 {
+    font-size: 1em;
+    padding-left: 4.5em;
+}
+
+.wy-nav-content {
+    max-width: 900px;
+}
+
+/*.wy-breadcrumbs li.wy-breadcrumbs-aside {
     display: none;
 }
 

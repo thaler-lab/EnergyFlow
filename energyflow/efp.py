@@ -1,4 +1,6 @@
-r"""Energy Flow Polynomials (EFPs) are a set of observables, indexed by
+r"""# Energy Flow Polynomials
+
+Energy Flow Polynomials (EFPs) are a set of observables, indexed by
 non-isomorphic multigraphs, which linearly span the space of infrared and
 collinear (IRC) safe observables.
 

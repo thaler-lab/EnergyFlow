@@ -7,14 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="canonical" href="https://energyflow.network/installation/">
   <link rel="shortcut icon" href="../img/favicon.ico">
   <title>Installation - EnergyFlow</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../css/eftheme.css" rel="stylesheet" />
   
   <script>
     // Current page data
@@ -25,7 +26,7 @@
   
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
   <script>
@@ -46,12 +47,13 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="..">
-            <div class="eflogo">
-                <img src="../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
-            </div>
-        </a>
+  <a href="..">
+    <div class="eflogo">
+      <img src="../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+    </div>
+  </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -60,100 +62,54 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Getting Started</span>
-    <ul class="subnav">
-                <li class=" current">
-                    
-    <a class="current" href="./">Installation</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#install-via-pip">Install via pip</a></li>
-    
-
-    <li class="toctree-l3"><a href="#numpy">NumPy</a></li>
-    
-
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#install-via-pip">Install via pip</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#numpy">NumPy</a>
+    </li>
     </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../demos/">Demos</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../examples/">Examples</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../faqs/">FAQs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../releases/">Release Notes</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../news/">News</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Documentation</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../docs/archs/">Architectures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/datasets/">Datasets</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/emd/">EMD</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/efp/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/gen/">Multigraph Generation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/obs/">Observables</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../docs/utils/">Utils</a>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../demos/">Demos</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../examples/">Examples</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../faqs/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../releases/">Release Notes</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../news/">News</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Documentation</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/archs/">Architectures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/datasets/">Datasets</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/emd/">EMD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/efm/">Energy Flow Moments</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/efp/">Energy Flow Polynomials</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/measures/">Measures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/gen/">Multigraph Generation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/obs/">Observables</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../docs/utils/">Utils</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -185,21 +141,23 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
-                <p>The EnergyFlow package is written in pure Python and the core depends only on NumPy, the fundamental package for scientific computing with Python, six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3, and h5py, which is used to interface with HDF5 files. The extra features require additional packages as specified below:</p>
+                <h1 id="installation">Installation</h1>
+<p>The EnergyFlow package is written in pure Python and the core depends only on NumPy, the fundamental package for scientific computing with Python, six, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3, and h5py, which is used to interface with HDF5 files. The extra features require additional packages as specified below:</p>
 <ul>
 <li>Architectures: <a href="https://keras.io">Keras</a>, <a href="https://scikit-learn.org">scikit-learn</a>.</li>
 <li>EMD: <a href="https://pot.readthedocs.io/en/stable">Python Optimal Transport (POT)</a>.</li>
 <li>Multigraph Generation: <a href="http://igraph.org/redirect.html">iGraph</a></li>
 </ul>
 <p>The EnergyFlow package is designed to work with Python 2.7, 3.5, 3.6, and 3.7. These can be installed from <a href="https://www.python.org/downloads/">here</a>. A recent version of Python 3 is highly recommended, ideally 3.6 or higher.</p>
-<h3 id="install-via-pip">Install via <code>pip</code></h3>
+<h2 id="install-via-pip">Install via <code>pip</code></h2>
 <p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
-<h3 id="numpy">NumPy</h3>
+<h2 id="numpy">NumPy</h2>
 <p>As of version <code>0.8.2</code>, EnergyFlow has used a modified version of <code>numpy.einsum</code> to do the heavy lifting for the computation of EFPs. NumPy 1.14.0 changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. It was found that the multi-process approach used by <a href="../docs/efp/#batch_compute_1"><code>batch_compute</code></a> is typically much faster when using the inherently single-threaded <code>c_einsum</code> versus <code>tensordot</code>, which can call BLAS. Hence the custom version of <code>einsum</code> shipped with EnergyFlow disables all calls to <code>tensordot</code> and uses only <code>c_einsum</code>.</p>
               
             </div>
@@ -223,7 +181,7 @@
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -233,7 +191,7 @@
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -248,9 +206,14 @@
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../js/eftheme.js" defer></script>
       <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

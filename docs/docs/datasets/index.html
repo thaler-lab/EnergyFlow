@@ -7,14 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="canonical" href="https://energyflow.network/docs/datasets/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Datasets - EnergyFlow</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../../css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/eftheme.css" rel="stylesheet" />
   
   <script>
     // Current page data
@@ -25,7 +26,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
   <script>
@@ -46,12 +47,13 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../..">
-            <div class="eflogo">
-                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
-            </div>
-        </a>
+  <a href="../..">
+    <div class="eflogo">
+      <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+    </div>
+  </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -60,136 +62,108 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Getting Started</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../installation/">Installation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../demos/">Demos</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../examples/">Examples</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../faqs/">FAQs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../releases/">Release Notes</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../news/">News</a>
-                </li>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../demos/">Demos</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../examples/">Examples</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../faqs/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../releases/">Release Notes</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../news/">News</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../archs/">Architectures</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Datasets</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#moddataset">MODDataset</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#sel">sel</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#apply_mask">apply_mask</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#save">save</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#close">close</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#properties">properties</a>
+        <ul>
+    <li class="toctree-l5"><a class="reference internal" href="#jets_i">jets_i</a>
+    </li>
+    <li class="toctree-l5"><a class="reference internal" href="#jets_f">jets_f</a>
+    </li>
+    <li class="toctree-l5"><a class="reference internal" href="#pfcs">pfcs</a>
+    </li>
+    <li class="toctree-l5"><a class="reference internal" href="#gens">gens</a>
+    </li>
+    <li class="toctree-l5"><a class="reference internal" href="#particles">particles</a>
+    </li>
+    <li class="toctree-l5"><a class="reference internal" href="#filenames">filenames</a>
+    </li>
+    <li class="toctree-l5"><a class="reference internal" href="#hf">hf</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#load">load</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#filter_particles">filter_particles</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#kfactors">kfactors</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#z-jets-with-delphes-simulation">Z + Jets with Delphes Simulation</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#load_1">load</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quark-and-gluon-jets">Quark and Gluon Jets</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#load_2">load</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quark-and-gluon-nsubs">Quark and Gluon Nsubs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#load_3">load</a>
+    </li>
+        </ul>
+    </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Documentation</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../archs/">Architectures</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Datasets</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#moddataset">MODDataset</a></li>
-        
-            <li><a class="toctree-l4" href="#load">load</a></li>
-        
-            <li><a class="toctree-l4" href="#filter_particles">filter_particles</a></li>
-        
-            <li><a class="toctree-l4" href="#kfactors">kfactors</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#z-jets-with-delphes-simulation">Z + Jets with Delphes Simulation</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#load_1">load</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#quark-and-gluon-jets">Quark and Gluon Jets</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#load_2">load</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#quark-and-gluon-nsubs">Quark and Gluon Nsubs</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#load_3">load</a></li>
-        
-        </ul>
-    
-
-    </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../emd/">EMD</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efp/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Multigraph Generation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../obs/">Observables</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utils/">Utils</a>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../emd/">EMD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efm/">Energy Flow Moments</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efp/">Energy Flow Polynomials</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../measures/">Measures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../gen/">Multigraph Generation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../obs/">Observables</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utils</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -221,12 +195,14 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
-                <h2 id="cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</h2>
+                <h1 id="datasets">Datasets</h1>
+<h2 id="cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</h2>
 <p>Starting in 2014, the CMS Collaboration began to release research-grade
 recorded and simulated datasets on the <a href="http://opendata.
 cern.ch/">CERN Open Data Portal</a>. These fantastic resources provide a unique opportunity for
@@ -552,6 +528,7 @@ relevant when <code>npf!=-1</code>.</li>
 <p>Closes the underlying HDF5 file, if one is associated with the
 <code>MODDataset</code> object. Note that associated HDF5 files are closed by
 default when the <code>MODDataset</code> object is deleted.</p>
+<h4 id="properties">properties</h4>
 <h5 id="jets_i">jets_i</h5>
 <pre><code class="python">jets_i
 </code></pre>
@@ -836,7 +813,7 @@ doi.org/10.5281/zenodo.3548091"><img alt="DOI" src="https://zenodo.org/badge/DOI
 OmniFold: A Method to Simultaneously Unfold All Observables, <a href="https://arxiv.org/abs/1911.09107">arXiv:1911.09107</a>.</li>
 </ul>
 <hr />
-<h3 id="load_1">load</h3>
+<h4 id="load_1">load</h4>
 <pre><code class="python">energyflow.zjets_delphes.load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo', which='all', include_keys=None, exclude_keys=None)
 </code></pre>
 
@@ -943,7 +920,7 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <br>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
-<h3 id="load_2">load</h3>
+<h4 id="load_2">load</h4>
 <pre><code class="python">energyflow.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
 
@@ -1008,7 +985,7 @@ gluon jets generated with Pythia 8.230. Following <a href="https:
 that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
-<h3 id="load_3">load</h3>
+<h4 id="load_3">load</h4>
 <pre><code class="python">energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
 </code></pre>
 
@@ -1056,7 +1033,7 @@ prior to redownloading.</p>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -1066,7 +1043,7 @@ prior to redownloading.</p>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -1081,9 +1058,14 @@ prior to redownloading.</p>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

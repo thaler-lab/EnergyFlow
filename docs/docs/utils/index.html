@@ -7,14 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="canonical" href="https://energyflow.network/docs/utils/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Utils - EnergyFlow</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../../css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/eftheme.css" rel="stylesheet" />
   
   <script>
     // Current page data
@@ -25,7 +26,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
   <script>
@@ -46,12 +47,13 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../..">
-            <div class="eflogo">
-                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
-            </div>
-        </a>
+  <a href="../..">
+    <div class="eflogo">
+      <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+    </div>
+  </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -60,203 +62,144 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Getting Started</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../installation/">Installation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../demos/">Demos</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../examples/">Examples</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../faqs/">FAQs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../releases/">Release Notes</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../news/">News</a>
-                </li>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../demos/">Demos</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../examples/">Examples</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../faqs/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../releases/">Release Notes</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../news/">News</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../archs/">Architectures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../datasets/">Datasets</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../emd/">EMD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efm/">Energy Flow Moments</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efp/">Energy Flow Polynomials</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../measures/">Measures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../gen/">Multigraph Generation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../obs/">Observables</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Utils</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#particle-tools">Particle Tools</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ptyphims_from_p4s">ptyphims_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pts_from_p4s">pts_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pt2s_from_p4s">pt2s_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ys_from_p4s">ys_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#etas_from_p4s">etas_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#phis_from_p4s">phis_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#m2s_from_p4s">m2s_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ms_from_p4s">ms_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ms_from_ps">ms_from_ps</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#etas_from_pts_ys_ms">etas_from_pts_ys_ms</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ys_from_pts_etas_ms">ys_from_pts_etas_ms</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_ptyphims">p4s_from_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_ptyphipids">p4s_from_ptyphipids</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sum_ptyphims">sum_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sum_ptyphipids">sum_ptyphipids</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#center_ptyphims">center_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#rotate_ptyphims">rotate_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#reflect_ptyphims">reflect_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pids2ms">pids2ms</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pids2chrgs">pids2chrgs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ischrgd">ischrgd</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#phi_fix">phi_fix</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#flat_metric">flat_metric</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#random-events">Random Events</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#gen_random_events">gen_random_events</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#gen_random_events_mcom">gen_random_events_mcom</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#gen_massless_phase_space">gen_massless_phase_space</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#data-tools">Data Tools</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#get_examples">get_examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#data_split">data_split</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#to_categorical">to_categorical</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#remap_pids">remap_pids</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#image-tools">Image Tools</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pixelate">pixelate</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#standardize">standardize</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#zero_center">zero_center</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fastjet-tools">FastJet Tools</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pjs_from_ptyphims">pjs_from_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ptyphims_from_pjs">ptyphims_from_pjs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cluster">cluster</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#softdrop">softdrop</a>
+    </li>
+        </ul>
+    </li>
     </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Documentation</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../archs/">Architectures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../datasets/">Datasets</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../emd/">EMD</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efp/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Multigraph Generation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../obs/">Observables</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Utils</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#particle-tools">Particle Tools</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#ptyphims_from_p4s">ptyphims_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#pts_from_p4s">pts_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#pt2s_from_p4s">pt2s_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#ys_from_p4s">ys_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#etas_from_p4s">etas_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#phis_from_p4s">phis_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#m2s_from_p4s">m2s_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#ms_from_p4s">ms_from_p4s</a></li>
-        
-            <li><a class="toctree-l4" href="#ms_from_ps">ms_from_ps</a></li>
-        
-            <li><a class="toctree-l4" href="#etas_from_pts_ys_ms">etas_from_pts_ys_ms</a></li>
-        
-            <li><a class="toctree-l4" href="#ys_from_pts_etas_ms">ys_from_pts_etas_ms</a></li>
-        
-            <li><a class="toctree-l4" href="#p4s_from_ptyphims">p4s_from_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#p4s_from_ptyphipids">p4s_from_ptyphipids</a></li>
-        
-            <li><a class="toctree-l4" href="#sum_ptyphims">sum_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#sum_ptyphipids">sum_ptyphipids</a></li>
-        
-            <li><a class="toctree-l4" href="#center_ptyphims">center_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#rotate_ptyphims">rotate_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#reflect_ptyphims">reflect_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#pids2ms">pids2ms</a></li>
-        
-            <li><a class="toctree-l4" href="#pids2chrgs">pids2chrgs</a></li>
-        
-            <li><a class="toctree-l4" href="#ischrgd">ischrgd</a></li>
-        
-            <li><a class="toctree-l4" href="#phi_fix">phi_fix</a></li>
-        
-            <li><a class="toctree-l4" href="#flat_metric">flat_metric</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#random-events">Random Events</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#gen_random_events">gen_random_events</a></li>
-        
-            <li><a class="toctree-l4" href="#gen_random_events_mcom">gen_random_events_mcom</a></li>
-        
-            <li><a class="toctree-l4" href="#gen_massless_phase_space">gen_massless_phase_space</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#data-tools">Data Tools</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#get_examples">get_examples</a></li>
-        
-            <li><a class="toctree-l4" href="#data_split">data_split</a></li>
-        
-            <li><a class="toctree-l4" href="#to_categorical">to_categorical</a></li>
-        
-            <li><a class="toctree-l4" href="#remap_pids">remap_pids</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#image-tools">Image Tools</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#pixelate">pixelate</a></li>
-        
-            <li><a class="toctree-l4" href="#standardize">standardize</a></li>
-        
-            <li><a class="toctree-l4" href="#zero_center">zero_center</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#fastjet-tools">FastJet Tools</a></li>
-    
-        <ul>
-        
-            <li><a class="toctree-l4" href="#pjs_from_ptyphims">pjs_from_ptyphims</a></li>
-        
-            <li><a class="toctree-l4" href="#ptyphims_from_pjs">ptyphims_from_pjs</a></li>
-        
-            <li><a class="toctree-l4" href="#cluster">cluster</a></li>
-        
-            <li><a class="toctree-l4" href="#softdrop">softdrop</a></li>
-        
-        </ul>
-    
-
-    </ul>
-                </li>
-    </ul>
-	    </li>
-          
-        </ul>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -288,12 +231,14 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
-                <h3 id="particle-tools">Particle Tools</h3>
+                <h1 id="utilities">Utilities</h1>
+<h2 id="particle-tools">Particle Tools</h2>
 <p>Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, <code>[e,px,py,pz]</code> (energy, momentum in <code>x</code> direction,
 momentum in <code>y</code> direction, momentum in <code>z</code> direction), or hadronic coordinates, 
@@ -329,7 +274,7 @@ three-dimensional array with shape <code>(N,M,4)</code> where <code>N</code> is 
 The valid inputs and outputs of the functions here will be described using
 this terminology.</p>
 <hr />
-<h4 id="ptyphims_from_p4s">ptyphims_from_p4s</h4>
+<h3 id="ptyphims_from_p4s">ptyphims_from_p4s</h3>
 <pre><code class="python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None)
 </code></pre>
 
@@ -360,7 +305,7 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </li>
 </ul>
 <hr />
-<h4 id="pts_from_p4s">pts_from_p4s</h4>
+<h3 id="pts_from_p4s">pts_from_p4s</h3>
 <pre><code class="python">energyflow.pts_from_p4s(p4s)
 </code></pre>
 
@@ -380,7 +325,7 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </li>
 </ul>
 <hr />
-<h4 id="pt2s_from_p4s">pt2s_from_p4s</h4>
+<h3 id="pt2s_from_p4s">pt2s_from_p4s</h3>
 <pre><code class="python">energyflow.pt2s_from_p4s(p4s)
 </code></pre>
 
@@ -400,7 +345,7 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </li>
 </ul>
 <hr />
-<h4 id="ys_from_p4s">ys_from_p4s</h4>
+<h3 id="ys_from_p4s">ys_from_p4s</h3>
 <pre><code class="python">energyflow.ys_from_p4s(p4s)
 </code></pre>
 
@@ -421,7 +366,7 @@ for all-zero particles</p>
 </li>
 </ul>
 <hr />
-<h4 id="etas_from_p4s">etas_from_p4s</h4>
+<h3 id="etas_from_p4s">etas_from_p4s</h3>
 <pre><code class="python">energyflow.etas_from_p4s(p4s)
 </code></pre>
 
@@ -442,7 +387,7 @@ zero for all-zero particles</p>
 </li>
 </ul>
 <hr />
-<h4 id="phis_from_p4s">phis_from_p4s</h4>
+<h3 id="phis_from_p4s">phis_from_p4s</h3>
 <pre><code class="python">energyflow.phis_from_p4s(p4s, phi_ref=None)
 </code></pre>
 
@@ -472,7 +417,7 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </li>
 </ul>
 <hr />
-<h4 id="m2s_from_p4s">m2s_from_p4s</h4>
+<h3 id="m2s_from_p4s">m2s_from_p4s</h3>
 <pre><code class="python">energyflow.m2s_from_p4s(p4s)
 </code></pre>
 
@@ -492,7 +437,7 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </li>
 </ul>
 <hr />
-<h4 id="ms_from_p4s">ms_from_p4s</h4>
+<h3 id="ms_from_p4s">ms_from_p4s</h3>
 <pre><code class="python">energyflow.ms_from_p4s(p4s)
 </code></pre>
 
@@ -512,7 +457,7 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </li>
 </ul>
 <hr />
-<h4 id="ms_from_ps">ms_from_ps</h4>
+<h3 id="ms_from_ps">ms_from_ps</h3>
 <pre><code class="python">energyflow.ms_from_ps(ps)
 </code></pre>
 
@@ -534,7 +479,7 @@ coordinates in $d\ge2$ spacetime dimensions.</li>
 </li>
 </ul>
 <hr />
-<h4 id="etas_from_pts_ys_ms">etas_from_pts_ys_ms</h4>
+<h3 id="etas_from_pts_ys_ms">etas_from_pts_ys_ms</h3>
 <pre><code class="python">energyflow.etas_from_pts_ys_ms(pts, ys, ms)
 </code></pre>
 
@@ -563,7 +508,7 @@ All input arrays should have the same shape.</p>
 </li>
 </ul>
 <hr />
-<h4 id="ys_from_pts_etas_ms">ys_from_pts_etas_ms</h4>
+<h3 id="ys_from_pts_etas_ms">ys_from_pts_etas_ms</h3>
 <pre><code class="python">energyflow.ys_from_pts_etas_ms(pts, etas, ms)
 </code></pre>
 
@@ -592,7 +537,7 @@ All input arrays should have the same shape.</p>
 </li>
 </ul>
 <hr />
-<h4 id="p4s_from_ptyphims">p4s_from_ptyphims</h4>
+<h3 id="p4s_from_ptyphims">p4s_from_ptyphims</h3>
 <pre><code class="python">energyflow.p4s_from_ptyphims(ptyphims)
 </code></pre>
 
@@ -614,7 +559,7 @@ The mass is optional and if left out will be taken to be zero.</li>
 </li>
 </ul>
 <hr />
-<h4 id="p4s_from_ptyphipids">p4s_from_ptyphipids</h4>
+<h3 id="p4s_from_ptyphipids">p4s_from_ptyphipids</h3>
 <pre><code class="python">energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
 </code></pre>
 
@@ -642,7 +587,7 @@ where the mass is replaced by the PDG ID of the particle.</li>
 </li>
 </ul>
 <hr />
-<h4 id="sum_ptyphims">sum_ptyphims</h4>
+<h3 id="sum_ptyphims">sum_ptyphims</h3>
 <pre><code class="python">energyflow.sum_ptyphims(ptyphims, scheme='escheme')
 </code></pre>
 
@@ -675,7 +620,7 @@ used as the <code>phi_ref</code> when converting back to hadronic coordinates.</
 </li>
 </ul>
 <hr />
-<h4 id="sum_ptyphipids">sum_ptyphipids</h4>
+<h3 id="sum_ptyphipids">sum_ptyphipids</h3>
 <pre><code class="python">energyflow.sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False)
 </code></pre>
 
@@ -707,7 +652,7 @@ used as the <code>phi_ref</code> when converting back to hadronic coordinates.</
 </li>
 </ul>
 <hr />
-<h4 id="center_ptyphims">center_ptyphims</h4>
+<h3 id="center_ptyphims">center_ptyphims</h3>
 <pre><code class="python">energyflow.center_ptyphims(ptyphims, axis=None, center='escheme', copy=True)
 </code></pre>
 
@@ -743,7 +688,7 @@ the origin.</li>
 </li>
 </ul>
 <hr />
-<h4 id="rotate_ptyphims">rotate_ptyphims</h4>
+<h3 id="rotate_ptyphims">rotate_ptyphims</h3>
 <pre><code class="python">energyflow.rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True)
 </code></pre>
 
@@ -785,7 +730,7 @@ the origin.</li>
 </li>
 </ul>
 <hr />
-<h4 id="reflect_ptyphims">reflect_ptyphims</h4>
+<h3 id="reflect_ptyphims">reflect_ptyphims</h3>
 <pre><code class="python">energyflow.reflect_ptyphims(ptyphims, which='both', center=None, copy=True)
 </code></pre>
 
@@ -814,7 +759,7 @@ reflections.</li>
 </li>
 </ul>
 <hr />
-<h4 id="pids2ms">pids2ms</h4>
+<h3 id="pids2ms">pids2ms</h3>
 <pre><code class="python">energyflow.pids2ms(pids, error_on_unknown=False)
 </code></pre>
 
@@ -841,7 +786,7 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </li>
 </ul>
 <hr />
-<h4 id="pids2chrgs">pids2chrgs</h4>
+<h3 id="pids2chrgs">pids2chrgs</h3>
 <pre><code class="python">energyflow.pids2chrgs(pids, error_on_unknown=False)
 </code></pre>
 
@@ -869,7 +814,7 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </li>
 </ul>
 <hr />
-<h4 id="ischrgd">ischrgd</h4>
+<h3 id="ischrgd">ischrgd</h3>
 <pre><code class="python">energyflow.ischrgd(pids, ignored_pids=None)
 </code></pre>
 
@@ -895,7 +840,7 @@ charged, for instance to avoid counting quarks as charged particles.</li>
 </li>
 </ul>
 <hr />
-<h4 id="phi_fix">phi_fix</h4>
+<h3 id="phi_fix">phi_fix</h3>
 <pre><code class="python">energyflow.phi_fix(phis, phi_ref, copy=True)
 </code></pre>
 
@@ -926,7 +871,7 @@ modified in place.</li>
 </li>
 </ul>
 <hr />
-<h4 id="flat_metric">flat_metric</h4>
+<h3 id="flat_metric">flat_metric</h3>
 <pre><code class="python">energyflow.flat_metric(dim)
 </code></pre>
 
@@ -949,13 +894,13 @@ universe).</li>
 </li>
 </ul>
 <hr />
-<h3 id="random-events">Random Events</h3>
+<h2 id="random-events">Random Events</h2>
 <p>Functions to generate random sets of four-vectors. Includes an implementation
 of the <a href="https://doi.org/10.1016/0010-4655(86)90119-0">RAMBO</a> algorithm for
 sampling uniform M-body massless phase space. Also includes other functions for
 various random, non-center of momentum, and non-uniform sampling.</p>
 <hr />
-<h4 id="gen_random_events">gen_random_events</h4>
+<h3 id="gen_random_events">gen_random_events</h3>
 <pre><code class="python">energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0.0)
 </code></pre>
 
@@ -993,7 +938,7 @@ dropped.</li>
 </li>
 </ul>
 <hr />
-<h4 id="gen_random_events_mcom">gen_random_events_mcom</h4>
+<h3 id="gen_random_events_mcom">gen_random_events_mcom</h3>
 <pre><code class="python">energyflow.gen_random_events_mcom(nevents, nparticles, dim=4)
 </code></pre>
 
@@ -1024,7 +969,7 @@ are specified as <code>[E,p1,p2,...]</code>.</li>
 </li>
 </ul>
 <hr />
-<h4 id="gen_massless_phase_space">gen_massless_phase_space</h4>
+<h3 id="gen_massless_phase_space">gen_massless_phase_space</h3>
 <pre><code class="python">energyflow.gen_massless_phase_space(nevents, nparticles, energy=1.0)
 </code></pre>
 
@@ -1056,12 +1001,12 @@ dropped.</li>
 </li>
 </ul>
 <hr />
-<h3 id="data-tools">Data Tools</h3>
+<h2 id="data-tools">Data Tools</h2>
 <p>Functions for dealing with datasets. These are not importable from
 the top level <code>energyflow</code> module, but must instead be imported 
 from <code>energyflow.utils</code>.</p>
 <hr />
-<h4 id="get_examples">get_examples</h4>
+<h3 id="get_examples">get_examples</h3>
 <pre><code class="python">energyflow.utils.get_examples(path='~/.energyflow', which='all', overwrite=False)
 </code></pre>
 
@@ -1085,7 +1030,7 @@ case all the available examples are downloaded.</li>
 </li>
 </ul>
 <hr />
-<h4 id="data_split">data_split</h4>
+<h3 id="data_split">data_split</h3>
 <pre><code class="python">energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 </code></pre>
 
@@ -1136,7 +1081,7 @@ non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <cod
 </li>
 </ul>
 <hr />
-<h4 id="to_categorical">to_categorical</h4>
+<h3 id="to_categorical">to_categorical</h3>
 <pre><code class="python">energyflow.utils.to_categorical(labels, num_classes=None)
 </code></pre>
 
@@ -1161,7 +1106,7 @@ maximum label plus one.</li>
 </li>
 </ul>
 <hr />
-<h4 id="remap_pids">remap_pids</h4>
+<h3 id="remap_pids">remap_pids</h3>
 <pre><code class="python">energyflow.utils.remap_pids(events, pid_i=3)
 </code></pre>
 
@@ -1180,12 +1125,12 @@ axis of <code>events</code>.</li>
 </li>
 </ul>
 <hr />
-<h3 id="image-tools">Image Tools</h3>
+<h2 id="image-tools">Image Tools</h2>
 <p>Functions for dealing with image representations of events. These are 
 not importable from the top level <code>energyflow</code> module, but must 
 instead be imported from <code>energyflow.utils</code>.</p>
 <hr />
-<h4 id="pixelate">pixelate</h4>
+<h3 id="pixelate">pixelate</h3>
 <pre><code class="python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
 </code></pre>
 
@@ -1233,7 +1178,7 @@ of the channels changed in version 1.0.3.</li>
 </li>
 </ul>
 <hr />
-<h4 id="standardize">standardize</h4>
+<h3 id="standardize">standardize</h3>
 <pre><code class="python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
 </code></pre>
 
@@ -1270,7 +1215,7 @@ that this be kept consistent for images used with a given model.</li>
 </li>
 </ul>
 <hr />
-<h4 id="zero_center">zero_center</h4>
+<h3 id="zero_center">zero_center</h3>
 <pre><code class="python">energyflow.utils.zero_center(args, kwargs)
 </code></pre>
 
@@ -1301,7 +1246,7 @@ to zero center. <code>None</code> is interpretted to mean every channel.</li>
 </li>
 </ul>
 <hr />
-<h3 id="fastjet-tools">FastJet Tools</h3>
+<h2 id="fastjet-tools">FastJet Tools</h2>
 <p>The <a href="http://fastjet.fr/">FastJet package</a> provides, among other things, fast
 jet clustering utilities. It is written in C++ and includes a Python interface
 that is easily installed at compile time by passing the <code>--enable-pyext</code> flag
@@ -1312,7 +1257,7 @@ to be installed, but the following utilities are available assuming that
 <code>import fastjet</code> succeeds in your Python environment (if not, no warnings or
 errors will be issued but this module will not be usable).</p>
 <hr />
-<h4 id="pjs_from_ptyphims">pjs_from_ptyphims</h4>
+<h3 id="pjs_from_ptyphims">pjs_from_ptyphims</h3>
 <pre><code class="python">energyflow.pjs_from_ptyphims(ptyphims)
 </code></pre>
 
@@ -1334,7 +1279,7 @@ array.</li>
 </li>
 </ul>
 <hr />
-<h4 id="ptyphims_from_pjs">ptyphims_from_pjs</h4>
+<h3 id="ptyphims_from_pjs">ptyphims_from_pjs</h3>
 <pre><code class="python">energyflow.ptyphims_from_pjs(pjs, mass=True)
 </code></pre>
 
@@ -1359,7 +1304,7 @@ array.</li>
 </li>
 </ul>
 <hr />
-<h4 id="cluster">cluster</h4>
+<h3 id="cluster">cluster</h3>
 <pre><code class="python">energyflow.cluster(pjs, algorithm='ca', R=1000.0)
 </code></pre>
 
@@ -1392,7 +1337,7 @@ because they are all used by the FastJet Python package.</li>
 </li>
 </ul>
 <hr />
-<h4 id="softdrop">softdrop</h4>
+<h3 id="softdrop">softdrop</h3>
 <pre><code class="python">energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
 
@@ -1463,7 +1408,7 @@ obs/#zg_from_pj">$z_g$</a>.</li>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -1473,7 +1418,7 @@ obs/#zg_from_pj">$z_g$</a>.</li>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -1486,9 +1431,14 @@ obs/#zg_from_pj">$z_g$</a>.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>

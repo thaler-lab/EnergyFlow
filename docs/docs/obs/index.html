@@ -7,14 +7,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
+  <link rel="canonical" href="https://energyflow.network/docs/obs/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
   <title>Observables - EnergyFlow</title>
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-  <link rel="stylesheet" href="../../css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../css/theme_extra.css" type="text/css" />
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
-  <link href="../../css/eftheme.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../../css/eftheme.css" rel="stylesheet" />
   
   <script>
     // Current page data
@@ -25,7 +26,7 @@
   
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script>hljs.initHighlightingOnLoad();</script> 
   
   <script>
@@ -46,12 +47,13 @@
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-        <a href="../..">
-            <div class="eflogo">
-                <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
-            </div>
-        </a>
+  <a href="../..">
+    <div class="eflogo">
+      <img src="../../img/eflogowhite.png"  class="eflogo-img"> EnergyFlow
+    </div>
+  </a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
@@ -60,136 +62,98 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-	<ul class="current">
-	  
-          
-            <li class="toctree-l1">
-		
-    <a class="" href="../..">Home</a>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Getting Started</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../../installation/">Installation</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../demos/">Demos</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../examples/">Examples</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../faqs/">FAQs</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../releases/">Release Notes</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../../news/">News</a>
-                </li>
-    </ul>
-	    </li>
-          
-            <li class="toctree-l1">
-		
-    <span class="caption-text">Documentation</span>
-    <ul class="subnav">
-                <li class="">
-                    
-    <a class="" href="../archs/">Architectures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../datasets/">Datasets</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../emd/">EMD</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efm/">Energy Flow Moments</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../efp/">Energy Flow Polynomials</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../measures/">Measures</a>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../gen/">Multigraph Generation</a>
-                </li>
-                <li class=" current">
-                    
-    <a class="current" href="./">Observables</a>
-    <ul class="subnav">
-            
-    <li class="toctree-l3"><a href="#d2">D2</a></li>
-    
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Getting Started</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../demos/">Demos</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../examples/">Examples</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../faqs/">FAQs</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../releases/">Release Notes</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../../news/">News</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Documentation</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../archs/">Architectures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../datasets/">Datasets</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../emd/">EMD</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efm/">Energy Flow Moments</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../efp/">Energy Flow Polynomials</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../measures/">Measures</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../gen/">Multigraph Generation</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Observables</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#d2">D2</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#compute">compute</a></li>
-        
-            <li><a class="toctree-l4" href="#batch_compute">batch_compute</a></li>
-        
-        </ul>
-    
-
-    <li class="toctree-l3"><a href="#c2">C2</a></li>
-    
+    <li class="toctree-l3"><a class="reference internal" href="#compute">compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch_compute">batch_compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">properties</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#compute_1">compute</a></li>
-        
-            <li><a class="toctree-l4" href="#batch_compute_1">batch_compute</a></li>
-        
+    <li class="toctree-l4"><a class="reference internal" href="#efpset">efpset</a>
+    </li>
         </ul>
-    
-
-    <li class="toctree-l3"><a href="#c3">C3</a></li>
-    
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#c2">C2</a>
         <ul>
-        
-            <li><a class="toctree-l4" href="#compute_2">compute</a></li>
-        
-            <li><a class="toctree-l4" href="#batch_compute_2">batch_compute</a></li>
-        
+    <li class="toctree-l3"><a class="reference internal" href="#compute_1">compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch_compute_1">batch_compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_1">properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#efpset_1">efpset</a>
+    </li>
         </ul>
-    
-
-    <li class="toctree-l3"><a href="#image_activity">image_activity</a></li>
-    
-
-    <li class="toctree-l3"><a href="#zg">zg</a></li>
-    
-
-    <li class="toctree-l3"><a href="#zg_from_pj">zg_from_pj</a></li>
-    
-
-    </ul>
-                </li>
-                <li class="">
-                    
-    <a class="" href="../utils/">Utils</a>
-                </li>
-    </ul>
-	    </li>
-          
+    </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#c3">C3</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#compute_2">compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch_compute_2">batch_compute</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_2">properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#efpset_2">efpset</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#image_activity">image_activity</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#zg">zg</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#zg_from_pj">zg_from_pj</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../utils/">Utils</a>
+                    </li>
+                </ul>
       </div>
-      &nbsp;
+    </div>
     </nav>
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
@@ -221,17 +185,19 @@
       
     </li>
   </ul>
+  
   <hr/>
 </div>
           <div role="main">
             <div class="section">
               
-                <p>Implementations of come collider physics observables. Some observables
+                <h1 id="observables">Observables</h1>
+<p>Implementations of come collider physics observables. Some observables
 require the <a href="http://fastjet.fr/">FastJet</a> Python interface to be importable;
 if it's not, no warnings or errors will be issued, the observables will simply
 not be included in this module.</p>
 <hr />
-<h3 id="d2">D2</h3>
+<h2 id="d2">D2</h2>
 <p>Ratio of EFPs (specifically, energy correlation functions) designed to
 tag two prong signals. In graphs, the formula is:</p>
 <p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" 
@@ -285,7 +251,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h4 id="compute">compute</h4>
+<h3 id="compute">compute</h3>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
@@ -323,7 +289,7 @@ used.</li>
 </ul>
 </li>
 </ul>
-<h4 id="batch_compute">batch_compute</h4>
+<h3 id="batch_compute">batch_compute</h3>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -348,13 +314,14 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
-<h5 id="efpset">efpset</h5>
+<h3 id="properties">properties</h3>
+<h4 id="efpset">efpset</h4>
 <pre><code class="python">efpset
 </code></pre>
 
 <p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
-<h3 id="c2">C2</h3>
+<h2 id="c2">C2</h2>
 <p>Ratio of Energy Correlation Functions designed to tag two prong signals.
 In graphs, the formula is:</p>
 <p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" 
@@ -408,7 +375,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h4 id="compute_1">compute</h4>
+<h3 id="compute_1">compute</h3>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
@@ -446,7 +413,7 @@ used.</li>
 </ul>
 </li>
 </ul>
-<h4 id="batch_compute_1">batch_compute</h4>
+<h3 id="batch_compute_1">batch_compute</h3>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -471,13 +438,14 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
-<h5 id="efpset_1">efpset</h5>
+<h3 id="properties_1">properties</h3>
+<h4 id="efpset_1">efpset</h4>
 <pre><code class="python">efpset
 </code></pre>
 
 <p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
-<h3 id="c3">C3</h3>
+<h2 id="c3">C3</h2>
 <p>Ratio of Energy Correlation Functions designed to tag three prong
 signals. In graphs, the formula is:</p>
 <p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" 
@@ -526,7 +494,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h4 id="compute_2">compute</h4>
+<h3 id="compute_2">compute</h3>
 <pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
 
@@ -564,7 +532,7 @@ used.</li>
 </ul>
 </li>
 </ul>
-<h4 id="batch_compute_2">batch_compute</h4>
+<h3 id="batch_compute_2">batch_compute</h3>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -589,13 +557,14 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
-<h5 id="efpset_2">efpset</h5>
+<h3 id="properties_2">properties</h3>
+<h4 id="efpset_2">efpset</h4>
 <pre><code class="python">efpset
 </code></pre>
 
 <p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
-<h3 id="image_activity">image_activity</h3>
+<h2 id="image_activity">image_activity</h2>
 <pre><code class="python">energyflow.image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None)
 </code></pre>
 
@@ -643,7 +612,7 @@ the center of the image will be at <code>(0,0)</code>.</li>
 </li>
 </ul>
 <hr />
-<h3 id="zg">zg</h3>
+<h2 id="zg">zg</h2>
 <pre><code class="python">energyflow.zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca')
 </code></pre>
 
@@ -688,7 +657,7 @@ the argument of the same name of <a href="/docs/utils/#cluster"><code>cluster</c
 </li>
 </ul>
 <hr />
-<h3 id="zg_from_pj">zg_from_pj</h3>
+<h2 id="zg_from_pj">zg_from_pj</h2>
 <pre><code class="python">energyflow.zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
 
@@ -751,7 +720,7 @@ and <code>1</code>.</li>
     
   </div>
 
-  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
       
         </div>
@@ -761,7 +730,7 @@ and <code>1</code>.</li>
 
   </div>
 
-  <div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
           <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
@@ -776,9 +745,14 @@ and <code>1</code>.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
       <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
 </body>
 </html>
