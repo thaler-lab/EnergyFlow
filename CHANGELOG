@@ -1,4 +1,8 @@
-### 1.1.x
+## 1.1.x
+
+**1.1.1**
+
+- Try to set multiprocessing start method to 'fork' in order for EMD multicore functionality to work, warn if the context has already been set otherwise.
 
 **1.1.0**
 
@@ -8,7 +12,8 @@
 - Added Python 3.8 to Travis CI testing.
 - Deployment to PyPI via Travis CI.
 
-### 1.0.x
+
+## 1.0.x
 
 **1.0.3**
 
@@ -37,7 +42,8 @@
 - Implemented the `D2`, `C2`, and `C3` observables using EFPs.
 - Two new demos, [EFM Demo](/demos/#efm-demo) and [Counting Leafless Multigaphs with Nauty](/demos/#counting-leafless-multigaphs-with-nauty).
 
-### 0.13.x
+
+## 0.13.x
 
 **0.13.2**
 
@@ -64,7 +70,7 @@ enabling the large arrays to be freed and only the selected jets to remain in me
 - EMD module now imported when importing toplevel energyflow.
 
 
-### 0.12.x
+## 0.12.x
 
 **0.12.3**
 
@@ -107,7 +113,7 @@ sets. Thanks to Anders Andreassen for pointing this out!
 - Added EMD Demo notebook
 
 
-### 0.11.x
+## 0.11.x
 
 **0.11.2**
 
@@ -126,7 +132,7 @@ the [Python Optimal Transport](https://pot.readthedocs.io) library and [SciPy](h
 - Included binder support for the jupyter notebook demos. Thanks to Matthew Feickert for contributing this feature!
 
 
-### 0.10.x
+## 0.10.x
 
 **0.10.5**
 
@@ -154,6 +160,6 @@ the [Python Optimal Transport](https://pot.readthedocs.io) library and [SciPy](h
 - Added `archs` module containing EFN, PFN, DNN, CNN, and Linear models.
 
 
-### <0.9.x
+## <0.9.x
 
 - Rapid development of EFP code.

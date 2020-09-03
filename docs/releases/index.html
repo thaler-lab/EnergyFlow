@@ -159,7 +159,11 @@
               
                 <h1 id="release-notes">Release Notes</h1>
 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
-<h3 id="11x">1.1.x</h3>
+<h2 id="11x">1.1.x</h2>
+<p><strong>1.1.1</strong></p>
+<ul>
+<li>Try to set multiprocessing start method to 'fork' in order for EMD multicore functionality to work, warn if the context has already been set otherwise.</li>
+</ul>
 <p><strong>1.1.0</strong></p>
 <ul>
 <li>Changed default EFP behavior when <code>kappa≠1</code> and added option to revert to original behavior if desired. See the <a href="/docs/measures">EFP Measures</a> page for more details.</li>
@@ -168,7 +172,7 @@
 <li>Added Python 3.8 to Travis CI testing.</li>
 <li>Deployment to PyPI via Travis CI.</li>
 </ul>
-<h3 id="10x">1.0.x</h3>
+<h2 id="10x">1.0.x</h2>
 <p><strong>1.0.3</strong></p>
 <ul>
 <li>Increased the speed of <code>pjs_from_ptyphims</code>.</li>
@@ -196,7 +200,7 @@
 <li>Implemented the <code>D2</code>, <code>C2</code>, and <code>C3</code> observables using EFPs.</li>
 <li>Two new demos, <a href="/demos/#efm-demo">EFM Demo</a> and <a href="/demos/#counting-leafless-multigaphs-with-nauty">Counting Leafless Multigaphs with Nauty</a>.</li>
 </ul>
-<h3 id="013x">0.13.x</h3>
+<h2 id="013x">0.13.x</h2>
 <p><strong>0.13.2</strong></p>
 <ul>
 <li>Keras 2.2.5 fixes a bug in their <code>batch_dot</code> function that is used by their <code>Dot</code> layer which is used by the <code>EFN</code> and <code>PFN</code> classes. This necessitates adjusting our code to account for the new behavior.</li>
@@ -221,7 +225,7 @@ enabling the large arrays to be freed and only the selected jets to remain in me
 <li>Added observables submodule which currently includes image_activity and zg.</li>
 <li>EMD module now imported when importing toplevel energyflow.</li>
 </ul>
-<h3 id="012x">0.12.x</h3>
+<h2 id="012x">0.12.x</h2>
 <p><strong>0.12.3</strong></p>
 <ul>
 <li>Set allow_pickle to True explicitly in Generator (recently changed default in NumPy).</li>
@@ -262,7 +266,7 @@ sets. Thanks to Anders Andreassen for pointing this out!</li>
 <li>Added support for passing arbitrary compilation options to Keras models.</li>
 <li>Added EMD Demo notebook</li>
 </ul>
-<h3 id="011x">0.11.x</h3>
+<h2 id="011x">0.11.x</h2>
 <p><strong>0.11.2</strong></p>
 <ul>
 <li>Added advanced activations support for neural network architectures. Thanks to Kevin Bauer for this suggestion!</li>
@@ -279,7 +283,7 @@ for pointing this out!</li>
 the <a href="https://pot.readthedocs.io">Python Optimal Transport</a> library and <a href="http://scipy.github.io/devdocs/">SciPy</a>.</li>
 <li>Included binder support for the jupyter notebook demos. Thanks to Matthew Feickert for contributing this feature!</li>
 </ul>
-<h3 id="010x">0.10.x</h3>
+<h2 id="010x">0.10.x</h2>
 <p><strong>0.10.5</strong></p>
 <ul>
 <li>Minor improvement and fixes. Thanks to Preksha Naik for pointing out a typo!</li>
@@ -305,7 +309,7 @@ the <a href="https://pot.readthedocs.io">Python Optimal Transport</a> library an
 <ul>
 <li>Added <code>archs</code> module containing EFN, PFN, DNN, CNN, and Linear models.</li>
 </ul>
-<h3 id="09x">&lt;0.9.x</h3>
+<h2 id="09x">&lt;0.9.x</h2>
 <ul>
 <li>Rapid development of EFP code.</li>
 </ul>
