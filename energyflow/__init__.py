@@ -10,9 +10,10 @@ if sys.version_info[:2] >= (3, 4):
         try:
             multiprocessing.set_start_method('fork')
         except:
-            method = ''
+            pass
+    method = multiprocessing.get_start_method()
     if method != 'fork':
-        warnings.warn('multiprocessing start method is {},'.format(multiprocessing.get_start_method())
+        warnings.warn('multiprocessing start method is {},'.format(method)
                       + ' EnergyFlow multicore functionality may not work properly')
     del multiprocessing, warnings
 del sys
@@ -46,4 +47,4 @@ __all__ = (datasets.__all__ +
            obs.__all__ +
            utils.__all__)
 
-__version__ = '1.1.1'
+__version__ = '1.1.2'

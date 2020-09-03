@@ -1,5 +1,9 @@
 ## 1.1.x
 
+**1.1.2**
+
+- Remove extraneous warning from setting multiprocessing start method on OSX.
+
 **1.1.1**
 
 - Try to set multiprocessing start method to 'fork' in order for EMD multicore functionality to work, warn if the context has already been set otherwise.
