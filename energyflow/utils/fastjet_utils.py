@@ -16,6 +16,7 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 
 from energyflow.utils.generic_utils import import_fastjet
+from energyflow.utils.particle_utils import phi_fix
 
 fj = import_fastjet()
 
@@ -41,22 +42,18 @@ if fj:
             array.
         """
 
-        pjs = [fj.PseudoJet() for i in range(len(ptyphims))]
-        for pj,ptyphim in zip(pjs, ptyphims):
-            if len(ptyphim) >= 4:
-                pj.reset_PtYPhiM(ptyphim[0], ptyphim[1], ptyphim[2], ptyphim[3])
-            else:
-                pj.reset_PtYPhiM(ptyphim[0], ptyphim[1], ptyphim[2])
+        return [fj.PtYPhiM(*ptyphim[:4]) for ptyphim in ptyphims]
 
-        return pjs
-
-    def ptyphims_from_pjs(pjs, mass=True):
+    def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
         """Extracts hadronic four-vectors from FastJet PseudoJets.
 
         **Arguments**
 
         - **pjs** : _list_ of _fastjet.PseudoJet_
             - An iterable of PseudoJets.
+        - **phi_ref** : _float_ or `None`
+            - The reference phi value to use for phi fixing. If `None`, then no
+            phi fixing is performed.
         - **mass** : _bool_
             - Whether or not to include the mass in the extracted four-vectors.
 
@@ -68,9 +65,14 @@ if fj:
         """
 
         if mass:
-            return np.asarray([[pj.pt(), pj.rap(), pj.phi(), pj.m()] for pj in pjs])
+            event = np.asarray([[pj.pt(), pj.rap(), pj.phi(), pj.m()] for pj in pjs])
         else:
-            return np.asarray([[pj.pt(), pj.rap(), pj.phi()] for pj in pjs])
+            event = np.asarray([[pj.pt(), pj.rap(), pj.phi()] for pj in pjs])
+
+        if phi_ref is not None:
+            phi_fix(event[:,2], phi_ref, copy=False)
+
+        return event
 
     def cluster(pjs, algorithm='ca', R=fj.JetDefinition.max_allowable_R):
         """Clusters a list of PseudoJets according to a specified jet

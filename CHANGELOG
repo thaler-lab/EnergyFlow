@@ -1,5 +1,9 @@
 ## 1.1.x
 
+- Added `phi_ref` option to `ptyphims_from_pjs`.
+- Simplified `pjs_from_ptyphims` to use `fastjet.PtYPhiM`.
+- Simplified multiprocessing usage to avoid setting global start context when trying to use fork.
+
 **1.1.2**
 
 - Remove extraneous warning from setting multiprocessing start method on OSX.

@@ -5,10 +5,11 @@ from functools import wraps
 import gzip
 from itertools import repeat
 import json
-from multiprocessing import Pool
+import multiprocessing
 import os
 import sys
 import time
+import warnings
 
 import numpy as np
 import six
@@ -88,16 +89,22 @@ def concat_specs(c_specs, d_specs):
     else:
         return c_specs
 
-# handle Pool not being a context manager in Python 2
+# handle Pool not being a context manager in Python < 3.4
 @contextlib.contextmanager
 def create_pool(*args, **kwargs):
-    if sys.version_info[0] == 2:
-        pool = Pool(*args, **kwargs)
+    if sys.version_info < (3, 4):
+        pool = multiprocessing.Pool(*args, **kwargs)
         yield pool
         pool.terminate()
     else:
-        with Pool(*args, **kwargs) as pool:
-            yield pool
+        if 'fork' not in multiprocessing.get_all_start_methods():
+            warnings.warn("'fork' is not available as a multiprocessing start method, "
+                          + "EnergyFlow multicore functionality may not work properly")
+            with multiprocessing.Pool(*args, **kwargs) as pool:
+                yield pool
+        else:
+            with multiprocessing.get_context('fork').Pool(*args, **kwargs) as pool:
+                yield pool
 
 # applies comprison comp of obj on val
 def explicit_comp(obj, comp, val):
