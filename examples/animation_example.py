@@ -25,7 +25,6 @@ plt.rcParams['figure.figsize'] = (4,4)
 
 import energyflow as ef
 from matplotlib import animation, rc
-from IPython.display import HTML
 
 # helper function to interpolate between the optimal transport of two events
 def merge(ev0, ev1, R=1, lamb=0.5):    
@@ -139,5 +138,6 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, frames=nframes, repeat=True)
 anim.save('energyflowanimation.mp4', fps=fps, dpi=200)
 
-# uncomment this if running in a jupyter notebook
+# uncomment these lines if running in a jupyter notebook
+# from IPython.display import HTML
 # HTML(anim.to_html5_video())

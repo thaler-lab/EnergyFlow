@@ -160,6 +160,11 @@
                 <h1 id="release-notes">Release Notes</h1>
 <p>Notes regarding the released versions of EnergyFlow will be published here.</p>
 <h2 id="11x">1.1.x</h2>
+<ul>
+<li>Added <code>phi_ref</code> option to <code>ptyphims_from_pjs</code>.</li>
+<li>Simplified <code>pjs_from_ptyphims</code> to use <code>fastjet.PtYPhiM</code>.</li>
+<li>Simplified multiprocessing usage to avoid setting global start context when trying to use fork.</li>
+</ul>
 <p><strong>1.1.2</strong></p>
 <ul>
 <li>Remove extraneous warning from setting multiprocessing start method on OSX.</li>

@@ -20,19 +20,8 @@ from energyflow.archs import LinearClassifier
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, standardize, to_categorical
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 
@@ -92,27 +81,24 @@ for d in range(1, dmax+1):
         print('EFPs d <= {} AUC:'.format(d), auc)
         print()
 
-# make ROC curve plot if we have matplotlib
-if plt:
+# some nicer plot settings 
+plt.rcParams['figure.figsize'] = (4,4)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-    # some nicer plot settings 
-    plt.rcParams['figure.figsize'] = (4,4)
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['figure.autolayout'] = True
+# iterate over the ROC curves and plot them
+for i,d in enumerate(range(1, dmax+1)):
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                            label='LDA: d <= {} EFPs'.format(d))
 
-    # iterate over the ROC curves and plot them
-    for i,d in enumerate(range(1, dmax+1)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
-                                                label='LDA: d <= {} EFPs'.format(d))
+# axes labels
+plt.xlabel('Quark Jet Efficiency')
+plt.ylabel('Gluon Jet Rejection')
 
-    # axes labels
-    plt.xlabel('Quark Jet Efficiency')
-    plt.ylabel('Gluon Jet Rejection')
+# axes limits
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 
-    # axes limits
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-
-    # make legend and show plot
-    plt.legend(loc='lower left', frameon=False)
-    plt.show()
+# make legend and show plot
+plt.legend(loc='lower left', frameon=False)
+plt.show()

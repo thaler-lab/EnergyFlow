@@ -161,13 +161,13 @@
 <pre><code class="python">python3 -c &quot;import energyflow; energyflow.utils.get_examples()&quot;
 </code></pre>
 
-<p>See the <a href="../docs/utils/#get_examples"><code>get_examples</code></a> function for more detailed information.</p>
+<p>See the <a href="../docs/utils/#get_examples"><code>get_examples</code></a> function for more detailed information. The examples require <a href="https://matplotlib.org/"><code>matplotlib</code></a> and <a href="https://scikit-learn.org/stable/"><code>scikit-learn</code></a> to be installed.</p>
 <h3 id="efn_examplepy">efn_example.py</h3>
-<p>An example involving Energy Flow Networks (EFNs), which were introduced
-in <a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. The <a href="../docs/
-archs/#efn"><code>EFN</code></a> class is used to construct the network architecture. The output
-of the example is a plot of the ROC curves obtained by the EFN as well as
-the jet mass and constituent multiplicity observables.</p>
+<p>An example using Energy Flow Networks (EFNs), which were introduced in
+<a href="https://arxiv.org/abs/1810.05165">1810.05165</a>, to classify quark and gluon
+jets. The <a href="../docs/archs/#efn"><code>EFN</code></a> class is used to construct the network
+architecture. The output of the example is a plot of the ROC curves obtained
+by the EFN as well as the jet mass and constituent multiplicity observables.</p>
 <pre><code class="python"># standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -180,19 +180,8 @@ from energyflow.archs import EFN
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, to_categorical
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ##################################
 # the commented values correspond to those in 1810.05165
@@ -253,72 +242,68 @@ efn.fit([z_train, p_train], Y_train,
 # get predictions on test data
 preds = efn.predict([z_test, p_test], batch_size=1000)
 
-# get ROC curve if we have sklearn
-if roc_curve:
-    efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+# get ROC curve
+efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
 
-    # get area under the ROC curve
-    auc = roc_auc_score(Y_test[:,1], preds[:,1])
-    print()
-    print('EFN AUC:', auc)
-    print()
+# get area under the ROC curve
+auc = roc_auc_score(Y_test[:,1], preds[:,1])
+print()
+print('EFN AUC:', auc)
+print()
 
-    # make ROC curve and filter plot if we have matplotlib
-    if plt:
+# some nicer plot settings 
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-        # some nicer plot settings 
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
+fig, axes = plt.subplots(1, 2, figsize=(8,4))
 
-        fig, axes = plt.subplots(1, 2, figsize=(8,4))
+######################### ROC Curve Plot #########################
 
-        ######################### ROC Curve Plot #########################
+# get multiplicity and mass for comparison
+masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
+mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
+mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
+mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-        # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
-        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
-        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
+# plot the ROC curves
+axes[0].plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
+axes[0].plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+axes[0].plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
-        # plot the ROC curves
-        axes[0].plot(efn_tp, 1-efn_fp, '-', color='black', label='EFN')
-        axes[0].plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        axes[0].plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+# axes labels
+axes[0].set_xlabel('Quark Jet Efficiency')
+axes[0].set_ylabel('Gluon Jet Rejection')
 
-        # axes labels
-        axes[0].set_xlabel('Quark Jet Efficiency')
-        axes[0].set_ylabel('Gluon Jet Rejection')
+# axes limits
+axes[0].set_xlim(0, 1)
+axes[0].set_ylim(0, 1)
 
-        # axes limits
-        axes[0].set_xlim(0, 1)
-        axes[0].set_ylim(0, 1)
+# make legend and show plot
+axes[0].legend(loc='lower left', frameon=False)
 
-        # make legend and show plot
-        axes[0].legend(loc='lower left', frameon=False)
+######################### Filter Plot #########################
 
-        ######################### Filter Plot #########################
+# plot settings
+R, n = 0.4, 100
+colors = ['Reds', 'Oranges', 'Greens', 'Blues', 'Purples', 'Greys']
+grads = np.linspace(0.45, 0.55, 4)
 
-        # plot settings
-        R, n = 0.4, 100
-        colors = ['Reds', 'Oranges', 'Greens', 'Blues', 'Purples', 'Greys']
-        grads = np.linspace(0.45, 0.55, 4)
+# evaluate filters
+X, Y, Z = efn.eval_filters(R, n=n)
 
-        # evaluate filters
-        X, Y, Z = efn.eval_filters(R, n=n)
+# plot filters
+for i,z in enumerate(Z):
+    axes[1].contourf(X, Y, z/np.max(z), grads, cmap=colors[i%len(colors)])
 
-        # plot filters
-        for i,z in enumerate(Z):
-            axes[1].contourf(X, Y, z/np.max(z), grads, cmap=colors[i%len(colors)])
+axes[1].set_xticks(np.linspace(-R, R, 5))
+axes[1].set_yticks(np.linspace(-R, R, 5))
+axes[1].set_xticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
+axes[1].set_yticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
+axes[1].set_xlabel('Translated Rapidity y')
+axes[1].set_ylabel('Translated Azimuthal Angle phi')
+axes[1].set_title('Energy Flow Network Latent Space', fontdict={'fontsize': 10})
 
-        axes[1].set_xticks(np.linspace(-R, R, 5))
-        axes[1].set_yticks(np.linspace(-R, R, 5))
-        axes[1].set_xticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
-        axes[1].set_yticklabels(['-R', '-R/2', '0', 'R/2', 'R'])
-        axes[1].set_xlabel('Translated Rapidity y')
-        axes[1].set_ylabel('Translated Azimuthal Angle phi')
-        axes[1].set_title('Energy Flow Network Latent Space', fontdict={'fontsize': 10})
-
-        plt.show()
+plt.show()
 
 </code></pre>
 
@@ -341,19 +326,8 @@ from energyflow.archs import PFN
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, remap_pids, to_categorical
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 # the commented values correspond to those in 1810.05165
@@ -417,46 +391,42 @@ pfn.fit(X_train, Y_train,
 # get predictions on test data
 preds = pfn.predict(X_test, batch_size=1000)
 
-# get ROC curve if we have sklearn
-if roc_curve:
-    pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+# get ROC curve
+pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
 
-    # get area under the ROC curve
-    auc = roc_auc_score(Y_test[:,1], preds[:,1])
-    print()
-    print('PFN AUC:', auc)
-    print()
+# get area under the ROC curve
+auc = roc_auc_score(Y_test[:,1], preds[:,1])
+print()
+print('PFN AUC:', auc)
+print()
 
-    # make ROC curve plot if we have matplotlib
-    if plt:
+# get multiplicity and mass for comparison
+masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
+mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
+mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
+mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-        # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
-        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
-        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
+# some nicer plot settings 
+plt.rcParams['figure.figsize'] = (4,4)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-        # some nicer plot settings 
-        plt.rcParams['figure.figsize'] = (4,4)
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
+# plot the ROC curves
+plt.plot(pfn_tp, 1-pfn_fp, '-', color='black', label='PFN')
+plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
-        # plot the ROC curves
-        plt.plot(pfn_tp, 1-pfn_fp, '-', color='black', label='PFN')
-        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+# axes labels
+plt.xlabel('Quark Jet Efficiency')
+plt.ylabel('Gluon Jet Rejection')
 
-        # axes labels
-        plt.xlabel('Quark Jet Efficiency')
-        plt.ylabel('Gluon Jet Rejection')
+# axes limits
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 
-        # axes limits
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-
-        # make legend and show plot
-        plt.legend(loc='lower left', frameon=False)
-        plt.show()
+# make legend and show plot
+plt.legend(loc='lower left', frameon=False)
+plt.show()
 
 </code></pre>
 
@@ -489,19 +459,8 @@ from energyflow.archs import CNN
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, pixelate, standardize, to_categorical, zero_center
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 
@@ -575,46 +534,42 @@ cnn.fit(X_train, Y_train,
 # get predictions on test data
 preds = cnn.predict(X_test, batch_size=1000)
 
-# get ROC curve if we have sklearn
-if roc_curve:
-    cnn_fp, cnn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+# get ROC curve
+cnn_fp, cnn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
 
-    # get area under the ROC curve
-    auc = roc_auc_score(Y_test[:,1], preds[:,1])
-    print()
-    print('CNN AUC:', auc)
-    print()
+# get area under the ROC curve
+auc = roc_auc_score(Y_test[:,1], preds[:,1])
+print()
+print('CNN AUC:', auc)
+print()
 
-    # make ROC curve plot if we have matplotlib
-    if plt:
+# get multiplicity and mass for comparison
+masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
+mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
+mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
+mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-        # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
-        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
-        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
+# some nicer plot settings 
+plt.rcParams['figure.figsize'] = (4,4)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-        # some nicer plot settings 
-        plt.rcParams['figure.figsize'] = (4,4)
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
+# plot the ROC curves
+plt.plot(cnn_tp, 1-cnn_fp, '-', color='black', label='CNN')
+plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
-        # plot the ROC curves
-        plt.plot(cnn_tp, 1-cnn_fp, '-', color='black', label='CNN')
-        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+# axes labels
+plt.xlabel('Quark Jet Efficiency')
+plt.ylabel('Gluon Jet Rejection')
 
-        # axes labels
-        plt.xlabel('Quark Jet Efficiency')
-        plt.ylabel('Gluon Jet Rejection')
+# axes limits
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 
-        # axes limits
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-
-        # make legend and show plot
-        plt.legend(loc='lower left', frameon=False)
-        plt.show()
+# make legend and show plot
+plt.legend(loc='lower left', frameon=False)
+plt.show()
 
 </code></pre>
 
@@ -639,19 +594,8 @@ from energyflow.archs import DNN
 from energyflow.datasets import qg_nsubs
 from energyflow.utils import data_split, to_categorical
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 
@@ -714,30 +658,27 @@ for i,num_nsub in enumerate(num_nsubs):
         print('{} nsubs DNN AUC:'.format(num_nsub), auc)
         print()
 
-# make ROC curve plot if we have matplotlib
-if plt:
+# some nicer plot settings 
+plt.rcParams['figure.figsize'] = (4,4)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-    # some nicer plot settings 
-    plt.rcParams['figure.figsize'] = (4,4)
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['figure.autolayout'] = True
+# iterate over the ROC curves and plot them
+for i in range(len(rocs)):
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                            label='DNN: {} N-subs'.format(num_nsubs[i]))
 
-    # iterate over the ROC curves and plot them
-    for i in range(len(rocs)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
-                                                label='DNN: {} N-subs'.format(num_nsubs[i]))
+# axes labels
+plt.xlabel('Quark Jet Efficiency')
+plt.ylabel('Gluon Jet Rejection')
 
-    # axes labels
-    plt.xlabel('Quark Jet Efficiency')
-    plt.ylabel('Gluon Jet Rejection')
+# axes limits
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 
-    # axes limits
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-
-    # make legend and show plot
-    plt.legend(loc='lower left', frameon=False)
-    plt.show()
+# make legend and show plot
+plt.legend(loc='lower left', frameon=False)
+plt.show()
 
 </code></pre>
 
@@ -762,19 +703,8 @@ from energyflow.archs import LinearClassifier
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, standardize, to_categorical
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 
@@ -834,30 +764,27 @@ for d in range(1, dmax+1):
         print('EFPs d &lt;= {} AUC:'.format(d), auc)
         print()
 
-# make ROC curve plot if we have matplotlib
-if plt:
+# some nicer plot settings 
+plt.rcParams['figure.figsize'] = (4,4)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-    # some nicer plot settings 
-    plt.rcParams['figure.figsize'] = (4,4)
-    plt.rcParams['font.family'] = 'serif'
-    plt.rcParams['figure.autolayout'] = True
+# iterate over the ROC curves and plot them
+for i,d in enumerate(range(1, dmax+1)):
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                            label='LDA: d &lt;= {} EFPs'.format(d))
 
-    # iterate over the ROC curves and plot them
-    for i,d in enumerate(range(1, dmax+1)):
-        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
-                                                label='LDA: d &lt;= {} EFPs'.format(d))
+# axes labels
+plt.xlabel('Quark Jet Efficiency')
+plt.ylabel('Gluon Jet Rejection')
 
-    # axes labels
-    plt.xlabel('Quark Jet Efficiency')
-    plt.ylabel('Gluon Jet Rejection')
+# axes limits
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 
-    # axes limits
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-
-    # make legend and show plot
-    plt.legend(loc='lower left', frameon=False)
-    plt.show()
+# make legend and show plot
+plt.legend(loc='lower left', frameon=False)
+plt.show()
 
 </code></pre>
 
@@ -887,7 +814,6 @@ plt.rcParams['figure.figsize'] = (4,4)
 
 import energyflow as ef
 from matplotlib import animation, rc
-from IPython.display import HTML
 
 # helper function to interpolate between the optimal transport of two events
 def merge(ev0, ev1, R=1, lamb=0.5):    
@@ -1001,7 +927,8 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, frames=nframes, repeat=True)
 anim.save('energyflowanimation.mp4', fps=fps, dpi=200)
 
-# uncomment this if running in a jupyter notebook
+# uncomment these lines if running in a jupyter notebook
+# from IPython.display import HTML
 # HTML(anim.to_html5_video())
 
 </code></pre>

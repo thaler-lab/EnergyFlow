@@ -18,19 +18,8 @@ from energyflow.archs import PFN
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, remap_pids, to_categorical
 
-# attempt to import sklearn
-try:
-    from sklearn.metrics import roc_auc_score, roc_curve
-except:
-    print('please install scikit-learn in order to make ROC curves')
-    roc_curve = False
-
-# attempt to import matplotlib
-try:
-    import matplotlib.pyplot as plt
-except:
-    print('please install matploltib in order to make plots')
-    plt = False
+from sklearn.metrics import roc_auc_score, roc_curve
+import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 # the commented values correspond to those in 1810.05165
@@ -94,43 +83,39 @@ pfn.fit(X_train, Y_train,
 # get predictions on test data
 preds = pfn.predict(X_test, batch_size=1000)
 
-# get ROC curve if we have sklearn
-if roc_curve:
-    pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
+# get ROC curve
+pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
 
-    # get area under the ROC curve
-    auc = roc_auc_score(Y_test[:,1], preds[:,1])
-    print()
-    print('PFN AUC:', auc)
-    print()
+# get area under the ROC curve
+auc = roc_auc_score(Y_test[:,1], preds[:,1])
+print()
+print('PFN AUC:', auc)
+print()
 
-    # make ROC curve plot if we have matplotlib
-    if plt:
+# get multiplicity and mass for comparison
+masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
+mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
+mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
+mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-        # get multiplicity and mass for comparison
-        masses = np.asarray([ef.ms_from_p4s(ef.p4s_from_ptyphims(x).sum(axis=0)) for x in X])
-        mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
-        mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
-        mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
+# some nicer plot settings 
+plt.rcParams['figure.figsize'] = (4,4)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['figure.autolayout'] = True
 
-        # some nicer plot settings 
-        plt.rcParams['figure.figsize'] = (4,4)
-        plt.rcParams['font.family'] = 'serif'
-        plt.rcParams['figure.autolayout'] = True
+# plot the ROC curves
+plt.plot(pfn_tp, 1-pfn_fp, '-', color='black', label='PFN')
+plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
+plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
 
-        # plot the ROC curves
-        plt.plot(pfn_tp, 1-pfn_fp, '-', color='black', label='PFN')
-        plt.plot(mass_tp, 1-mass_fp, '-', color='blue', label='Jet Mass')
-        plt.plot(mult_tp, 1-mult_fp, '-', color='red', label='Multiplicity')
+# axes labels
+plt.xlabel('Quark Jet Efficiency')
+plt.ylabel('Gluon Jet Rejection')
 
-        # axes labels
-        plt.xlabel('Quark Jet Efficiency')
-        plt.ylabel('Gluon Jet Rejection')
+# axes limits
+plt.xlim(0, 1)
+plt.ylim(0, 1)
 
-        # axes limits
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-
-        # make legend and show plot
-        plt.legend(loc='lower left', frameon=False)
-        plt.show()
+# make legend and show plot
+plt.legend(loc='lower left', frameon=False)
+plt.show()

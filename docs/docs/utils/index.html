@@ -1280,7 +1280,7 @@ array.</li>
 </ul>
 <hr />
 <h3 id="ptyphims_from_pjs">ptyphims_from_pjs</h3>
-<pre><code class="python">energyflow.ptyphims_from_pjs(pjs, mass=True)
+<pre><code class="python">energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
 </code></pre>
 
 <p>Extracts hadronic four-vectors from FastJet PseudoJets.</p>
@@ -1288,6 +1288,11 @@ array.</li>
 <ul>
 <li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
 <li>An iterable of PseudoJets.</li>
+</ul>
+</li>
+<li><strong>phi_ref</strong> : <em>float</em> or <code>None</code><ul>
+<li>The reference phi value to use for phi fixing. If <code>None</code>, then no
+phi fixing is performed.</li>
 </ul>
 </li>
 <li><strong>mass</strong> : <em>bool</em><ul>
