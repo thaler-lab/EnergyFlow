@@ -706,102 +706,77 @@ def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
 
     return ptyphims
 
-# masses (in GeV) of particles by pdgid
+# charges and masses (in GeV) of particles by pdgid
 # obtained from the Pythia8 Particle Data page
 # http://home.thep.lu.se/~torbjorn/pythia82html/ParticleData.html
-# includes fundamental particles and most ground state uds mesons and baryons
-PARTICLE_MASSES = {
-    0:    0.,      # void
-    1:    0.33,    # down
-    2:    0.33,    # up
-    3:    0.50,    # strange
-    4:    1.50,    # charm
-    5:    4.80,    # bottom
-    6:    171.,    # top
-    11:   5.11e-4, # e-
-    12:   0.,      # nu_e
-    13:   0.10566, # mu-
-    14:   0.,      # nu_mu
-    15:   1.77682, # tau-
-    16:   0.,      # nu_tau
-    21:   0.,      # gluon
-    22:   0.,      # photon
-    23:   91.1876, # Z
-    24:   80.385,  # W+
-    25:   125.,    # Higgs
-    111:  0.13498, # pi0
-    113:  0.77549, # rho0
-    130:  0.49761, # K0-long
-    211:  0.13957, # pi+
-    213:  0.77549, # rho+
-    221:  0.54785, # eta
-    223:  0.78265, # omega
-    310:  0.49761, # K0-short
-    321:  0.49368, # K+
-    331:  0.95778, # eta'
-    333:  1.01946, # phi
-    2112: 0.93957, # neutron
-    2212: 0.93827, # proton
-    1114: 1.232,   # Delta-
-    2114: 1.232,   # Delta0
-    2214: 1.232,   # Delta+
-    2224: 1.232,   # Delta++
-    3122: 1.11568, # Lambda0
-    3222: 1.18937, # Sigma+
-    3212: 1.19264, # Sigma0
-    3112: 1.19745, # Sigma-
-    3312: 1.32171, # Xi-
-    3322: 1.31486, # Xi0
-    3334: 1.67245, # Omega-
+# includes fundamental particles and most ground state uds mesons and baryons 
+# as well as some things that have shown up at Pythia parton level
+PARTICLE_PROPERTIES = {
+#   PDGID     CHARGE MASS          NAME
+    0:       ( 0.,   0.,      ), # void
+    1:       (-1./3, 0.33,    ), # down
+    2:       ( 2./3, 0.33,    ), # up
+    3:       (-1./3, 0.50,    ), # strange
+    4:       ( 2./3, 1.50,    ), # charm
+    5:       (-1./3, 4.80,    ), # bottom
+    6:       ( 2./3, 171.,    ), # top
+    11:      (-1.,   5.11e-4, ), # e-
+    12:      ( 0.,   0.,      ), # nu_e
+    13:      (-1.,   0.10566, ), # mu-
+    14:      ( 0.,   0.,      ), # nu_mu
+    15:      (-1.,   1.77682, ), # tau-
+    16:      ( 0.,   0.,      ), # nu_tau
+    21:      ( 0.,   0.,      ), # gluon
+    22:      ( 0.,   0.,      ), # photon
+    23:      ( 0.,   91.1876, ), # Z
+    24:      ( 1.,   80.385,  ), # W+
+    25:      ( 0.,   125.,    ), # Higgs
+    111:     ( 0.,   0.13498, ), # pi0
+    113:     ( 0.,   0.77549, ), # rho0
+    130:     ( 0.,   0.49761, ), # K0-long
+    211:     ( 1.,   0.13957, ), # pi+
+    213:     ( 1.,   0.77549, ), # rho+
+    221:     ( 0.,   0.54785, ), # eta
+    223:     ( 0.,   0.78265, ), # omega
+    310:     ( 0.,   0.49761, ), # K0-short
+    321:     ( 1.,   0.49368, ), # K+
+    331:     ( 0.,   0.95778, ), # eta'
+    333:     ( 0.,   1.01946, ), # phi
+    445:     ( 0.,   3.55620, ), # chi_2c
+    555:     ( 0.,   9.91220, ), # chi_2b
+    2101:    ( 1./3, 0.57933, ), # ud_0
+    2112:    ( 0.,   0.93957, ), # neutron
+    2203:    ( 4./3, 0.77133, ), # uu_1
+    2212:    ( 1.,   0.93827, ), # proton
+    1114:    (-1.,   1.232,   ), # Delta-
+    2114:    ( 0.,   1.232,   ), # Delta0
+    2214:    ( 1.,   1.232,   ), # Delta+
+    2224:    ( 2.,   1.232,   ), # Delta++
+    3122:    ( 0.,   1.11568, ), # Lambda0
+    3222:    ( 1.,   1.18937, ), # Sigma+
+    3212:    ( 0.,   1.19264, ), # Sigma0
+    3112:    (-1.,   1.19745, ), # Sigma-
+    3312:    (-1.,   1.32171, ), # Xi-
+    3322:    ( 0.,   1.31486, ), # Xi0
+    3334:    (-1.,   1.67245, ), # Omega-
+    10441:   ( 0.,   3.41475, ), # chi_0c
+    10551:   ( 0.,   9.85940, ), # chi_0b
+    20443:   ( 0.,   3.51066, ), # chi_1c
+    9940003: ( 0.,   3.29692, ), # J/psi[3S1(8)]
+    9940005: ( 0.,   3.75620, ), # chi_2c[3S1(8)]
+    9940011: ( 0.,   3.61475, ), # chi_0c[3S1(8)]
+    9940023: ( 0.,   3.71066, ), # chi_1c[3S1(8)]
+    9940103: ( 0.,   3.88611, ), # psi(2S)[3S1(8)]
+    9941003: ( 0.,   3.29692, ), # J/psi[1S0(8)]
+    9942003: ( 0.,   3.29692, ), # J/psi[3PJ(8)]
+    9942033: ( 0.,   3.97315, ), # psi(3770)[3PJ(8)]
+    9950203: ( 0.,   10.5552, ), # Upsilon(3S)[3S1(8)]
 }
 
-# particle electric charges in fundamental units
-PARTICLE_CHARGES = {
-    0:     0.,   # void
-    1:    -1./3, # down
-    2:     2./3, # up
-    3:    -1./3, # strange
-    4:     2./3, # charm
-    5:    -1./3, # bottom
-    6:     2./3, # top
-    11:   -1.,   # e-
-    12:    0.,   # nu_e
-    13:   -1.,   # mu-
-    14:    0.,   # nu_mu
-    15:   -1.,   # tau-
-    16:    0.,   # nu_tau
-    21:    0.,   # gluon
-    22:    0.,   # photon
-    23:    0.,   # Z
-    24:    1.,   # W+
-    25:    0.,   # Higgs
-    111:   0.,   # pi0
-    113:   0.,   # rho0
-    130:   0.,   # K0-long
-    211:   1.,   # pi+
-    213:   1.,   # rho+
-    221:   0.,   # eta
-    223:   0.,   # omega
-    310:   0.,   # K0-short
-    321:   1.,   # K+
-    331:   0.,   # eta'
-    333:   0.,   # phi
-    2112:  0.,   # neutron
-    2212:  1.,   # proton
-    1114: -1.,   # Delta-
-    2114:  0.,   # Delta0
-    2214:  1.,   # Delta+
-    2224:  2.,   # Delta++
-    3122:  0.,   # Lambda0
-    3222:  1.,   # Sigma+
-    3212:  0.,   # Sigma0
-    3112: -1.,   # Sigma-
-    3312: -1.,   # Xi-
-    3322:  0.,   # Xi0
-    3334: -1.,   # Omega-
-}
-
-CHARGED_PIDS = frozenset(k for k,v in PARTICLE_CHARGES.items() if v != 0.)
+# dictionaries derived from the main one above
+PARTICLE_CHARGES = {pdgid: props[0] for pdgid,props in PARTICLE_PROPERTIES.items()}
+PARTICLE_MASSES  = {pdgid: props[1] for pdgid,props in PARTICLE_PROPERTIES.items()}
+CHARGED_PIDS = frozenset(pdgid for pdgid,charge in PARTICLE_CHARGES.items() if charge != 0.)
 
 def pids2ms(pids, error_on_unknown=False):
     r"""Map an array of [Particle Data Group IDs](http://pdg.lbl.gov/2018/

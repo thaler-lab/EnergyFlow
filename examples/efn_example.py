@@ -1,8 +1,8 @@
-"""An example involving Energy Flow Networks (EFNs), which were introduced
-in [1810.05165](https://arxiv.org/abs/1810.05165). The [`EFN`](../docs/
-archs/#efn) class is used to construct the network architecture. The output
-of the example is a plot of the ROC curves obtained by the EFN as well as
-the jet mass and constituent multiplicity observables.
+"""An example using Energy Flow Networks (EFNs), which were introduced in
+[1810.05165](https://arxiv.org/abs/1810.05165), to classify quark and gluon
+jets. The [`EFN`](../docs/archs/#efn) class is used to construct the network
+architecture. The output of the example is a plot of the ROC curves obtained
+by the EFN as well as the jet mass and constituent multiplicity observables.
 """
 
 # standard library imports
