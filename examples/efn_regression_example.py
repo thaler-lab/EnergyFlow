@@ -1,4 +1,4 @@
-"""A demo involving Energy Flow Networks (EFNs), which were introduced in
+"""An example involving Energy Flow Networks (EFNs), which were introduced in
 1810.05165, to regress the jet constituents to the jet mass. The EFN class is
 used to construct the network architecture. The output of the example is a plot
 of the predicted and actual mass distributions.
