@@ -41,6 +41,7 @@ ALL_EXAMPLES = [
     'dnn_example.py',
     'efp_example.py',
     'animation_example.py',
+    'efn_regression_example.py'
 ]
 
 # get access to the data directory of the installed package and the default efp file
