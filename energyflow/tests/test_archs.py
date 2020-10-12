@@ -3,9 +3,9 @@ from __future__ import absolute_import, division
 import numpy as np
 import pytest
 
-from keras import backend as K
-from keras.layers import PReLU
-from keras.initializers import Constant
+from tensorflow.keras import backend as K
+from tensorflow.keras.layers import PReLU
+from tensorflow.keras.initializers import Constant
 
 from energyflow import archs
 from test_utils import epsilon_percent, epsilon_diff
