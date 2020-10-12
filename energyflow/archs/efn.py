@@ -11,6 +11,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
+from energyflow.archs.dnn import construct_dense
 from energyflow.utils import iter_or_rep
 
 __all__ = [
@@ -137,42 +138,6 @@ def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
         tensors.append(layers[-1](tensors[-1]))
 
     return layers, tensors
-
-def construct_dense(input_tensor, sizes,
-                    acts='relu', k_inits='he_uniform',
-                    dropouts=0., l2_regs=0.,
-                    names=None):
-    """"""
-    
-    # repeat options if singletons
-    acts, k_inits, names = iter_or_rep(acts), iter_or_rep(k_inits), iter_or_rep(names)
-    dropouts, l2_regs = iter_or_rep(dropouts), iter_or_rep(l2_regs)
-
-    # lists of layers and tensors
-    layers, tensors = [], [input_tensor]
-
-    # iterate to make specified layers
-    z = zip(sizes, acts, k_inits, dropouts, l2_regs, names)
-    for s, act, k_init, dropout, l2_reg, name in z:
-
-        # get layers and append them to list
-        kwargs = ({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)} 
-                  if l2_reg > 0. else {})
-        dense_layer = Dense(s, kernel_initializer=k_init, name=name, **kwargs)
-        act_layer = _get_act_layer(act)
-        layers.extend([dense_layer, act_layer])
-
-        # get tensors and append them to list
-        tensors.append(dense_layer(tensors[-1]))
-        tensors.append(act_layer(tensors[-1]))
-
-        # apply dropout if specified
-        if dropout > 0.:
-            dr_name = None if name is None else '{}_dropout'.format(name)
-            layers.append(Dropout(dropout, name=dr_name))
-            tensors.append(layers[-1](tensors[-1]))
-
-    return layers, tensors[1:]
 
 
 ################################################################################
@@ -303,11 +268,12 @@ class SymmetricPerParticleNN(NNBase):
         self._construct_F()
 
         # get output layers
-        d_layer = Dense(self.output_dim, name=self._proc_name('output'))
+        out_layer = Dense(self.output_dim, name=self._proc_name('output'))
         act_layer = _get_act_layer(self.output_act)
+        self._layers.extend([out_layer, act_layer])
 
         # append output tensors
-        self._tensors.append(d_layer(self.tensors[-1]))
+        self._tensors.append(out_layer(self.tensors[-1]))
         self._tensors.append(act_layer(self.tensors[-1]))
 
         # construct a new model

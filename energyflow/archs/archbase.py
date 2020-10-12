@@ -344,7 +344,11 @@ class NNBase(ArchBase):
 
     @property
     def model(self):
-        return self._model
+        if hasattr(self, '_model'):
+            return self._model
+        else:
+            name = self.__class__.__name__
+            raise AttributeError("'{}' object has no underlying model".format(name))
 
 
 ###############################################################################
