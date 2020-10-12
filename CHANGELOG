@@ -5,6 +5,7 @@
 - Import Keras directly from tensorflow.
 - Added the ability to concatenate global features directly into the F funciton of an EFN/PFN model. See the `num_global_features` option of the EFN/PFN models.
 - In list of tensors in EFN/PFN models, changed how input tensors are listed in order to produce a flattened list.
+- Modified internals so that DNN and EFN/PFN models use the same code to construct fully-connected network fragments.
 
 ## 1.1.x
 
