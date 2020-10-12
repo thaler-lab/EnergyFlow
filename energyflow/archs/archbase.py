@@ -6,8 +6,8 @@ import os
 import sys
 import warnings
 
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
 
 import six
 

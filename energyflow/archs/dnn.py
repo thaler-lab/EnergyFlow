@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division, print_function
 
-from keras.layers import Dense, Dropout
-from keras.models import Sequential
-from keras.regularizers import l2
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase
 from energyflow.utils import iter_or_rep

@@ -4,11 +4,11 @@ from abc import abstractmethod, abstractproperty
 
 import numpy as np
 
-from keras import __version__ as __keras_version__
-from keras import backend as K
-from keras.layers import Dense, Dot, Dropout, Input, Lambda, TimeDistributed
-from keras.models import Model
-from keras.regularizers import l2
+import tensorflow.keras.backend as K
+from tensorflow.keras import __version__ as __keras_version__
+from tensorflow.keras.layers import Concatenate, Dense, Dot, Dropout, Input, Lambda, TimeDistributed
+from tensorflow.keras.models import Model
+from tensorflow.keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.utils import iter_or_rep
@@ -16,7 +16,7 @@ from energyflow.utils import iter_or_rep
 __all__ = [
 
     # input constructor functions
-    #'construct_efn_input', 'construct_pfn_input',
+    #'construct_weighted_input', 'construct_input',
 
     # weight mask constructor functions
     #'construct_efn_weight_mask', 'construct_pfn_weight_mask',
@@ -28,18 +28,18 @@ __all__ = [
     'EFN', 'PFN'
 ]
 
-###############################################################################
+################################################################################
 # Keras 2.2.5 fixes bug in 2.2.4 that affects our usage of the Dot layer
-###############################################################################
+################################################################################
 
 keras_version_tuple = tuple(map(int, __keras_version__.split('.')))
 DOT_AXIS = 0 if keras_version_tuple <= (2, 2, 4) else 1
 
-###############################################################################
+################################################################################
 # INPUT FUNCTIONS
-###############################################################################
+################################################################################
 
-def construct_efn_input(input_dim, zs_name=None, phats_name=None):
+def construct_weighted_input(input_dim, zs_name=None, phats_name=None):
 
     # construct input tensors
     zs_input = Input(batch_shape=(None, None), name=zs_name)
@@ -47,15 +47,15 @@ def construct_efn_input(input_dim, zs_name=None, phats_name=None):
 
     return [zs_input, phats_input]
 
-def construct_pfn_input(input_dim, name=None):
+def construct_input(input_dim, nnone=2, name=None):
 
     # construct input tensor
-    return [Input(batch_shape=(None, None, input_dim), name=name)]
+    return [Input(batch_shape=nnone*(None,) + (input_dim,), name=name)]
 
 
-###############################################################################
+################################################################################
 # WEIGHT MASK FUNCTIONS
-###############################################################################
+################################################################################
 
 def construct_efn_weight_mask(input_tensor, mask_val=0., name=None):
     """"""
@@ -63,13 +63,13 @@ def construct_efn_weight_mask(input_tensor, mask_val=0., name=None):
     # define a function which maps the given mask_val to zero
     def efn_mask_func(X, mask_val=mask_val):
     
-        # map mask_val to zero and leave everything else alone    
+        # map mask_val to zero and leave everything else alone
         return X * K.cast(K.not_equal(X, mask_val), K.dtype(X))
 
     mask_layer = Lambda(efn_mask_func, name=name)
 
     # return as lists for consistency
-    return [mask_layer], [mask_layer(input_tensor)]
+    return [mask_layer], mask_layer(input_tensor)
 
 def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
     """"""
@@ -83,12 +83,12 @@ def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
     mask_layer = Lambda(pfn_mask_func, name=name)
 
     # return as lists for consistency
-    return [mask_layer], [mask_layer(input_tensor)]
+    return [mask_layer], mask_layer(input_tensor)
 
 
-###############################################################################
+################################################################################
 # NETWORK FUNCTIONS
-###############################################################################
+################################################################################
 
 def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', 
                                                                   names=None, l2_regs=0.):
@@ -119,7 +119,7 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
         tensors.append(tdist_layer(tensors[-1]))
         tensors.append(act_layer(tensors[-1]))
 
-    return layers, tensors
+    return layers, tensors[1:]
 
 def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
     """"""
@@ -136,9 +136,9 @@ def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
 
     return layers, tensors
 
-def construct_dense(input_tensor, sizes, 
-                    acts='relu', k_inits='he_uniform', 
-                    dropouts=0., l2_regs=0., 
+def construct_dense(input_tensor, sizes,
+                    acts='relu', k_inits='he_uniform',
+                    dropouts=0., l2_regs=0.,
                     names=None):
     """"""
     
@@ -170,12 +170,12 @@ def construct_dense(input_tensor, sizes,
             layers.append(Dropout(dropout, name=dr_name))
             tensors.append(layers[-1](tensors[-1]))
 
-    return layers, tensors
+    return layers, tensors[1:]
 
 
-###############################################################################
+################################################################################
 # SymmetricPerParticleNN - Base class for EFN-like models
-###############################################################################
+################################################################################
 
 class SymmetricPerParticleNN(NNBase):
 
@@ -248,6 +248,10 @@ class SymmetricPerParticleNN(NNBase):
             keras.io/layers/core/#masking) appears to have issues masking
             the biases of a network, so this has been implemented in a
             custom (and correct) manner since version `0.12.0`.
+        - **num_global_features**=`None` : _int_
+            - Number of additional features to be concatenated with the latent
+            space observables to form the input to F. If not `None`, then the
+            features are to be provided at the end of the list of inputs.
         """
 
         # process generic NN hps
@@ -279,6 +283,9 @@ class SymmetricPerParticleNN(NNBase):
 
         # masking
         self.mask_val = self._proc_arg('mask_val', default=0.)
+
+        # additional network modifications
+        self.num_global_features = self._proc_arg('num_global_features', default=None)
 
         self._verify_empty_hps()
 
@@ -320,7 +327,7 @@ class SymmetricPerParticleNN(NNBase):
         layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
 
         # construct Phi
-        Phi_layers, Phi_tensors = construct_distributed_dense(self.inputs[-1], self.Phi_sizes, 
+        Phi_layers, Phi_tensors = construct_distributed_dense(self.tensors[-1], self.Phi_sizes, 
                                                               acts=self.Phi_acts, 
                                                               k_inits=self.Phi_k_inits, 
                                                               names=names, 
@@ -344,7 +351,7 @@ class SymmetricPerParticleNN(NNBase):
         layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
 
         # construct latent tensors
-        latent_layers, latent_tensors = construct_latent(self._tensors[-1], self.weights, 
+        latent_layers, latent_tensors = construct_latent(self.tensors[-1], self.weights, 
                                                          dropout=self.latent_dropout, 
                                                          name=self._proc_name('sum'))
         
@@ -370,7 +377,7 @@ class SymmetricPerParticleNN(NNBase):
 
 
         # construct F
-        F_layers, F_tensors = construct_dense(self.latent[-1], self.F_sizes,
+        F_layers, F_tensors = construct_dense(self.tensors[-1], self.F_sizes,
                                               acts=self.F_acts, k_inits=self.F_k_inits, 
                                               dropouts=self.F_dropouts, names=names,
                                               l2_regs=self.F_l2_regs)
@@ -432,37 +439,53 @@ class SymmetricPerParticleNN(NNBase):
 
     @property
     def tensors(self):
-        """List of all tensors in the model."""
+        """List of all tensors in the model. Order may be arbitrary given that
+        not every model can be unambiguously flattened."""
 
         return self._tensors
 
 
-###############################################################################
+################################################################################
+# Construction helper functions
+################################################################################
+
+def _new_symppnn(symppnn, cls, args, kwargs):
+    pfn = (symppnn is PFN)
+    if cls is symppnn:
+        if kwargs.get('num_global_features') is not None:
+            return super(symppnn, cls).__new__(PFNGlobalFeatures if pfn else EFNGlobalFeatures)
+        else:
+            return super(symppnn, cls).__new__(symppnn)
+    else:
+        return super(symppnn, cls).__new__(cls)
+
+
+################################################################################
 # EFN - Energy flow network class
-###############################################################################
+################################################################################
 
 class EFN(SymmetricPerParticleNN):
 
     """Energy Flow Network (EFN) architecture."""
 
+    # customize which EFN instance is created
+    def __new__(cls, *args, **kwargs):
+        return _new_symppnn(EFN, cls, args, kwargs)
+
     def _construct_inputs(self):
 
         # construct input tensors
-        self._inputs = construct_efn_input(self.input_dim, 
+        self._inputs = construct_weighted_input(self.input_dim, 
                                            zs_name=self._proc_name('zs_input'), 
                                            phats_name=self._proc_name('phats_input'))
 
-        # construct weight tensor
-        mask_layers, mask_tensors = construct_efn_weight_mask(self.inputs[0], 
-                                                              mask_val=self.mask_val, 
-                                                              name=self._proc_name('mask'))
-        self._weights = mask_tensors[0]
+        # construct weight tensor and begin list of layers
+        self._layers, self._weights = construct_efn_weight_mask(self.inputs[0], 
+                                                                mask_val=self.mask_val, 
+                                                                name=self._proc_name('mask'))
 
         # begin list of tensors with the inputs
-        self._tensors = [self.inputs, self.weights]
-
-        # begin list of layers with the mask layer
-        self._layers = [mask_layers[0]]
+        self._tensors = [self.weights] + self.inputs
 
     @property
     def inputs(self):
@@ -548,33 +571,33 @@ class EFN(SymmetricPerParticleNN):
         return X, Y, Z
 
 
-###############################################################################
+################################################################################
 # PFN - Particle flow network class
-###############################################################################
+################################################################################
 
 class PFN(SymmetricPerParticleNN):
 
     """Particle Flow Network (PFN) architecture. Accepts the same 
     hyperparameters as the [`EFN`](#EFN)."""
 
+    # customize which PFN instance is created
+    def __new__(cls, *args, **kwargs):
+        return _new_symppnn(PFN, cls, args, kwargs)
+
     # PFN(*args, **kwargs)
     def _construct_inputs(self):
         """""" # need this for autogen docs
 
         # construct input tensor
-        self._inputs = construct_pfn_input(self.input_dim, name=self._proc_name('input'))
+        self._inputs = construct_input(self.input_dim, name=self._proc_name('input'))
 
-        # construct weight tensor
-        mask_layers, mask_tensors = construct_pfn_weight_mask(self.inputs[0], 
-                                                              mask_val=self.mask_val, 
-                                                              name=self._proc_name('mask'))
-        self._weights = mask_tensors[0]
+        # construct weight tensor and begin list of layers
+        self._layers, self._weights = construct_pfn_weight_mask(self.inputs[0], 
+                                                                mask_val=self.mask_val, 
+                                                                name=self._proc_name('mask'))
 
         # begin list of tensors with the inputs
-        self._tensors = [self.inputs, self.weights]
-
-        # begin list of layers with the mask layer
-        self._layers = [mask_layers[0]]
+        self._tensors = [self.weights] + self.inputs
 
     @property
     def inputs(self):
@@ -592,3 +615,38 @@ class PFN(SymmetricPerParticleNN):
         """
 
         return self._weights
+
+################################################################################
+# Mixin class for concatenating features to F (eventually there may be more mixins)
+################################################################################
+
+class GlobalFeaturesMixin(object):
+
+    def _construct_inputs(self):
+
+        # do normal construction of inputs
+        super(GlobalFeaturesMixin, self)._construct_inputs()
+
+        # get new input tensor and insert it at position 1 in tensors list
+        self.inputs.extend(construct_input(self.num_global_features, nnone=1,
+                                           name=self._proc_name('num_global_features')))
+        self.tensors.insert(1, self._global_feature_tensor)
+
+    def _construct_latent(self):
+
+        # do normal construction of the latent layer
+        super(GlobalFeaturesMixin, self)._construct_latent()
+
+        # add concatenate layer and tensor to respective lists
+        self.layers.append(Concatenate(axis=-1, name=self._proc_name('concat')))
+        self.tensors.append(self.layers[-1]([self.tensors[-1], self._global_feature_tensor]))
+
+    @property
+    def _global_feature_tensor(self):
+        return self.inputs[-1]
+
+class PFNGlobalFeatures(GlobalFeaturesMixin, PFN):
+    pass
+
+class EFNGlobalFeatures(GlobalFeaturesMixin, EFN):
+    pass

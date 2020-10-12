@@ -1,3 +1,11 @@
+## 1.2.x
+
+**1.2.0**
+
+- Import Keras directly from tensorflow.
+- Added the ability to concatenate global features directly into the F funciton of an EFN/PFN model. See the `num_global_features` option of the EFN/PFN models.
+- In list of tensors in EFN/PFN models, changed how input tensors are listed in order to produce a flattened list.
+
 ## 1.1.x
 
 **1.1.3**
@@ -5,6 +13,7 @@
 - Added `phi_ref` option to `ptyphims_from_pjs`.
 - Simplified `pjs_from_ptyphims` to use `fastjet.PtYPhiM`.
 - Simplified multiprocessing usage to avoid setting global start context when trying to use fork.
+- Added EFN regression example.
 
 **1.1.2**
 

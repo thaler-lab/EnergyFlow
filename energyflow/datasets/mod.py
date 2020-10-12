@@ -230,7 +230,7 @@ def load(*args, **kwargs):
 
         # filter subdatasets according to specified values
         subdatasets = [sdset for sdset in dataset['subdatasets']
-                               if sdset[0] in kwargs['subdatasets']]
+                                if sdset[0] in kwargs['subdatasets']]
 
         # check that no unrecognized subdatasets were passed in
         allowed_sds = set([sdset[0] for sdset in dataset['subdatasets']])

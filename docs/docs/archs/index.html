@@ -324,6 +324,12 @@ the biases of a network, so this has been implemented in a
 custom (and correct) manner since version <code>0.12.0</code>.</li>
 </ul>
 </li>
+<li><strong>num_global_features</strong>=<code>None</code> : <em>int</em><ul>
+<li>Number of additional features to be concatenated with the latent
+space observables to form the input to F. If not <code>None</code>, then the
+features are to be provided at the end of the list of inputs.</li>
+</ul>
+</li>
 </ul>
 <h3 id="eval_filters">eval_filters</h3>
 <pre><code class="python">eval_filters(patch, n=100, prune=True)
