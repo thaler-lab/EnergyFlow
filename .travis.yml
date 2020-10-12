@@ -6,9 +6,9 @@ install: |
   pip install --upgrade cython scipy
   pip install --upgrade pot pytest scikit-learn
   if [ $(python -c "import sys; print(sys.version_info[0])") -eq 2 ]; then
-    pip install keras==2.2.5 tensorflow==1.14
+    pip install tensorflow==1.14
   else
-    pip install keras tensorflow
+    pip install tensorflow
   fi
   pip install .
 

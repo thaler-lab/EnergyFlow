@@ -32,6 +32,8 @@ __all__ = [
 # Keras 2.2.5 fixes bug in 2.2.4 that affects our usage of the Dot layer
 ################################################################################
 
+if __keras_version__.endswith('-tf'):
+    __keras_version__ = __keras_version__[:-3]
 keras_version_tuple = tuple(map(int, __keras_version__.split('.')))
 DOT_AXIS = 0 if keras_version_tuple <= (2, 2, 4) else 1
 
