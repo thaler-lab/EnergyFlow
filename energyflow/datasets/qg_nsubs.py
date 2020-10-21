@@ -46,9 +46,8 @@ def load(num_data=-1, cache_dir='~/.energyflow'):
                       file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
                       cache_dir=cache_dir)
 
-    f = np.load(fpath)
-    X, y = f['X'], f['y']
-    f.close()
+    with np.load(fpath) as f:
+        X, y = f['X'], f['y']
 
     if num_data > -1:
         X, y = X[:num_data], y[:num_data]

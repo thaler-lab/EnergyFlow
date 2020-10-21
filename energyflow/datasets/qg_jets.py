@@ -450,7 +450,10 @@ HASHES = {
 GENERATORS = frozenset(URLS.keys())
 SOURCES = ['dropbox', 'zenodo']
 
-def load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow'):
+# load(num_data=100000, pad=True, ncol=4, generator='pythia',
+#      with_bc=False, cache_dir='~/.energyflow')
+def load(num_data=100000, pad=True, ncol=4, 
+         generator='pythia', with_bc=False, cache_dir='~/.energyflow'):
     """Loads samples from the dataset (which in total is contained in twenty 
     files). Any file that is needed that has not been cached will be 
     automatically downloaded. Downloading a file causes it to be cached for
@@ -461,13 +464,15 @@ def load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir
     - **num_data** : _int_
         - The number of events to return. A value of `-1` means read in all
         events.
-    - **generator** : _str_
-        - Specifies which Monte Carlo generator the events should come from.
-        Currently, the options are `'pythia'` and `'herwig'`.
     - **pad** : _bool_
         - Whether to pad the events with zeros to make them the same length.
         Note that if set to `False`, the returned `X` array will be an object
         array and not a 3-d array of floats.
+    - **ncol** : _int_
+        - Number of columns to keep in each event.
+    - **generator** : _str_
+        - Specifies which Monte Carlo generator the events should come from.
+        Currently, the options are `'pythia'` and `'herwig'`.
     - **with_bc** : _bool_
         - Whether to include jets coming from bottom or charm quarks. Changing
         this flag does not mask out these jets but rather accesses an entirely
@@ -527,17 +532,16 @@ def load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir
                     print("Failed to download {} from source '{}', trying next source...".format(filename, source))
 
         # load file and append arrays
-        f = np.load(fpath)
-        Xs.append(f['X'])
-        ys.append(f['y'])
-        f.close()
+        with np.load(fpath) as f:
+            Xs.append(f['X'])
+            ys.append(f['y'])
 
     # get X array
     if pad:
         max_len_axis1 = max([X.shape[1] for X in Xs])
-        X = np.vstack([_pad_events_axis1(x, max_len_axis1) for x in Xs])
+        X = np.vstack([_pad_events_axis1(x[...,:ncol], max_len_axis1) for x in Xs])
     else:
-        X = np.asarray([x[x[:,0]>0] for X in Xs for x in X], dtype='O')
+        X = np.asarray([x[x[:,0]>0,:ncol] for X in Xs for x in X], dtype='O')
 
     # get y array
     y = np.concatenate(ys)

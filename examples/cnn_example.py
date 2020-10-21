@@ -1,21 +1,19 @@
-"""An example involving jet images and convolutional neural networks (CNNs).
-The [`CNN`](../docs/archs/#cnn) class is used to provide a network architecture
+"""An example involving jet images and convolutional neural networks (CNNs). The
+[`CNN`](../docs/archs/#cnn) class is used to provide a network architecture
 based on that described in [1612.01551](https://arxiv.org/abs/1612.01551). 
 
-Jet images are constructed using the [`pixelate`](../docs/utils/#pixelate) 
-function and can be either one-channel (grayscale), meaning that only 
-$p_T$ information is used, or two-channel (color), meaning that $p_T$
-information and local charged particle counts are used. The images are
-preprocessed by subtracting the average image in the training set and
-dividing by the per-pixel standard deviations, using the 
-[`zero_center`](../docs/utils/#zero_center) and 
-[`standardize`](../docs/utils/#standardize) functions, respectively. 
-The output of the example is a plot of the ROC curves of the CNN 
-as well as the jet mass and constituent multiplicity observables.
+Jet images are constructed using the [`pixelate`](../docs/utils/#pixelate)
+function and can be either one-channel (grayscale), meaning that only $p_T$
+information is used, or two-channel (color), meaning that $p_T$ information and
+local charged particle counts are used. The images are preprocessed by
+subtracting the average image in the training set and dividing by the per-pixel
+standard deviations, using the [`zero_center`](../docs/utils/#zero_center) and 
+[`standardize`](../docs/utils/#standardize) functions, respectively. The output
+of the example is a plot of the ROC curves of the CNN as well as the jet mass
+and constituent multiplicity observables.
 
-Note that the number of epochs is quite small because it is quite time
-consuming to train a CNN without a GPU (which will speed up this example
-immensely).
+Note that the number of epochs is quite small because it is quite time consuming
+to train a CNN without a GPU (which will speed up this example immensely).
 """
 
 # standard library imports
@@ -97,10 +95,10 @@ cnn = CNN(hps)
 
 # train model
 cnn.fit(X_train, Y_train,
-          epochs=num_epoch,
-          batch_size=batch_size,
-          validation_data=(X_val, Y_val),
-          verbose=1)
+        epochs=num_epoch,
+        batch_size=batch_size,
+        validation_data=(X_val, Y_val),
+        verbose=1)
 
 # get predictions on test data
 preds = cnn.predict(X_test, batch_size=1000)

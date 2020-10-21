@@ -138,6 +138,8 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         else:
             return super(Measure, cls).__new__(cls)
 
+    # Measure(measure, beta=1, kappa=1, normed=True, coords=None,
+    #                  check_input=True, kappa_normed_behavior='new')
     def __init__(self, measure, beta=1, kappa=1, normed=True, coords=None,
                                 check_input=True, kappa_normed_behavior='new'):
         r"""Processes inputs according to the measure choice and other options.

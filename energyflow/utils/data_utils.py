@@ -174,14 +174,14 @@ def to_categorical(labels, num_classes=None):
     return categorical
 
 # PDGid to small float dictionary
-pid2float_mapping = {22: 0,
-                     211: .1, -211: .2,
-                     321: .3, -321: .4,
-                     130: .5,
-                     2112: .6, -2112: .7,
-                     2212: .8, -2212: .9,
-                     11: 1.0, -11: 1.1,
-                     13: 1.2, -13: 1.3}
+PID2FLOAT_MAP = {22: 0,
+                 211: .1, -211: .2,
+                 321: .3, -321: .4,
+                 130: .5,
+                 2112: .6, -2112: .7,
+                 2212: .8, -2212: .9,
+                 11: 1.0, -11: 1.1,
+                 13: 1.2, -13: 1.3}
 
 def remap_pids(events, pid_i=3):
     """Remaps PDG id numbers to small floats for use in a neural network.
@@ -189,16 +189,35 @@ def remap_pids(events, pid_i=3):
 
     **Arguments**
 
-    - **events** : _3-d numpy.ndarray_
+    - **events** : _numpy.ndarray_
         - The events as an array of arrays of particles.
     - **pid_i** : _int_
-        - The index corresponding to pid information along the last 
-        axis of `events`.
+        - The column index corresponding to pid information in an event.
     """
 
-    events_shape = events.shape
-    pids = events[:,:,pid_i].astype(int).reshape((events_shape[0]*events_shape[1]))
-    events[:,:,pid_i] = np.asarray([pid2float_mapping.get(pid, 0) for pid in pids]).reshape(events_shape[:2])
+    if events.ndim == 3:
+        pids = events[:,:,pid_i].astype(int).reshape((events.shape[0]*events.shape[1]))
+        events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
+                                        for pid in pids]).reshape(events.shape[:2])
+    else:
+        for event in events:
+            event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
+                                         for pid in event[:,pid_i].astype(int)])
+
+def _pad_events_axis1(events, axis1_shape):
+    """Pads the first axis of the NumPy array `events` with zero subarrays
+    such that the first dimension of the results has size `axis1_shape`.
+    """
+
+    if events.ndim != 3:
+        raise ValueError('events must be a 3d numpy array')
+
+    num_zeros = axis1_shape - events.shape[1]
+    if num_zeros > 0:
+        zeros = np.zeros((events.shape[0], num_zeros, events.shape[2]))
+        return np.concatenate((events, zeros), axis=1)
+
+    return events
 
 # the following code is closely based on analogous parts of Keras
 if sys.version_info[0] == 2:
@@ -241,18 +260,6 @@ if sys.version_info[0] == 2:
                 fd.write(chunk)
 else:
     from six.moves.urllib.request import urlretrieve
-
-def _pad_events_axis1(events, axis1_shape):
-    """Pads the first axis of the NumPy array `events` with zero subarrays
-    such that the first dimension of the results has size `axis1_shape`.
-    """
-
-    num_zeros = axis1_shape - events.shape[1]
-    if num_zeros > 0:
-        zeros = np.zeros([num_zeros if i == 1 else s for i,s in enumerate(events.shape)])
-        return np.concatenate((events, zeros), axis=1)
-
-    return events
 
 def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     """Calculates a file sha256 or md5 hash.

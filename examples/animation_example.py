@@ -1,7 +1,7 @@
 """An example that makes an animation between two events using the EMD. Note
 that `ffmpeg` must be installed in order for matplotlib to be able to render
-the animation. Strange errors may result if there is an issue with the presence
-of required software components.
+the animation. Strange errors may result if there are issues with required
+software components.
 """
 
 # standard library imports

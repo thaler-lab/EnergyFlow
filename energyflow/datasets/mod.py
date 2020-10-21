@@ -296,7 +296,10 @@ def load(*args, **kwargs):
     # return concatenated MODDataset
     return MODDataset(datasets=moddsets)
 
-def filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5):
+# filter_particles(particles, which='all', pt_cut=None, chs=False,
+#                             pt_i=0, pid_i=4, vertex_i=5)
+def filter_particles(particles, which='all', pt_cut=None, chs=False,
+                                pt_i=0, pid_i=4, vertex_i=5):
     """Constructs a mask that will select particles according to specified
     properties. Currently supported are selecting particles according to their
     charge, removing particles associated to a pileup vertex, and implementing
@@ -353,6 +356,8 @@ def filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid
         
     return mask
 
+# kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
+#                        apply_residual_correction=True)
 def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True):
     """Evaluates k-factors used by a particular collection. Currently, since
     CMS2011AJets is the only supported collection, some of the arguments are

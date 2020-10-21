@@ -1,8 +1,10 @@
 """An example involving Particle Flow Networks (PFNs), which were introduced in
 [1810.05165](https://arxiv.org/abs/1810.05165). The [`PFN`](../docs/archs/#pfn)
-class is used to construct the network architecture. The output of the example
-is a plot of the ROC curves obtained by the PFN as well as the jet mass and
-constituent multiplicity observables.
+class is used to construct the network architecture. This example is meant to
+highlight the usafe of PFNs with Tensorflow datasets, in particular the function
+`tf_point_cloud_dataset` which helpfully formats things in the proper way. Like
+the bse PFN example, the output is a plot of the ROC curves obtained by the PFN
+as well as the jet mass and constituent multiplicity observables.
 """
 
 # standard library imports
@@ -13,7 +15,7 @@ import numpy as np
 
 # energyflow imports
 import energyflow as ef
-from energyflow.archs import PFN
+from energyflow.archs import PFN, tf_point_cloud_dataset
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, remap_pids, to_categorical
 
@@ -34,13 +36,14 @@ Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
 # Phi_sizes, F_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
-num_epoch = 5
+num_epoch = 1
 batch_size = 500
 
 ################################################################################
 
 # load data
-X, y = qg_jets.load(train + val + test)
+ncol = 4 if use_pids else 3
+X, y = qg_jets.load(train + val + test, pad=False, ncol=ncol)
 
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
@@ -49,16 +52,13 @@ print('Loaded quark and gluon jets')
 
 # preprocess by centering jets and normalizing pts
 for x in X:
-    mask = x[:,0] > 0
-    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
-    x[mask,1:3] -= yphi_avg
-    x[mask,0] /= x[:,0].sum()
+    yphi_avg = np.average(x[:,1:3], weights=x[:,0], axis=0)
+    x[:,1:3] -= yphi_avg
+    x[:,0] /= x[:,0].sum()
 
 # handle particle id channel
 if use_pids:
     remap_pids(X, pid_i=3)
-else:
-    X = X[:,:,:3]
 
 print('Finished preprocessing')
 
@@ -70,17 +70,21 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-pfn = PFN(input_dim=X.shape[-1], Phi_sizes=Phi_sizes, F_sizes=F_sizes)
+pfn = PFN(input_dim=ncol, Phi_sizes=Phi_sizes, F_sizes=F_sizes)
+
+# get tf datasets
+d_train = tf_point_cloud_dataset([[X_train], Y_train], batch_size)
+d_val = tf_point_cloud_dataset([X_val, Y_val], batch_size)
+d_test = tf_point_cloud_dataset(X_test, batch_size)
+print('training dataset', d_train)
+print('validation dataset', d_val)
+print('testing dataset', d_test)
 
 # train model
-pfn.fit(X_train, Y_train,
-        epochs=num_epoch,
-        batch_size=batch_size,
-        validation_data=(X_val, Y_val),
-        verbose=1)
+pfn.fit(d_train, epochs=num_epoch, validation_data=d_val)
 
 # get predictions on test data
-preds = pfn.predict(X_test, batch_size=1000)
+preds = pfn.predict(d_test)
 
 # get ROC curve
 pfn_fp, pfn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])

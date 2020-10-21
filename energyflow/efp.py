@@ -41,7 +41,7 @@ class EFP(EFPBase):
     """A class for representing and computing a single EFP."""
 
     # EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
-    #     check_input=True, np_optimize=True)
+    #            check_input=True, np_optimize=True)
     def __init__(self, edges, weights=None, efpset_args=None, np_optimize=True, **kwargs):
         r"""Since a standalone EFP defines and holds a `Measure` instance, all
         `Measure` keywords are accepted.

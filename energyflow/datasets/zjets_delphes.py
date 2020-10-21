@@ -101,6 +101,9 @@ NUM_FILES = 17
 SOURCES = ['dropbox', 'zenodo']
 ZENODO_RECORD = '3548091'
 
+# load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
+#               source='zenodo', which='all',
+#               include_keys=None, exclude_keys=None)
 def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo', 
                   which='all', include_keys=None, exclude_keys=None):
     """Loads in the Z+jet Pythia/Herwig + Delphes datasets. Any file that is
@@ -197,21 +200,19 @@ def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source=
             break
 
         # load file
-        f = np.load(_get_filepath(filename, url, cache_dir, cache_subdir=subdir, file_hash=h))
+        with np.load(_get_filepath(filename, url, cache_dir, cache_subdir=subdir, file_hash=h)) as f:
 
-        # add relevant arrays to vals
-        for i,(key,val) in enumerate(vals.items()):
+            # add relevant arrays to vals
+            for i,(key,val) in enumerate(vals.items()):
 
-            if 'particles' not in key or pad:
-                val.append(f[key])
-            else:
-                val.append([np.array(ps[ps[:,0] > 0]) for ps in f[key]])
+                if 'particles' not in key or pad:
+                    val.append(f[key])
+                else:
+                    val.append([np.array(ps[ps[:,0] > 0]) for ps in f[key]])
 
-            # increment number of events
-            if i == 0:
-                n += len(val[-1])
-
-        f.close()
+                # increment number of events
+                if i == 0:
+                    n += len(val[-1])
 
     # warn if we don't have enough events
     if num_data > n:

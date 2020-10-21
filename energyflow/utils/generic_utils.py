@@ -36,12 +36,14 @@ __all__ = [
 # list of examples
 ALL_EXAMPLES = [
     'efn_example.py',
+    'efn_regression_example.py',
+    'efn_tfdataset_example.py',
     'pfn_example.py',
+    'pfn_tfdataset_example.py',
     'cnn_example.py',
     'dnn_example.py',
     'efp_example.py',
-    'animation_example.py',
-    'efn_regression_example.py'
+    'animation_example.py'
 ]
 
 # get access to the data directory of the installed package and the default efp file

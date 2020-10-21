@@ -36,6 +36,8 @@ class Generator(object):
 
     """Generates non-isomorphic multigraphs according to provided specifications."""
 
+    # Generator(dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
+    #           filename=None, gen_efms=True, np_optimize='greedy', verbose=False)
     def __init__(self, dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
                       filename=None, gen_efms=True, np_optimize='greedy', verbose=False):
         r"""Doing a fresh generation of connected multigraphs (`filename=None`)

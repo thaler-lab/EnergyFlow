@@ -1,12 +1,11 @@
-"""An example involving deep, fully-connected neural networks (DNNs).
-The [`DNN`](../docs/archs/#dnn) class is used to construct the network 
-architecture.
+"""An example involving deep, fully-connected neural networks (DNNs). The
+[`DNN`](../docs/archs/#dnn) class is used to construct the network architecture.
 
-The inputs are taken to be the $N$-subjettiness observables as specified
-as part of the phase space basis from [1704.08249](https://arxiv.org
-/abs/1704.08249), cut off at some total number of observables. The
-output of the example is a plot showing the ROC curves obtained from
-training the DNN on different numbers of $N$-subjettiness observables.
+The inputs are taken to be the $N$-subjettiness observables as specified as part
+of the phase space basis from [1704.08249](https://arxiv.org/abs/1704.08249),
+cut off at some total number of observables. The output of the example is a plot
+showing the ROC curves obtained from training the DNN on different numbers of
+$N$-subjettiness observables.
 """
 
 # standard library imports
@@ -67,10 +66,10 @@ for i,num_nsub in enumerate(num_nsubs):
 
     # train model
     dnn.fit(X_train, Y_train,
-              epochs=num_epoch,
-              batch_size=batch_size,
-              validation_data=(X_val, Y_val),
-              verbose=1)
+            epochs=num_epoch,
+            batch_size=batch_size,
+            validation_data=(X_val, Y_val),
+            verbose=1)
 
     # get predictions on test data
     preds = dnn.predict(X_test, batch_size=1000)

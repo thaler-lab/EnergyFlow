@@ -127,8 +127,8 @@ class EFM(EFMBase):
 
     """A class representing and computing a single EFM."""
 
-    # EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None,
-    #     coords=None, check_input=True)
+    # EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
+    #                  coords=None, check_input=True)
     def __init__(self, nup, nlow=0, rl_from=None, subslice_from=None, **kwargs):
         r"""Since EFMs are fully symmetric tensors, they can be specified by
         just two integers: the number of raised and number of lowered indices

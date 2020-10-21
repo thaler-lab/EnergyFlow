@@ -1,10 +1,9 @@
-"""An example involving Energy Flow Polynomials (EFPs) and a linear
-classifier (Fisher's Linear Discriminant by default). First, the 
-[`EFPSet`](../docs/efp/#efpset) class is used to compute the EFPs
-up to the specified `dmax`, the default being `dmax=5`. Then linear
-classifiers are trained for different numbers of EFPs as input, 
-determined by taking all EFPs up to degree `d` with `d` from `1` 
-to `dmax`. The output of the example is a plot of the ROC curves
+"""An example involving Energy Flow Polynomials (EFPs) and a linear classifier
+(Fisher's Linear Discriminant by default). First, the [`EFPSet`](../docs/
+efp/#efpset) class is used to compute the EFPs up to the specified `dmax`, the
+default being `dmax=5`. Then linear classifiers are trained for different
+numbers of EFPs as input, determined by taking all EFPs up to degree `d` with
+`d` from `1` to `dmax`. The output of the example is a plot of the ROC curves
 for the classifiers with different numbers of EFP inputs.
 """
 

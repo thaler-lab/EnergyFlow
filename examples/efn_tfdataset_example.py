@@ -1,8 +1,11 @@
 """An example using Energy Flow Networks (EFNs), which were introduced in
 [1810.05165](https://arxiv.org/abs/1810.05165), to classify quark and gluon
 jets. The [`EFN`](../docs/archs/#efn) class is used to construct the network
-architecture. The output of the example is a plot of the ROC curves obtained
-by the EFN as well as the jet mass and constituent multiplicity observables.
+architecture. This example is meant to highlight the usafe of PFNs with
+Tensorflow datasets, in particular the function `tf_point_cloud_dataset` which
+helpfully formats things in the proper way.  The output of the example is a
+plot of the ROC curves obtained by the EFN as well as the jet mass and
+constituent multiplicity observables.
 """
 
 # standard library imports
@@ -13,7 +16,7 @@ import numpy as np
 
 # energyflow imports
 import energyflow as ef
-from energyflow.archs import EFN
+from energyflow.archs import EFN, tf_point_cloud_dataset
 from energyflow.datasets import qg_jets
 from energyflow.utils import data_split, to_categorical
 
@@ -33,16 +36,13 @@ Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
 # Phi_sizes, F_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
-num_epoch = 5
+num_epoch = 1
 batch_size = 500
 
 ###############################################################################
 
 # load data
-X, y = qg_jets.load(train + val + test)
-
-# ignore pid information
-X = X[:,:,:3]
+X, y = qg_jets.load(train + val + test, pad=False, ncol=3)
 
 # convert labels to categorical
 Y = to_categorical(y, num_classes=2)
@@ -51,17 +51,18 @@ print('Loaded quark and gluon jets')
 
 # preprocess by centering jets and normalizing pts
 for x in X:
-    mask = x[:,0] > 0
-    yphi_avg = np.average(x[mask,1:3], weights=x[mask,0], axis=0)
-    x[mask,1:3] -= yphi_avg
-    x[mask,0] /= x[:,0].sum()
+    yphi_avg = np.average(x[:,1:3], weights=x[:,0], axis=0)
+    x[:,1:3] -= yphi_avg
+    x[:,0] /= x[:,0].sum()
 
 print('Finished preprocessing')
 
 # do train/val/test split 
 (z_train, z_val, z_test, 
  p_train, p_val, p_test,
- Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, val=val, test=test)
+ Y_train, Y_val, Y_test) = data_split(np.asarray([x[:,0] for x in X], dtype='O'),
+                                      np.asarray([x[:,1:] for x in X], dtype='O'),
+                                      Y, val=val, test=test)
 
 print('Done train/val/test split')
 print('Model summary:')
@@ -69,15 +70,19 @@ print('Model summary:')
 # build architecture
 efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes)
 
+# get tf datasets
+d_train = tf_point_cloud_dataset([(z_train, p_train), Y_train], batch_size)
+d_val = tf_point_cloud_dataset([(z_val, p_val), Y_val], batch_size)
+d_test = tf_point_cloud_dataset([(z_test, p_test)], batch_size)
+print('training dataset', d_train)
+print('validation dataset', d_val)
+print('testing dataset', d_test)
+
 # train model
-efn.fit([z_train, p_train], Y_train,
-        epochs=num_epoch,
-        batch_size=batch_size,
-        validation_data=([z_val, p_val], Y_val),
-        verbose=1)
+efn.fit(d_train, epochs=num_epoch, validation_data=d_val)
 
 # get predictions on test data
-preds = efn.predict([z_test, p_test], batch_size=1000)
+preds = efn.predict(d_test)
 
 # get ROC curve
 efn_fp, efn_tp, threshs = roc_curve(Y_test[:,1], preds[:,1])
