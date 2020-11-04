@@ -99,6 +99,12 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Observables</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#image_activity">image_activity</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#zg">zg</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#zg_from_pj">zg_from_pj</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#d2">D2</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#compute">compute</a>
@@ -141,12 +147,6 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#image_activity">image_activity</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#zg">zg</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#zg_from_pj">zg_from_pj</a>
-    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../utils/">Utils</a>
@@ -180,9 +180,6 @@
     <li>Observables</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/obs.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
   
@@ -196,373 +193,6 @@
 require the <a href="http://fastjet.fr/">FastJet</a> Python interface to be importable;
 if it's not, no warnings or errors will be issued, the observables will simply
 not be included in this module.</p>
-<hr />
-<h2 id="d2">D2</h2>
-<p>Ratio of EFPs (specifically, energy correlation functions) designed to
-tag two prong signals. In graphs, the formula is:</p>
-<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" 
-class="obs_center" width="20%"/></p>
-<p>For additional information, see the <a href="https://arxiv.org/
-abs/1409.6298">original paper</a>.</p>
-<pre><code class="python">energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True, coords=None, check_input=True)
-</code></pre>
-
-<p>Since a <code>D2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
-keywords are accepted.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
-<li>The choice of measure. See <a href="../measures">Measures</a> for additional
-info.</li>
-</ul>
-</li>
-<li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
-than zero.</li>
-</ul>
-</li>
-<li><strong>strassen</strong> : <em>bool</em><ul>
-<li>Whether to use matrix multiplication to speed up the evaluation.
-Not recommended when $\beta=2$ since EFMs are faster.</li>
-</ul>
-</li>
-<li><strong>reg</strong> : <em>float</em><ul>
-<li>A regularizing value to be added to the denominator in the event
-that it is zero. Should typically be something less than 1e-30.</li>
-</ul>
-</li>
-<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
-</ul>
-</li>
-<li><strong>normed</strong> : <em>bool</em><ul>
-<li>Controls normalization of the energies in the measure.</li>
-</ul>
-</li>
-<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
-<a href="../measures">Measures</a> for additional info.</li>
-</ul>
-</li>
-<li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume the
-first input type.</li>
-</ul>
-</li>
-</ul>
-<h3 id="compute">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
-</code></pre>
-
-<p>Computes the value of the observable on a single event. Note that
-the observable object is also callable, in which case this method is
-invoked.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The event as an array of particles in the coordinates specified
-by <code>coords</code>.</li>
-</ul>
-</li>
-<li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
-of the energies of an event.</li>
-</ul>
-</li>
-<li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
-of the pairwise angles of an event.</li>
-</ul>
-</li>
-<li><strong>nhats</strong> : 2-d array like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
-of the scaled particle momenta. Only applicable when EFMs are being
-used.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>float</em><ul>
-<li>The observable value.</li>
-</ul>
-</li>
-</ul>
-<h3 id="batch_compute">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
-</code></pre>
-
-<p>Computes the value of the observable on several events.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The events as an array of arrays of particles in coordinates
-matching those anticipated by <code>coords</code>.</li>
-</ul>
-</li>
-<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
-<li>The number of worker processes to use. A value of <code>None</code> will
-use as many processes as there are CPUs on the machine.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>1-d numpy.ndarray</em><ul>
-<li>A vector of the observable values for each event.</li>
-</ul>
-</li>
-</ul>
-<h3 id="properties">properties</h3>
-<h4 id="efpset">efpset</h4>
-<pre><code class="python">efpset
-</code></pre>
-
-<p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
-<hr />
-<h2 id="c2">C2</h2>
-<p>Ratio of Energy Correlation Functions designed to tag two prong signals.
-In graphs, the formula is:</p>
-<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" 
-class="obs_center" width="20%"/></p>
-<p>For additional information, see the <a href="https://arxiv.org/
-abs/1305.0007">original paper</a>.</p>
-<pre><code class="python">energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True, coords=None, check_input=True)
-</code></pre>
-
-<p>Since a <code>C2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
-keywords are accepted.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
-<li>The choice of measure. See <a href="../measures">Measures</a> for additional
-info.</li>
-</ul>
-</li>
-<li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
-than zero.</li>
-</ul>
-</li>
-<li><strong>strassen</strong> : <em>bool</em><ul>
-<li>Whether to use matrix multiplication to speed up the evaluation.
-Not recommended when $\beta=2$ since EFMs are faster.</li>
-</ul>
-</li>
-<li><strong>reg</strong> : <em>float</em><ul>
-<li>A regularizing value to be added to the denominator in the event
-that it is zero. Should typically be something less than 1e-30.</li>
-</ul>
-</li>
-<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
-</ul>
-</li>
-<li><strong>normed</strong> : <em>bool</em><ul>
-<li>Controls normalization of the energies in the measure.</li>
-</ul>
-</li>
-<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
-<a href="../measures">Measures</a> for additional info.</li>
-</ul>
-</li>
-<li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume the
-first input type.</li>
-</ul>
-</li>
-</ul>
-<h3 id="compute_1">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
-</code></pre>
-
-<p>Computes the value of the observable on a single event. Note that
-the observable object is also callable, in which case this method is
-invoked.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The event as an array of particles in the coordinates specified
-by <code>coords</code>.</li>
-</ul>
-</li>
-<li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
-of the energies of an event.</li>
-</ul>
-</li>
-<li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
-of the pairwise angles of an event.</li>
-</ul>
-</li>
-<li><strong>nhats</strong> : 2-d array like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
-of the scaled particle momenta. Only applicable when EFMs are being
-used.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>float</em><ul>
-<li>The observable value.</li>
-</ul>
-</li>
-</ul>
-<h3 id="batch_compute_1">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
-</code></pre>
-
-<p>Computes the value of the observable on several events.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The events as an array of arrays of particles in coordinates
-matching those anticipated by <code>coords</code>.</li>
-</ul>
-</li>
-<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
-<li>The number of worker processes to use. A value of <code>None</code> will
-use as many processes as there are CPUs on the machine.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>1-d numpy.ndarray</em><ul>
-<li>A vector of the observable values for each event.</li>
-</ul>
-</li>
-</ul>
-<h3 id="properties_1">properties</h3>
-<h4 id="efpset_1">efpset</h4>
-<pre><code class="python">efpset
-</code></pre>
-
-<p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
-<hr />
-<h2 id="c3">C3</h2>
-<p>Ratio of Energy Correlation Functions designed to tag three prong
-signals. In graphs, the formula is:</p>
-<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" 
-class="obs_center" width="30%"/></p>
-<p>For additional information, see the <a href="https://arxiv.org/
-abs/1305.0007">original paper</a>.</p>
-<pre><code class="python">energyflow.C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True, coords=None, check_input=True)
-</code></pre>
-
-<p>Since a <code>D2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
-keywords are accepted.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
-<li>The choice of measure. See <a href="../measures">Measures</a> for additional
-info.</li>
-</ul>
-</li>
-<li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
-than zero.</li>
-</ul>
-</li>
-<li><strong>reg</strong> : <em>float</em><ul>
-<li>A regularizing value to be added to the denominator in the event
-that it is zero. Should typically be something less than 1e-30.</li>
-</ul>
-</li>
-<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
-</ul>
-</li>
-<li><strong>normed</strong> : <em>bool</em><ul>
-<li>Controls normalization of the energies in the measure.</li>
-</ul>
-</li>
-<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
-<a href="../measures">Measures</a> for additional info.</li>
-</ul>
-</li>
-<li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume the
-first input type.</li>
-</ul>
-</li>
-</ul>
-<h3 id="compute_2">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
-</code></pre>
-
-<p>Computes the value of the observable on a single event. Note that
-the observable object is also callable, in which case this method is
-invoked.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The event as an array of particles in the coordinates specified
-by <code>coords</code>.</li>
-</ul>
-</li>
-<li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
-of the energies of an event.</li>
-</ul>
-</li>
-<li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
-of the pairwise angles of an event.</li>
-</ul>
-</li>
-<li><strong>nhats</strong> : 2-d array like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
-of the scaled particle momenta. Only applicable when EFMs are being
-used.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>float</em><ul>
-<li>The observable value.</li>
-</ul>
-</li>
-</ul>
-<h3 id="batch_compute_2">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
-</code></pre>
-
-<p>Computes the value of the observable on several events.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
-<li>The events as an array of arrays of particles in coordinates
-matching those anticipated by <code>coords</code>.</li>
-</ul>
-</li>
-<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
-<li>The number of worker processes to use. A value of <code>None</code> will
-use as many processes as there are CPUs on the machine.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>1-d numpy.ndarray</em><ul>
-<li>A vector of the observable values for each event.</li>
-</ul>
-</li>
-</ul>
-<h3 id="properties_2">properties</h3>
-<h4 id="efpset_2">efpset</h4>
-<pre><code class="python">efpset
-</code></pre>
-
-<p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
 <h2 id="image_activity">image_activity</h2>
 <pre><code class="python">energyflow.image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None)
@@ -698,6 +328,376 @@ and <code>1</code>.</li>
 </li>
 </ul>
 <hr />
+<h2 id="d2">D2</h2>
+<p>Ratio of EFPs (specifically, energy correlation functions) designed to
+tag two prong signals. In graphs, the formula is:</p>
+<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" 
+class="obs_center" width="20%"/></p>
+<p>For additional information, see the <a href="https://arxiv.org/
+abs/1409.6298">original paper</a>.</p>
+<pre><code class="python">energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
+              coords=None, check_input=True)
+</code></pre>
+
+<p>Since a <code>D2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
+keywords are accepted.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
+<li>The choice of measure. See <a href="../measures">Measures</a> for additional
+info.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>float</em><ul>
+<li>The parameter $\beta$ appearing in the measure. Must be greater
+than zero.</li>
+</ul>
+</li>
+<li><strong>strassen</strong> : <em>bool</em><ul>
+<li>Whether to use matrix multiplication to speed up the evaluation.
+Not recommended when $\beta=2$ since EFMs are faster.</li>
+</ul>
+</li>
+<li><strong>reg</strong> : <em>float</em><ul>
+<li>A regularizing value to be added to the denominator in the event
+that it is zero. Should typically be something less than 1e-30.</li>
+</ul>
+</li>
+<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
+<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
+use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+</ul>
+</li>
+<li><strong>normed</strong> : <em>bool</em><ul>
+<li>Controls normalization of the energies in the measure.</li>
+</ul>
+</li>
+<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
+<li>Controls which coordinates are assumed for the input. See 
+<a href="../measures">Measures</a> for additional info.</li>
+</ul>
+</li>
+<li><strong>check_input</strong> : <em>bool</em><ul>
+<li>Whether to check the type of the input each time or assume the
+first input type.</li>
+</ul>
+</li>
+</ul>
+<h3 id="compute">compute</h3>
+<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+</code></pre>
+
+<p>Computes the value of the observable on a single event. Note that
+the observable object is also callable, in which case this method is
+invoked.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The event as an array of particles in the coordinates specified
+by <code>coords</code>.</li>
+</ul>
+</li>
+<li><strong>zs</strong> : 1-d array_like<ul>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+of the energies of an event.</li>
+</ul>
+</li>
+<li><strong>thetas</strong> : 2-d array_like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>nhats</strong> : 2-d array like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
+of the scaled particle momenta. Only applicable when EFMs are being
+used.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>float</em><ul>
+<li>The observable value.</li>
+</ul>
+</li>
+</ul>
+<h3 id="batch_compute">batch_compute</h3>
+<pre><code class="python">batch_compute(events, n_jobs=None)
+</code></pre>
+
+<p>Computes the value of the observable on several events.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The events as an array of arrays of particles in coordinates
+matching those anticipated by <code>coords</code>.</li>
+</ul>
+</li>
+<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
+<li>The number of worker processes to use. A value of <code>None</code> will
+use as many processes as there are CPUs on the machine.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>A vector of the observable values for each event.</li>
+</ul>
+</li>
+</ul>
+<h3 id="properties">properties</h3>
+<h4 id="efpset">efpset</h4>
+<pre><code class="python">efpset
+</code></pre>
+
+<p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
+<hr />
+<h2 id="c2">C2</h2>
+<p>Ratio of Energy Correlation Functions designed to tag two prong signals.
+In graphs, the formula is:</p>
+<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" 
+class="obs_center" width="20%"/></p>
+<p>For additional information, see the <a href="https://arxiv.org/
+abs/1305.0007">original paper</a>.</p>
+<pre><code class="python">energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
+              coords=None, check_input=True)
+</code></pre>
+
+<p>Since a <code>C2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
+keywords are accepted.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
+<li>The choice of measure. See <a href="../measures">Measures</a> for additional
+info.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>float</em><ul>
+<li>The parameter $\beta$ appearing in the measure. Must be greater
+than zero.</li>
+</ul>
+</li>
+<li><strong>strassen</strong> : <em>bool</em><ul>
+<li>Whether to use matrix multiplication to speed up the evaluation.
+Not recommended when $\beta=2$ since EFMs are faster.</li>
+</ul>
+</li>
+<li><strong>reg</strong> : <em>float</em><ul>
+<li>A regularizing value to be added to the denominator in the event
+that it is zero. Should typically be something less than 1e-30.</li>
+</ul>
+</li>
+<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
+<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
+use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+</ul>
+</li>
+<li><strong>normed</strong> : <em>bool</em><ul>
+<li>Controls normalization of the energies in the measure.</li>
+</ul>
+</li>
+<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
+<li>Controls which coordinates are assumed for the input. See 
+<a href="../measures">Measures</a> for additional info.</li>
+</ul>
+</li>
+<li><strong>check_input</strong> : <em>bool</em><ul>
+<li>Whether to check the type of the input each time or assume the
+first input type.</li>
+</ul>
+</li>
+</ul>
+<h3 id="compute_1">compute</h3>
+<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+</code></pre>
+
+<p>Computes the value of the observable on a single event. Note that
+the observable object is also callable, in which case this method is
+invoked.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The event as an array of particles in the coordinates specified
+by <code>coords</code>.</li>
+</ul>
+</li>
+<li><strong>zs</strong> : 1-d array_like<ul>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+of the energies of an event.</li>
+</ul>
+</li>
+<li><strong>thetas</strong> : 2-d array_like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>nhats</strong> : 2-d array like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
+of the scaled particle momenta. Only applicable when EFMs are being
+used.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>float</em><ul>
+<li>The observable value.</li>
+</ul>
+</li>
+</ul>
+<h3 id="batch_compute_1">batch_compute</h3>
+<pre><code class="python">batch_compute(events, n_jobs=None)
+</code></pre>
+
+<p>Computes the value of the observable on several events.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The events as an array of arrays of particles in coordinates
+matching those anticipated by <code>coords</code>.</li>
+</ul>
+</li>
+<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
+<li>The number of worker processes to use. A value of <code>None</code> will
+use as many processes as there are CPUs on the machine.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>A vector of the observable values for each event.</li>
+</ul>
+</li>
+</ul>
+<h3 id="properties_1">properties</h3>
+<h4 id="efpset_1">efpset</h4>
+<pre><code class="python">efpset
+</code></pre>
+
+<p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
+<hr />
+<h2 id="c3">C3</h2>
+<p>Ratio of Energy Correlation Functions designed to tag three prong
+signals. In graphs, the formula is:</p>
+<p><img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" 
+class="obs_center" width="30%"/></p>
+<p>For additional information, see the <a href="https://arxiv.org/
+abs/1305.0007">original paper</a>.</p>
+<pre><code class="python">energyflow.C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
+              coords=None, check_input=True)
+</code></pre>
+
+<p>Since a <code>D2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
+keywords are accepted.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>measure</strong> : {<code>'hadr'</code>, <code>'hadrdot'</code>, <code>'hadrefm'</code>, <code>'ee'</code>, <code>'eeefm'</code>}<ul>
+<li>The choice of measure. See <a href="../measures">Measures</a> for additional
+info.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>float</em><ul>
+<li>The parameter $\beta$ appearing in the measure. Must be greater
+than zero.</li>
+</ul>
+</li>
+<li><strong>reg</strong> : <em>float</em><ul>
+<li>A regularizing value to be added to the denominator in the event
+that it is zero. Should typically be something less than 1e-30.</li>
+</ul>
+</li>
+<li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
+<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
+use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+</ul>
+</li>
+<li><strong>normed</strong> : <em>bool</em><ul>
+<li>Controls normalization of the energies in the measure.</li>
+</ul>
+</li>
+<li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
+<li>Controls which coordinates are assumed for the input. See 
+<a href="../measures">Measures</a> for additional info.</li>
+</ul>
+</li>
+<li><strong>check_input</strong> : <em>bool</em><ul>
+<li>Whether to check the type of the input each time or assume the
+first input type.</li>
+</ul>
+</li>
+</ul>
+<h3 id="compute_2">compute</h3>
+<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+</code></pre>
+
+<p>Computes the value of the observable on a single event. Note that
+the observable object is also callable, in which case this method is
+invoked.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>event</strong> : 2-d array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The event as an array of particles in the coordinates specified
+by <code>coords</code>.</li>
+</ul>
+</li>
+<li><strong>zs</strong> : 1-d array_like<ul>
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+of the energies of an event.</li>
+</ul>
+</li>
+<li><strong>thetas</strong> : 2-d array_like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+of the pairwise angles of an event.</li>
+</ul>
+</li>
+<li><strong>nhats</strong> : 2-d array like<ul>
+<li>If present, <code>zs</code> must also be present, and <code>nhats</code> is used in place
+of the scaled particle momenta. Only applicable when EFMs are being
+used.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>float</em><ul>
+<li>The observable value.</li>
+</ul>
+</li>
+</ul>
+<h3 id="batch_compute_2">batch_compute</h3>
+<pre><code class="python">batch_compute(events, n_jobs=None)
+</code></pre>
+
+<p>Computes the value of the observable on several events.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>events</strong> : array_like or <code>fastjet.PseudoJet</code><ul>
+<li>The events as an array of arrays of particles in coordinates
+matching those anticipated by <code>coords</code>.</li>
+</ul>
+</li>
+<li><strong>n_jobs</strong> : <em>int</em> or <code>None</code><ul>
+<li>The number of worker processes to use. A value of <code>None</code> will
+use as many processes as there are CPUs on the machine.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>1-d numpy.ndarray</em><ul>
+<li>A vector of the observable values for each event.</li>
+</ul>
+</li>
+</ul>
+<h3 id="properties_2">properties</h3>
+<h4 id="efpset_2">efpset</h4>
+<pre><code class="python">efpset
+</code></pre>
+
+<p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
+<hr />
               
             </div>
           </div>
@@ -733,7 +733,7 @@ and <code>1</code>.</li>
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../gen/" style="color: #fcfcfc;">&laquo; Previous</a></span>

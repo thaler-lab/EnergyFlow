@@ -4,14 +4,14 @@
 
 .eflogo {
     width: 100%;
-    max-height: 150px;
-    font-size: 150%;
+    max-height: 185px;
+    font-size: 200%;
     color: white;
 }
 
 .wy-side-nav-search .eflogo-img {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     background: var(--mit-red);
     margin-bottom: 0;
 }

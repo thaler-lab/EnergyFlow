@@ -1,3 +1,32 @@
+r"""# Architectures
+
+Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) are model
+architectures designed for learning from collider events as unordered,
+variable-length sets of particles. Both EFNs and PFNs are parameterized by a
+learnable per-particle function $\Phi$ and latent space function $F$.
+
+An EFN takes the following form:
+$$\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)$$
+where $z_i$ is a measure of the energy of particle $i$, such as $z_i=p_{T,i}$,
+and $\hat p_i$ is a measure of the angular information of particle $i$, such as
+$\hat p_i = (y_i,\phi_i)$. Any infrared- and collinear-safe observable can be
+parameterized in this form.
+
+A PFN takes the following form:
+$$\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)$$
+where $p_i$ is the information of particle $i$, such as its four-momentum,
+charge, or flavor. Any observable can be parameterized in this form. See the
+[Deep Sets](https://arxiv.org/abs/1703.06114) framework for additional 
+discussion.
+
+Since these architectures are not used by the core EnergyFlow code, and require
+the external [TensorFlow](https://www.tensorflow.org) and [scikit-learn](http:
+//scikit-learn.org/) libraries, they are not imported by default but must be
+explicitly imported, e.g. `from energyflow.archs import *`. EnergyFlow also
+contains several additional model architectures for ease of using common models
+that frequently appear in the intersection of particle physics and machine
+learning.
+"""
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
@@ -83,29 +112,28 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
     def _construct_model(self):
         pass
 
-    # fit(X_train, Y_train, **kwargs)
+    # fit(*args, **kwargs)
     @abstractmethod
     def fit(self):
         """Train the model by fitting the provided training dataset and labels.
-        Transparently calls the `fit()` method of the underlying model.
+        Transparently calls the `.fit()` method of the underlying model.
 
         **Arguments**
 
-        - **X_train** : _numpy.ndarray_
-            - The training dataset as an array of features for each sample.
-        - **Y_train** : _numpy.ndarray_
-            - The labels for the training dataset. May need to be one-hot encoded
-            depending on the requirements of the underlying model (typically Keras
-            models will use one-hot encoding whereas the linear model does not.)
+        - ***args** : _numpy.ndarray_ or _tensorflow.data.Dataset_
+            - Either the `X_train` and `Y_train` NumPy arrays or a TensorFlow
+            dataset. See [`tf_point_cloud_dataset`](#tf_point_cloud_dataset) for
+            contruction of TensorFlow datasets for EFN and PFN models.
         - **kwargs** : _dict_
-            - Keyword arguments passed on to the `fit` method of the underlying 
-            model. Most relevant for neural network models, where the [Keras model 
-            docs](https://keras.io/models/model/#fit) contain detailed information
-            on the possible arguments.
+            - Keyword arguments passed on to the `.fit()` method of the
+            underlying model. Most relevant for neural network models, where the
+            [TensorFlow/Keras model docs](https://www.tensorflow.org/api_docs/
+            python/tf/keras/Model#fit) contain detailed information on the
+            possible arguments.
 
         **Returns**
 
-        - Whatever the underlying model's `fit()` returns.
+        - The return value of the the underlying model's `.fit()` method.
         """
 
         pass

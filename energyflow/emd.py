@@ -34,8 +34,7 @@ are used instead of energies.
 from __future__ import absolute_import, division, print_function
 
 import itertools
-import os
-import sys
+import multiprocessing
 import time
 import warnings
 
@@ -160,7 +159,7 @@ if wasserstein:
             value is multiplied by the floating points epsilon (around 1e-16 for
             64-bit floats) to determine the actual tolerance.
         - **epsilon_small_factor** : _float_
-            - Analogou to `epsilon_large_factor` but used where the numerical
+            - Analogous to `epsilon_large_factor` but used where the numerical
             tolerance can be stricter.
 
         **Returns**
@@ -299,7 +298,7 @@ if wasserstein:
             value is multiplied by the floating points epsilon (around 1e-16 for
             64-bit floats) to determine the actual tolerance.
         - **epsilon_small_factor** : _float_
-            - Analogou to `epsilon_large_factor` but used where the numerical
+            - Analogous to `epsilon_large_factor` but used where the numerical
             tolerance can be stricter.
 
         **Returns**
@@ -321,7 +320,7 @@ if wasserstein:
 
         # determine number of threads to use
         if n_jobs is None or n_jobs == -1:
-            n_jobs = os.cpu_count() or 1
+            n_jobs = multiprocessing.cpu_count() or 1
 
         # create object
         pairwise_emd = wasserstein.PairwiseEMD(R, beta, norm, n_jobs, print_every, bool(verbose),
@@ -824,7 +823,7 @@ if ot:
         if isinstance(print_every, float):
             print_every = int(npairs*print_event)
         if n_jobs is None or n_jobs == -1:
-            n_jobs = os.cpu_count() or 1
+            n_jobs = multiprocessing.cpu_count() or 1
 
         # setup container for EMDs
         emds = np.zeros((len(_X0), len(_X1)))

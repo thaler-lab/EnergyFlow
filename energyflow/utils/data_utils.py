@@ -183,7 +183,7 @@ PID2FLOAT_MAP = {22: 0,
                  11: 1.0, -11: 1.1,
                  13: 1.2, -13: 1.3}
 
-def remap_pids(events, pid_i=3):
+def remap_pids(events, pid_i=3, error_on_unknown=True):
     """Remaps PDG id numbers to small floats for use in a neural network.
     `events` are modified in place and nothing is returned.
 
@@ -193,16 +193,28 @@ def remap_pids(events, pid_i=3):
         - The events as an array of arrays of particles.
     - **pid_i** : _int_
         - The column index corresponding to pid information in an event.
+    - **error_on_unknown** : _bool_
+        - Controls whether a `KeyError` is raised if an unknown PDG ID is
+        encountered. If `False`, unknown PDG IDs will map to zero.
     """
 
     if events.ndim == 3:
         pids = events[:,:,pid_i].astype(int).reshape((events.shape[0]*events.shape[1]))
-        events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
-                                        for pid in pids]).reshape(events.shape[:2])
+        if error_on_unknown:
+            events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP[pid]
+                                            for pid in pids]).reshape(events.shape[:2])
+        else:
+            events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
+                                            for pid in pids]).reshape(events.shape[:2])
     else:
-        for event in events:
-            event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
-                                         for pid in event[:,pid_i].astype(int)])
+        if error_on_unknown:
+            for event in events:
+                event[:,pid_i] = np.asarray([PID2FLOAT_MAP[pid]
+                                             for pid in event[:,pid_i].astype(int)])
+        else:
+            for event in events:
+                event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
+                                             for pid in event[:,pid_i].astype(int)])
 
 def _pad_events_axis1(events, axis1_shape):
     """Pads the first axis of the NumPy array `events` with zero subarrays

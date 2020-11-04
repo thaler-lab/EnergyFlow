@@ -89,6 +89,12 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#load">load</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#filter_particles">filter_particles</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#kfactors">kfactors</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#moddataset">MODDataset</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#sel">sel</a>
@@ -118,12 +124,6 @@
         </ul>
     </li>
         </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#load">load</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#filter_particles">filter_particles</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#kfactors">kfactors</a>
     </li>
         </ul>
     </li>
@@ -189,9 +189,6 @@
     
     <li>Datasets</li>
     <li class="wy-breadcrumbs-aside">
-      
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/datasets.md"
-          class="icon icon-github"> Edit on GitHub</a>
       
     </li>
   </ul>
@@ -264,6 +261,198 @@ DOIs of the original CMS Open Datasets, see <a href="https://arxiv.org/abs/1908.
 CMS Open Data</a>. To get started using the
 samples, see the <a href="/demos/#mod-jet-demo">MOD Jet Demo</a> which makes use of the 
 <a href="#load"><code>load</code></a> function.</p>
+<hr />
+<h3 id="load">load</h3>
+<pre><code class="python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', 
+                           dataset='cms', subdatasets=None, validate_files=False,
+                           store_pfcs=True, store_gens=True, verbose=0)
+</code></pre>
+
+<p>Loads samples from the specified MOD dataset. Any file that is needed
+that has not been cached will be automatically downloaded from Zenodo.
+Downloaded files are cached for later use. File checksums are optionally
+validated to ensure dataset fidelity.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
+<li>Used to specify cuts to be made to the dataset while loading; see
+the detailed description of the positional arguments accepted by
+<a href="#moddataset"><code>MODDataset</code></a>.</li>
+</ul>
+</li>
+<li><strong>amount</strong> : <em>int</em> or <em>float</em><ul>
+<li>Approximate amount of the dataset to load. If an integer, this is the
+number of files to load (a warning is issued if more files are
+requested than are available). If a float, this is the fraction of the
+number of available files to load, rounded up to the nearest whole
+number. Note that since ints and floats are treated different, a value
+of <code>1</code> loads one file whereas <code>1.0</code> loads the entire dataset. A value
+of <code>-1</code> also loads the entire dataset. </li>
+</ul>
+</li>
+<li><strong>cache_dir</strong> : <em>str</em><ul>
+<li>The directory where to store/look for the files. Note that 
+<code>'datasets'</code> is automatically appended to the end of this path, as well
+as the collection name. For example, the default is to download/look
+for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>.</li>
+</ul>
+</li>
+<li><strong>collection</strong> : <em>str</em><ul>
+<li>Name of the collection of datasets to consider. Currently the only
+collection is <code>'CMS2011AJets'</code>, though more may be added in the future.</li>
+</ul>
+</li>
+<li><strong>dataset</strong> : <em>str</em><ul>
+<li>Which dataset in the collection to load. Currently the
+<code>'CMS2011AJets'</code> collection has <code>'cms'</code>, <code>'sim'</code>, and <code>'gen'</code> datasets.</li>
+</ul>
+</li>
+<li><strong>subdatasets</strong> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or <code>None</code><ul>
+<li>The names of subdatasets to use. A value of <code>None</code> uses all available
+subdatasets. Currently, for the <code>'CMS2011AJets'</code> collection, the
+<code>'cms'</code> dataset has one subdataset, <code>'CMS_Jet300_pT375-infGeV'</code>, the
+<code>'sim'</code> dataset has eight subdatasets arrange according to generator
+$\hat p_T$, e.g. <code>'SIM470_Jet300_pT375-infGeV'</code>, and the <code>'gen'</code>
+dataset also has eight subdatasets arranged similaraly, e.g.
+<code>'GEN470_pT375-infGeV'</code>.</li>
+</ul>
+</li>
+<li><strong>validate_files</strong> : <em>bool</em><ul>
+<li>Whether or not to validate files according to their MD5 hashes. It
+is a good idea to set this to <code>True</code> when first downloading the files
+from Zenodo in order to ensure they downloaded properly.</li>
+</ul>
+</li>
+<li><strong>store_pfcs</strong> : <em>bool</em><ul>
+<li>Whether or not to store PFCs if they are present in the dataset.</li>
+</ul>
+</li>
+<li><strong>store_gens</strong> : <em>bool</em><ul>
+<li>Whether or not to store gen-level particles (referred to as
+"gens") if they are present in the dataset.</li>
+</ul>
+</li>
+<li><strong>verbose</strong> : <em>int</em><ul>
+<li>Verbosity level to use when loading. <code>0</code> is the least verbose, <code>1</code>
+is more verbose, and <code>2</code> is the most verbose.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>MODDataset</em><ul>
+<li>A <code>MODDataset</code> object containing the selected events or jets from the
+specified collection, dataset, and subdatasets.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="filter_particles">filter_particles</h3>
+<pre><code class="python">energyflow.mod.filter_particles(particles, which='all', pt_cut=None, chs=False,
+                                           pt_i=0, pid_i=4, vertex_i=5)
+</code></pre>
+
+<p>Constructs a mask that will select particles according to specified
+properties. Currently supported are selecting particles according to their
+charge, removing particles associated to a pileup vertex, and implementing
+a minimum particle-level pT cut</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>particles</strong> : <em>numpy.ndarray</em><ul>
+<li>Two-dimensional array of particles.</li>
+</ul>
+</li>
+<li><strong>which</strong> : {<code>'all'</code>, <code>'charged'</code>, <code>'neutral'</code>}<ul>
+<li>Selects particles according to their charge.</li>
+</ul>
+</li>
+<li><strong>pt_cut</strong> : <em>float</em> or <code>None</code><ul>
+<li>If not <code>None</code>, the minimum transverse momentum a particle can have to
+be selected.</li>
+</ul>
+</li>
+<li><strong>chs</strong> : <em>bool</em><ul>
+<li>Whether or not to implement charged hadron subtraction (CHS), which
+removes particles associated to a non-leading vertex (i.e. with vertex
+ids greater than or equal to 1).</li>
+</ul>
+</li>
+<li><strong>pt_i</strong> : <em>int</em><ul>
+<li>Column index of the transverse momentum values of the particles.</li>
+</ul>
+</li>
+<li><strong>pid_i</strong> : <em>int</em><ul>
+<li>Column index of the particle IDs (used to select by charge).</li>
+</ul>
+</li>
+<li><strong>vertex_i</strong> : <em>int</em><ul>
+<li>Column index of the vertex IDs (used to implement CHS).</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>A boolean mask which selects the specified particles, i.e.
+<code>particles[filter_particles(particles, ...)]</code> will be an array of only
+those particles passing the specified cuts.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="kfactors">kfactors</h3>
+<pre><code class="python">energyflow.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
+                                      apply_residual_correction=True)
+</code></pre>
+
+<p>Evaluates k-factors used by a particular collection. Currently, since
+CMS2011AJets is the only supported collection, some of the arguments are
+specific to the details of this collection (such as the use of jet pTs) and
+may change in future versions of this function.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>dataset</strong> : {<code>'sim'</code>, <code>'gen'</code>}<ul>
+<li>Specifies which type of k-factor to use. <code>'sim'</code> includes a reweighting
+to match the distribution of the number of primary vertices between
+the simulation dataset and the CMS data whereas <code>'gen'</code> does not.</li>
+</ul>
+</li>
+<li><strong>pts</strong> : <em>numpy.ndarray</em><ul>
+<li>The transverse momenta of the jets, used to determine the
+pT-dependent k-factor due to using only leading order matrix elements
+in the event generation. For the CMS2011AJets collection, these are
+derived from Figure 5 of <a href="https://doi.org/10.1016/j.
+physletb.2014.01.034">this reference</a>.</li>
+</ul>
+</li>
+<li><strong>npvs</strong> : <em>numpy.ndarray</em> of integer type or <code>None</code><ul>
+<li>The number of primary vertices of a simulated event, used to
+reweight a simulated event to match the pileup distribution of data.
+Should be the same length as <code>pts</code> and correspond to the same events.
+Not used if <code>dataset</code> is <code>'gen'</code>.</li>
+</ul>
+</li>
+<li><strong>collection</strong> : <em>str</em><ul>
+<li>Name of the collection of datasets to consider. Currently the only
+collection is <code>'CMS2011AJets'</code>, though more may be added in the future.</li>
+</ul>
+</li>
+<li><strong>apply_residual_correction</strong> : <em>bool</em><ul>
+<li>Whether or not to apply a residual correction derived from the first
+bin of the pT spectrum that corrects for the remaining difference
+between data and simulation.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of k-factors corresponding to the events specified by the
+<code>pts</code> and (optionally) the <code>npvs</code> arrays. These should be multiplied
+into any existing weight for the simulated or generated event.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h3 id="moddataset">MODDataset</h3>
 <p>Loads and provides access to datasets in MOD HDF5 format. Jets can be
@@ -377,7 +566,8 @@ i.e. <code>modds.jet_pts*modds.jecs</code>.</p>
 <p><code>MODDataset</code> supports the builtin <code>len()</code> method, which returns the number
 of jets currently stored in the dataset, as well as the <code>print()</code> method,
 which prints a summary of the dataset.</p>
-<pre><code class="python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, store_pfcs=True, store_gens=True)
+<pre><code class="python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, 
+                                 store_pfcs=True, store_gens=True)
 </code></pre>
 
 <p><code>MODDataset</code> can be initialized from a MOD HDF5 file or from a list
@@ -566,194 +756,6 @@ for GEN it is the same as <code>gens</code>.</p>
 
 <p>The underlying HDF5 file, if one is associated to the <code>MODDataset</code>.</p>
 <hr />
-<h3 id="load">load</h3>
-<pre><code class="python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', dataset='cms', subdatasets=None, validate_files=False, store_pfcs=True, store_gens=True, verbose=0)
-</code></pre>
-
-<p>Loads samples from the specified MOD dataset. Any file that is needed
-that has not been cached will be automatically downloaded from Zenodo.
-Downloaded files are cached for later use. File checksums are optionally
-validated to ensure dataset fidelity.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>*args</strong> : <em>arbitrary positional arguments</em><ul>
-<li>Used to specify cuts to be made to the dataset while loading; see
-the detailed description of the positional arguments accepted by
-<a href="#moddataset"><code>MODDataset</code></a>.</li>
-</ul>
-</li>
-<li><strong>amount</strong> : <em>int</em> or <em>float</em><ul>
-<li>Approximate amount of the dataset to load. If an integer, this is the
-number of files to load (a warning is issued if more files are
-requested than are available). If a float, this is the fraction of the
-number of available files to load, rounded up to the nearest whole
-number. Note that since ints and floats are treated different, a value
-of <code>1</code> loads one file whereas <code>1.0</code> loads the entire dataset. A value
-of <code>-1</code> also loads the entire dataset. </li>
-</ul>
-</li>
-<li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
-<code>'datasets'</code> is automatically appended to the end of this path, as well
-as the collection name. For example, the default is to download/look
-for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>.</li>
-</ul>
-</li>
-<li><strong>collection</strong> : <em>str</em><ul>
-<li>Name of the collection of datasets to consider. Currently the only
-collection is <code>'CMS2011AJets'</code>, though more may be added in the future.</li>
-</ul>
-</li>
-<li><strong>dataset</strong> : <em>str</em><ul>
-<li>Which dataset in the collection to load. Currently the
-<code>'CMS2011AJets'</code> collection has <code>'cms'</code>, <code>'sim'</code>, and <code>'gen'</code> datasets.</li>
-</ul>
-</li>
-<li><strong>subdatasets</strong> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or <code>None</code><ul>
-<li>The names of subdatasets to use. A value of <code>None</code> uses all available
-subdatasets. Currently, for the <code>'CMS2011AJets'</code> collection, the
-<code>'cms'</code> dataset has one subdataset, <code>'CMS_Jet300_pT375-infGeV'</code>, the
-<code>'sim'</code> dataset has eight subdatasets arrange according to generator
-$\hat p_T$, e.g. <code>'SIM470_Jet300_pT375-infGeV'</code>, and the <code>'gen'</code>
-dataset also has eight subdatasets arranged similaraly, e.g.
-<code>'GEN470_pT375-infGeV'</code>.</li>
-</ul>
-</li>
-<li><strong>validate_files</strong> : <em>bool</em><ul>
-<li>Whether or not to validate files according to their MD5 hashes. It
-is a good idea to set this to <code>True</code> when first downloading the files
-from Zenodo in order to ensure they downloaded properly.</li>
-</ul>
-</li>
-<li><strong>store_pfcs</strong> : <em>bool</em><ul>
-<li>Whether or not to store PFCs if they are present in the dataset.</li>
-</ul>
-</li>
-<li><strong>store_gens</strong> : <em>bool</em><ul>
-<li>Whether or not to store gen-level particles (referred to as
-"gens") if they are present in the dataset.</li>
-</ul>
-</li>
-<li><strong>verbose</strong> : <em>int</em><ul>
-<li>Verbosity level to use when loading. <code>0</code> is the least verbose, <code>1</code>
-is more verbose, and <code>2</code> is the most verbose.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>MODDataset</em><ul>
-<li>A <code>MODDataset</code> object containing the selected events or jets from the
-specified collection, dataset, and subdatasets.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="filter_particles">filter_particles</h3>
-<pre><code class="python">energyflow.mod.filter_particles(particles, which='all', pt_cut=None, chs=False, pt_i=0, pid_i=4, vertex_i=5)
-</code></pre>
-
-<p>Constructs a mask that will select particles according to specified
-properties. Currently supported are selecting particles according to their
-charge, removing particles associated to a pileup vertex, and implementing
-a minimum particle-level pT cut</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>particles</strong> : <em>numpy.ndarray</em><ul>
-<li>Two-dimensional array of particles.</li>
-</ul>
-</li>
-<li><strong>which</strong> : {<code>'all'</code>, <code>'charged'</code>, <code>'neutral'</code>}<ul>
-<li>Selects particles according to their charge.</li>
-</ul>
-</li>
-<li><strong>pt_cut</strong> : <em>float</em> or <code>None</code><ul>
-<li>If not <code>None</code>, the minimum transverse momentum a particle can have to
-be selected.</li>
-</ul>
-</li>
-<li><strong>chs</strong> : <em>bool</em><ul>
-<li>Whether or not to implement charged hadron subtraction (CHS), which
-removes particles associated to a non-leading vertex (i.e. with vertex
-ids greater than or equal to 1).</li>
-</ul>
-</li>
-<li><strong>pt_i</strong> : <em>int</em><ul>
-<li>Column index of the transverse momentum values of the particles.</li>
-</ul>
-</li>
-<li><strong>pid_i</strong> : <em>int</em><ul>
-<li>Column index of the particle IDs (used to select by charge).</li>
-</ul>
-</li>
-<li><strong>vertex_i</strong> : <em>int</em><ul>
-<li>Column index of the vertex IDs (used to implement CHS).</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>A boolean mask which selects the specified particles, i.e.
-<code>particles[filter_particles(particles, ...)]</code> will be an array of only
-those particles passing the specified cuts.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="kfactors">kfactors</h3>
-<pre><code class="python">energyflow.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True)
-</code></pre>
-
-<p>Evaluates k-factors used by a particular collection. Currently, since
-CMS2011AJets is the only supported collection, some of the arguments are
-specific to the details of this collection (such as the use of jet pTs) and
-may change in future versions of this function.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>dataset</strong> : {<code>'sim'</code>, <code>'gen'</code>}<ul>
-<li>Specifies which type of k-factor to use. <code>'sim'</code> includes a reweighting
-to match the distribution of the number of primary vertices between
-the simulation dataset and the CMS data whereas <code>'gen'</code> does not.</li>
-</ul>
-</li>
-<li><strong>pts</strong> : <em>numpy.ndarray</em><ul>
-<li>The transverse momenta of the jets, used to determine the
-pT-dependent k-factor due to using only leading order matrix elements
-in the event generation. For the CMS2011AJets collection, these are
-derived from Figure 5 of <a href="https://doi.org/10.1016/j.
-physletb.2014.01.034">this reference</a>.</li>
-</ul>
-</li>
-<li><strong>npvs</strong> : <em>numpy.ndarray</em> of integer type or <code>None</code><ul>
-<li>The number of primary vertices of a simulated event, used to
-reweight a simulated event to match the pileup distribution of data.
-Should be the same length as <code>pts</code> and correspond to the same events.
-Not used if <code>dataset</code> is <code>'gen'</code>.</li>
-</ul>
-</li>
-<li><strong>collection</strong> : <em>str</em><ul>
-<li>Name of the collection of datasets to consider. Currently the only
-collection is <code>'CMS2011AJets'</code>, though more may be added in the future.</li>
-</ul>
-</li>
-<li><strong>apply_residual_correction</strong> : <em>bool</em><ul>
-<li>Whether or not to apply a residual correction derived from the first
-bin of the pT spectrum that corrects for the remaining difference
-between data and simulation.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>An array of k-factors corresponding to the events specified by the
-<code>pts</code> and (optionally) the <code>npvs</code> arrays. These should be multiplied
-into any existing weight for the simulated or generated event.</li>
-</ul>
-</li>
-</ul>
-<hr />
 <h2 id="z-jets-with-delphes-simulation">Z + Jets with Delphes Simulation</h2>
 <p>Datasets of QCD jets used for studying unfolding in <a href="https://arxiv.org/abs/1911.09107">OmniFold: A Method to
 Simultaneously Unfold All Observables</a>. Four
@@ -814,7 +816,9 @@ OmniFold: A Method to Simultaneously Unfold All Observables, <a href="https://a
 </ul>
 <hr />
 <h4 id="load_1">load</h4>
-<pre><code class="python">energyflow.zjets_delphes.load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo', which='all', include_keys=None, exclude_keys=None)
+<pre><code class="python">energyflow.zjets_delphes.load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
+                                       source='zenodo', which='all',
+                                       include_keys=None, exclude_keys=None)
 </code></pre>
 
 <p>Loads in the Z+jet Pythia/Herwig + Delphes datasets. Any file that is
@@ -921,7 +925,8 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="/img/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
 <h4 id="load_2">load</h4>
-<pre><code class="python">energyflow.qg_jets.load(num_data=100000, generator='pythia', pad=True, with_bc=False, cache_dir='~/.energyflow')
+<pre><code class="python">energyflow.qg_jets.load(num_data=100000, pad=True, ncol=4, generator='pythia',
+                        with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
 
 <p>Loads samples from the dataset (which in total is contained in twenty 
@@ -935,15 +940,19 @@ later use. Basic checksums are performed.</p>
 events.</li>
 </ul>
 </li>
-<li><strong>generator</strong> : <em>str</em><ul>
-<li>Specifies which Monte Carlo generator the events should come from.
-Currently, the options are <code>'pythia'</code> and <code>'herwig'</code>.</li>
-</ul>
-</li>
 <li><strong>pad</strong> : <em>bool</em><ul>
 <li>Whether to pad the events with zeros to make them the same length.
 Note that if set to <code>False</code>, the returned <code>X</code> array will be an object
 array and not a 3-d array of floats.</li>
+</ul>
+</li>
+<li><strong>ncol</strong> : <em>int</em><ul>
+<li>Number of columns to keep in each event.</li>
+</ul>
+</li>
+<li><strong>generator</strong> : <em>str</em><ul>
+<li>Specifies which Monte Carlo generator the events should come from.
+Currently, the options are <code>'pythia'</code> and <code>'herwig'</code>.</li>
 </ul>
 </li>
 <li><strong>with_bc</strong> : <em>bool</em><ul>
@@ -1046,7 +1055,7 @@ prior to redownloading.</p>
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../archs/" style="color: #fcfcfc;">&laquo; Previous</a></span>

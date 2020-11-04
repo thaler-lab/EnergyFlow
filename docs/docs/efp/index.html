@@ -222,9 +222,6 @@
     <li>Energy Flow Polynomials</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/efp.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
   
@@ -247,7 +244,8 @@ are discussed in the <a href="../measures">Measures</a> section.</p>
 <hr />
 <h2 id="efp">EFP</h2>
 <p>A class for representing and computing a single EFP.</p>
-<pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None, check_input=True, np_optimize=True)
+<pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
+                      check_input=True, np_optimize=True)
 </code></pre>
 
 <p>Since a standalone EFP defines and holds a <code>Measure</code> instance, all
@@ -472,7 +470,8 @@ this EFP within an <code>EFPSet</code>.</p>
 <p>A class that holds a collection of EFPs and computes their values on
 events. Note that all keyword arguments are stored as properties of the
 <code>EFPSet</code> instance.</p>
-<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, coords=None, check_input=True, verbose=0)
+<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
+                         coords=None, check_input=True, verbose=0)
 </code></pre>
 
 <p><code>EFPSet</code> can be initialized in one of three ways (in order of
@@ -815,7 +814,7 @@ each column.</p>
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../efm/" style="color: #fcfcfc;">&laquo; Previous</a></span>

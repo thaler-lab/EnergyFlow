@@ -226,9 +226,6 @@
     <li>Utils</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/utils.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
   
@@ -1107,20 +1104,24 @@ maximum label plus one.</li>
 </ul>
 <hr />
 <h3 id="remap_pids">remap_pids</h3>
-<pre><code class="python">energyflow.utils.remap_pids(events, pid_i=3)
+<pre><code class="python">energyflow.utils.remap_pids(events, pid_i=3, error_on_unknown=True)
 </code></pre>
 
 <p>Remaps PDG id numbers to small floats for use in a neural network.
 <code>events</code> are modified in place and nothing is returned.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>events</strong> : <em>3-d numpy.ndarray</em><ul>
+<li><strong>events</strong> : <em>numpy.ndarray</em><ul>
 <li>The events as an array of arrays of particles.</li>
 </ul>
 </li>
 <li><strong>pid_i</strong> : <em>int</em><ul>
-<li>The index corresponding to pid information along the last 
-axis of <code>events</code>.</li>
+<li>The column index corresponding to pid information in an event.</li>
+</ul>
+</li>
+<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
+<li>Controls whether a <code>KeyError</code> is raised if an unknown PDG ID is
+encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </ul>
 </li>
 </ul>
@@ -1426,7 +1427,7 @@ obs/#zg_from_pj">$z_g$</a>.</li>
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../obs/" style="color: #fcfcfc;">&laquo; Previous</a></span>

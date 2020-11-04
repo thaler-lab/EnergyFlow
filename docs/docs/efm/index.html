@@ -91,6 +91,8 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Energy Flow Moments</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#efp2efms">efp2efms</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#efm">EFM</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#compute">compute</a>
@@ -124,8 +126,6 @@
     <li class="toctree-l4"><a class="reference internal" href="#rules">rules</a>
     </li>
         </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#efp2efms">efp2efms</a>
     </li>
         </ul>
     </li>
@@ -170,9 +170,6 @@
     <li>Energy Flow Moments</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/efm.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
   
@@ -201,9 +198,38 @@ with energies.</p>
 <code>EFPSet</code> classes using the classes and functions in this module. The <code>EFM</code> and
 <code>EFMSet</code> classes can also be used on their own, as can the <code>efp2efms</code> function.</p>
 <hr />
-<h2 id="efm">EFM</h2>
+<h3 id="efp2efms">efp2efms</h3>
+<pre><code class="python">energyflow.efp2efms(graph)
+</code></pre>
+
+<p>Translates an EFP formula, specified by its graph, to an expression
+involving EFMs. The input is a graph as a list of edges and the output is a
+tuple where the first argument is a string to be used with einsum and the
+second is a list of EFM signatures (the number of raised indices followed
+by the number of lowered indices).</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>graph</strong> : <em>list</em> of <em>tuple</em><ul>
+<li>The EFP graph given as a list of edges.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>(<em>str</em>, <em>list</em> of <em>tuple</em>)<ul>
+<li>The einstring to be used with einsum for performing the contraction
+of EFMs followed by a list of the EFM specs. If <code>r</code> is the result of
+this function, and <code>efms</code> is a dictionary containing EFM tensors
+indexed by their signatures, then the value of the EFP is given as
+<code>np.einsum(r[0], *[efms[sig] for sig in r[1]])</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="efm">EFM</h3>
 <p>A class representing and computing a single EFM.</p>
-<pre><code class="python">energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, coords=None, check_input=True)
+<pre><code class="python">energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
+                            coords=None, check_input=True)
 </code></pre>
 
 <p>Since EFMs are fully symmetric tensors, they can be specified by
@@ -255,7 +281,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h3 id="compute">compute</h3>
+<h4 id="compute">compute</h4>
 <pre><code class="python">compute(event=None, zs=None, nhats=None)
 </code></pre>
 
@@ -287,7 +313,7 @@ are the first <code>nup</code> and the lowered indices are the last <code>nlow</
 </ul>
 </li>
 </ul>
-<h3 id="batch_compute">batch_compute</h3>
+<h4 id="batch_compute">batch_compute</h4>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -312,31 +338,32 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 </li>
 </ul>
-<h3 id="properties">properties</h3>
-<h4 id="nup">nup</h4>
+<h4 id="properties">properties</h4>
+<h5 id="nup">nup</h5>
 <pre><code class="python">nup
 </code></pre>
 
 <p>The number of uppered indices on the EFM.</p>
-<h4 id="nlow">nlow</h4>
+<h5 id="nlow">nlow</h5>
 <pre><code class="python">nlow
 </code></pre>
 
 <p>The number of lowered indices on the EFM.</p>
-<h4 id="spec">spec</h4>
+<h5 id="spec">spec</h5>
 <pre><code class="python">spec
 </code></pre>
 
 <p>The signature of the EFM as <code>(nup, nlow)</code>.</p>
-<h4 id="v">v</h4>
+<h5 id="v">v</h5>
 <pre><code class="python">v
 </code></pre>
 
 <p>The valency, or total number of indices, of the EFM.</p>
 <hr />
-<h2 id="efmset">EFMSet</h2>
+<h3 id="efmset">EFMSet</h3>
 <p>A class for holding and efficiently constructing a collection of EFMs.</p>
-<pre><code class="python">energyflow.EFMSet(efm_specs=None, vmax=None, measure='hadrefm', beta=2, kappa=1, normed=None, coords=None, check_input=True)
+<pre><code class="python">energyflow.EFMSet(efm_specs=None, vmax=None, measure='hadrefm', beta=2, kappa=1,
+                  normed=None, coords=None, check_input=True)
 </code></pre>
 
 <p>An <code>EFMSet</code> can be initialized two ways (in order of precedence):</p>
@@ -393,7 +420,7 @@ first input type.</li>
 </ul>
 </li>
 </ul>
-<h3 id="compute_1">compute</h3>
+<h4 id="compute_1">compute</h4>
 <pre><code class="python">compute(event=None, zs=None, nhats=None)
 </code></pre>
 
@@ -425,7 +452,7 @@ of the scaled particle momenta.</li>
 </ul>
 </li>
 </ul>
-<h3 id="batch_compute_1">batch_compute</h3>
+<h4 id="batch_compute_1">batch_compute</h4>
 <pre><code class="python">batch_compute(events, n_jobs=None)
 </code></pre>
 
@@ -451,47 +478,19 @@ signatures.</li>
 </ul>
 </li>
 </ul>
-<h3 id="properties_1">properties</h3>
-<h4 id="efms">efms</h4>
+<h4 id="properties_1">properties</h4>
+<h5 id="efms">efms</h5>
 <pre><code class="python">efms
 </code></pre>
 
 <p>A dictionary of the <code>EFM</code> objects held by this <code>EFMSet</code> where the
 keys are the signatures of the EFM.</p>
-<h4 id="rules">rules</h4>
+<h5 id="rules">rules</h5>
 <pre><code class="python">rules
 </code></pre>
 
 <p>An ordered dictionary of the construction method used for each <code>EFM</code>
 where the order is the same as <code>sorted_efms</code>.</p>
-<hr />
-<h3 id="efp2efms">efp2efms</h3>
-<pre><code class="python">energyflow.efp2efms(graph)
-</code></pre>
-
-<p>Translates an EFP formula, specified by its graph, to an expression
-involving EFMs. The input is a graph as a list of edges and the output is a
-tuple where the first argument is a string to be used with einsum and the
-second is a list of EFM signatures (the number of raised indices followed
-by the number of lowered indices).</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>graph</strong> : <em>list</em> of <em>tuple</em><ul>
-<li>The EFP graph given as a list of edges.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li>(<em>str</em>, <em>list</em> of <em>tuple</em>)<ul>
-<li>The einstring to be used with einsum for performing the contraction
-of EFMs followed by a list of the EFM specs. If <code>r</code> is the result of
-this function, and <code>efms</code> is a dictionary containing EFM tensors
-indexed by their signatures, then the value of the EFP is given as
-<code>np.einsum(r[0], *[efms[sig] for sig in r[1]])</code>.</li>
-</ul>
-</li>
-</ul>
 <hr />
               
             </div>
@@ -528,7 +527,7 @@ indexed by their signatures, then the value of the EFP is given as
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../emd/" style="color: #fcfcfc;">&laquo; Previous</a></span>

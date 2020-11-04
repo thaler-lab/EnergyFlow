@@ -85,11 +85,25 @@
                 <ul class="current">
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Architectures</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#archbase">ArchBase</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#fit">fit</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#predict">predict</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#properties">properties</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#model">model</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#efn">EFN</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#eval_filters">eval_filters</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#properties">properties</a>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_1">properties</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#inputs">inputs</a>
     </li>
@@ -109,7 +123,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#pfn">PFN</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#properties_1">properties</a>
+    <li class="toctree-l3"><a class="reference internal" href="#properties_2">properties</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#inputs_1">inputs</a>
     </li>
@@ -133,17 +147,11 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#linearclassifier">LinearClassifier</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#archbase">ArchBase</a>
+    <li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#fit">fit</a>
+    <li class="toctree-l3"><a class="reference internal" href="#tf_point_cloud_dataset">tf_point_cloud_dataset</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#predict">predict</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#properties_2">properties</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#model">model</a>
-    </li>
-        </ul>
+    <li class="toctree-l3"><a class="reference internal" href="#tf_gen">tf_gen</a>
     </li>
         </ul>
     </li>
@@ -194,9 +202,6 @@
     <li>Architectures</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/pkomiske/EnergyFlow/edit/master/docs/docs/archs.md"
-          class="icon icon-github"> Edit on GitHub</a>
-      
     </li>
   </ul>
   
@@ -223,11 +228,215 @@ charge, or flavor. Any observable can be parameterized in this form. See the
 <a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional 
 discussion.</p>
 <p>Since these architectures are not used by the core EnergyFlow code, and require
-the external <a href="https://keras.io">Keras</a> and <a href="http://scikit-
-learn.org/">scikit-learn</a> libraries, they are not imported by default but must be explicitly
-imported, e.g. <code>from energyflow.archs import *</code>. EnergyFlow also contains
-several additional model architectures for ease of using common models that
-frequently appear in the intersection of particle physics and machine learning.</p>
+the external <a href="https://www.tensorflow.org">TensorFlow</a> and <a href="http:
+//scikit-learn.org/">scikit-learn</a> libraries, they are not imported by default but must be
+explicitly imported, e.g. <code>from energyflow.archs import *</code>. EnergyFlow also
+contains several additional model architectures for ease of using common models
+that frequently appear in the intersection of particle physics and machine
+learning.</p>
+<hr />
+<h2 id="archbase">ArchBase</h2>
+<p>Base class for all architectures contained in EnergyFlow. The mechanism of
+specifying hyperparameters for all architectures is described here. Methods
+common to all architectures are documented here. Note that this class cannot
+be instantiated directly as it is an abstract base class.</p>
+<pre><code class="python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
+</code></pre>
+
+<p>Accepts arbitrary arguments. Positional arguments (if present) are
+dictionaries of hyperparameters, keyword arguments (if present) are 
+hyperparameters directly. Keyword hyperparameters take precedence over
+positional hyperparameter dictionaries.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary positional arguments<ul>
+<li>Each argument is a dictionary containing hyperparameter (name, value)
+pairs.</li>
+</ul>
+</li>
+<li><strong>*kwargs</strong> : arbitrary keyword arguments<ul>
+<li>Hyperparameters as keyword arguments. Takes precedence over the 
+positional arguments.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Default NN Hyperparameters</strong></p>
+<p>Common hyperparameters that apply to all architectures except for
+<a href="#linearclassifier"><code>LinearClassifier</code></a>.</p>
+<p><strong>Compilation Options</strong></p>
+<ul>
+<li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
+<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras loss 
+function docs</a> for available loss
+functions.</li>
+</ul>
+</li>
+<li><strong>optimizer</strong>=<code>'adam'</code> : Keras optimizer or <em>str</em><ul>
+<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a> instance or a
+string referring to one (in which case the default arguments are 
+used).</li>
+</ul>
+</li>
+<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
+<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply to the
+model.</li>
+</ul>
+</li>
+<li><strong>compile_opts</strong>=<code>{}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to be passed on to the
+<a href="https://keras.io/models/model/#compile"><code>compile</code></a> method of the
+model. <code>loss</code>, <code>optimizer</code>, and <code>metrics</code> (see above) are included
+in this dictionary. All other values are the Keras defaults.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Output Options</strong></p>
+<ul>
+<li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
+<li>The output dimension of the model.</li>
+</ul>
+</li>
+<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em> or Keras activation<ul>
+<li>Activation function to apply to the output.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Callback Options</strong></p>
+<ul>
+<li><strong>filepath</strong>=<code>None</code> : <em>str</em><ul>
+<li>The file path for where to save the model. If <code>None</code> then the
+model will not be saved.</li>
+</ul>
+</li>
+<li><strong>save_while_training</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether the model is saved during training (using the 
+<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
+callback) or only once training terminates. Only relevant if
+<code>filepath</code> is set.</li>
+</ul>
+</li>
+<li><strong>save_weights_only</strong>=<code>False</code> : <em>bool</em><ul>
+<li>Whether only the weights of the model or the full model are
+saved. Only relevant if <code>filepath</code> is set.</li>
+</ul>
+</li>
+<li><strong>modelcheck_opts</strong>=<code>{'save_best_only':True, 'verbose':1}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to be passed on to the
+<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
+callback, if it is present. <code>save_weights_only</code> (see above) is
+included in this dictionary. All other arguments are the Keras
+defaults.</li>
+</ul>
+</li>
+<li><strong>patience</strong>=<code>None</code> : <em>int</em><ul>
+<li>The number of epochs with no improvement after which the training
+is stopped (using the <a href="https://keras.io/
+callbacks/#earlystopping"><code>EarlyStopping</code></a> callback). If <code>None</code> then no early stopping
+is used.</li>
+</ul>
+</li>
+<li><strong>earlystop_opts</strong>=<code>{'restore_best_weights':True, 'verbose':1}</code> : <em>dict</em><ul>
+<li>Dictionary of keyword arguments to be passed on to the
+<a href="https://keras.io/callbacks/#earlystopping"><code>EarlyStopping</code></a>
+callback, if it is present. <code>patience</code> (see above) is included in
+this dictionary. All other arguments are the Keras defaults.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Flags</strong></p>
+<ul>
+<li><strong>name_layers</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether to give the layers of the model explicit names or let
+them be named automatically. One reason to set this to <code>False</code>
+would be in order to use parts of this model in another model
+(all Keras layers in a model are required to have unique names).</li>
+</ul>
+</li>
+<li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether the model should be compiled or not.</li>
+</ul>
+</li>
+<li><strong>summary</strong>=<code>True</code> : <em>bool</em><ul>
+<li>Whether a summary should be printed or not.</li>
+</ul>
+</li>
+</ul>
+<h3 id="fit">fit</h3>
+<pre><code class="python">fit(*args, **kwargs)
+</code></pre>
+
+<p>Train the model by fitting the provided training dataset and labels.
+Transparently calls the <code>.fit()</code> method of the underlying model.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : <em>numpy.ndarray</em> or <em>tensorflow.data.Dataset</em><ul>
+<li>Either the <code>X_train</code> and <code>Y_train</code> NumPy arrays or a TensorFlow
+dataset. See <a href="#tf_point_cloud_dataset"><code>tf_point_cloud_dataset</code></a> for
+contruction of TensorFlow datasets for EFN and PFN models.</li>
+</ul>
+</li>
+<li><strong>kwargs</strong> : <em>dict</em><ul>
+<li>Keyword arguments passed on to the <code>.fit()</code> method of the
+underlying model. Most relevant for neural network models, where the
+<a href="https://www.tensorflow.org/api_docs/
+python/tf/keras/Model#fit">TensorFlow/Keras model docs</a> contain detailed information on the
+possible arguments.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>The return value of the the underlying model's <code>.fit()</code> method.</li>
+</ul>
+<h3 id="predict">predict</h3>
+<pre><code class="python">predict(X_test, **kwargs)
+</code></pre>
+
+<p>Evaluate the model on a dataset. Note that for the <code>LinearClassifier</code>
+this corresponds to the <code>predict_proba</code> method of the underlying 
+scikit-learn model.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
+<li>The dataset to evaluate the model on.</li>
+</ul>
+</li>
+<li><strong>kwargs</strong> : <em>dict</em><ul>
+<li>Keyword arguments passed on to the underlying model when
+predicting on a dataset.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>The value of the model on the input dataset.</li>
+</ul>
+</li>
+</ul>
+<h3 id="properties">properties</h3>
+<h4 id="model">model</h4>
+<pre><code class="python">model
+</code></pre>
+
+<p>The underlying model held by this architecture. Note that accessing
+an attribute that the architecture does not have will resulting in
+attempting to retrieve the attribute from this model. This allows for
+interrogation of the EnergyFlow architecture in the same manner as the
+underlying model.</p>
+<p><strong>Examples</strong></p>
+<ul>
+<li>For neural network models:<ul>
+<li><code>model.layers</code> will return a list of the layers, where 
+<code>model</code> is any EnergFlow neural network.</li>
+</ul>
+</li>
+<li>For linear models:<ul>
+<li><code>model.coef_</code> will return the coefficients, where <code>model</code>
+is any EnergyFlow <code>LinearClassifier</code> instance.</li>
+</ul>
+</li>
+</ul>
 <hr />
 <h2 id="efn">EFN</h2>
 <p>Energy Flow Network (EFN) architecture.</p>
@@ -368,7 +577,7 @@ filters at each point.</li>
 </ul>
 </li>
 </ul>
-<h3 id="properties">properties</h3>
+<h3 id="properties_1">properties</h3>
 <h4 id="inputs">inputs</h4>
 <pre><code class="python">inputs
 </code></pre>
@@ -410,7 +619,7 @@ hyperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
 <pre><code class="python">energyflow.archs.PFN(*args, **kwargs)
 </code></pre>
 
-<h3 id="properties_1">properties</h3>
+<h3 id="properties_2">properties</h3>
 <h4 id="inputs_1">inputs</h4>
 <pre><code class="python">inputs
 </code></pre>
@@ -646,208 +855,85 @@ convergence parameter.</li>
 </li>
 </ul>
 <hr />
-<h2 id="archbase">ArchBase</h2>
-<p>Base class for all architectures contained in EnergyFlow. The mechanism of
-specifying hyperparameters for all architectures is described here. Methods
-common to all architectures are documented here. Note that this class cannot
-be instantiated directly as it is an abstract base class.</p>
-<pre><code class="python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
+<h2 id="utilities">Utilities</h2>
+<p>Utilities for EnergyFlow architectures, split out from the utils submodule
+because these import tensorflow, which the main package avoids doing.</p>
+<hr />
+<h3 id="tf_point_cloud_dataset">tf_point_cloud_dataset</h3>
+<pre><code class="python">energyflow.archs.tf_point_cloud_dataset(data_arrs, batch_size=None, dtype='float32')
 </code></pre>
 
-<p>Accepts arbitrary arguments. Positional arguments (if present) are
-dictionaries of hyperparameters, keyword arguments (if present) are 
-hyperparameters directly. Keyword hyperparameters take precedence over
-positional hyperparameter dictionaries.</p>
+<p>Creates a TensorFlow dataset from NumPy arrays of events of particles,
+designed to be used as input to EFN and PFN models. The function uses a
+generator to spool events from the arrays as needed and pad them on the fly.
+As of EnergyFlow version 1.3.0, it is suggested to use this function to
+create TensorFlow datasets to use as input to EFN and PFN training as it can
+yield a slight improvement in training and evaluation time.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>*args</strong> : arbitrary positional arguments<ul>
-<li>Each argument is a dictionary containing hyperparameter (name, value)
-pairs.</li>
+<li><strong>data_arrs</strong> : <em>list</em> or <em>tuple</em> of <em>numpy.ndarray</em>
+    -</li>
+<li><strong>batch_size</strong> : <em>int</em> or <code>None</code><ul>
+<li>If an integer, the dataset will provide batches with that number of
+events when queried. If <code>None</code>, no batching is done. Setting this option
+should replace padding a <code>batch_size</code> argument directly to the <code>.fit</code>
+method of the EFN or PFN.</li>
 </ul>
 </li>
-<li><strong>*kwargs</strong> : arbitrary keyword arguments<ul>
-<li>Hyperparameters as keyword arguments. Takes precedence over the 
-positional arguments.</li>
+<li><strong>dtype</strong> : <em>str</em><ul>
+<li>The datatype to use in the TensorFlow dataset. Note that 32-bit
+floats are typically sufficient for ML models and so this is the
+default.</li>
 </ul>
 </li>
-</ul>
-<p><strong>Default NN Hyperparameters</strong></p>
-<p>Common hyperparameters that apply to all architectures except for
-<a href="#linearclassifier"><code>LinearClassifier</code></a>.</p>
-<p><strong>Compilation Options</strong></p>
-<ul>
-<li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras loss 
-function docs</a> for available loss
-functions.</li>
+<li><strong>prefetch</strong> : <em>int</em><ul>
+<li>The maximum number of batches to prepare in advance of their usage
+during training or evaluation. See the <a href="https:
+//www.tensorflow.org/api_docs/python/tf/data/Dataset#prefetch">TensorFlow documentation</a> for more
+details.</li>
 </ul>
 </li>
-<li><strong>optimizer</strong>=<code>'adam'</code> : Keras optimizer or <em>str</em><ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a> instance or a
-string referring to one (in which case the default arguments are 
-used).</li>
-</ul>
-</li>
-<li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
-<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply to the
-model.</li>
-</ul>
-</li>
-<li><strong>compile_opts</strong>=<code>{}</code> : <em>dict</em><ul>
-<li>Dictionary of keyword arguments to be passed on to the
-<a href="https://keras.io/models/model/#compile"><code>compile</code></a> method of the
-model. <code>loss</code>, <code>optimizer</code>, and <code>metrics</code> (see above) are included
-in this dictionary. All other values are the Keras defaults.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Output Options</strong></p>
-<ul>
-<li><strong>output_dim</strong>=<code>2</code> : <em>int</em><ul>
-<li>The output dimension of the model.</li>
-</ul>
-</li>
-<li><strong>output_act</strong>=<code>'softmax'</code> : <em>str</em> or Keras activation<ul>
-<li>Activation function to apply to the output.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Callback Options</strong></p>
-<ul>
-<li><strong>filepath</strong>=<code>None</code> : <em>str</em><ul>
-<li>The file path for where to save the model. If <code>None</code> then the
-model will not be saved.</li>
-</ul>
-</li>
-<li><strong>save_while_training</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether the model is saved during training (using the 
-<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
-callback) or only once training terminates. Only relevant if
-<code>filepath</code> is set.</li>
-</ul>
-</li>
-<li><strong>save_weights_only</strong>=<code>False</code> : <em>bool</em><ul>
-<li>Whether only the weights of the model or the full model are
-saved. Only relevant if <code>filepath</code> is set.</li>
-</ul>
-</li>
-<li><strong>modelcheck_opts</strong>=<code>{'save_best_only':True, 'verbose':1}</code> : <em>dict</em><ul>
-<li>Dictionary of keyword arguments to be passed on to the
-<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
-callback, if it is present. <code>save_weights_only</code> (see above) is
-included in this dictionary. All other arguments are the Keras
-defaults.</li>
-</ul>
-</li>
-<li><strong>patience</strong>=<code>None</code> : <em>int</em><ul>
-<li>The number of epochs with no improvement after which the training
-is stopped (using the <a href="https://keras.io/
-callbacks/#earlystopping"><code>EarlyStopping</code></a> callback). If <code>None</code> then no early stopping
-is used.</li>
-</ul>
-</li>
-<li><strong>earlystop_opts</strong>=<code>{'restore_best_weights':True, 'verbose':1}</code> : <em>dict</em><ul>
-<li>Dictionary of keyword arguments to be passed on to the
-<a href="https://keras.io/callbacks/#earlystopping"><code>EarlyStopping</code></a>
-callback, if it is present. <code>patience</code> (see above) is included in
-this dictionary. All other arguments are the Keras defaults.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Flags</strong></p>
-<ul>
-<li><strong>name_layers</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether to give the layers of the model explicit names or let
-them be named automatically. One reason to set this to <code>False</code>
-would be in order to use parts of this model in another model
-(all Keras layers in a model are required to have unique names).</li>
-</ul>
-</li>
-<li><strong>compile</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether the model should be compiled or not.</li>
-</ul>
-</li>
-<li><strong>summary</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether a summary should be printed or not.</li>
-</ul>
-</li>
-</ul>
-<h3 id="fit">fit</h3>
-<pre><code class="python">fit(X_train, Y_train, **kwargs)
-</code></pre>
-
-<p>Train the model by fitting the provided training dataset and labels.
-Transparently calls the <code>fit()</code> method of the underlying model.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>X_train</strong> : <em>numpy.ndarray</em><ul>
-<li>The training dataset as an array of features for each sample.</li>
-</ul>
-</li>
-<li><strong>Y_train</strong> : <em>numpy.ndarray</em><ul>
-<li>The labels for the training dataset. May need to be one-hot encoded
-depending on the requirements of the underlying model (typically Keras
-models will use one-hot encoding whereas the linear model does not.)</li>
-</ul>
-</li>
-<li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the <code>fit</code> method of the underlying 
-model. Most relevant for neural network models, where the <a href="https://keras.io/models/model/#fit">Keras model 
-docs</a> contain detailed information
-on the possible arguments.</li>
+<li><strong>pad_val</strong> : <em>float</em><ul>
+<li>Events will be padded with particles consisting of this value repeated
+as many times as necessary. This should match the <code>mask_val</code> option of
+the EFN or PFN model.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li>Whatever the underlying model's <code>fit()</code> returns.</li>
-</ul>
-<h3 id="predict">predict</h3>
-<pre><code class="python">predict(X_test, **kwargs)
-</code></pre>
-
-<p>Evaluate the model on a dataset. Note that for the <code>LinearClassifier</code>
-this corresponds to the <code>predict_proba</code> method of the underlying 
-scikit-learn model.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>X_test</strong> : <em>numpy.ndarray</em><ul>
-<li>The dataset to evaluate the model on.</li>
+<li><em>tensorflow.data.Dataset</em><ul>
+<li>The TensorFlow dataset built from the provided arrays and options. To
+view samples from the dataset, for instance the first five batches, one
+can do:</li>
 </ul>
 </li>
-<li><strong>kwargs</strong> : <em>dict</em><ul>
-<li>Keyword arguments passed on to the underlying model when
-predicting on a dataset.</li>
+</ul>
+<pre><code class="python">for sample in tfdataset.take(5).as_numpy_iterator():
+    print(sample.shape)
+</code></pre>
+
+<hr />
+<h3 id="tf_gen">tf_gen</h3>
+<pre><code class="python">energyflow.archs.tf_gen(args)
+</code></pre>
+
+<p>Returns a function that when called returns a generator that yields
+samples from the given arrays. Designed to work with
+<code>tf.data.Dataset.from_generator</code>, though commonly this is handled by
+<a href="#tf_point_cloud_dataset"><code>tf_point_cloud_dataset</code></a>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of arrays.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
-<li><em>numpy.ndarray</em><ul>
-<li>The value of the model on the input dataset.</li>
-</ul>
-</li>
-</ul>
-<h3 id="properties_2">properties</h3>
-<h4 id="model">model</h4>
-<pre><code class="python">model
-</code></pre>
-
-<p>The underlying model held by this architecture. Note that accessing
-an attribute that the architecture does not have will resulting in
-attempting to retrieve the attribute from this model. This allows for
-interrogation of the EnergyFlow architecture in the same manner as the
-underlying model.</p>
-<p><strong>Examples</strong></p>
-<ul>
-<li>For neural network models:<ul>
-<li><code>model.layers</code> will return a list of the layers, where 
-<code>model</code> is any EnergFlow neural network.</li>
-</ul>
-</li>
-<li>For linear models:<ul>
-<li><code>model.coef_</code> will return the coefficients, where <code>model</code>
-is any EnergyFlow <code>LinearClassifier</code> instance.</li>
+<li><em>function</em><ul>
+<li>A function that when called returns a generator that yields samples
+from the given arrays.</li>
 </ul>
 </li>
 </ul>
@@ -887,7 +973,7 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
-          <a href="https://github.com/pkomiske/EnergyFlow/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+          <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
       
       
         <span><a href="../../news/" style="color: #fcfcfc;">&laquo; Previous</a></span>
