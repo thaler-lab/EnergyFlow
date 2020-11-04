@@ -1,3 +1,4 @@
+---
 language: python
 os: linux
 dist: bionic
@@ -12,7 +13,7 @@ install: |
   fi
   pip install .
 
-script: 
+script:
   - pytest -v energyflow
 
 stages:
