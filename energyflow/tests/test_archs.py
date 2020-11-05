@@ -165,7 +165,7 @@ def test_EFN_global_features(nglobal):
 @pytest.mark.pfn
 @pytest.mark.globalfeatures
 @pytest.mark.parametrize('nglobal', [1, 12])
-def test_PFN_required(nglobal):
+def test_PFN_global_features(nglobal):
     n, m = 50, 10
     X_train = [np.random.rand(n, m, 3), np.random.rand(n, nglobal)]
     Y_train = np.random.rand(n, 2)

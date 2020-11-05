@@ -64,17 +64,17 @@ def construct_point_cloud_weighted_inputs(*input_dims, zs_names=None, phats_name
     # handle names
     if zs_names is None:
         zs_names = len(input_dims)*[None]
-    elif len(input_dims) != len(zs_names):
-        raise ValueError('zs_names must be the same length as number of input_dims')
+    elif (not isinstance(zs_names, list)) or len(input_dims) != len(zs_names):
+        raise ValueError('zs_names must be a list of the same length as number of input_dims')
     if phats_names is None:
         phats_names = len(input_dims)*[None]
-    elif len(input_dims) != len(phats_names):
-        raise ValueError('phats_names must be the same length as number of  input_dims')
+    elif (not isinstance(phats_names, list)) or len(input_dims) != len(phats_names):
+        raise ValueError('phats_names must be a list of the same length as number of  input_dims')
 
     inputs = []
     for i,input_dim in enumerate(input_dims):
         inputs.append(Input(batch_shape=(None, None), name=zs_names[i]))
-        inputs.append(Inputs(batch_shape=(None, None, input_dim), name=phats_name[i]))
+        inputs.append(Input(batch_shape=(None, None, input_dim), name=phats_names[i]))
 
     return inputs
 
@@ -275,7 +275,12 @@ class SymmetricPerParticleNN(NNBase):
             achitecture components are constructed. If not `None`, then the
             above `Phi` options are used to specify aspects of each EFN
             architecture; lists or tuples should be used to specify the options
-            for the different architectures.
+            for the different architectures. For instance, if there is an EFN1
+            and EFN2 architecture, the the `Phi_sizes` are specified as:
+        ```python
+        Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...), 
+                     (Phi_sizes_EFN2_0, Phi_sizes_EFN2_1, ...)]
+        ```
         - **num_global_features**=`None` : _int_
             - Number of additional features to be concatenated with the latent
             space observables to form the input to F. If not `None`, then the
@@ -503,8 +508,8 @@ class EFN(SymmetricPerParticleNN):
 
         # construct input tensors
         self._inputs = construct_point_cloud_weighted_inputs(self.input_dim, 
-                                           zs_name=self._proc_name('zs_input'), 
-                                           phats_name=self._proc_name('phats_input'))
+                                           zs_names=[self._proc_name('zs_input')],
+                                           phats_names=[self._proc_name('phats_input')])
 
         # construct weight tensor and begin list of layers
         self._layers, self._weights = construct_weighted_point_cloud_mask(self.inputs[0], 
@@ -615,7 +620,7 @@ class PFN(SymmetricPerParticleNN):
         """""" # need this for autogen docs
 
         # construct input tensor
-        self._inputs = construct_point_cloud_inputs(self.input_dim, name=self._proc_name('input'))
+        self._inputs = construct_point_cloud_inputs(self.input_dim, names=[self._proc_name('input')])
 
         # construct weight tensor and begin list of layers
         self._layers, self._weights = construct_point_cloud_mask(self.inputs[0], 

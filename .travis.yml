@@ -5,7 +5,7 @@ dist: bionic
 
 install: |
   pip install --upgrade cython scipy
-  pip install --upgrade pot pytest scikit-learn
+  pip install --upgrade pot pytest scikit-learn wasserstein
   if [ $(python -c "import sys; print(sys.version_info[0])") -eq 2 ]; then
     pip install tensorflow==1.14
   else

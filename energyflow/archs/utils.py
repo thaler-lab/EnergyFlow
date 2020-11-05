@@ -98,7 +98,6 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
     # check if this is a top-level call (i.e. xyweights is True)
     need_padding, nx = False, 1
     if _xyweights is True:
-        print('_xyweights is True')
 
         # check for proper length
         if len(data_arrs) not in {1, 2, 3}:
@@ -111,8 +110,6 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
                 data_arrs[i], need_padding_i = tf_point_cloud_dataset(data_arrs[i], batch_size=None,
                                                                       dtype=dtype, _xyweights='internal')
                 need_padding |= need_padding_i
-    else:
-        print('_xyweights is False')
 
     # process each dataset
     tfds, arr_len = [], None
@@ -160,10 +157,8 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
     # set batch size
     if batch_size:
         if need_padding:
-            print('padding the batch')
             tfds = tfds.padded_batch(batch_size, padding_values=float(pad_val))
         else:
-            print('not padding the batch')
             tfds = tfds.batch(batch_size)
 
     # set prefetch amount
