@@ -18,7 +18,6 @@ script:
 
 stages:
   - test
-  - deploy
 
 jobs:
   include:
@@ -26,23 +25,8 @@ jobs:
     - python: 3.6
     - python: 3.7
     - python: 3.8
-    - stage: deploy
-      python: 3.8
-      install: pip3 install --upgrade twine
-      script: |
-        python3 setup.py sdist bdist_wheel
-        if [ "$TWINE_REPOSITORY" = "testpypi" ]; then
-          export TWINE_PASSWORD=$TWINE_PASSWORD_PYPITEST
-        fi
-      after_success: |
-        if [ ! -z $TRAVIS_TAG ] || [ "$TWINE_REPOSITORY" = "testpypi" ]; then
-          python3 -m twine upload --skip-existing dist/*
-        fi
-
-env:
-  global:
-    TWINE_USERNAME=__token__
 
 branches:
   only:
     - master
+    - efn2

@@ -533,6 +533,19 @@ the biases of a network, so this has been implemented in a
 custom (and correct) manner since version <code>0.12.0</code>.</li>
 </ul>
 </li>
+</ul>
+<p><strong>Extended EFN Hyperparameters</strong></p>
+<ul>
+<li><strong>additional_input_dims</strong>=<code>None</code> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
+<li>If multiple EFN architectures are to be used to create several
+latent space embeddings, this list specifies the input dimensions
+of the subsequent input tensors. If <code>None</code>, then no additional
+achitecture components are constructed. If not <code>None</code>, then the
+above <code>Phi</code> options are used to specify aspects of each EFN
+architecture; lists or tuples should be used to specify the options
+for the different architectures.</li>
+</ul>
+</li>
 <li><strong>num_global_features</strong>=<code>None</code> : <em>int</em><ul>
 <li>Number of additional features to be concatenated with the latent
 space observables to form the input to F. If not <code>None</code>, then the
@@ -869,11 +882,42 @@ generator to spool events from the arrays as needed and pad them on the fly.
 As of EnergyFlow version 1.3.0, it is suggested to use this function to
 create TensorFlow datasets to use as input to EFN and PFN training as it can
 yield a slight improvement in training and evaluation time.</p>
+<p>Here are some examples of using this function. For a standard EFN without
+event weights, one would specify the arrays as:</p>
+<pre><code class="python">data_arrs = [[event_zs, event_phats], Y]
+</code></pre>
+
+<p>For a PFN, let's say with event weights, the arrays look like:</p>
+<pre><code class="python">data_arrs = [event_ps, Y, weights]
+</code></pre>
+
+<p>For an EFN model with global features, we would do:</p>
+<pre><code class="python">data_arrs = [[event_zs, event_phats, X_global], Y]
+</code></pre>
+
+<p>For a test dataset, where there are no target values of weights, it is
+important to use a nested list in the case where there are multiple inputs.
+For instance, for a test dataset for an EFN model, we would have:</p>
+<pre><code class="python">data_arrs = [[test_event_zs, test_event_phats]]
+</code></pre>
+
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>data_arrs</strong> : <em>list</em> or <em>tuple</em> of <em>numpy.ndarray</em>
-    -</li>
-<li><strong>batch_size</strong> : <em>int</em> or <code>None</code><ul>
+<li>
+<p><strong>data_arrs</strong> : {<em>tuple</em>, <em>list</em>} of <em>numpy.ndarray</em></p>
+<ul>
+<li>The NumPy arrays to build the dataset from. A single array may be
+given, in which case samples from it alone are used. If a list of arrays
+are given, then it should be length 1, 2, or 3, corresponding to the
+<code>(X,)</code>, <code>(X, Y)</code>, or <code>(X, Y, weights)</code>, respectively, where <code>X</code> are the
+features, <code>Y</code> are the targets and <code>weights</code> are the sample weights. In
+the case where multiple inputs or multiple target arrays are to be used,
+a nested list may be used, (see above).</li>
+</ul>
+</li>
+<li>
+<p><strong>batch_size</strong> : <em>int</em> or <code>None</code></p>
+<ul>
 <li>If an integer, the dataset will provide batches with that number of
 events when queried. If <code>None</code>, no batching is done. Setting this option
 should replace padding a <code>batch_size</code> argument directly to the <code>.fit</code>
@@ -887,7 +931,7 @@ default.</li>
 </ul>
 </li>
 <li><strong>prefetch</strong> : <em>int</em><ul>
-<li>The maximum number of batches to prepare in advance of their usage
+<li>The maximum number of samples to prepare in advance of their usage
 during training or evaluation. See the <a href="https:
 //www.tensorflow.org/api_docs/python/tf/data/Dataset#prefetch">TensorFlow documentation</a> for more
 details.</li>

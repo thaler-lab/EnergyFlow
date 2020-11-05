@@ -26,10 +26,38 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
     create TensorFlow datasets to use as input to EFN and PFN training as it can
     yield a slight improvement in training and evaluation time.
 
+
+    Here are some examples of using this function. For a standard EFN without
+    event weights, one would specify the arrays as:
+    ```python
+    data_arrs = [[event_zs, event_phats], Y]
+    ```
+    For a PFN, let's say with event weights, the arrays look like:
+    ```python
+    data_arrs = [event_ps, Y, weights]
+    ```
+    For an EFN model with global features, we would do:
+    ```python
+    data_arrs = [[event_zs, event_phats, X_global], Y]
+    ```
+    For a test dataset, where there are no target values of weights, it is
+    important to use a nested list in the case where there are multiple inputs.
+    For instance, for a test dataset for an EFN model, we would have:
+    ```python
+    data_arrs = [[test_event_zs, test_event_phats]]
+    ```
+
     **Arguments**
 
-    - **data_arrs** : _list_ or _tuple_ of _numpy.ndarray_
-        -
+    - **data_arrs** : {_tuple_, _list_} of _numpy.ndarray_
+        - The NumPy arrays to build the dataset from. A single array may be
+        given, in which case samples from it alone are used. If a list of arrays
+        are given, then it should be length 1, 2, or 3, corresponding to the
+        `(X,)`, `(X, Y)`, or `(X, Y, weights)`, respectively, where `X` are the
+        features, `Y` are the targets and `weights` are the sample weights. In
+        the case where multiple inputs or multiple target arrays are to be used,
+        a nested list may be used, (see above).
+
     - **batch_size** : _int_ or `None`
         - If an integer, the dataset will provide batches with that number of
         events when queried. If `None`, no batching is done. Setting this option
@@ -40,7 +68,7 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
         floats are typically sufficient for ML models and so this is the
         default.
     - **prefetch** : _int_
-        - The maximum number of batches to prepare in advance of their usage
+        - The maximum number of samples to prepare in advance of their usage
         during training or evaluation. See the [TensorFlow documentation](https:
         //www.tensorflow.org/api_docs/python/tf/data/Dataset#prefetch) for more
         details.
@@ -70,16 +98,21 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
     # check if this is a top-level call (i.e. xyweights is True)
     need_padding, nx = False, 1
     if _xyweights is True:
+        print('_xyweights is True')
 
         # check for proper length
         if len(data_arrs) not in {1, 2, 3}:
             raise ValueError("'data_arrs' should be length 1, 2, or 3 if _xyweights is True")
 
-        # make data_arrs[0] a list or tuple
-        if isinstance(data_arrs[0], (list, tuple)):
-            nx = len(data_arrs[0])
-            data_arrs[0], need_padding = tf_point_cloud_dataset(data_arrs[0], batch_size=None,
-                                                                dtype=dtype, _xyweights='internal')
+        # if data_arrs[i] is a list or tuple, process it further
+        for i in range(len(data_arrs)):
+            if isinstance(data_arrs[i], (list, tuple)):
+                nx = len(data_arrs[i])
+                data_arrs[i], need_padding_i = tf_point_cloud_dataset(data_arrs[i], batch_size=None,
+                                                                      dtype=dtype, _xyweights='internal')
+                need_padding |= need_padding_i
+    else:
+        print('_xyweights is False')
 
     # process each dataset
     tfds, arr_len = [], None
@@ -127,13 +160,15 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
     # set batch size
     if batch_size:
         if need_padding:
-            tfds = tfds.padded_batch(batch_size, padding_values=pad_val)
+            print('padding the batch')
+            tfds = tfds.padded_batch(batch_size, padding_values=float(pad_val))
         else:
+            print('not padding the batch')
             tfds = tfds.batch(batch_size)
 
-        # set prefetch amount
-        if prefetch:
-            tfds = tfds.prefetch(prefetch)
+    # set prefetch amount
+    if batch_size is not None and prefetch:
+        tfds = tfds.prefetch(prefetch)
 
     # ensure that the need for padding is communicated internally
     if _xyweights == 'internal':

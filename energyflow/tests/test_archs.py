@@ -159,7 +159,7 @@ def test_EFN_global_features(nglobal):
     Y_val = np.random.rand(n//10, 2)
     efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
     hist = efn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=[X_val, Y_val])
-    efn._global_feature_tensor
+    efn.global_feature_tensor
 
 @pytest.mark.arch
 @pytest.mark.pfn
@@ -173,5 +173,5 @@ def test_PFN_required(nglobal):
     Y_val = np.random.rand(n//10, 2)
     pfn = archs.PFN(input_dim=3, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
     hist = pfn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=[X_val, Y_val])
-    pfn._global_feature_tensor
+    pfn.global_feature_tensor
 

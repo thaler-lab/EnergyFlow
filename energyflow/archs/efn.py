@@ -17,10 +17,10 @@ from energyflow.utils import iter_or_rep
 __all__ = [
 
     # input constructor functions
-    #'construct_weighted_input', 'construct_input',
+    #'construct_point_cloud_weighted_inputs', 'construct_point_cloud_inputs',
 
     # weight mask constructor functions
-    #'construct_efn_weight_mask', 'construct_pfn_weight_mask',
+    #'construct_weighted_point_cloud_mask', 'construct_point_cloud_mask',
 
     # network consstructor functions
     #'construct_distributed_dense', 'construct_latent', 'construct_dense', 
@@ -42,48 +42,98 @@ DOT_AXIS = 0 if keras_version_tuple <= (2, 2, 4) else 1
 # INPUT FUNCTIONS
 ################################################################################
 
-def construct_weighted_input(input_dim, zs_name=None, phats_name=None):
+def construct_point_cloud_weighted_inputs(*input_dims, zs_names=None, phats_names=None):
+    """Builds the input tensors for multiple weighted point cloud inputs with
+    different dimensions.
+
+    **Arguments**
+
+    - ***input_dims** : arbitrary position arguments of type _int_
+        - The dimensions of the different point clouds, not including the weight
+        dimension.
+    - **zs_names** : _list_ of _str_ or `None`
+        - The names of the input weight tensors, or None to use default names.
+    - **phats_names** : _list_ of _str_ or `None`
+        - The names of the input point tensors, or None to use default names.
+
+    **Returns**
+
+    - _list_ of _tensorflow.keras.Input_ tensors.
+    """
+
+    # handle names
+    if zs_names is None:
+        zs_names = len(input_dims)*[None]
+    elif len(input_dims) != len(zs_names):
+        raise ValueError('zs_names must be the same length as number of input_dims')
+    if phats_names is None:
+        phats_names = len(input_dims)*[None]
+    elif len(input_dims) != len(phats_names):
+        raise ValueError('phats_names must be the same length as number of  input_dims')
+
+    inputs = []
+    for i,input_dim in enumerate(input_dims):
+        inputs.append(Input(batch_shape=(None, None), name=zs_names[i]))
+        inputs.append(Inputs(batch_shape=(None, None, input_dim), name=phats_name[i]))
+
+    return inputs
+
+def construct_point_cloud_inputs(*input_dims, names=None):
+    """Builds the input tensors for multiple point cloud inputs with different
+    dimensions.
+
+    **Arguments**
+
+    - ***input_dims** : arbitrary position arguments of type _int_
+        - The dimensions of the different point clouds, not including the weight
+        dimension.
+    - **names** : _list_ of _str_ or `None`
+        - The names of the input tensors for the weights, or None to use default
+        names.
+
+    **Returns**
+
+    - _list_ of _tensorflow.keras.Input_ tensors.
+    """
+
+    if names is None:
+        names = len(input_dims)*[None]
+    elif len(input_dims) != len(names):
+        raise ValueError('names must be the same length as the number of input dims')
 
     # construct input tensors
-    zs_input = Input(batch_shape=(None, None), name=zs_name)
-    phats_input = Input(batch_shape=(None, None, input_dim), name=phats_name)
-
-    return [zs_input, phats_input]
-
-def construct_input(input_dim, nnone=2, name=None):
-
-    # construct input tensor
-    return [Input(batch_shape=nnone*(None,) + (input_dim,), name=name)]
+    return [Input(batch_shape=(None, None, input_dim), name=name)
+            for input_dim,name in zip(input_dims, names)]
 
 
 ################################################################################
 # WEIGHT MASK FUNCTIONS
 ################################################################################
 
-def construct_efn_weight_mask(input_tensor, mask_val=0., name=None):
+def construct_weighted_point_cloud_mask(input_tensor, mask_val=0., name=None):
     """"""
 
     # define a function which maps the given mask_val to zero
-    def efn_mask_func(X, mask_val=mask_val):
+    def mask_func(X, mask_val=mask_val):
     
         # map mask_val to zero and leave everything else alone
         return X * K.cast(K.not_equal(X, mask_val), K.dtype(X))
 
-    mask_layer = Lambda(efn_mask_func, name=name)
+    mask_layer = Lambda(mask_func, name=name)
 
     # return as lists for consistency
     return [mask_layer], mask_layer(input_tensor)
 
-def construct_pfn_weight_mask(input_tensor, mask_val=0., name=None):
+def construct_point_cloud_mask(input_tensor, mask_val=0., name=None):
     """"""
 
     # define a function which maps the given mask_val to zero
-    def pfn_mask_func(X, mask_val=mask_val):
+    def mask_func(X, mask_val=mask_val):
 
         # map mask_val to zero and return 1 elsewhere
         return K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X))
 
-    mask_layer = Lambda(pfn_mask_func, name=name)
+    mask_layer = Lambda(mask_func, name=name)
 
     # return as lists for consistency
     return [mask_layer], mask_layer(input_tensor)
@@ -215,6 +265,17 @@ class SymmetricPerParticleNN(NNBase):
             keras.io/layers/core/#masking) appears to have issues masking
             the biases of a network, so this has been implemented in a
             custom (and correct) manner since version `0.12.0`.
+
+        **Extended EFN Hyperparameters**
+
+        - **additional_input_dims**=`None` : {_tuple_, _list_} of _int_
+            - If multiple EFN architectures are to be used to create several
+            latent space embeddings, this list specifies the input dimensions
+            of the subsequent input tensors. If `None`, then no additional
+            achitecture components are constructed. If not `None`, then the
+            above `Phi` options are used to specify aspects of each EFN
+            architecture; lists or tuples should be used to specify the options
+            for the different architectures.
         - **num_global_features**=`None` : _int_
             - Number of additional features to be concatenated with the latent
             space observables to form the input to F. If not `None`, then the
@@ -261,8 +322,8 @@ class SymmetricPerParticleNN(NNBase):
         # initialize dictionaries for holding indices of subnetworks
         self._layer_inds, self._tensor_inds = {}, {}
 
-        # construct earlier parts of the model
-        self._construct_inputs()
+        # construct parts of the model
+        self._construct_point_cloud_inputs()
         self._construct_Phi()
         self._construct_latent()
         self._construct_F()
@@ -283,8 +344,16 @@ class SymmetricPerParticleNN(NNBase):
         self._compile_model()
 
     @abstractmethod
-    def _construct_inputs(self):
+    def _construct_point_cloud_inputs(self):
         pass
+
+    def _construct_global_inputs(self):
+        
+        # get new input tensor and insert it at position 1 in tensors list
+        if self.num_global_features:
+            self.inputs.append(Input(batch_shape=(None, self.num_global_features), 
+                                     name=self._proc_name('num_global_features')))
+            self.tensors.insert(1, self.global_feature_tensor)
 
     def _construct_Phi(self):
 
@@ -335,6 +404,11 @@ class SymmetricPerParticleNN(NNBase):
         self._layer_inds['latent'] = layer_inds
         self._tensor_inds['latent'] = tensor_inds
 
+        # add concatenate layer if we have global features
+        if self.num_global_features:
+            self.layers.append(Concatenate(axis=-1, name=self._proc_name('concat')))
+            self.tensors.append(self.layers[-1]([self.tensors[-1], self.global_feature_tensor]))
+
     def _construct_F(self):
 
         # get names
@@ -369,6 +443,10 @@ class SymmetricPerParticleNN(NNBase):
     @abstractproperty
     def weights(self):
         pass
+
+    @property
+    def global_feature_tensor(self):
+        return self.inputs[-1] if self.num_global_features else None
 
     @property
     def Phi(self):
@@ -414,21 +492,6 @@ class SymmetricPerParticleNN(NNBase):
 
 
 ################################################################################
-# Construction helper functions
-################################################################################
-
-def _new_symppnn(symppnn, cls, args, kwargs):
-    pfn = (symppnn is PFN)
-    if cls is symppnn:
-        if kwargs.get('num_global_features') is not None:
-            return super(symppnn, cls).__new__(PFNGlobalFeatures if pfn else EFNGlobalFeatures)
-        else:
-            return super(symppnn, cls).__new__(symppnn)
-    else:
-        return super(symppnn, cls).__new__(cls)
-
-
-################################################################################
 # EFN - Energy flow network class
 ################################################################################
 
@@ -436,24 +499,23 @@ class EFN(SymmetricPerParticleNN):
 
     """Energy Flow Network (EFN) architecture."""
 
-    # customize which EFN instance is created
-    def __new__(cls, *args, **kwargs):
-        return _new_symppnn(EFN, cls, args, kwargs)
-
-    def _construct_inputs(self):
+    def _construct_point_cloud_inputs(self):
 
         # construct input tensors
-        self._inputs = construct_weighted_input(self.input_dim, 
+        self._inputs = construct_point_cloud_weighted_inputs(self.input_dim, 
                                            zs_name=self._proc_name('zs_input'), 
                                            phats_name=self._proc_name('phats_input'))
 
         # construct weight tensor and begin list of layers
-        self._layers, self._weights = construct_efn_weight_mask(self.inputs[0], 
+        self._layers, self._weights = construct_weighted_point_cloud_mask(self.inputs[0], 
                                                                 mask_val=self.mask_val, 
                                                                 name=self._proc_name('mask'))
 
         # begin list of tensors with the inputs
         self._tensors = [self.weights] + self.inputs
+
+        # build common inputs
+        self._construct_global_inputs()
 
     @property
     def inputs(self):
@@ -548,24 +610,23 @@ class PFN(SymmetricPerParticleNN):
     """Particle Flow Network (PFN) architecture. Accepts the same 
     hyperparameters as the [`EFN`](#EFN)."""
 
-    # customize which PFN instance is created
-    def __new__(cls, *args, **kwargs):
-        return _new_symppnn(PFN, cls, args, kwargs)
-
     # PFN(*args, **kwargs)
-    def _construct_inputs(self):
+    def _construct_point_cloud_inputs(self):
         """""" # need this for autogen docs
 
         # construct input tensor
-        self._inputs = construct_input(self.input_dim, name=self._proc_name('input'))
+        self._inputs = construct_point_cloud_inputs(self.input_dim, name=self._proc_name('input'))
 
         # construct weight tensor and begin list of layers
-        self._layers, self._weights = construct_pfn_weight_mask(self.inputs[0], 
-                                                                mask_val=self.mask_val, 
-                                                                name=self._proc_name('mask'))
+        self._layers, self._weights = construct_point_cloud_mask(self.inputs[0], 
+                                                                 mask_val=self.mask_val, 
+                                                                 name=self._proc_name('mask'))
 
         # begin list of tensors with the inputs
         self._tensors = [self.weights] + self.inputs
+
+        # build common inputs
+        self._construct_global_inputs()
 
     @property
     def inputs(self):
@@ -583,38 +644,3 @@ class PFN(SymmetricPerParticleNN):
         """
 
         return self._weights
-
-################################################################################
-# Mixin class for concatenating features to F (eventually there may be more mixins)
-################################################################################
-
-class GlobalFeaturesMixin(object):
-
-    def _construct_inputs(self):
-
-        # do normal construction of inputs
-        super(GlobalFeaturesMixin, self)._construct_inputs()
-
-        # get new input tensor and insert it at position 1 in tensors list
-        self.inputs.extend(construct_input(self.num_global_features, nnone=1,
-                                           name=self._proc_name('num_global_features')))
-        self.tensors.insert(1, self._global_feature_tensor)
-
-    def _construct_latent(self):
-
-        # do normal construction of the latent layer
-        super(GlobalFeaturesMixin, self)._construct_latent()
-
-        # add concatenate layer and tensor to respective lists
-        self.layers.append(Concatenate(axis=-1, name=self._proc_name('concat')))
-        self.tensors.append(self.layers[-1]([self.tensors[-1], self._global_feature_tensor]))
-
-    @property
-    def _global_feature_tensor(self):
-        return self.inputs[-1]
-
-class PFNGlobalFeatures(GlobalFeaturesMixin, PFN):
-    pass
-
-class EFNGlobalFeatures(GlobalFeaturesMixin, EFN):
-    pass
