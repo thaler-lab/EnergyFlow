@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{%- block site_name %}
+  <a href="{{ nav.homepage.url|url }}">
+    <div class="eflogo">
+      <img src="{{ base_url }}/img/eflogowhite.png"  class="eflogo-img"> {{ config.site_name }}
+    </div>
+  </a>
+{%- endblock %}

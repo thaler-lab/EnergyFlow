@@ -1,6 +1,5 @@
 **/__pycache__
 .ipynb_checkpoints
-mkdocs/
 clean
 dist/
 .DS_Store

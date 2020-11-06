@@ -69,8 +69,8 @@ __all__ = [
 # emd(*args, **kwargs)
 def emd4doc():
     """Computes the EMD between two events. The `emd` function is set equal to
-    either `emd_wasserstein` or `emd_pot`, with the former preferred unless the
-    Wasserstein library is not available.
+    [`emd_wasserstein`](#emd_wasserstein) or [`emd_pot`](#emd_pot), with the
+    former preferred unless the Wasserstein library is not available.
     """
 
     pass
@@ -78,8 +78,9 @@ def emd4doc():
 # emds(*args, **kwargs)
 def emds4doc():
     """Computes the EMDs between collections of events. The `emds` function is
-    set equal to either `emds_wasserstein` or `emds_pot`, with the former
-    preferred unless the Wasserstein library is not available.
+    set equal to [`emds_wasserstein`](#emds_wasserstein) or
+    [`emds_pot`](#emds_pot), with the former preferred unless the Wasserstein
+    library is not available.
     """
 
     pass

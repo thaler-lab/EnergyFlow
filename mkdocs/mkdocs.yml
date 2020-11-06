@@ -1,0 +1,48 @@
+site_name: EnergyFlow
+site_url: https://energyflow.network
+site_description: Documentation for EnergyFlow
+site_author: Patrick T. Komiske III, Eric M. Metodiev
+repo_url: https://github.com/pkomiske/EnergyFlow
+edit_uri: ""
+
+docs_dir: sources
+site_dir: ../docs
+
+# style
+theme:
+  name: readthedocs
+  navigation_depth: 5
+  custom_dir: eftheme
+extra_css:
+  - css/eftheme.css
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML
+  - js/eftheme.js
+
+# use math extension
+markdown_extensions:
+  - mdx_math
+
+# google analytics
+google_analytics: ['UA-122962541-1', 'energyflow.network']
+
+# nav structure
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Demos: demos.md
+    - Examples: examples.md
+    - FAQs: faqs.md
+    - Release Notes: releases.md
+    - News: news.md
+  - Documentation:
+    - Architectures: docs/archs.md
+    - Datasets: docs/datasets.md
+    - EMD: docs/emd.md
+    - Energy Flow Moments: docs/efm.md
+    - Energy Flow Polynomials: docs/efp.md
+    - Measures: docs/measures.md
+    - Multigraph Generation: docs/gen.md
+    - Observables: docs/obs.md
+    - Utils: docs/utils.md
