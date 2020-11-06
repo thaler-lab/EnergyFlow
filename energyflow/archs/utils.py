@@ -11,6 +11,8 @@ import warnings
 import numpy as np
 import tensorflow as tf
 
+from energyflow.utils import iter_or_rep
+
 __all__ = [
     'tf_point_cloud_dataset',
     'tf_gen'
@@ -195,3 +197,12 @@ def tf_gen(*args):
         return zip(*args)
 
     return gen_func
+
+def iter_or_rep_multiple(arg, num, name):
+    if not isinstance(arg, (list, tuple)):
+        arg = [arg]
+
+    if len(arg) != num:
+        raise ValueError('multiple Phi components being used, incorrect number of sublists for ' + name)
+
+    return [iter_or_rep(x) for x in arg]
