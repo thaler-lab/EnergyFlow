@@ -174,7 +174,8 @@ def to_categorical(labels, num_classes=None):
     return categorical
 
 # PDGid to small float dictionary
-PID2FLOAT_MAP = {22: 0,
+PID2FLOAT_MAP = {0: 0.,
+                 22: 0.,
                  211: .1, -211: .2,
                  321: .3, -321: .4,
                  130: .5,

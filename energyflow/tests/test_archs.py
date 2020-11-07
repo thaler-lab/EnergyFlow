@@ -120,7 +120,7 @@ def test_EFN_masking(mask_val):
 
     assert epsilon_diff(efn.predict(X_test), efn.predict(X_test_mask), 10**-15)
 
-    kf = K.function(inputs=efn.inputs, outputs=efn.latent)
+    kf = K.function(inputs=efn.inputs, outputs=efn.latent[0])
     pure_mask = kf([0*X_test[0] + mask_val, 0*X_test[1] + mask_val ])[0]
     assert epsilon_diff(pure_mask, 0, 10**-15)
 
@@ -143,7 +143,7 @@ def test_PFN_masking(mask_val):
 
     assert epsilon_diff(pfn.predict(X_test), pfn.predict(X_test_mask), 10**-15)
 
-    kf = K.function(inputs=pfn.inputs, outputs=pfn.latent)
+    kf = K.function(inputs=pfn.inputs, outputs=pfn.latent[0])
     pure_mask = kf([0*X_test + mask_val])[0]
     assert epsilon_diff(pure_mask, 0, 10**-15)
 

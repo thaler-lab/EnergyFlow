@@ -297,14 +297,14 @@ class SymmetricPerParticleNN(NNBase):
         # process generic NN hps
         super(SymmetricPerParticleNN, self)._process_hps()
 
-        # required hyperparameters
+        # input dimensions
         self.input_dims = [self._proc_arg('input_dim')]
-        self.Phi_sizes = self._proc_arg('Phi_sizes', old='ppm_sizes')
-        self.F_sizes = self._proc_arg('F_sizes', old='dense_sizes')
-
-        # network modifications
         self.additional_input_dims = self._proc_arg('additional_input_dims', default=None)
         self.num_global_features = self._proc_arg('num_global_features', default=None)
+
+        # network sizes
+        self.Phi_sizes = self._proc_arg('Phi_sizes', old='ppm_sizes')
+        self.F_sizes = self._proc_arg('F_sizes', old='dense_sizes')
 
         # determine if we have multiple Phi components
         self._prepare_multiple_Phis()
@@ -319,9 +319,15 @@ class SymmetricPerParticleNN(NNBase):
 
         # regularizations
         self.Phi_l2_regs = self._proc_Phi_arg('Phi_l2_regs', default=0.)
-        self.latent_dropout = self._proc_Phi_arg('latent_dropout', default=0.)
+        self.latent_dropout = self._proc_arg('latent_dropout', default=0.)
         self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0., old='dense_dropouts'))
         self.F_l2_regs   = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))
+
+        # handle latent dropout
+        if not isinstance(self.latent_dropout, (tuple, list)):
+            self.latent_dropout = self.num_Phi_models*[self.latent_dropout]
+        elif len(self.latent_dropout) != self.num_Phi_models:
+            raise ValueError('number of latent dropouts does not match number of Phi components')
 
         # masking
         self.mask_val = self._proc_arg('mask_val', default=0.)
@@ -372,6 +378,7 @@ class SymmetricPerParticleNN(NNBase):
 
         else:
             self.num_Phi_models = 1
+            self.Phi_sizes = [self.Phi_sizes]
             def proc_Phi_arg(name, **kwargs):
                 return [iter_or_rep(self._proc_arg(name, **kwargs))]
 
@@ -407,16 +414,16 @@ class SymmetricPerParticleNN(NNBase):
                                                         names=names, l2_regs=self.Phi_l2_regs[i])
 
             # add layers and tensors to internal lists
-            self._layers.extend(Phi_layers)
-            self._tensors.extend(Phi_tensors)
+            self.layers.extend(Phi_layers)
+            self.tensors.extend(Phi_tensors)
 
             # determine end inds
             layer_inds.append(len(self.layers))
             tensor_inds.append(len(self.tensors))
 
             # store inds
-            self._layer_inds['Phi_{}'.format(i)] = tuple(layer_inds)
-            self._tensor_inds['Phi_{}'.format(i)] = tuple(tensor_inds)
+            self.layer_inds['Phi_{}'.format(i)] = tuple(layer_inds)
+            self.tensor_inds['Phi_{}'.format(i)] = tuple(tensor_inds)
 
     def _construct_latent(self):
 
@@ -428,21 +435,21 @@ class SymmetricPerParticleNN(NNBase):
 
             # construct latent tensors
             ps_tensor = self.tensors[self.tensor_inds['Phi_{}'.format(i)][1] - 1]
-            latent_layers, latent_tensors = construct_latent(ps_tensor, self.weights[i], 
-                                                             dropout=self.latent_dropout[i], 
+            latent_layers, latent_tensors = construct_latent(ps_tensor, self.weights[i],
+                                                             dropout=self.latent_dropout[i],
                                                              name=self._proc_name('sum_{}'.format(i)))
             
             # add layers and tensors to internal lists
-            self._layers.extend(latent_layers)
-            self._tensors.extend(latent_tensors)
+            self.layers.extend(latent_layers)
+            self.tensors.extend(latent_tensors)
 
             # determine end inds
             layer_inds.append(len(self.layers))
             tensor_inds.append(len(self.tensors))
 
             # store inds
-            self._layer_inds['latent_{}'.format(i)] = tuple(layer_inds)
-            self._tensor_inds['latent_{}'.format(i)] = tuple(tensor_inds)
+            self.layer_inds['latent_{}'.format(i)] = tuple(layer_inds)
+            self.tensor_inds['latent_{}'.format(i)] = tuple(tensor_inds)
 
         # get tensors to concatenate
         tensors_to_concat = [latents[-1] for latents in self.latent]
@@ -450,10 +457,12 @@ class SymmetricPerParticleNN(NNBase):
             tensors_to_concat.append(self.global_feature_tensor)
 
         if len(tensors_to_concat) > 1:
-            self._layer_inds['concat'] = len(self.layers)
-            self._tensor_inds['concat'] = len(self.tensors)
+            self.layer_inds['concat'] = len(self.layers)
+            self.tensor_inds['F_input'] = self._tensor_inds['concat'] = len(self.tensors)
             self.layers.append(Concatenate(axis=-1, name=self._proc_name('concat')))
             self.tensors.append(self.layers[-1](tensors_to_concat))
+        else:
+            self.tensor_inds['F_input'] = len(self.tensors) - 1
 
     def _construct_F(self):
 
@@ -463,24 +472,23 @@ class SymmetricPerParticleNN(NNBase):
         # determine begin inds
         layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
 
-
         # construct F
-        F_layers, F_tensors = construct_dense(self.tensors[-1], self.F_sizes,
+        F_layers, F_tensors = construct_dense(self.tensors[self.tensor_inds['F_input']], self.F_sizes,
                                               acts=self.F_acts, k_inits=self.F_k_inits, 
                                               dropouts=self.F_dropouts, names=names,
                                               l2_regs=self.F_l2_regs)
 
         # add layers and tensors to internal lists
-        self._layers.extend(F_layers)
-        self._tensors.extend(F_tensors)
+        self.layers.extend(F_layers)
+        self.tensors.extend(F_tensors)
 
         # determine end inds
         layer_inds.append(len(self.layers))
         tensor_inds.append(len(self.tensors))
 
         # store inds
-        self._layer_inds['F'] = layer_inds
-        self._tensor_inds['F'] = tensor_inds
+        self.layer_inds['F'] = layer_inds
+        self.tensor_inds['F'] = tensor_inds
 
     @property
     def layer_inds(self):
@@ -494,13 +502,13 @@ class SymmetricPerParticleNN(NNBase):
     def inputs(self):
         pass
 
-    @property
-    def _ps_input_tensors(self):
-        return [self.inputs[i] for i in self.tensor_inds['ps_inputs']]
-
     @abstractproperty
     def weights(self):
         pass
+
+    @property
+    def _ps_input_tensors(self):
+        return [self.inputs[i] for i in self.tensor_inds['ps_inputs']]
 
     @property
     def global_feature_tensor(self):
@@ -561,7 +569,7 @@ class EFN(SymmetricPerParticleNN):
         # construct input tensors
         zs_names = [self._proc_name('zs_input_{}'.format(i)) for i in range(self.num_Phi_models)]
         phats_names = [self._proc_name('phats_input_{}'.format(i)) for i in range(self.num_Phi_models)]
-        self._inputs = construct_point_cloud_weighted_inputs(self.input_dims, zs_names=zs_names, phats_names=phats_names)
+        self._inputs = construct_point_cloud_weighted_inputs(*self.input_dims, zs_names=zs_names, phats_names=phats_names)
 
         # begin list of tensors in the model
         self._tensors = list(self.inputs)
@@ -576,7 +584,7 @@ class EFN(SymmetricPerParticleNN):
         self.layer_inds['weight_mask'] = 0
 
         # add weights to list of tensors
-        self.tensors += self.weights
+        self.tensors.extend(self.weights)
         self.tensor_inds['weights'] = (len(self.inputs), len(self.tensors))
 
         # build common inputs
@@ -686,7 +694,7 @@ class PFN(SymmetricPerParticleNN):
 
         # construct input tensor
         ps_names = [self._proc_name('ps_input_{}'.format(i)) for i in range(self.num_Phi_models)]
-        self._inputs = construct_point_cloud_inputs(self.input_dims, names=ps_names)
+        self._inputs = construct_point_cloud_inputs(*self.input_dims, names=ps_names)
 
         # begin list of tensors in the model
         self._tensors = list(self.inputs)
@@ -700,7 +708,7 @@ class PFN(SymmetricPerParticleNN):
         self.layer_inds['weight_mask'] = 0
 
         # add weights to list of tensors
-        self.tensors += self.weights
+        self.tensors.extend(self.weights)
         self.tensor_inds['weights'] = (len(self.inputs), len(self.tensors))
 
         # build common inputs

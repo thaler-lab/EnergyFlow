@@ -1,0 +1,103 @@
+:root {
+    --mit-red: #a31f34;
+}
+
+.eflogo {
+    width: 100%;
+    max-height: 185px;
+    font-size: 200%;
+    color: white;
+}
+
+.wy-side-nav-search .eflogo-img {
+    width: 150px;
+    height: 150px;
+    background: var(--mit-red);
+    margin-bottom: 0;
+}
+
+.wy-side-nav-search {
+    background: var(--mit-red);
+}
+
+h1, legend {
+    color: var(--mit-red);
+}
+
+.wy-side-nav-search a:hover {
+    background: var(--mit-red);
+}
+
+.wy-nav-top {
+    background: var(--mit-red);
+}
+
+a:visited {
+    color: #2980B9;
+}
+
+a:visited code {
+    color: #2980B9;
+}
+
+.wy-nav-top a {
+    color: white;
+}
+
+
+.wy-menu-vertical a {
+    color: #b3b3b3;
+}
+
+.wy-menu-vertical .toctree-l1 {
+    padding-left: 1em;
+}
+
+.toctree-l5 {
+    font-size: 1em;
+    padding-left: 4.5em;
+}
+
+.wy-nav-content {
+    max-width: 900px;
+}
+
+/*.wy-menu-vertical ul {
+    margin-bottom: 0em;
+}
+
+.wy-breadcrumbs li.wy-breadcrumbs-aside {
+    display: none;
+}
+
+ changes sublist item to nothing
+.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+    list-style: none;
+}
+
+moves menu items left a bit
+.wy-menu-vertical .subnav li.current > ul li a {
+    padding-left: 2.4em;
+}
+
+.wy-menu-vertical .subnav li.current a.toctree-l4 {
+    padding-left: 3.6em;
+}
+
+.wy-menu-vertical .subnav li.current a.toctree-l5 {
+    display: none;
+}
+
+.obs_center {
+    display: block;
+      margin-left: auto;
+      margin-right: auto;
+}
+
+.wy-plain-list-disc li li, .rst-content .section ul li li, .rst-content .toctree-wrapper ul li li, article ul li li {
+    list-style: none;
+}
+
+.wy-menu-vertical li ul.subnav ul.subnav {
+    padding-left: 0em;
+}*/
