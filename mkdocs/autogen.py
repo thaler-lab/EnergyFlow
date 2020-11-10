@@ -131,12 +131,12 @@ docs = {
                     'name': 'EFN',
                     'maindocfuncname': '_process_hps',
                     'methods': ['eval_filters'],
-                    'properties': ['inputs', 'weights', 'Phi', 'latent', 'F', 'output']
+                    'properties': ['inputs', 'weights', 'Phi', 'latent', 'F', 'output', 'layers', 'tensors']
                 },
                 {
                     'name': 'PFN',
                     'maindocfuncname': '_construct_point_cloud_inputs',
-                    'properties': ['inputs', 'weights', 'Phi', 'latent', 'F', 'output']
+                    'properties': ['inputs', 'weights', 'Phi', 'latent', 'F', 'output', 'layers', 'tensors']
                 },
                 {
                     'name': 'CNN',
@@ -158,11 +158,11 @@ docs = {
                 }
             ]
         },
-        {
-            'module': archs.utils,
-            'modpath': 'energyflow.archs.',
-            'functions': archs.utils.__all__
-        },
+        #{
+        #    'module': archs.utils,
+        #    'modpath': 'energyflow.archs.',
+        #    'functions': archs.utils.__all__
+        #},
     ],
 
     'datasets': [

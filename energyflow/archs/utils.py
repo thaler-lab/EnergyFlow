@@ -6,6 +6,7 @@ because these import tensorflow, which the main package avoids doing.
 
 from __future__ import absolute_import, division, print_function
 
+import types
 import warnings
 
 import numpy as np
@@ -15,12 +16,13 @@ from energyflow.utils import iter_or_rep
 
 __all__ = [
     'tf_point_cloud_dataset',
-    'tf_gen'
+    'to_generator'
 ]
 
 # tf_point_cloud_dataset(data_arrs, batch_size=None, dtype='float32')
 def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
-                                      prefetch=10, pad_val=0., _xyweights=True):
+                                      prefetch=10, pad_val=0.,
+                                      generator_shapes=None, _xyweights=True):
     """Creates a TensorFlow dataset from NumPy arrays of events of particles,
     designed to be used as input to EFN and PFN models. The function uses a
     generator to spool events from the arrays as needed and pad them on the fly.
@@ -59,7 +61,6 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
         features, `Y` are the targets and `weights` are the sample weights. In
         the case where multiple inputs or multiple target arrays are to be used,
         a nested list may be used, (see above).
-
     - **batch_size** : _int_ or `None`
         - If an integer, the dataset will provide batches with that number of
         events when queried. If `None`, no batching is done. Setting this option
@@ -92,6 +93,9 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
     ```
     """
 
+    # handle generator shapes
+    generator_shapes = iter_or_rep(generator_shapes)
+
     # check for proper data_arrs
     if not isinstance(data_arrs, (list, tuple)):
         data_arrs = [data_arrs]
@@ -99,30 +103,38 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
 
     # check if this is a top-level call (i.e. xyweights is True)
     need_padding, nx = False, 1
-    if _xyweights is True:
+    if _xyweights:
 
         # check for proper length
         if len(data_arrs) not in {1, 2, 3}:
             raise ValueError("'data_arrs' should be length 1, 2, or 3 if _xyweights is True")
 
         # if data_arrs[i] is a list or tuple, process it further
-        for i in range(len(data_arrs)):
+        for i, gen_shapes in zip(range(len(data_arrs)), generator_shapes):
             if isinstance(data_arrs[i], (list, tuple)):
                 nx = len(data_arrs[i])
                 data_arrs[i], need_padding_i = tf_point_cloud_dataset(data_arrs[i], batch_size=None,
-                                                                      dtype=dtype, _xyweights='internal')
+                                                                      prefetch=None, dtype=dtype,
+                                                                      generator_shapes=gen_shapes,
+                                                                      _xyweights=False)
                 need_padding |= need_padding_i
 
     # process each dataset
     tfds, arr_len = [], None
-    for arr in data_arrs:
+    for arr, gen_shape in zip(data_arrs, generator_shapes):
         try:
             # skip if already a dataset
             if isinstance(arr, tf.data.Dataset):
                 tfds.append(arr)
                 continue
-            else:
-                assert isinstance(arr, np.ndarray), 'array must be a numpy array'
+
+            # handle the case of a generator
+            elif isinstance(arr, types.GeneratorType):
+                tfds.append(tf_dataset_from_generator(arr, output_shapes=gen_shape, dtype=dtype))
+                continue
+
+            # ensure we have a numpy array with the right dtype
+            arr = convert_dtype(arr, dtype)
 
             # check size of array
             if arr_len is None:
@@ -139,12 +151,16 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
                 else:
                     raise IndexError('array dimensions not understood')
 
-                tfds.append(tf.data.Dataset.from_generator(tf_gen(arr), tf.as_dtype(dtype), tfd_shape))
+                # if a generator_shape was specified, ensure it matches
+                if gen_shape is not None and gen_shape != tfd_shape:
+                    raise ValueError('improper generator_shape for array - use None for non-generator input')
+
+                tfds.append(tf_dataset_from_generator(arr, tfd_shape, dtype))
                 need_padding = True
 
             # form dataset from array
             else:
-                tfds.append(tf.data.Dataset.from_tensor_slices(np.asarray(arr, dtype=dtype)))
+                tfds.append(tf.data.Dataset.from_tensor_slices(arr))
 
         except Exception as e:
             e.args = ('cannot properly form tensorflow dataset - ' + e.args[0],) + e.args[1:]
@@ -164,16 +180,28 @@ def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
             tfds = tfds.batch(batch_size)
 
     # set prefetch amount
-    if batch_size is not None and prefetch:
+    if prefetch:
         tfds = tfds.prefetch(prefetch)
 
     # ensure that the need for padding is communicated internally
-    if _xyweights == 'internal':
+    if not _xyweights:
         return tfds, need_padding
 
     return tfds
 
-def tf_gen(*args):
+def convert_dtype(X, dtype):
+
+    # check for proper argument type
+    if not isinstance(X, np.ndarray):
+        raise TypeError("argument 'X' must be a numpy ndarray")
+
+    # object arrays are special
+    if X.dtype == np.dtype('O'):
+        return np.asarray([convert_dtype(x, dtype) for x in X], dtype='O')
+    else:
+        return X.astype(dtype, copy=False)
+
+def to_generator(*args, batch_size, seed=None, infinite=False):
     """Returns a function that when called returns a generator that yields
     samples from the given arrays. Designed to work with
     `tf.data.Dataset.from_generator`, though commonly this is handled by
@@ -191,18 +219,70 @@ def tf_gen(*args):
         from the given arrays.
     """
 
-    def gen_func():
-        if len(args) == 1:
-            return iter(args[0])
-        return zip(*args)
+    def generator():
 
-    return gen_func
+        len_args = len(args)
 
-def iter_or_rep_multiple(arg, num, name):
-    if not isinstance(arg, (list, tuple)):
-        arg = [arg]
+        # no shuffling required
+        if seed is None:
 
-    if len(arg) != num:
-        raise ValueError('multiple Phi components being used, incorrect number of sublists for ' + name)
+            # loop over epochs
+            while True:
 
-    return [iter_or_rep(x) for x in arg]
+                # loop over dataset
+                for it in (iter(args[0]) if len_args == 1 else zip(*args)):
+                    yield it
+
+                # consider ending iteration
+                if not infinite:
+                    return
+
+        # get rng from seed
+        if isinstance(seed, str):
+            seed = int(seed)
+        rng = np.random.default_rng(np.random.SeedSequence(seed))
+        
+        # loop over epochs
+        while True:
+
+            # get a new permutation each epoch
+            perm = rng.permutation(len(args[0]))
+
+            # special case 1
+            if len_args == 1:
+                arg0 = args[0]
+                for p in perm:
+                    yield arg0[p]
+
+            # special case 2
+            elif len_args == 2:
+                arg0, arg1 = args
+                for p in perm:
+                    yield (arg0[p], arg1[p])
+
+            # special case 3
+            elif len_args == 3:
+                arg0, arg1, arg2 = args
+                for p in perm:
+                    yield (arg0[p], arg1[p], arg2[p])
+
+            # general case
+            else:
+                for p in perm:
+                    yield tuple(arg[p] for arg in args)
+
+            # consider ending iteration
+            if not infinite:
+                return
+
+    return generator
+
+def tf_dataset_from_generator(X, output_shapes=None, dtype='float32', args=None):
+
+    if not isinstance(X, types.GeneratorType):
+        X = to_generator(convert_dtype(X, dtype))
+
+    return tf.data.Dataset.from_generator(X, tf.as_dtype(dtype),
+                                          output_shapes=output_shapes,
+                                          args=args)
+

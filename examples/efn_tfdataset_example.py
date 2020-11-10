@@ -10,6 +10,7 @@ constituent multiplicity observables.
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
+import sys
 
 # standard numerical library imports
 import numpy as np
@@ -71,9 +72,9 @@ print('Model summary:')
 efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes)
 
 # get tf datasets
-d_train = tf_point_cloud_dataset([(z_train, p_train), Y_train], batch_size)
-d_val = tf_point_cloud_dataset([(z_val, p_val), Y_val], batch_size)
-d_test = tf_point_cloud_dataset([(z_test, p_test)], batch_size)
+d_train = tf_point_cloud_dataset([(z_train, p_train), Y_train], batch_size, shuffle=False)
+d_val = tf_point_cloud_dataset([(z_val, p_val), Y_val], batch_size, shuffle=False)
+d_test = tf_point_cloud_dataset([(z_test, p_test)], batch_size, shuffle=False)
 print('training dataset', d_train)
 print('validation dataset', d_val)
 print('testing dataset', d_test)
@@ -131,7 +132,7 @@ colors = ['Reds', 'Oranges', 'Greens', 'Blues', 'Purples', 'Greys']
 grads = np.linspace(0.45, 0.55, 4)
 
 # evaluate filters
-X, Y, Z = efn.eval_filters(R, n=n)
+X, Y, Z = efn.eval_filters(R, n=n, Phi_i=0)
 
 # plot filters
 for i,z in enumerate(Z):

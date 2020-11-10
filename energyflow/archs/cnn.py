@@ -25,7 +25,7 @@ class CNN(NNBase):
 
         - **input_shape** : {_tuple_, _list_} of _int_
             - The shape of a single jet image. Assuming that `data_format`
-            is set to `channels_first`, this is `(nb_chan,npix,npix)`.
+            is set to `channels_last`, this is `(npix,npix,nb_chan)`.
         - **filter_sizes** : {_tuple_, _list_} of _int_
             - The size of the filters, which are taken to be square, in each 
             convolutional layer of the network. The length of the list will be
@@ -42,7 +42,8 @@ class CNN(NNBase):
         - **pool_sizes**=`0` : {_tuple_, _list_} of _int_
             - Size of maxpooling filter, taken to be a square. A value of 
             `0` will not use maxpooling.
-        - **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
+        - **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras
+        activation
             - Activation function(s) for the conv layers. A single string or
             activation layer will apply the same activation to all conv layers.
             Keras advanced activation layers are also accepted, either as
@@ -51,37 +52,42 @@ class CNN(NNBase):
             layer will be used for all activations and may introduce weight 
             sharing (such as with `PReLU`); it is recommended in this case to 
             pass as many activations as there are layers in the model.See the
-            [Keras activations docs](https://keras.io/activations/) for more 
-            detail.
-        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
+            [Keras activations docs](https://www.tensorflow.org/api_docs/python/
+            tf/keras/activations) for more detail.
+        - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras
+        activation
             - Activation functions(s) for the dense layers. A single string 
             or activation layer will apply the same activation to all dense 
             layers.
-        - **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
+        - **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras
+        initializer
             - Kernel initializers for the convolutional layers. A single
             string will apply the same initializer to all layers. See the
-            [Keras initializer docs](https://keras.io/initializers/) for 
-            more detail.
-        - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
+            [Keras initializer docs](https://www.tensorflow.org/api_docs/python/
+            tf/keras/initializers) for more detail.
+        - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras
+        initializer
             - Kernel initializers for the dense layers. A single string will 
             apply the same initializer to all layers.
         - **conv_dropouts**=`0` : {_tuple_, _list_} of _float_
             - Dropout rates for the convolutional layers. A single float will
             apply the same dropout rate to all conv layers. See the [Keras
-            Dropout layer](https://keras.io/layers/core/#dropout) for more 
-            detail.
+            Dropout layer](https://www.tensorflow.org/api_docs/python/tf/keras/
+            layers/Dropout) for more detail.
         - **num_spatial2d_dropout**=`0` : _int_
             - The number of convolutional layers, starting from the beginning
-            of the model, for which to apply [SpatialDropout2D](https://keras
-            .io/layers/core/#spatialdropout2d) instead of Dropout.
+            of the model, for which to apply [SpatialDropout2D](https://www.
+            tensorflow.org/api_docs/python/tf/keras/layers/SpatialDropout2D)
+            instead of Dropout.
         - **dense_dropouts**=`0` : {_tuple_, _list_} of _float_
             - Dropout rates for the dense layers. A single float will apply 
             the same dropout rate to all dense layers.
         - **paddings**=`'valid'` : {_tuple_, _list_} of _str_
             - Controls how the filters are convoled with the inputs. See
-            the [Keras Conv2D layer](https://keras.io/layers/convolutional/#conv2d) 
-            for more detail.
-        - **data_format**=`'channels_last'` : {`'channels_first'`, `'channels_last'`}
+            the [Keras Conv2D layer](https://www.tensorflow.org/api_docs/python/
+            tf/keras/layers/Conv2D) for more detail.
+        - **data_format**=`'channels_last'` : {`'channels_first'`,
+        `'channels_last'`}
             - Sets which axis is expected to contain the different channels.
             `'channels_first'` appears to have issues with newer versions of 
             tensorflow, so prefer `'channels_last'`.
@@ -127,7 +133,7 @@ class CNN(NNBase):
     def _construct_model(self):
 
         # fresh model
-        self._model = Sequential()
+        self._model = Sequential(name=self.model_name)
 
         # iterate over conv specifications
         conv_z = zip(self.filter_sizes, self.num_filters, self.pool_sizes, self.conv_acts,

@@ -452,8 +452,8 @@ SOURCES = ['dropbox', 'zenodo']
 
 # load(num_data=100000, pad=True, ncol=4, generator='pythia',
 #      with_bc=False, cache_dir='~/.energyflow')
-def load(num_data=100000, pad=True, ncol=4, 
-         generator='pythia', with_bc=False, cache_dir='~/.energyflow'):
+def load(num_data=100000, pad=True, ncol=4, generator='pythia',
+         with_bc=False, cache_dir='~/.energyflow', dtype='float64'):
     """Loads samples from the dataset (which in total is contained in twenty 
     files). Any file that is needed that has not been cached will be 
     automatically downloaded. Downloading a file causes it to be cached for
@@ -481,6 +481,9 @@ def load(num_data=100000, pad=True, ncol=4,
     - **cache_dir** : _str_
         - The directory where to store/look for the files. Note that 
         `'datasets'` is automatically appended to the end of this path.
+    - **dtype** : _str_ or _numpy.dtype_
+        - The dtype of the resulting NumPy arrays. For ML applications it may be
+        preferred to use 32-bit floats.
 
     **Returns**
 
@@ -533,8 +536,8 @@ def load(num_data=100000, pad=True, ncol=4,
 
         # load file and append arrays
         with np.load(fpath) as f:
-            Xs.append(f['X'])
-            ys.append(f['y'])
+            Xs.append(np.asarray(f['X'], dtype=dtype))
+            ys.append(np.asarray(f['y'], dtype=dtype))
 
     # get X array
     if pad:

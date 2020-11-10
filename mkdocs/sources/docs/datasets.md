@@ -726,6 +726,9 @@ later use. Basic checksums are performed.
 - **cache_dir** : _str_
     - The directory where to store/look for the files. Note that 
     `'datasets'` is automatically appended to the end of this path.
+- **dtype** : _str_ or _numpy.dtype_
+    - The dtype of the resulting NumPy arrays. For ML applications it may be
+    preferred to use 32-bit floats.
 
 **Returns**
 

@@ -147,6 +147,25 @@ def test_PFN_masking(mask_val):
     pure_mask = kf([0*X_test + mask_val])[0]
     assert epsilon_diff(pure_mask, 0, 10**-15)
 
+    m3,m4 = (30, 40)
+
+    X_train = [np.random.rand(n,m1,input_dim), np.random.rand(n,m3,input_dim)]
+    y_train = np.random.rand(n, 2)
+
+    pfn = ef.archs.PFN(input_dim=input_dim, additional_input_dims=(input_dim,),
+                       Phi_sizes=[[10], [20]], F_sizes=[10], mask_val=mask_val)
+    pfn.fit(X_train, y_train, epochs=1)
+
+    X_test = [np.random.rand(n,m2,input_dim), np.random.rand(n,m4,input_dim)]
+    X_test_mask = [np.concatenate((X_test[0], mask_val*np.ones((n,m1//2,input_dim))), axis=1),
+                   np.concatenate((X_test[1], mask_val*np.ones((n,m2//2,input_dim))), axis=1)]
+
+    assert epsilon_diff(pfn.predict(X_test), pfn.predict(X_test_mask), 10**-15)
+
+    kf = tf.keras.backend.function(inputs=pfn.inputs, outputs=pfn.latent[0])
+    pure_mask = kf([0*X_test[0] + mask_val, 0*X_test[1] + mask_val])[0]
+    assert epsilon_diff(pure_mask, 0, 10**-15)
+
 @pytest.mark.arch
 @pytest.mark.efn
 @pytest.mark.globalfeatures

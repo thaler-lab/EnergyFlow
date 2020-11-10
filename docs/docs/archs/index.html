@@ -117,6 +117,10 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#output">output</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#layers">layers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#tensors">tensors</a>
+    </li>
         </ul>
     </li>
         </ul>
@@ -137,6 +141,10 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#output_1">output</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#layers_1">layers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#tensors_1">tensors</a>
+    </li>
         </ul>
     </li>
         </ul>
@@ -146,14 +154,6 @@
     <li class="toctree-l2"><a class="reference internal" href="#dnn">DNN</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#linearclassifier">LinearClassifier</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#tf_point_cloud_dataset">tf_point_cloud_dataset</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#tf_gen">tf_gen</a>
-    </li>
-        </ul>
     </li>
     </ul>
                     </li>
@@ -266,27 +266,28 @@ positional arguments.</li>
 <p><strong>Compilation Options</strong></p>
 <ul>
 <li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras loss 
-function docs</a> for available loss
-functions.</li>
+<li>The loss function to use for the model. See the <a href="https://www.tensorflow.org/api_docs/python/tf/keras/
+losses">Keras loss
+function docs</a> for available loss functions.</li>
 </ul>
 </li>
 <li><strong>optimizer</strong>=<code>'adam'</code> : Keras optimizer or <em>str</em><ul>
-<li>A <a href="https://keras.io/optimizers/">Keras optimizer</a> instance or a
-string referring to one (in which case the default arguments are 
-used).</li>
+<li>A <a href="https://www.tensorflow.org/api_docs/python/tf/
+keras/optimizers">Keras optimizer</a> instance or a string referring to one (in which
+case the default arguments are used).</li>
 </ul>
 </li>
 <li><strong>metrics</strong>=<code>['accuracy']</code> : <em>list</em> of <em>str</em><ul>
-<li>The <a href="https://keras.io/metrics/">Keras metrics</a> to apply to the
-model.</li>
+<li>The <a href="https://www.tensorflow.org/api_docs/python/tf/
+keras/metrics">Keras metrics</a> to apply to the model.</li>
 </ul>
 </li>
 <li><strong>compile_opts</strong>=<code>{}</code> : <em>dict</em><ul>
 <li>Dictionary of keyword arguments to be passed on to the
-<a href="https://keras.io/models/model/#compile"><code>compile</code></a> method of the
-model. <code>loss</code>, <code>optimizer</code>, and <code>metrics</code> (see above) are included
-in this dictionary. All other values are the Keras defaults.</li>
+<a href="https://www.tensorflow.org/api_docs/python/tf/keras/
+Model"><code>compile</code></a> method of the model. <code>loss</code>, <code>optimizer</code>, and <code>metrics</code> (see
+above) are included in this dictionary. All other values are the
+Keras defaults.</li>
 </ul>
 </li>
 </ul>
@@ -310,9 +311,9 @@ model will not be saved.</li>
 </li>
 <li><strong>save_while_training</strong>=<code>True</code> : <em>bool</em><ul>
 <li>Whether the model is saved during training (using the 
-<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
-callback) or only once training terminates. Only relevant if
-<code>filepath</code> is set.</li>
+<a href="https://www.tensorflow.org/api_docs/python/tf/
+keras/callbacks/ModelCheckpoint"><code>ModelCheckpoint</code></a> callback) or only once training
+terminates. Only relevant if <code>filepath</code> is set.</li>
 </ul>
 </li>
 <li><strong>save_weights_only</strong>=<code>False</code> : <em>bool</em><ul>
@@ -322,29 +323,34 @@ saved. Only relevant if <code>filepath</code> is set.</li>
 </li>
 <li><strong>modelcheck_opts</strong>=<code>{'save_best_only':True, 'verbose':1}</code> : <em>dict</em><ul>
 <li>Dictionary of keyword arguments to be passed on to the
-<a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
-callback, if it is present. <code>save_weights_only</code> (see above) is
-included in this dictionary. All other arguments are the Keras
-defaults.</li>
+<a href="https://www.tensorflow.org/api_docs/python/tf/
+keras/callbacks/ModelCheckpoint"><code>ModelCheckpoint</code></a> callback, if it is present.
+<code>save_weights_only</code> (see above) is included in this dictionary.
+All other arguments are the Keras defaults.</li>
 </ul>
 </li>
 <li><strong>patience</strong>=<code>None</code> : <em>int</em><ul>
 <li>The number of epochs with no improvement after which the training
-is stopped (using the <a href="https://keras.io/
-callbacks/#earlystopping"><code>EarlyStopping</code></a> callback). If <code>None</code> then no early stopping
-is used.</li>
+is stopped (using the <a href="https://www.tensorflow.org/
+api_docs/python/tf/keras/callbacks/EarlyStopping"><code>EarlyStopping</code></a> callback). If
+<code>None</code> then no early stopping is used.</li>
 </ul>
 </li>
 <li><strong>earlystop_opts</strong>=<code>{'restore_best_weights':True, 'verbose':1}</code> : <em>dict</em><ul>
 <li>Dictionary of keyword arguments to be passed on to the
-<a href="https://keras.io/callbacks/#earlystopping"><code>EarlyStopping</code></a>
-callback, if it is present. <code>patience</code> (see above) is included in
-this dictionary. All other arguments are the Keras defaults.</li>
+<a href="https://www.tensorflow.org/api_docs/python/tf/
+keras/callbacks/EarlyStopping"><code>EarlyStopping</code></a> callback, if it is present.
+<code>patience</code> (see above) is included in this dictionary. All other
+arguments are the Keras defaults.</li>
 </ul>
 </li>
 </ul>
-<p><strong>Flags</strong></p>
+<p><strong>Other Options</strong></p>
 <ul>
+<li><strong>model_name</strong>=<code>None</code> : <em>str</em><ul>
+<li>If not <code>None</code>, this will be the name of the model.</li>
+</ul>
+</li>
 <li><strong>name_layers</strong>=<code>True</code> : <em>bool</em><ul>
 <li>Whether to give the layers of the model explicit names or let
 them be named automatically. One reason to set this to <code>False</code>
@@ -448,13 +454,16 @@ well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required EFN Hyperparameters</strong></p>
 <ul>
 <li><strong>input_dim</strong> : <em>int</em><ul>
-<li>The number of features for each particle.</li>
+<li>The number of features for each particle. As of version 1.3.0,
+<code>input_dim</code> may also be a tuple or list of integers, in which case
+multiple Phi components will be used and their latent spaces
+concatenated (see <code>additional_input_dims</code>).</li>
 </ul>
 </li>
 <li><strong>Phi_sizes</strong> (formerly <code>ppm_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The sizes of the dense layers in the per-particle frontend
-module $\Phi$. The last element will be the number of latent 
-observables that the model defines.</li>
+<li>The sizes of the dense layers in the per-particle frontend module
+$\Phi$. The last element will be the number of latent observables
+that the model defines.</li>
 </ul>
 </li>
 <li><strong>F_sizes</strong> (formerly <code>dense_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
@@ -474,78 +483,88 @@ the default arguments) or as Keras <code>Layer</code> instances. If passing a
 single <code>Layer</code> instance, be aware that this layer will be used for
 all activations and may introduce weight sharing (such as with 
 <code>PReLU</code>); it is recommended in this case to pass as many activations
-as there are layers in the model. See the <a href="https://keras.io/activations/">Keras activations 
+as there are layers in the model. See the <a href="https://www.tensorflow.org/api_docs/python/tf/keras/
+activations">Keras activations 
 docs</a> for more detail.</li>
 </ul>
 </li>
 <li><strong>F_acts</strong>=<code>'relu'</code> (formerly <code>dense_acts</code>) : {<em>tuple</em>, <em>list</em>} of
 <em>str</em> or Keras activation<ul>
-<li>Activation functions(s) for the dense layers in the 
-backend module $F$. A single string or activation layer will apply
-the same activation to all layers.</li>
+<li>Activation functions(s) for the dense layers in the backend module
+$F$. A single string or activation layer will apply the same
+activation to all layers.</li>
 </ul>
 </li>
 <li><strong>Phi_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>ppm_k_inits</code>) : {<em>tuple</em>,
 <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers in the per-particle
 frontend module $\Phi$. A single string will apply the same
-initializer to all layers. See the <a href="https:
-//keras.io/initializers/">Keras initializer docs</a> for more detail.</li>
+initializer to all layers. See the <a href="https://
+www.tensorflow.org/api_docs/python/tf/keras/initializers">Keras initializer docs</a> for more
+detail.</li>
 </ul>
 </li>
 <li><strong>F_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>dense_k_inits</code>) : {<em>tuple</em>,
 <em>list</em>} of <em>str</em> or Keras initializer<ul>
-<li>Kernel initializers for the dense layers in the backend 
-module $F$. A single string will apply the same initializer 
-to all layers.</li>
+<li>Kernel initializers for the dense layers in the backend module
+$F$. A single string will apply the same initializer to all layers.</li>
 </ul>
 </li>
 <li><strong>latent_dropout</strong>=<code>0</code> : <em>float</em><ul>
-<li>Dropout rates for the summation layer that defines the
-value of the latent observables on the inputs. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
-detail.</li>
+<li>Dropout rates for the summation layer that defines the value of
+the latent observables on the inputs. See the <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dropout">Keras Dropout layer</a>
+for more detail.</li>
 </ul>
 </li>
 <li><strong>F_dropouts</strong>=<code>0</code> (formerly <code>dense_dropouts</code>) : {<em>tuple</em>, <em>list</em>}
 of <em>float</em><ul>
-<li>Dropout rates for the dense layers in the backend module $F$. 
-A single float will apply the same dropout rate to all dense layers.</li>
+<li>Dropout rates for the dense layers in the backend module $F$. A
+single float will apply the same dropout rate to all dense layers.</li>
 </ul>
 </li>
 <li><strong>Phi_l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>$L_2$-regulatization strength for both the weights and biases
-of the layers in the $\Phi$ network. A single float will apply the
-same $L_2$-regulatization to all layers.</li>
+<li>$L_2$-regulatization strength for both the weights and biases of
+the layers in the $\Phi$ network. A single float will apply the same
+$L_2$-regulatization to all layers.</li>
 </ul>
 </li>
 <li><strong>F_l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>$L_2$-regulatization strength for both the weights and biases
-of the layers in the $F$ network. A single float will apply the
-same $L_2$-regulatization to all layers.</li>
+<li>$L_2$-regulatization strength for both the weights and biases of
+the layers in the $F$ network. A single float will apply the same
+$L_2$-regulatization to all layers.</li>
 </ul>
 </li>
 <li><strong>mask_val</strong>=<code>0</code> : <em>float</em><ul>
 <li>The value for which particles with all features set equal to
-this value will be ignored. The <a href="https://
-keras.io/layers/core/#masking">Keras Masking layer</a> appears to have issues masking
-the biases of a network, so this has been implemented in a
-custom (and correct) manner since version <code>0.12.0</code>.</li>
+this value will be ignored. The <a href="https://www.
+tensorflow.org/api_docs/python/tf/keras/layers/Masking">Keras Masking layer</a> does not
+work with the TimeDistributed layer, so this has been implemented in
+a custom manner since version <code>0.12.0</code>.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Extended EFN Hyperparameters</strong></p>
 <ul>
 <li><strong>additional_input_dims</strong>=<code>None</code> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>If multiple EFN architectures are to be used to create several
-latent space embeddings, this list specifies the input dimensions
-of the subsequent input tensors. If <code>None</code>, then no additional
-achitecture components are constructed. If not <code>None</code>, then the
-above <code>Phi</code> options are used to specify aspects of each EFN
-architecture; lists or tuples should be used to specify the options
-for the different architectures.</li>
+<li>If multiple Phi components are to be used to create several latent
+space embeddings, this list specifies the input dimensions of the
+subsequent input tensors. Note that the same behavior may be induced
+by passing a tuple or list of ints as <code>input_dim</code>. If <code>None</code>, then
+no additional achitecture components are constructed. If not <code>None</code>,
+or if <code>input_dim</code> is a tuple or list of length greater than one,
+then the above <code>Phi</code> options (as well as <code>latent_dropout</code>) are used
+to specify aspects of each Phi component; lists or tuples should be
+used to specify the options for the different architectures. For
+instance, if there is an EFN1 and EFN2 architecture, the the
+<code>Phi_sizes</code> are specified as:</li>
 </ul>
 </li>
+</ul>
+<pre><code class="python">Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...), 
+             (Phi_sizes_EFN2_0, Phi_sizes_EFN2_1, ...)]
+</code></pre>
+
+<ul>
 <li><strong>num_global_features</strong>=<code>None</code> : <em>int</em><ul>
 <li>Number of additional features to be concatenated with the latent
 space observables to form the input to F. If not <code>None</code>, then the
@@ -554,7 +573,7 @@ features are to be provided at the end of the list of inputs.</li>
 </li>
 </ul>
 <h3 id="eval_filters">eval_filters</h3>
-<pre><code class="python">eval_filters(patch, n=100, prune=True)
+<pre><code class="python">eval_filters(patch, n=100, Phi_i=None, prune=True)
 </code></pre>
 
 <p>Evaluates the latent space filters of this model on a patch of the 
@@ -569,24 +588,24 @@ Passing a single float <code>R</code> is equivalent to <code>[-R,-R,R,R]</code>.
 </li>
 <li><strong>n</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>The number of grid points on which to evaluate the filters. A list 
-of length 2 is interpretted as <code>[nx, ny]</code> where <code>nx</code> is the number of
-points along the x (or first) dimension and <code>ny</code> is the number of points
-along the y (or second) dimension.</li>
+of length 2 is interpretted as <code>[nx, ny]</code> where <code>nx</code> is the number
+of points along the x (or first) dimension and <code>ny</code> is the number of
+points along the y (or second) dimension.</li>
 </ul>
 </li>
 <li><strong>prune</strong> : <em>bool</em><ul>
-<li>Whether to remove filters that are all zero (which happens sometimes
-due to dying ReLUs).</li>
+<li>Whether to remove filters that are all zero (which happens
+sometimes due to dying ReLUs).</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li>(<em>numpy.ndarray</em>, <em>numpy.ndarray</em>, <em>numpy.ndarray</em>)<ul>
-<li>Returns three arrays, <code>(X, Y, Z)</code>, where <code>X</code> and <code>Y</code> have shape <code>(nx, ny)</code> 
-and are arrays of the values of the geometric inputs in the specified patch.
-<code>Z</code> has shape <code>(num_filters, nx, ny)</code> and is the value of the different
-filters at each point.</li>
+<li>Returns three arrays, <code>(X, Y, Z)</code>, where <code>X</code> and <code>Y</code> have shape
+<code>(nx, ny)</code> and are arrays of the values of the geometric inputs in
+the specified patch. <code>Z</code> has shape <code>(num_filters, nx, ny)</code> and is
+the value of the different filters at each point.</li>
 </ul>
 </li>
 </ul>
@@ -595,26 +614,34 @@ filters at each point.</li>
 <pre><code class="python">inputs
 </code></pre>
 
-<p>List of input tensors to the model. EFNs have two input tensors:
-<code>inputs[0]</code> corresponds to the <code>zs</code> input and <code>inputs[1]</code> corresponds
-to the <code>phats</code> input.</p>
+<p>List of input tensors to the model. EFNs have two input tensors per
+Phi component: <code>inputs[2*i]</code> corresponds to the <code>zs</code> input of Phi
+component <code>i</code> and <code>inputs[2*i+1]</code> corresponds to the <code>ps</code> input.
+Additionally, if any global features are present, they are final tensor
+in this list.</p>
 <h4 id="weights">weights</h4>
 <pre><code class="python">weights
 </code></pre>
 
-<p>Weight tensor for the model. This is the <code>zs</code> input where entries
+<p>List of weight tensors for the model, one for each Phi component.
+For each of the Phi components, this is the <code>zs</code> input where entries
 equal to <code>mask_val</code> have been set to zero.</p>
 <h4 id="phi">Phi</h4>
 <pre><code class="python">Phi
 </code></pre>
 
-<p>List of tensors corresponding to the layers in the $\Phi$ network.</p>
+<p>List of lists of tensors corresponding to the layers in the $\Phi$
+network(s). The outer list will have length equal to the number of Phi
+components and each sublist contains the tensors for that particular
+component.</p>
 <h4 id="latent">latent</h4>
 <pre><code class="python">latent
 </code></pre>
 
-<p>List of tensors corresponding to the summation layer in the
-network, including any dropout layer if present.</p>
+<p>List of lists of tensors corresponding to the summation layer(s) in
+the network, including any latent dropout layers if present. The outer
+list will have length equal to the number of Phi components and each
+sublist contains the latent tensors for that particular component.</p>
 <h4 id="f">F</h4>
 <pre><code class="python">F
 </code></pre>
@@ -625,6 +652,18 @@ network, including any dropout layer if present.</p>
 </code></pre>
 
 <p>Output tensor for the model.</p>
+<h4 id="layers">layers</h4>
+<pre><code class="python">layers
+</code></pre>
+
+<p>List of all layers in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also <code>layer_inds</code>.</p>
+<h4 id="tensors">tensors</h4>
+<pre><code class="python">tensors
+</code></pre>
+
+<p>List of all tensors in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also <code>tensor_inds</code>.</p>
 <hr />
 <h2 id="pfn">PFN</h2>
 <p>Particle Flow Network (PFN) architecture. Accepts the same 
@@ -637,26 +676,32 @@ hyperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
 <pre><code class="python">inputs
 </code></pre>
 
-<p>List of input tensors to the model. PFNs have one input tensor
-corresponding to the <code>ps</code> input.</p>
+<p>List of input tensors to the model. PFNs have one input tensor per
+Phi component corresponding to the <code>ps</code> input. Additionally, if there
+are any global features present, they are final tensor in this list.</p>
 <h4 id="weights_1">weights</h4>
 <pre><code class="python">weights
 </code></pre>
 
-<p>Weight tensor for the model. A weight of <code>0</code> is assigned to any
-particle which has all features equal to <code>mask_val</code>, and <code>1</code> is
-assigned otherwise.</p>
+<p>List of weight tensors for the model, one for each Phi component.
+A weight of <code>0</code> is assigned to any particle which has all features
+equal to <code>mask_val</code>, and <code>1</code> is assigned otherwise.</p>
 <h4 id="phi_1">Phi</h4>
 <pre><code class="python">Phi
 </code></pre>
 
-<p>List of tensors corresponding to the layers in the $\Phi$ network.</p>
+<p>List of lists of tensors corresponding to the layers in the $\Phi$
+network(s). The outer list will have length equal to the number of Phi
+components and each sublist contains the tensors for that particular
+component.</p>
 <h4 id="latent_1">latent</h4>
 <pre><code class="python">latent
 </code></pre>
 
-<p>List of tensors corresponding to the summation layer in the
-network, including any dropout layer if present.</p>
+<p>List of lists of tensors corresponding to the summation layer(s) in
+the network, including any latent dropout layers if present. The outer
+list will have length equal to the number of Phi components and each
+sublist contains the latent tensors for that particular component.</p>
 <h4 id="f_1">F</h4>
 <pre><code class="python">F
 </code></pre>
@@ -667,6 +712,18 @@ network, including any dropout layer if present.</p>
 </code></pre>
 
 <p>Output tensor for the model.</p>
+<h4 id="layers_1">layers</h4>
+<pre><code class="python">layers
+</code></pre>
+
+<p>List of all layers in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also <code>layer_inds</code>.</p>
+<h4 id="tensors_1">tensors</h4>
+<pre><code class="python">tensors
+</code></pre>
+
+<p>List of all tensors in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also <code>tensor_inds</code>.</p>
 <hr />
 <h2 id="cnn">CNN</h2>
 <p>Convolutional Neural Network architecture.</p>
@@ -679,7 +736,7 @@ well as defaults common to all EnergyFlow neural network models.</p>
 <ul>
 <li><strong>input_shape</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>The shape of a single jet image. Assuming that <code>data_format</code>
-is set to <code>channels_first</code>, this is <code>(nb_chan,npix,npix)</code>.</li>
+is set to <code>channels_last</code>, this is <code>(npix,npix,nb_chan)</code>.</li>
 </ul>
 </li>
 <li><strong>filter_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
@@ -706,7 +763,8 @@ equivalent to an empty list.</li>
 <code>0</code> will not use maxpooling.</li>
 </ul>
 </li>
-<li><strong>conv_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras activation<ul>
+<li><strong>conv_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras
+activation<ul>
 <li>Activation function(s) for the conv layers. A single string or
 activation layer will apply the same activation to all conv layers.
 Keras advanced activation layers are also accepted, either as
@@ -715,39 +773,43 @@ instances. If passing a single <code>Layer</code> instance, be aware that this
 layer will be used for all activations and may introduce weight 
 sharing (such as with <code>PReLU</code>); it is recommended in this case to 
 pass as many activations as there are layers in the model.See the
-<a href="https://keras.io/activations/">Keras activations docs</a> for more 
-detail.</li>
+<a href="https://www.tensorflow.org/api_docs/python/
+tf/keras/activations">Keras activations docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras activation<ul>
+<li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras
+activation<ul>
 <li>Activation functions(s) for the dense layers. A single string 
 or activation layer will apply the same activation to all dense 
 layers.</li>
 </ul>
 </li>
-<li><strong>conv_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
+<li><strong>conv_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras
+initializer<ul>
 <li>Kernel initializers for the convolutional layers. A single
 string will apply the same initializer to all layers. See the
-<a href="https://keras.io/initializers/">Keras initializer docs</a> for 
-more detail.</li>
+<a href="https://www.tensorflow.org/api_docs/python/
+tf/keras/initializers">Keras initializer docs</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
+<li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras
+initializer<ul>
 <li>Kernel initializers for the dense layers. A single string will 
 apply the same initializer to all layers.</li>
 </ul>
 </li>
 <li><strong>conv_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
 <li>Dropout rates for the convolutional layers. A single float will
-apply the same dropout rate to all conv layers. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
-detail.</li>
+apply the same dropout rate to all conv layers. See the <a href="https://www.tensorflow.org/api_docs/python/tf/keras/
+layers/Dropout">Keras
+Dropout layer</a> for more detail.</li>
 </ul>
 </li>
 <li><strong>num_spatial2d_dropout</strong>=<code>0</code> : <em>int</em><ul>
 <li>The number of convolutional layers, starting from the beginning
-of the model, for which to apply <a href="https://keras
-.io/layers/core/#spatialdropout2d">SpatialDropout2D</a> instead of Dropout.</li>
+of the model, for which to apply <a href="https://www.
+tensorflow.org/api_docs/python/tf/keras/layers/SpatialDropout2D">SpatialDropout2D</a>
+instead of Dropout.</li>
 </ul>
 </li>
 <li><strong>dense_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
@@ -757,11 +819,12 @@ the same dropout rate to all dense layers.</li>
 </li>
 <li><strong>paddings</strong>=<code>'valid'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Controls how the filters are convoled with the inputs. See
-the <a href="https://keras.io/layers/convolutional/#conv2d">Keras Conv2D layer</a> 
-for more detail.</li>
+the <a href="https://www.tensorflow.org/api_docs/python/
+tf/keras/layers/Conv2D">Keras Conv2D layer</a> for more detail.</li>
 </ul>
 </li>
-<li><strong>data_format</strong>=<code>'channels_last'</code> : {<code>'channels_first'</code>, <code>'channels_last'</code>}<ul>
+<li><strong>data_format</strong>=<code>'channels_last'</code> : {<code>'channels_first'</code>,
+<code>'channels_last'</code>}<ul>
 <li>Sets which axis is expected to contain the different channels.
 <code>'channels_first'</code> appears to have issues with newer versions of 
 tensorflow, so prefer <code>'channels_last'</code>.</li>
@@ -798,23 +861,23 @@ instances. If passing a single <code>Layer</code> instance, be aware that this
 layer will be used for all activations and may introduce weight 
 sharing (such as with <code>PReLU</code>); it is recommended in this case to 
 pass as many activations as there are layers in the model.See the
-<a href="https://keras.io/activations/">Keras activations docs</a> for more 
-detail.</li>
+<a href="https://www.tensorflow.org/api_docs/python/
+tf/keras/activations">Keras activations docs</a> for more detail.</li>
 </ul>
 </li>
 <li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras 
 initializer<ul>
 <li>Kernel initializers for the dense layers. A single string 
 will apply the same initializer to all layers. See the
-<a href="https://keras.io/initializers/">Keras initializer docs</a> for 
-more detail.</li>
+<a href="https://www.tensorflow.org/api_docs/python/
+tf/keras/initializers">Keras initializer docs</a> for more detail.</li>
 </ul>
 </li>
 <li><strong>dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>Dropout rates for the dense layers. A single float will
-apply the same dropout rate to all layers. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
-detail.</li>
+<li>Dropout rates for the dense layers. A single float will apply the
+same dropout rate to all layers. See the <a href="https
+://www.tensorflow.org/api_docs/python/tf/keras/layers/Dropout">Keras Dropout layer</a> for
+more detail.</li>
 </ul>
 </li>
 <li><strong>l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
@@ -864,120 +927,6 @@ convergence parameter.</li>
 <li><strong>LR_hps</strong>=<code>{}</code> : <em>dict</em><ul>
 <li>Dictionary of keyword arguments to pass on to the underlying
 <code>LogisticRegression</code> model.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h2 id="utilities">Utilities</h2>
-<p>Utilities for EnergyFlow architectures, split out from the utils submodule
-because these import tensorflow, which the main package avoids doing.</p>
-<hr />
-<h3 id="tf_point_cloud_dataset">tf_point_cloud_dataset</h3>
-<pre><code class="python">energyflow.archs.tf_point_cloud_dataset(data_arrs, batch_size=None, dtype='float32')
-</code></pre>
-
-<p>Creates a TensorFlow dataset from NumPy arrays of events of particles,
-designed to be used as input to EFN and PFN models. The function uses a
-generator to spool events from the arrays as needed and pad them on the fly.
-As of EnergyFlow version 1.3.0, it is suggested to use this function to
-create TensorFlow datasets to use as input to EFN and PFN training as it can
-yield a slight improvement in training and evaluation time.</p>
-<p>Here are some examples of using this function. For a standard EFN without
-event weights, one would specify the arrays as:</p>
-<pre><code class="python">data_arrs = [[event_zs, event_phats], Y]
-</code></pre>
-
-<p>For a PFN, let's say with event weights, the arrays look like:</p>
-<pre><code class="python">data_arrs = [event_ps, Y, weights]
-</code></pre>
-
-<p>For an EFN model with global features, we would do:</p>
-<pre><code class="python">data_arrs = [[event_zs, event_phats, X_global], Y]
-</code></pre>
-
-<p>For a test dataset, where there are no target values of weights, it is
-important to use a nested list in the case where there are multiple inputs.
-For instance, for a test dataset for an EFN model, we would have:</p>
-<pre><code class="python">data_arrs = [[test_event_zs, test_event_phats]]
-</code></pre>
-
-<p><strong>Arguments</strong></p>
-<ul>
-<li>
-<p><strong>data_arrs</strong> : {<em>tuple</em>, <em>list</em>} of <em>numpy.ndarray</em></p>
-<ul>
-<li>The NumPy arrays to build the dataset from. A single array may be
-given, in which case samples from it alone are used. If a list of arrays
-are given, then it should be length 1, 2, or 3, corresponding to the
-<code>(X,)</code>, <code>(X, Y)</code>, or <code>(X, Y, weights)</code>, respectively, where <code>X</code> are the
-features, <code>Y</code> are the targets and <code>weights</code> are the sample weights. In
-the case where multiple inputs or multiple target arrays are to be used,
-a nested list may be used, (see above).</li>
-</ul>
-</li>
-<li>
-<p><strong>batch_size</strong> : <em>int</em> or <code>None</code></p>
-<ul>
-<li>If an integer, the dataset will provide batches with that number of
-events when queried. If <code>None</code>, no batching is done. Setting this option
-should replace padding a <code>batch_size</code> argument directly to the <code>.fit</code>
-method of the EFN or PFN.</li>
-</ul>
-</li>
-<li><strong>dtype</strong> : <em>str</em><ul>
-<li>The datatype to use in the TensorFlow dataset. Note that 32-bit
-floats are typically sufficient for ML models and so this is the
-default.</li>
-</ul>
-</li>
-<li><strong>prefetch</strong> : <em>int</em><ul>
-<li>The maximum number of samples to prepare in advance of their usage
-during training or evaluation. See the <a href="https:
-//www.tensorflow.org/api_docs/python/tf/data/Dataset#prefetch">TensorFlow documentation</a> for more
-details.</li>
-</ul>
-</li>
-<li><strong>pad_val</strong> : <em>float</em><ul>
-<li>Events will be padded with particles consisting of this value repeated
-as many times as necessary. This should match the <code>mask_val</code> option of
-the EFN or PFN model.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>tensorflow.data.Dataset</em><ul>
-<li>The TensorFlow dataset built from the provided arrays and options. To
-view samples from the dataset, for instance the first five batches, one
-can do:</li>
-</ul>
-</li>
-</ul>
-<pre><code class="python">for sample in tfdataset.take(5).as_numpy_iterator():
-    print(sample.shape)
-</code></pre>
-
-<hr />
-<h3 id="tf_gen">tf_gen</h3>
-<pre><code class="python">energyflow.archs.tf_gen(args)
-</code></pre>
-
-<p>Returns a function that when called returns a generator that yields
-samples from the given arrays. Designed to work with
-<code>tf.data.Dataset.from_generator</code>, though commonly this is handled by
-<a href="#tf_point_cloud_dataset"><code>tf_point_cloud_dataset</code></a>.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
-<li>An arbitrary number of arrays.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>function</em><ul>
-<li>A function that when called returns a generator that yields samples
-from the given arrays.</li>
 </ul>
 </li>
 </ul>

@@ -31,3 +31,4 @@ __all__ = (datasets.__all__ +
            utils.__all__)
 
 __version__ = '1.3.0'
+__author__ = 'Patrick T. Komiske III <pkomiske@mit.edu>'

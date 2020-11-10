@@ -62,21 +62,22 @@ Common hyperparameters that apply to all architectures except for
 **Compilation Options**
 
 - **loss**=`'categorical_crossentropy'` : _str_
-    - The loss function to use for the model. See the [Keras loss 
-    function docs](https://keras.io/losses/) for available loss
-    functions.
+    - The loss function to use for the model. See the [Keras loss
+    function docs](https://www.tensorflow.org/api_docs/python/tf/keras/
+    losses) for available loss functions.
 - **optimizer**=`'adam'` : Keras optimizer or _str_
-    - A [Keras optimizer](https://keras.io/optimizers/) instance or a
-    string referring to one (in which case the default arguments are 
-    used).
+    - A [Keras optimizer](https://www.tensorflow.org/api_docs/python/tf/
+    keras/optimizers) instance or a string referring to one (in which
+    case the default arguments are used).
 - **metrics**=`['accuracy']` : _list_ of _str_
-    - The [Keras metrics](https://keras.io/metrics/) to apply to the
-    model.
+    - The [Keras metrics](https://www.tensorflow.org/api_docs/python/tf/
+    keras/metrics) to apply to the model.
 - **compile_opts**=`{}` : _dict_
     - Dictionary of keyword arguments to be passed on to the
-    [`compile`](https://keras.io/models/model/#compile) method of the
-    model. `loss`, `optimizer`, and `metrics` (see above) are included
-    in this dictionary. All other values are the Keras defaults.
+    [`compile`](https://www.tensorflow.org/api_docs/python/tf/keras/
+    Model) method of the model. `loss`, `optimizer`, and `metrics` (see
+    above) are included in this dictionary. All other values are the
+    Keras defaults.
 
 **Output Options**
 
@@ -92,31 +93,34 @@ Common hyperparameters that apply to all architectures except for
     model will not be saved.
 - **save_while_training**=`True` : _bool_
     - Whether the model is saved during training (using the 
-    [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
-    callback) or only once training terminates. Only relevant if
-    `filepath` is set.
+    [`ModelCheckpoint`](https://www.tensorflow.org/api_docs/python/tf/
+    keras/callbacks/ModelCheckpoint) callback) or only once training
+    terminates. Only relevant if `filepath` is set.
 - **save_weights_only**=`False` : _bool_
     - Whether only the weights of the model or the full model are
     saved. Only relevant if `filepath` is set.
 - **modelcheck_opts**=`{'save_best_only':True, 'verbose':1}` : _dict_
     - Dictionary of keyword arguments to be passed on to the
-    [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
-    callback, if it is present. `save_weights_only` (see above) is
-    included in this dictionary. All other arguments are the Keras
-    defaults.
+    [`ModelCheckpoint`](https://www.tensorflow.org/api_docs/python/tf/
+    keras/callbacks/ModelCheckpoint) callback, if it is present.
+    `save_weights_only` (see above) is included in this dictionary.
+    All other arguments are the Keras defaults.
 - **patience**=`None` : _int_
     - The number of epochs with no improvement after which the training
-    is stopped (using the [`EarlyStopping`](https://keras.io/
-    callbacks/#earlystopping) callback). If `None` then no early stopping
-    is used.
+    is stopped (using the [`EarlyStopping`](https://www.tensorflow.org/
+    api_docs/python/tf/keras/callbacks/EarlyStopping) callback). If
+    `None` then no early stopping is used.
 - **earlystop_opts**=`{'restore_best_weights':True, 'verbose':1}` : _dict_
     - Dictionary of keyword arguments to be passed on to the
-    [`EarlyStopping`](https://keras.io/callbacks/#earlystopping)
-    callback, if it is present. `patience` (see above) is included in
-    this dictionary. All other arguments are the Keras defaults.
+    [`EarlyStopping`](https://www.tensorflow.org/api_docs/python/tf/
+    keras/callbacks/EarlyStopping) callback, if it is present.
+    `patience` (see above) is included in this dictionary. All other
+    arguments are the Keras defaults.
 
-**Flags**
+**Other Options**
 
+- **model_name**=`None` : _str_
+    - If not `None`, this will be the name of the model.
 - **name_layers**=`True` : _bool_
     - Whether to give the layers of the model explicit names or let
     them be named automatically. One reason to set this to `False`
@@ -217,11 +221,14 @@ well as defaults common to all EnergyFlow neural network models.
 **Required EFN Hyperparameters**
 
 - **input_dim** : _int_
-    - The number of features for each particle.
+    - The number of features for each particle. As of version 1.3.0,
+    `input_dim` may also be a tuple or list of integers, in which case
+    multiple Phi components will be used and their latent spaces
+    concatenated (see `additional_input_dims`).
 - **Phi_sizes** (formerly `ppm_sizes`) : {_tuple_, _list_} of _int_
-    - The sizes of the dense layers in the per-particle frontend
-    module $\Phi$. The last element will be the number of latent 
-    observables that the model defines.
+    - The sizes of the dense layers in the per-particle frontend module
+    $\Phi$. The last element will be the number of latent observables
+    that the model defines.
 - **F_sizes** (formerly `dense_sizes`) : {_tuple_, _list_} of _int_
     - The sizes of the dense layers in the backend module $F$.
 
@@ -238,58 +245,62 @@ _str_ or Keras activation
     all activations and may introduce weight sharing (such as with 
     `PReLU`); it is recommended in this case to pass as many activations
     as there are layers in the model. See the [Keras activations 
-    docs](https://keras.io/activations/) for more detail.
+    docs](https://www.tensorflow.org/api_docs/python/tf/keras/
+    activations) for more detail.
 - **F_acts**=`'relu'` (formerly `dense_acts`) : {_tuple_, _list_} of
 _str_ or Keras activation
-    - Activation functions(s) for the dense layers in the 
-    backend module $F$. A single string or activation layer will apply
-    the same activation to all layers.
+    - Activation functions(s) for the dense layers in the backend module
+    $F$. A single string or activation layer will apply the same
+    activation to all layers.
 - **Phi_k_inits**=`'he_uniform'` (formerly `ppm_k_inits`) : {_tuple_,
 _list_} of _str_ or Keras initializer
     - Kernel initializers for the dense layers in the per-particle
     frontend module $\Phi$. A single string will apply the same
-    initializer to all layers. See the [Keras initializer docs](https:
-    //keras.io/initializers/) for more detail.
+    initializer to all layers. See the [Keras initializer docs](https://
+    www.tensorflow.org/api_docs/python/tf/keras/initializers) for more
+    detail.
 - **F_k_inits**=`'he_uniform'` (formerly `dense_k_inits`) : {_tuple_,
 _list_} of _str_ or Keras initializer
-    - Kernel initializers for the dense layers in the backend 
-    module $F$. A single string will apply the same initializer 
-    to all layers.
+    - Kernel initializers for the dense layers in the backend module
+    $F$. A single string will apply the same initializer to all layers.
 - **latent_dropout**=`0` : _float_
-    - Dropout rates for the summation layer that defines the
-    value of the latent observables on the inputs. See the [Keras
-    Dropout layer](https://keras.io/layers/core/#dropout) for more 
-    detail.
+    - Dropout rates for the summation layer that defines the value of
+    the latent observables on the inputs. See the [Keras Dropout layer](
+    https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dropout)
+    for more detail.
 - **F_dropouts**=`0` (formerly `dense_dropouts`) : {_tuple_, _list_}
 of _float_
-    - Dropout rates for the dense layers in the backend module $F$. 
-    A single float will apply the same dropout rate to all dense layers.
+    - Dropout rates for the dense layers in the backend module $F$. A
+    single float will apply the same dropout rate to all dense layers.
 - **Phi_l2_regs**=`0` : {_tuple_, _list_} of _float_
-    - $L_2$-regulatization strength for both the weights and biases
-    of the layers in the $\Phi$ network. A single float will apply the
-    same $L_2$-regulatization to all layers.
+    - $L_2$-regulatization strength for both the weights and biases of
+    the layers in the $\Phi$ network. A single float will apply the same
+    $L_2$-regulatization to all layers.
 - **F_l2_regs**=`0` : {_tuple_, _list_} of _float_
-    - $L_2$-regulatization strength for both the weights and biases
-    of the layers in the $F$ network. A single float will apply the
-    same $L_2$-regulatization to all layers.
+    - $L_2$-regulatization strength for both the weights and biases of
+    the layers in the $F$ network. A single float will apply the same
+    $L_2$-regulatization to all layers.
 - **mask_val**=`0` : _float_
     - The value for which particles with all features set equal to
-    this value will be ignored. The [Keras Masking layer](https://
-    keras.io/layers/core/#masking) appears to have issues masking
-    the biases of a network, so this has been implemented in a
-    custom (and correct) manner since version `0.12.0`.
+    this value will be ignored. The [Keras Masking layer](https://www.
+    tensorflow.org/api_docs/python/tf/keras/layers/Masking) does not
+    work with the TimeDistributed layer, so this has been implemented in
+    a custom manner since version `0.12.0`.
 
 **Extended EFN Hyperparameters**
 
 - **additional_input_dims**=`None` : {_tuple_, _list_} of _int_
-    - If multiple EFN architectures are to be used to create several
-    latent space embeddings, this list specifies the input dimensions
-    of the subsequent input tensors. If `None`, then no additional
-    achitecture components are constructed. If not `None`, then the
-    above `Phi` options are used to specify aspects of each EFN
-    architecture; lists or tuples should be used to specify the options
-    for the different architectures. For instance, if there is an EFN1
-    and EFN2 architecture, the the `Phi_sizes` are specified as:
+    - If multiple Phi components are to be used to create several latent
+    space embeddings, this list specifies the input dimensions of the
+    subsequent input tensors. Note that the same behavior may be induced
+    by passing a tuple or list of ints as `input_dim`. If `None`, then
+    no additional achitecture components are constructed. If not `None`,
+    or if `input_dim` is a tuple or list of length greater than one,
+    then the above `Phi` options (as well as `latent_dropout`) are used
+    to specify aspects of each Phi component; lists or tuples should be
+    used to specify the options for the different architectures. For
+    instance, if there is an EFN1 and EFN2 architecture, the the
+    `Phi_sizes` are specified as:
 ```python
 Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...), 
              (Phi_sizes_EFN2_0, Phi_sizes_EFN2_1, ...)]
@@ -302,7 +313,7 @@ Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...),
 ### eval_filters
 
 ```python
-eval_filters(patch, n=100, prune=True)
+eval_filters(patch, n=100, Phi_i=None, prune=True)
 ```
 
 Evaluates the latent space filters of this model on a patch of the 
@@ -339,9 +350,11 @@ two-dimensional geometric input space.
 inputs
 ```
 
-List of input tensors to the model. EFNs have two input tensors:
-`inputs[0]` corresponds to the `zs` input and `inputs[1]` corresponds
-to the `phats` input.
+List of input tensors to the model. EFNs have two input tensors per
+Phi component: `inputs[2*i]` corresponds to the `zs` input of Phi
+component `i` and `inputs[2*i+1]` corresponds to the `ps` input.
+Additionally, if any global features are present, they are final tensor
+in this list.
 
 #### weights
 
@@ -359,7 +372,10 @@ equal to `mask_val` have been set to zero.
 Phi
 ```
 
-List of tensors corresponding to the layers in the $\Phi$ network.
+List of lists of tensors corresponding to the layers in the $\Phi$
+network(s). The outer list will have length equal to the number of Phi
+components and each sublist contains the tensors for that particular
+component.
 
 #### latent
 
@@ -367,8 +383,10 @@ List of tensors corresponding to the layers in the $\Phi$ network.
 latent
 ```
 
-List of tensors corresponding to the summation layer in the
-network, including any dropout layer if present.
+List of lists of tensors corresponding to the summation layer(s) in
+the network, including any latent dropout layers if present. The outer
+list will have length equal to the number of Phi components and each
+sublist contains the latent tensors for that particular component.
 
 #### F
 
@@ -385,6 +403,24 @@ output
 ```
 
 Output tensor for the model.
+
+#### layers
+
+```python
+layers
+```
+
+List of all layers in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also `layer_inds`.
+
+#### tensors
+
+```python
+tensors
+```
+
+List of all tensors in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also `tensor_inds`.
 
 
 ----
@@ -408,8 +444,9 @@ energyflow.archs.PFN(*args, **kwargs)
 inputs
 ```
 
-List of input tensors to the model. PFNs have one input tensor
-corresponding to the `ps` input.
+List of input tensors to the model. PFNs have one input tensor per
+Phi component corresponding to the `ps` input. Additionally, if there
+are any global features present, they are final tensor in this list.
 
 #### weights
 
@@ -427,7 +464,10 @@ equal to `mask_val`, and `1` is assigned otherwise.
 Phi
 ```
 
-List of tensors corresponding to the layers in the $\Phi$ network.
+List of lists of tensors corresponding to the layers in the $\Phi$
+network(s). The outer list will have length equal to the number of Phi
+components and each sublist contains the tensors for that particular
+component.
 
 #### latent
 
@@ -435,8 +475,10 @@ List of tensors corresponding to the layers in the $\Phi$ network.
 latent
 ```
 
-List of tensors corresponding to the summation layer in the
-network, including any dropout layer if present.
+List of lists of tensors corresponding to the summation layer(s) in
+the network, including any latent dropout layers if present. The outer
+list will have length equal to the number of Phi components and each
+sublist contains the latent tensors for that particular component.
 
 #### F
 
@@ -453,6 +495,24 @@ output
 ```
 
 Output tensor for the model.
+
+#### layers
+
+```python
+layers
+```
+
+List of all layers in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also `layer_inds`.
+
+#### tensors
+
+```python
+tensors
+```
+
+List of all tensors in the model. Order may be arbitrary since not
+every model can be unambiguously flattened. See also `tensor_inds`.
 
 
 ----
@@ -472,7 +532,7 @@ well as defaults common to all EnergyFlow neural network models.
 
 - **input_shape** : {_tuple_, _list_} of _int_
     - The shape of a single jet image. Assuming that `data_format`
-    is set to `channels_first`, this is `(nb_chan,npix,npix)`.
+    is set to `channels_last`, this is `(npix,npix,nb_chan)`.
 - **filter_sizes** : {_tuple_, _list_} of _int_
     - The size of the filters, which are taken to be square, in each 
     convolutional layer of the network. The length of the list will be
@@ -489,7 +549,8 @@ well as defaults common to all EnergyFlow neural network models.
 - **pool_sizes**=`0` : {_tuple_, _list_} of _int_
     - Size of maxpooling filter, taken to be a square. A value of 
     `0` will not use maxpooling.
-- **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
+- **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras
+activation
     - Activation function(s) for the conv layers. A single string or
     activation layer will apply the same activation to all conv layers.
     Keras advanced activation layers are also accepted, either as
@@ -498,37 +559,42 @@ well as defaults common to all EnergyFlow neural network models.
     layer will be used for all activations and may introduce weight 
     sharing (such as with `PReLU`); it is recommended in this case to 
     pass as many activations as there are layers in the model.See the
-    [Keras activations docs](https://keras.io/activations/) for more 
-    detail.
-- **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
+    [Keras activations docs](https://www.tensorflow.org/api_docs/python/
+    tf/keras/activations) for more detail.
+- **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras
+activation
     - Activation functions(s) for the dense layers. A single string 
     or activation layer will apply the same activation to all dense 
     layers.
-- **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
+- **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras
+initializer
     - Kernel initializers for the convolutional layers. A single
     string will apply the same initializer to all layers. See the
-    [Keras initializer docs](https://keras.io/initializers/) for 
-    more detail.
-- **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
+    [Keras initializer docs](https://www.tensorflow.org/api_docs/python/
+    tf/keras/initializers) for more detail.
+- **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras
+initializer
     - Kernel initializers for the dense layers. A single string will 
     apply the same initializer to all layers.
 - **conv_dropouts**=`0` : {_tuple_, _list_} of _float_
     - Dropout rates for the convolutional layers. A single float will
     apply the same dropout rate to all conv layers. See the [Keras
-    Dropout layer](https://keras.io/layers/core/#dropout) for more 
-    detail.
+    Dropout layer](https://www.tensorflow.org/api_docs/python/tf/keras/
+    layers/Dropout) for more detail.
 - **num_spatial2d_dropout**=`0` : _int_
     - The number of convolutional layers, starting from the beginning
-    of the model, for which to apply [SpatialDropout2D](https://keras
-    .io/layers/core/#spatialdropout2d) instead of Dropout.
+    of the model, for which to apply [SpatialDropout2D](https://www.
+    tensorflow.org/api_docs/python/tf/keras/layers/SpatialDropout2D)
+    instead of Dropout.
 - **dense_dropouts**=`0` : {_tuple_, _list_} of _float_
     - Dropout rates for the dense layers. A single float will apply 
     the same dropout rate to all dense layers.
 - **paddings**=`'valid'` : {_tuple_, _list_} of _str_
     - Controls how the filters are convoled with the inputs. See
-    the [Keras Conv2D layer](https://keras.io/layers/convolutional/#conv2d) 
-    for more detail.
-- **data_format**=`'channels_last'` : {`'channels_first'`, `'channels_last'`}
+    the [Keras Conv2D layer](https://www.tensorflow.org/api_docs/python/
+    tf/keras/layers/Conv2D) for more detail.
+- **data_format**=`'channels_last'` : {`'channels_first'`,
+`'channels_last'`}
     - Sets which axis is expected to contain the different channels.
     `'channels_first'` appears to have issues with newer versions of 
     tensorflow, so prefer `'channels_last'`.
@@ -565,19 +631,19 @@ well as defaults common to all EnergyFlow neural network models.
     layer will be used for all activations and may introduce weight 
     sharing (such as with `PReLU`); it is recommended in this case to 
     pass as many activations as there are layers in the model.See the
-    [Keras activations docs](https://keras.io/activations/) for more 
-    detail.
+    [Keras activations docs](https://www.tensorflow.org/api_docs/python/
+    tf/keras/activations) for more detail.
 - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras 
 initializer
     - Kernel initializers for the dense layers. A single string 
     will apply the same initializer to all layers. See the
-    [Keras initializer docs](https://keras.io/initializers/) for 
-    more detail.
+    [Keras initializer docs](https://www.tensorflow.org/api_docs/python/
+    tf/keras/initializers) for more detail.
 - **dropouts**=`0` : {_tuple_, _list_} of _float_
-    - Dropout rates for the dense layers. A single float will
-    apply the same dropout rate to all layers. See the [Keras
-    Dropout layer](https://keras.io/layers/core/#dropout) for more 
-    detail.
+    - Dropout rates for the dense layers. A single float will apply the
+    same dropout rate to all layers. See the [Keras Dropout layer](https
+    ://www.tensorflow.org/api_docs/python/tf/keras/layers/Dropout) for
+    more detail.
 - **l2_regs**=`0` : {_tuple_, _list_} of _float_
     - $L_2$-regulatization strength for both the weights and biases
     of the dense layers. A single float will apply the same
@@ -624,117 +690,6 @@ See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 - **LR_hps**=`{}` : _dict_
     - Dictionary of keyword arguments to pass on to the underlying
     `LogisticRegression` model.
-
-
-----
-
-## Utilities 
-
-Utilities for EnergyFlow architectures, split out from the utils submodule
-because these import tensorflow, which the main package avoids doing.
-
-----
-
-### tf_point_cloud_dataset
-
-```python
-energyflow.archs.tf_point_cloud_dataset(data_arrs, batch_size=None, dtype='float32')
-```
-
-Creates a TensorFlow dataset from NumPy arrays of events of particles,
-designed to be used as input to EFN and PFN models. The function uses a
-generator to spool events from the arrays as needed and pad them on the fly.
-As of EnergyFlow version 1.3.0, it is suggested to use this function to
-create TensorFlow datasets to use as input to EFN and PFN training as it can
-yield a slight improvement in training and evaluation time.
-
-
-Here are some examples of using this function. For a standard EFN without
-event weights, one would specify the arrays as:
-```python
-data_arrs = [[event_zs, event_phats], Y]
-```
-For a PFN, let's say with event weights, the arrays look like:
-```python
-data_arrs = [event_ps, Y, weights]
-```
-For an EFN model with global features, we would do:
-```python
-data_arrs = [[event_zs, event_phats, X_global], Y]
-```
-For a test dataset, where there are no target values of weights, it is
-important to use a nested list in the case where there are multiple inputs.
-For instance, for a test dataset for an EFN model, we would have:
-```python
-data_arrs = [[test_event_zs, test_event_phats]]
-```
-
-**Arguments**
-
-- **data_arrs** : {_tuple_, _list_} of _numpy.ndarray_
-    - The NumPy arrays to build the dataset from. A single array may be
-    given, in which case samples from it alone are used. If a list of arrays
-    are given, then it should be length 1, 2, or 3, corresponding to the
-    `(X,)`, `(X, Y)`, or `(X, Y, weights)`, respectively, where `X` are the
-    features, `Y` are the targets and `weights` are the sample weights. In
-    the case where multiple inputs or multiple target arrays are to be used,
-    a nested list may be used, (see above).
-
-- **batch_size** : _int_ or `None`
-    - If an integer, the dataset will provide batches with that number of
-    events when queried. If `None`, no batching is done. Setting this option
-    should replace padding a `batch_size` argument directly to the `.fit`
-    method of the EFN or PFN.
-- **dtype** : _str_
-    - The datatype to use in the TensorFlow dataset. Note that 32-bit
-    floats are typically sufficient for ML models and so this is the
-    default.
-- **prefetch** : _int_
-    - The maximum number of samples to prepare in advance of their usage
-    during training or evaluation. See the [TensorFlow documentation](https:
-    //www.tensorflow.org/api_docs/python/tf/data/Dataset#prefetch) for more
-    details.
-- **pad_val** : _float_
-    - Events will be padded with particles consisting of this value repeated
-    as many times as necessary. This should match the `mask_val` option of
-    the EFN or PFN model.
-
-**Returns**
-
-- _tensorflow.data.Dataset_
-    - The TensorFlow dataset built from the provided arrays and options. To
-    view samples from the dataset, for instance the first five batches, one
-    can do:
-
-```python
-for sample in tfdataset.take(5).as_numpy_iterator():
-    print(sample.shape)
-```
-
-
-----
-
-### tf_gen
-
-```python
-energyflow.archs.tf_gen(args)
-```
-
-Returns a function that when called returns a generator that yields
-samples from the given arrays. Designed to work with
-`tf.data.Dataset.from_generator`, though commonly this is handled by
-[`tf_point_cloud_dataset`](#tf_point_cloud_dataset).
-
-**Arguments**
-
-- ***args** : arbitrary _numpy.ndarray_ datasets
-    - An arbitrary number of arrays.
-
-**Returns**
-
-- _function_
-    - A function that when called returns a generator that yields samples
-    from the given arrays.
 
 
 ----

@@ -208,21 +208,22 @@ class NNBase(ArchBase):
         **Compilation Options**
 
         - **loss**=`'categorical_crossentropy'` : _str_
-            - The loss function to use for the model. See the [Keras loss 
-            function docs](https://keras.io/losses/) for available loss
-            functions.
+            - The loss function to use for the model. See the [Keras loss
+            function docs](https://www.tensorflow.org/api_docs/python/tf/keras/
+            losses) for available loss functions.
         - **optimizer**=`'adam'` : Keras optimizer or _str_
-            - A [Keras optimizer](https://keras.io/optimizers/) instance or a
-            string referring to one (in which case the default arguments are 
-            used).
+            - A [Keras optimizer](https://www.tensorflow.org/api_docs/python/tf/
+            keras/optimizers) instance or a string referring to one (in which
+            case the default arguments are used).
         - **metrics**=`['accuracy']` : _list_ of _str_
-            - The [Keras metrics](https://keras.io/metrics/) to apply to the
-            model.
+            - The [Keras metrics](https://www.tensorflow.org/api_docs/python/tf/
+            keras/metrics) to apply to the model.
         - **compile_opts**=`{}` : _dict_
             - Dictionary of keyword arguments to be passed on to the
-            [`compile`](https://keras.io/models/model/#compile) method of the
-            model. `loss`, `optimizer`, and `metrics` (see above) are included
-            in this dictionary. All other values are the Keras defaults.
+            [`compile`](https://www.tensorflow.org/api_docs/python/tf/keras/
+            Model) method of the model. `loss`, `optimizer`, and `metrics` (see
+            above) are included in this dictionary. All other values are the
+            Keras defaults.
 
         **Output Options**
 
@@ -238,31 +239,34 @@ class NNBase(ArchBase):
             model will not be saved.
         - **save_while_training**=`True` : _bool_
             - Whether the model is saved during training (using the 
-            [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
-            callback) or only once training terminates. Only relevant if
-            `filepath` is set.
+            [`ModelCheckpoint`](https://www.tensorflow.org/api_docs/python/tf/
+            keras/callbacks/ModelCheckpoint) callback) or only once training
+            terminates. Only relevant if `filepath` is set.
         - **save_weights_only**=`False` : _bool_
             - Whether only the weights of the model or the full model are
             saved. Only relevant if `filepath` is set.
         - **modelcheck_opts**=`{'save_best_only':True, 'verbose':1}` : _dict_
             - Dictionary of keyword arguments to be passed on to the
-            [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
-            callback, if it is present. `save_weights_only` (see above) is
-            included in this dictionary. All other arguments are the Keras
-            defaults.
+            [`ModelCheckpoint`](https://www.tensorflow.org/api_docs/python/tf/
+            keras/callbacks/ModelCheckpoint) callback, if it is present.
+            `save_weights_only` (see above) is included in this dictionary.
+            All other arguments are the Keras defaults.
         - **patience**=`None` : _int_
             - The number of epochs with no improvement after which the training
-            is stopped (using the [`EarlyStopping`](https://keras.io/
-            callbacks/#earlystopping) callback). If `None` then no early stopping
-            is used.
+            is stopped (using the [`EarlyStopping`](https://www.tensorflow.org/
+            api_docs/python/tf/keras/callbacks/EarlyStopping) callback). If
+            `None` then no early stopping is used.
         - **earlystop_opts**=`{'restore_best_weights':True, 'verbose':1}` : _dict_
             - Dictionary of keyword arguments to be passed on to the
-            [`EarlyStopping`](https://keras.io/callbacks/#earlystopping)
-            callback, if it is present. `patience` (see above) is included in
-            this dictionary. All other arguments are the Keras defaults.
+            [`EarlyStopping`](https://www.tensorflow.org/api_docs/python/tf/
+            keras/callbacks/EarlyStopping) callback, if it is present.
+            `patience` (see above) is included in this dictionary. All other
+            arguments are the Keras defaults.
 
-        **Flags**
+        **Other Options**
 
+        - **model_name**=`None` : _str_
+            - If not `None`, this will be the name of the model.
         - **name_layers**=`True` : _bool_
             - Whether to give the layers of the model explicit names or let
             them be named automatically. One reason to set this to `False`
@@ -309,22 +313,27 @@ class NNBase(ArchBase):
         self.compile = self._proc_arg('compile', default=True)
         self.summary = self._proc_arg('summary', default=True)
 
-    def _add_act(self, act):
+        # model name
+        self.model_name = self._proc_arg('model_name', default=None)
+        if self.model_name is None:
+            self.model_name = self._proc_name(self.__class__.__name__)
 
-        # handle case of act as a layer
-        if isinstance(act, Layer):
-            self.model.add(act)
+        # activation function counts
+        self._act_counts = {}
 
-        # handle case of act being a string and in ACT_DICT
-        elif isinstance(act, six.string_types) and act in ACT_DICT:
-            self.model.add(ACT_DICT[act]())
-
-        # default case of regular activation
-        else:
-            self.model.add(Activation(act))
+    def _add_act(self, act, name=None):
+        self.model.add(_get_act_layer(act, name=self._proc_act_name(act)))
 
     def _proc_name(self, name):
         return name if self.name_layers else None
+
+    def _proc_act_name(self, act):
+
+        # only process activations specified as strings
+        if isinstance(act, six.string_types):
+            name = self._proc_name('{}_{}'.format(act, self._act_counts.setdefault(act, 0)))
+            self._act_counts[act] += 1
+            return name
 
     def _compile_model(self):
 
@@ -385,15 +394,15 @@ class NNBase(ArchBase):
 
 ACT_DICT = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
 
-def _get_act_layer(act):
+def _get_act_layer(act, name=None):
 
     # handle case of act as a layer
     if isinstance(act, Layer):
         return act
 
-    # handle case of act being a string and in ACT_DICT
+    # determine name
     if isinstance(act, six.string_types) and act in ACT_DICT:
-        return ACT_DICT[act]()
+        return ACT_DICT[act](name=name)
 
-    # default case of passing act into layer
-    return Activation(act)
+    # default case of passing act into Activation layer
+    return Activation(act, name=name)

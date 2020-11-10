@@ -166,7 +166,7 @@ def to_categorical(labels, num_classes=None):
 
     y = np.asarray(labels, dtype=int)
     n = y.shape[0]
-    categorical = np.zeros((n, num_classes))
+    categorical = np.zeros((n, num_classes), dtype=labels.dtype)
 
     # index into array and set appropriate values to 1
     categorical[np.arange(n), y] = 1

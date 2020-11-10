@@ -1,5 +1,10 @@
 # Release Notes
 
+## 1.4.x
+
+- EFN/PFN architectures setup to have multiple Phi components that embed their inputs in separate latent spaces which are then concatenated together.
+- Activation function layers have more descriptive names.
+
 ## 1.3.x
 
 **1.3.0**

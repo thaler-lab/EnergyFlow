@@ -12,7 +12,6 @@ from tensorflow.keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.archs.dnn import construct_dense
-from energyflow.archs.utils import iter_or_rep_multiple
 from energyflow.utils import iter_or_rep, kwargs_check
 
 __all__ = [
@@ -40,7 +39,7 @@ keras_version_tuple = tuple(map(int, __keras_version__.split('.')))
 DOT_AXIS = 0 if keras_version_tuple <= (2, 2, 4) else 1
 
 ################################################################################
-# INPUT FUNCTIONS
+# Input Functions
 ################################################################################
 
 def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
@@ -54,7 +53,7 @@ def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
         dimension.
     - **zs_names** : _list_ of _str_ or `None`
         - The names of the input weight tensors, or None to use default names.
-    - **phats_names** : _list_ of _str_ or `None`
+    - **ps_names** : _list_ of _str_ or `None`
         - The names of the input point tensors, or None to use default names.
 
     **Returns**
@@ -62,7 +61,7 @@ def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
     - _list_ of _tensorflow.keras.Input_ tensors.
     """
 
-    zs_names, phats_names = kwargs.pop('zs_names'), kwargs.pop('phats_names')
+    zs_names, ps_names = kwargs.pop('zs_names'), kwargs.pop('ps_names')
     kwargs_check('construct_point_cloud_weighted_inputs', kwargs)
 
     # handle names
@@ -70,15 +69,15 @@ def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
         zs_names = len(input_dims)*[None]
     elif (not isinstance(zs_names, list)) or len(input_dims) != len(zs_names):
         raise ValueError('zs_names must be a list of the same length as number of input_dims')
-    if phats_names is None:
-        phats_names = len(input_dims)*[None]
-    elif (not isinstance(phats_names, list)) or len(input_dims) != len(phats_names):
-        raise ValueError('phats_names must be a list of the same length as number of  input_dims')
+    if ps_names is None:
+        ps_names = len(input_dims)*[None]
+    elif (not isinstance(ps_names, list)) or len(input_dims) != len(ps_names):
+        raise ValueError('ps_names must be a list of the same length as number of  input_dims')
 
     inputs = []
     for i,input_dim in enumerate(input_dims):
         inputs.append(Input(batch_shape=(None, None), name=zs_names[i]))
-        inputs.append(Input(batch_shape=(None, None, input_dim), name=phats_names[i]))
+        inputs.append(Input(batch_shape=(None, None, input_dim), name=ps_names[i]))
 
     return inputs
 
@@ -114,7 +113,7 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
 
 
 ################################################################################
-# WEIGHT MASK FUNCTIONS
+# Weight Mask Functions
 ################################################################################
 
 def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
@@ -147,22 +146,24 @@ def construct_point_cloud_mask(input_tensors, mask_val=0., name=None):
 
 
 ################################################################################
-# NETWORK FUNCTIONS
+# Network Construction Functions
 ################################################################################
 
 def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_uniform', 
-                                                                  names=None, l2_regs=0.):
+                                                     l2_regs=0., names=None, act_names=None):
     """"""
 
     # repeat options if singletons
     acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
-    name, l2_regs = iter_or_rep(names), iter_or_rep(l2_regs)
+    l2_regs = iter_or_rep(l2_regs)
+    names, act_names = iter_or_rep(names), iter_or_rep(act_names)
     
     # list of tensors
     layers, tensors = [], [input_tensor]
 
     # iterate over specified layers
-    for s, act, k_init, name, l2_reg in zip(sizes, acts, k_inits, names, l2_regs):
+    z = zip(sizes, acts, k_inits, l2_regs, names, act_names)
+    for s, act, k_init, l2_reg, name, act_name in z:
         
         # define a dense layer that will be applied through time distributed
         kwargs = {} 
@@ -172,7 +173,7 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
 
         # get layers and append them to list
         tdist_layer = TimeDistributed(d_layer, name=name)
-        act_layer = _get_act_layer(act)
+        act_layer = _get_act_layer(act, name=act_name)
         layers.extend([tdist_layer, act_layer])
 
         # get tensors and append them to list
@@ -198,10 +199,10 @@ def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
 
 
 ################################################################################
-# SymmetricPerParticleNN - Base class for EFN-like models
+# SymmetricPointCloudNN - Base class for EFN-like models
 ################################################################################
 
-class SymmetricPerParticleNN(NNBase):
+class SymmetricPointCloudNN(NNBase):
 
     # EFN(*args, **kwargs)
     def _process_hps(self):
@@ -211,11 +212,14 @@ class SymmetricPerParticleNN(NNBase):
         **Required EFN Hyperparameters**
 
         - **input_dim** : _int_
-            - The number of features for each particle.
+            - The number of features for each particle. As of version 1.3.0,
+            `input_dim` may also be a tuple or list of integers, in which case
+            multiple Phi components will be used and their latent spaces
+            concatenated (see `additional_input_dims`).
         - **Phi_sizes** (formerly `ppm_sizes`) : {_tuple_, _list_} of _int_
-            - The sizes of the dense layers in the per-particle frontend
-            module $\Phi$. The last element will be the number of latent 
-            observables that the model defines.
+            - The sizes of the dense layers in the per-particle frontend module
+            $\Phi$. The last element will be the number of latent observables
+            that the model defines.
         - **F_sizes** (formerly `dense_sizes`) : {_tuple_, _list_} of _int_
             - The sizes of the dense layers in the backend module $F$.
 
@@ -232,58 +236,62 @@ class SymmetricPerParticleNN(NNBase):
             all activations and may introduce weight sharing (such as with 
             `PReLU`); it is recommended in this case to pass as many activations
             as there are layers in the model. See the [Keras activations 
-            docs](https://keras.io/activations/) for more detail.
+            docs](https://www.tensorflow.org/api_docs/python/tf/keras/
+            activations) for more detail.
         - **F_acts**=`'relu'` (formerly `dense_acts`) : {_tuple_, _list_} of
         _str_ or Keras activation
-            - Activation functions(s) for the dense layers in the 
-            backend module $F$. A single string or activation layer will apply
-            the same activation to all layers.
+            - Activation functions(s) for the dense layers in the backend module
+            $F$. A single string or activation layer will apply the same
+            activation to all layers.
         - **Phi_k_inits**=`'he_uniform'` (formerly `ppm_k_inits`) : {_tuple_,
         _list_} of _str_ or Keras initializer
             - Kernel initializers for the dense layers in the per-particle
             frontend module $\Phi$. A single string will apply the same
-            initializer to all layers. See the [Keras initializer docs](https:
-            //keras.io/initializers/) for more detail.
+            initializer to all layers. See the [Keras initializer docs](https://
+            www.tensorflow.org/api_docs/python/tf/keras/initializers) for more
+            detail.
         - **F_k_inits**=`'he_uniform'` (formerly `dense_k_inits`) : {_tuple_,
         _list_} of _str_ or Keras initializer
-            - Kernel initializers for the dense layers in the backend 
-            module $F$. A single string will apply the same initializer 
-            to all layers.
+            - Kernel initializers for the dense layers in the backend module
+            $F$. A single string will apply the same initializer to all layers.
         - **latent_dropout**=`0` : _float_
-            - Dropout rates for the summation layer that defines the
-            value of the latent observables on the inputs. See the [Keras
-            Dropout layer](https://keras.io/layers/core/#dropout) for more 
-            detail.
+            - Dropout rates for the summation layer that defines the value of
+            the latent observables on the inputs. See the [Keras Dropout layer](
+            https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dropout)
+            for more detail.
         - **F_dropouts**=`0` (formerly `dense_dropouts`) : {_tuple_, _list_}
         of _float_
-            - Dropout rates for the dense layers in the backend module $F$. 
-            A single float will apply the same dropout rate to all dense layers.
+            - Dropout rates for the dense layers in the backend module $F$. A
+            single float will apply the same dropout rate to all dense layers.
         - **Phi_l2_regs**=`0` : {_tuple_, _list_} of _float_
-            - $L_2$-regulatization strength for both the weights and biases
-            of the layers in the $\Phi$ network. A single float will apply the
-            same $L_2$-regulatization to all layers.
+            - $L_2$-regulatization strength for both the weights and biases of
+            the layers in the $\Phi$ network. A single float will apply the same
+            $L_2$-regulatization to all layers.
         - **F_l2_regs**=`0` : {_tuple_, _list_} of _float_
-            - $L_2$-regulatization strength for both the weights and biases
-            of the layers in the $F$ network. A single float will apply the
-            same $L_2$-regulatization to all layers.
+            - $L_2$-regulatization strength for both the weights and biases of
+            the layers in the $F$ network. A single float will apply the same
+            $L_2$-regulatization to all layers.
         - **mask_val**=`0` : _float_
             - The value for which particles with all features set equal to
-            this value will be ignored. The [Keras Masking layer](https://
-            keras.io/layers/core/#masking) appears to have issues masking
-            the biases of a network, so this has been implemented in a
-            custom (and correct) manner since version `0.12.0`.
+            this value will be ignored. The [Keras Masking layer](https://www.
+            tensorflow.org/api_docs/python/tf/keras/layers/Masking) does not
+            work with the TimeDistributed layer, so this has been implemented in
+            a custom manner since version `0.12.0`.
 
         **Extended EFN Hyperparameters**
 
         - **additional_input_dims**=`None` : {_tuple_, _list_} of _int_
-            - If multiple EFN architectures are to be used to create several
-            latent space embeddings, this list specifies the input dimensions
-            of the subsequent input tensors. If `None`, then no additional
-            achitecture components are constructed. If not `None`, then the
-            above `Phi` options are used to specify aspects of each EFN
-            architecture; lists or tuples should be used to specify the options
-            for the different architectures. For instance, if there is an EFN1
-            and EFN2 architecture, the the `Phi_sizes` are specified as:
+            - If multiple Phi components are to be used to create several latent
+            space embeddings, this list specifies the input dimensions of the
+            subsequent input tensors. Note that the same behavior may be induced
+            by passing a tuple or list of ints as `input_dim`. If `None`, then
+            no additional achitecture components are constructed. If not `None`,
+            or if `input_dim` is a tuple or list of length greater than one,
+            then the above `Phi` options (as well as `latent_dropout`) are used
+            to specify aspects of each Phi component; lists or tuples should be
+            used to specify the options for the different architectures. For
+            instance, if there is an EFN1 and EFN2 architecture, the the
+            `Phi_sizes` are specified as:
         ```python
         Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...), 
                      (Phi_sizes_EFN2_0, Phi_sizes_EFN2_1, ...)]
@@ -295,12 +303,20 @@ class SymmetricPerParticleNN(NNBase):
         """
 
         # process generic NN hps
-        super(SymmetricPerParticleNN, self)._process_hps()
+        super(SymmetricPointCloudNN, self)._process_hps()
 
         # input dimensions
-        self.input_dims = [self._proc_arg('input_dim')]
+        self.input_dims = self._proc_arg('input_dim')
         self.additional_input_dims = self._proc_arg('additional_input_dims', default=None)
         self.num_global_features = self._proc_arg('num_global_features', default=None)
+
+        # ensure we end up with input_dims as a list
+        if isinstance(self.input_dims, int):
+            self.input_dims = [self.input_dims]
+        elif not isinstance(self.input_dims, (tuple, list)):
+            raise TypeError("'input_dim' must be an integer, tuple, or list")
+        else:
+            self.input_dims = list(self.input_dims)
 
         # network sizes
         self.Phi_sizes = self._proc_arg('Phi_sizes', old='ppm_sizes')
@@ -325,8 +341,8 @@ class SymmetricPerParticleNN(NNBase):
 
         # handle latent dropout
         if not isinstance(self.latent_dropout, (tuple, list)):
-            self.latent_dropout = self.num_Phi_models*[self.latent_dropout]
-        elif len(self.latent_dropout) != self.num_Phi_models:
+            self.latent_dropout = self.num_Phi_components*[self.latent_dropout]
+        elif len(self.latent_dropout) != self.num_Phi_components:
             raise ValueError('number of latent dropouts does not match number of Phi components')
 
         # masking
@@ -347,7 +363,7 @@ class SymmetricPerParticleNN(NNBase):
 
         # get output layers
         out_layer = Dense(self.output_dim, name=self._proc_name('output'))
-        act_layer = _get_act_layer(self.output_act)
+        act_layer = _get_act_layer(self.output_act, name=self._proc_act_name(self.output_act))
         self._layers.extend([out_layer, act_layer])
 
         # append output tensors
@@ -355,34 +371,54 @@ class SymmetricPerParticleNN(NNBase):
         self._tensors.append(act_layer(self.tensors[-1]))
 
         # construct a new model
-        self._model = Model(inputs=self.inputs, outputs=self.output)
+        self._model = Model(inputs=self.inputs, outputs=self.output, name=self.model_name)
 
         # compile model
         self._compile_model()
 
     def _prepare_multiple_Phis(self):
 
-        # boolean to track if we have multiple Phis
-        self._multiple_Phi_models = self.additional_input_dims is not None
-        if self._multiple_Phi_models:
-            self.input_dims += self.additional_input_dims
-            self.num_Phi_models = len(self.input_dims)
+        # form input dimensions
+        if self.additional_input_dims is not None:
+            if not isinstance(self.additional_input_dims, (tuple, list)):
+                self.additional_input_dims = [self.additional_input_dims]
+            self.input_dims.extend(self.additional_input_dims) 
+
+        # handle multiple Phis
+        self.num_Phi_components = len(self.input_dims)
+        if self.num_Phi_components > 1:
+            self.additional_input_dims = self.input_dims[1:]
 
             # check Phi sizes
             for x in self.Phi_sizes:
                 if not isinstance(x, (tuple, list)):
                     raise TypeError('multiple Phi components being used - Phi_sizes should be a list of lists')
 
-            def proc_Phi_arg(name, **kwargs):
-                return iter_or_rep_multiple(self._proc_arg(name, **kwargs), self.num_Phi_models, name)
+            self._proc_Phi_arg = self._proc_multiple_Phi_arg
 
         else:
-            self.num_Phi_models = 1
             self.Phi_sizes = [self.Phi_sizes]
-            def proc_Phi_arg(name, **kwargs):
-                return [iter_or_rep(self._proc_arg(name, **kwargs))]
+            self._proc_Phi_arg = self._proc_single_Phi_arg
 
-        self._proc_Phi_arg = proc_Phi_arg
+    def _proc_single_Phi_arg(self, name, **kwargs):
+        return [iter_or_rep(self._proc_arg(name, **kwargs))]
+
+    def _proc_multiple_Phi_arg(self, name, **kwargs):
+
+        # ensure we have a list of length num_Phi_components
+        arg = self._proc_arg(name, **kwargs)
+        if not isinstance(arg, (tuple, list)):
+            arg = self.num_Phi_components*[arg]
+        elif len(arg) != self.num_Phi_components:
+            raise ValueError('multiple Phi components being used - {}'.format(name)
+                             + ' length should match number of Phi components')
+
+        # process arguments parts, oen for each Phi component
+        arg = list(arg)
+        for i,a in enumerate(arg):
+            arg[i] = iter_or_rep(a)
+
+        return arg
 
     @abstractmethod
     def _construct_point_cloud_inputs(self):
@@ -400,10 +436,11 @@ class SymmetricPerParticleNN(NNBase):
     def _construct_Phi(self):
 
         # iterate over each Phi architecture
-        for i in range(self.num_Phi_models):
+        for i in range(self.num_Phi_components):
 
             # get names
             names = [self._proc_name('tdist_{}_{}'.format(i, j)) for j in range(len(self.Phi_sizes[i]))]
+            act_names = [self._proc_act_name(act) for Phi_size,act in zip(self.Phi_sizes[i], self.Phi_acts[i])]
 
             # determine begin inds
             layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
@@ -411,7 +448,8 @@ class SymmetricPerParticleNN(NNBase):
             # construct Phi
             Phi_layers, Phi_tensors = construct_distributed_dense(self._ps_input_tensors[i], self.Phi_sizes[i], 
                                                         acts=self.Phi_acts[i], k_inits=self.Phi_k_inits[i], 
-                                                        names=names, l2_regs=self.Phi_l2_regs[i])
+                                                        l2_regs=self.Phi_l2_regs[i],
+                                                        names=names, act_names=act_names)
 
             # add layers and tensors to internal lists
             self.layers.extend(Phi_layers)
@@ -428,7 +466,7 @@ class SymmetricPerParticleNN(NNBase):
     def _construct_latent(self):
 
         # iterate over each Phi architecture
-        for i in range(self.num_Phi_models):
+        for i in range(self.num_Phi_components):
 
             # determine begin inds
             layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
@@ -468,6 +506,7 @@ class SymmetricPerParticleNN(NNBase):
 
         # get names
         names = [self._proc_name('dense_{}'.format(i)) for i in range(len(self.F_sizes))]
+        act_names = [self._proc_act_name(act) for F_size,act in zip(self.F_sizes, self.F_acts)]
 
         # determine begin inds
         layer_inds, tensor_inds = [len(self.layers)], [len(self.tensors)]
@@ -475,8 +514,8 @@ class SymmetricPerParticleNN(NNBase):
         # construct F
         F_layers, F_tensors = construct_dense(self.tensors[self.tensor_inds['F_input']], self.F_sizes,
                                               acts=self.F_acts, k_inits=self.F_k_inits, 
-                                              dropouts=self.F_dropouts, names=names,
-                                              l2_regs=self.F_l2_regs)
+                                              dropouts=self.F_dropouts, l2_regs=self.F_l2_regs,
+                                              names=names, act_names=act_names)
 
         # add layers and tensors to internal lists
         self.layers.extend(F_layers)
@@ -487,16 +526,8 @@ class SymmetricPerParticleNN(NNBase):
         tensor_inds.append(len(self.tensors))
 
         # store inds
-        self.layer_inds['F'] = layer_inds
-        self.tensor_inds['F'] = tensor_inds
-
-    @property
-    def layer_inds(self):
-        return self._layer_inds
-
-    @property
-    def tensor_inds(self):
-        return self._tensor_inds
+        self.layer_inds['F'] = tuple(layer_inds)
+        self.tensor_inds['F'] = tuple(tensor_inds)
 
     @abstractproperty
     def inputs(self):
@@ -516,19 +547,25 @@ class SymmetricPerParticleNN(NNBase):
 
     @property
     def Phi(self):
-        r"""List of tensors corresponding to the layers in the $\Phi$ network."""
+        r"""List of lists of tensors corresponding to the layers in the $\Phi$
+        network(s). The outer list will have length equal to the number of Phi
+        components and each sublist contains the tensors for that particular
+        component.
+        """
 
         return [self._tensors[slice(*self._tensor_inds['Phi_{}'.format(i)])]
-                for i in range(self.num_Phi_models)]
+                for i in range(self.num_Phi_components)]
 
     @property
     def latent(self):
-        """List of tensors corresponding to the summation layer in the
-        network, including any dropout layer if present.
+        """List of lists of tensors corresponding to the summation layer(s) in
+        the network, including any latent dropout layers if present. The outer
+        list will have length equal to the number of Phi components and each
+        sublist contains the latent tensors for that particular component.
         """
 
         return [self._tensors[slice(*self._tensor_inds['latent_{}'.format(i)])]
-                for i in range(self.num_Phi_models)]
+                for i in range(self.num_Phi_components)]
 
     @property
     def F(self):
@@ -544,32 +581,56 @@ class SymmetricPerParticleNN(NNBase):
 
     @property
     def layers(self):
-        """List of all layers in the model."""
+        """List of all layers in the model. Order may be arbitrary since not
+        every model can be unambiguously flattened. See also `layer_inds`.
+        """
 
         return self._layers
 
     @property
     def tensors(self):
-        """List of all tensors in the model. Order may be arbitrary given that
-        not every model can be unambiguously flattened."""
+        """List of all tensors in the model. Order may be arbitrary since not
+        every model can be unambiguously flattened. See also `tensor_inds`.
+        """
 
         return self._tensors
+
+    @property
+    def layer_inds(self):
+        """Dictionary whose keys are name of layers or groups of layers in the
+        network and whose values contain the corresponding indices in the
+        `layers` list. Values that are tuples indicate ranges of indices whereas
+        lists indicate explicit indices.
+        """
+
+        return self._layer_inds
+
+    @property
+    def tensor_inds(self):
+        """Dictionary whose keys are name of tensors or groups of tensors in the
+        network and whose values contain the corresponding indices in the
+        `tensors` list. Values that are tuples indicate ranges of indices whereas
+        lists indicate explicit indices.
+        """
+
+        return self._tensor_inds
 
 
 ################################################################################
 # EFN - Energy flow network class
 ################################################################################
 
-class EFN(SymmetricPerParticleNN):
+class EFN(SymmetricPointCloudNN):
 
     """Energy Flow Network (EFN) architecture."""
 
     def _construct_point_cloud_inputs(self):
 
         # construct input tensors
-        zs_names = [self._proc_name('zs_input_{}'.format(i)) for i in range(self.num_Phi_models)]
-        phats_names = [self._proc_name('phats_input_{}'.format(i)) for i in range(self.num_Phi_models)]
-        self._inputs = construct_point_cloud_weighted_inputs(*self.input_dims, zs_names=zs_names, phats_names=phats_names)
+        zs_names = [self._proc_name('zs_input_{}'.format(i)) for i in range(self.num_Phi_components)]
+        ps_names = [self._proc_name('ps_input_{}'.format(i)) for i in range(self.num_Phi_components)]
+        self._inputs = construct_point_cloud_weighted_inputs(*self.input_dims, zs_names=zs_names,
+                                                                               ps_names=ps_names)
 
         # begin list of tensors in the model
         self._tensors = list(self.inputs)
@@ -592,9 +653,11 @@ class EFN(SymmetricPerParticleNN):
 
     @property
     def inputs(self):
-        """List of input tensors to the model. EFNs have two input tensors:
-        `inputs[0]` corresponds to the `zs` input and `inputs[1]` corresponds
-        to the `phats` input.
+        """List of input tensors to the model. EFNs have two input tensors per
+        Phi component: `inputs[2*i]` corresponds to the `zs` input of Phi
+        component `i` and `inputs[2*i+1]` corresponds to the `ps` input.
+        Additionally, if any global features are present, they are final tensor
+        in this list.
         """
 
         return self._inputs
@@ -612,8 +675,8 @@ class EFN(SymmetricPerParticleNN):
 
         return self._weights
 
-    # eval_filters(patch, n=100, prune=True)
-    def eval_filters(self, patch, n=100, prune=True):
+    # eval_filters(patch, n=100, Phi_i=None, prune=True)
+    def eval_filters(self, patch, n=100, Phi_i=None, prune=True):
         """Evaluates the latent space filters of this model on a patch of the 
         two-dimensional geometric input space.
 
@@ -663,19 +726,31 @@ class EFN(SymmetricPerParticleNN):
 
         # handle weirdness of Keras/tensorflow
         old_keras = (keras_version_tuple <= (2, 2, 5))
-        s = self.Phi_sizes[-1] if len(self.Phi_sizes) else self.input_dims
-        in_t, out_t = self.inputs[1], self._tensors[self._tensor_inds['latent'][0] - 1]
+        
+        # iterate over latent spaces
+        if Phi_i is None:
+            Phi_i = range(self.num_Phi_components)
+        elif isinstance(Phi_i, int):
+            Phi_i = [Phi_i]
+            
+        Zs = []
+        for i in Phi_i:
+            nfilt = self.Phi_sizes[i][-1] if len(self.Phi_sizes[i]) else self.input_dims[i]
+            in_t, out_t = self._ps_input_tensors[i], self.Phi[i][-1]
 
-        # construct function
-        kf = K.function([in_t] if old_keras else in_t, [out_t] if old_keras else out_t)
+            # construct function
+            kf = K.function([in_t] if old_keras else in_t, [out_t] if old_keras else out_t)
 
-        # evaluate function
-        Z = kf([XY] if old_keras else XY)[0].reshape(nx, ny, s).transpose((2, 0, 1))
+            # evaluate function
+            Z = kf([XY] if old_keras else XY)[0].reshape(nx, ny, nfilt).transpose((2, 0, 1))
+            Zs.append(Z)
+            
+        Z = np.concatenate(Zs, axis=0)
 
         # prune filters that are off
         if prune:
-            return X, Y, Z[[not (z == 0).all() for z in Z]]
-        
+            return X, Y, Z[np.any(Z != 0., axis=(1,2))]
+
         return X, Y, Z
 
 
@@ -683,7 +758,7 @@ class EFN(SymmetricPerParticleNN):
 # PFN - Particle flow network class
 ################################################################################
 
-class PFN(SymmetricPerParticleNN):
+class PFN(SymmetricPointCloudNN):
 
     """Particle Flow Network (PFN) architecture. Accepts the same 
     hyperparameters as the [`EFN`](#EFN)."""
@@ -693,13 +768,13 @@ class PFN(SymmetricPerParticleNN):
         """""" # need this for autogen docs
 
         # construct input tensor
-        ps_names = [self._proc_name('ps_input_{}'.format(i)) for i in range(self.num_Phi_models)]
+        ps_names = [self._proc_name('ps_input_{}'.format(i)) for i in range(self.num_Phi_components)]
         self._inputs = construct_point_cloud_inputs(*self.input_dims, names=ps_names)
 
         # begin list of tensors in the model
         self._tensors = list(self.inputs)
         self.tensor_inds['inputs'] = (0, len(self.inputs))
-        self.tensor_inds['ps_inputs'] = list(range(self.num_Phi_models))
+        self.tensor_inds['ps_inputs'] = list(range(self.num_Phi_components))
 
         # construct weight tensor and begin list of layers
         weight_mask_layer, self._weights = construct_point_cloud_mask(self._ps_input_tensors,
@@ -716,8 +791,9 @@ class PFN(SymmetricPerParticleNN):
 
     @property
     def inputs(self):
-        """List of input tensors to the model. PFNs have one input tensor
-        corresponding to the `ps` input.
+        """List of input tensors to the model. PFNs have one input tensor per
+        Phi component corresponding to the `ps` input. Additionally, if there
+        are any global features present, they are final tensor in this list.
         """
 
         return self._inputs
