@@ -6,14 +6,18 @@ variable-length sets of particles. Both EFNs and PFNs are parameterized by a
 learnable per-particle function $\Phi$ and latent space function $F$.
 
 An EFN takes the following form:
+
 $$\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)$$
+
 where $z_i$ is a measure of the energy of particle $i$, such as $z_i=p_{T,i}$,
 and $\hat p_i$ is a measure of the angular information of particle $i$, such as
 $\hat p_i = (y_i,\phi_i)$. Any infrared- and collinear-safe observable can be
 parameterized in this form.
 
 A PFN takes the following form:
+
 $$\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)$$
+
 where $p_i$ is the information of particle $i$, such as its four-momentum,
 charge, or flavor. Any observable can be parameterized in this form. See the
 [Deep Sets](https://arxiv.org/abs/1703.06114) framework for additional 
@@ -140,8 +144,7 @@ Transparently calls the `.fit()` method of the underlying model.
 
 - ***args** : _numpy.ndarray_ or _tensorflow.data.Dataset_
     - Either the `X_train` and `Y_train` NumPy arrays or a TensorFlow
-    dataset. See [`tf_point_cloud_dataset`](#tf_point_cloud_dataset) for
-    contruction of TensorFlow datasets for EFN and PFN models.
+    dataset.
 - **kwargs** : _dict_
     - Keyword arguments passed on to the `.fit()` method of the
     underlying model. Most relevant for neural network models, where the
@@ -607,89 +610,6 @@ See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 - **LR_hps**=`{}` : _dict_
     - Dictionary of keyword arguments to pass on to the underlying
     `LogisticRegression` model.
-
-
-----
-
-## Utilities 
-
-Utilities for EnergyFlow architectures, split out from the utils submodule
-because these import tensorflow, which the main package avoids doing.
-
-----
-
-### tf_point_cloud_dataset
-
-```python
-energyflow.archs.tf_point_cloud_dataset(data_arrs, batch_size=None, dtype='float32')
-```
-
-Creates a TensorFlow dataset from NumPy arrays of events of particles,
-designed to be used as input to EFN and PFN models. The function uses a
-generator to spool events from the arrays as needed and pad them on the fly.
-As of EnergyFlow version 1.3.0, it is suggested to use this function to
-create TensorFlow datasets to use as input to EFN and PFN training as it can
-yield a slight improvement in training and evaluation time.
-
-**Arguments**
-
-- **data_arrs** : _list_ or _tuple_ of _numpy.ndarray_
-    -
-- **batch_size** : _int_ or `None`
-    - If an integer, the dataset will provide batches with that number of
-    events when queried. If `None`, no batching is done. Setting this option
-    should replace padding a `batch_size` argument directly to the `.fit`
-    method of the EFN or PFN.
-- **dtype** : _str_
-    - The datatype to use in the TensorFlow dataset. Note that 32-bit
-    floats are typically sufficient for ML models and so this is the
-    default.
-- **prefetch** : _int_
-    - The maximum number of batches to prepare in advance of their usage
-    during training or evaluation. See the [TensorFlow documentation](https:
-    //www.tensorflow.org/api_docs/python/tf/data/Dataset#prefetch) for more
-    details.
-- **pad_val** : _float_
-    - Events will be padded with particles consisting of this value repeated
-    as many times as necessary. This should match the `mask_val` option of
-    the EFN or PFN model.
-
-**Returns**
-
-- _tensorflow.data.Dataset_
-    - The TensorFlow dataset built from the provided arrays and options. To
-    view samples from the dataset, for instance the first five batches, one
-    can do:
-
-```python
-for sample in tfdataset.take(5).as_numpy_iterator():
-    print(sample.shape)
-```
-
-
-----
-
-### tf_gen
-
-```python
-energyflow.archs.tf_gen(args)
-```
-
-Returns a function that when called returns a generator that yields
-samples from the given arrays. Designed to work with
-`tf.data.Dataset.from_generator`, though commonly this is handled by
-[`tf_point_cloud_dataset`](#tf_point_cloud_dataset).
-
-**Arguments**
-
-- ***args** : arbitrary _numpy.ndarray_ datasets
-    - An arbitrary number of arrays.
-
-**Returns**
-
-- _function_
-    - A function that when called returns a generator that yields samples
-    from the given arrays.
 
 
 ----

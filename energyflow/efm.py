@@ -7,13 +7,13 @@ are the scalar contractions of products of EFMs.
 
 The expression for a (normalized) hadronic EFM in terms of transverse momenta
 $\{p_{Ti}\}$ and particle momenta $\{p_i^\mu\}$ is:
-$$
-\mathcal I^{\mu_1\cdots\mu_v} = 2^{v/2}\sum_{i=1}^Mz_in_i^{\mu_1}\cdots n_i^{\mu_v},
-$$
+
+\[\mathcal I^{\mu_1\cdots\mu_v} = 2^{v/2}\sum_{i=1}^Mz_in_i^{\mu_1}\cdots n_i^{\mu_v},\]
+
 where
-$$
-z_i=\frac{p_{Ti}}{\sum_jp_{Tj}},\quad\quad n_i^\mu=\frac{p_i^\mu}{p_{Ti}}.
-$$
+
+\[z_i=\frac{p_{Ti}}{\sum_jp_{Tj}},\quad\quad n_i^\mu=\frac{p_i^\mu}{p_{Ti}}.\]
+
 Note that for an EFM in an $e^+e^-$ context, transverse momenta are replaced
 with energies.
 

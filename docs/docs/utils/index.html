@@ -241,29 +241,37 @@ be in Cartesian coordinates, <code>[e,px,py,pz]</code> (energy, momentum in <cod
 momentum in <code>y</code> direction, momentum in <code>z</code> direction), or hadronic coordinates, 
 <code>[pt,y,phi,m]</code> (transverse momentum, rapidity, azimuthal angle, mass), which
 are related via:</p>
-<p>
+<div>
+<div class="MathJax_Preview">p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+\phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}</div>
 <script type="math/tex; mode=display">p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
 \phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}</script>
-</p>
+</div>
 <p>and inversely:</p>
-<p>
+<div>
+<div class="MathJax_Preview">E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.</div>
 <script type="math/tex; mode=display">E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
 p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.</script>
-</p>
+</div>
 <p>The pseudorapidity <code>eta</code> can be obtained from a Cartesian four-momentum as:</p>
-<p>
+<div>
+<div class="MathJax_Preview">\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+|\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},</div>
 <script type="math/tex; mode=display">\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
 |\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},</script>
-</p>
+</div>
 <p>and is related to the rapidity via</p>
-<p>
+<div>
+<div class="MathJax_Preview">\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).</div>
 <script type="math/tex; mode=display">\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
 y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).</script>
-</p>
+</div>
 <p>Note that the above formulas are numerically stable up to values of rapidity or
 pseudorapidity of a few hundred, above which the formulas have numerical issues. 
 In this case, a different but equivalent formulae are used that are numerically
-stable in this region. In all cases, the $p_T\to0$ limit produces infinite
+stable in this region. In all cases, the <span><span class="MathJax_Preview">p_T\to0</span><script type="math/tex">p_T\to0</script></span> limit produces infinite
 values.</p>
 <p>In the context of this package, an "event" is a two-dimensional numpy array
 with shape <code>(M,4)</code> where <code>M</code> is the multiplicity. An array of events is a 
@@ -272,9 +280,8 @@ The valid inputs and outputs of the functions here will be described using
 this terminology.</p>
 <hr />
 <h3 id="ptyphims_from_p4s">ptyphims_from_p4s</h3>
-<pre><code class="python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None)
+<pre><code class="language-python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None)
 </code></pre>
-
 <p>Convert to hadronic coordinates <code>[pt,y,phi,m]</code> from Cartesian
 coordinates. All-zero four-vectors are left alone.</p>
 <p><strong>Arguments</strong></p>
@@ -284,11 +291,11 @@ coordinates. All-zero four-vectors are left alone.</p>
 </ul>
 </li>
 <li><strong>phi_ref</strong> : {<code>None</code>, <code>'hardest'</code>, <em>float</em>, <em>numpy.ndarray</em>}<ul>
-<li>Used to help deal with the fact that $\phi$ is a periodic coordinate.
-If a float (which should be in $[0,2\pi)$), all phi values will be
-within $\pm\pi$ of this reference value. If <code>'\hardest'</code>, the phi of
+<li>Used to help deal with the fact that <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> is a periodic coordinate.
+If a float (which should be in <span><span class="MathJax_Preview">[0,2\pi)</span><script type="math/tex">[0,2\pi)</script></span>), all phi values will be
+within <span><span class="MathJax_Preview">\pm\pi</span><script type="math/tex">\pm\pi</script></span> of this reference value. If <code>'\hardest'</code>, the phi of
 the hardest particle is used as the reference value. If <code>None</code>, all
-phis will be in the range $[0,2\pi)$. An array is accepted in the case
+phis will be in the range <span><span class="MathJax_Preview">[0,2\pi)</span><script type="math/tex">[0,2\pi)</script></span>. An array is accepted in the case
 that <code>p4s</code> is an array of events, in which case the <code>phi_ref</code> array
 should have shape <code>(N,)</code> where <code>N</code> is the number of events.</li>
 </ul>
@@ -303,9 +310,8 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </ul>
 <hr />
 <h3 id="pts_from_p4s">pts_from_p4s</h3>
-<pre><code class="python">energyflow.pts_from_p4s(p4s)
+<pre><code class="language-python">energyflow.pts_from_p4s(p4s)
 </code></pre>
-
 <p>Calculate the transverse momenta of a collection of four-vectors.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -323,9 +329,8 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </ul>
 <hr />
 <h3 id="pt2s_from_p4s">pt2s_from_p4s</h3>
-<pre><code class="python">energyflow.pt2s_from_p4s(p4s)
+<pre><code class="language-python">energyflow.pt2s_from_p4s(p4s)
 </code></pre>
-
 <p>Calculate the squared transverse momenta of a collection of four-vectors.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -343,9 +348,8 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </ul>
 <hr />
 <h3 id="ys_from_p4s">ys_from_p4s</h3>
-<pre><code class="python">energyflow.ys_from_p4s(p4s)
+<pre><code class="language-python">energyflow.ys_from_p4s(p4s)
 </code></pre>
-
 <p>Calculate the rapidities of a collection of four-vectors. Returns zero
 for all-zero particles</p>
 <p><strong>Arguments</strong></p>
@@ -364,9 +368,8 @@ for all-zero particles</p>
 </ul>
 <hr />
 <h3 id="etas_from_p4s">etas_from_p4s</h3>
-<pre><code class="python">energyflow.etas_from_p4s(p4s)
+<pre><code class="language-python">energyflow.etas_from_p4s(p4s)
 </code></pre>
-
 <p>Calculate the pseudorapidities of a collection of four-vectors. Returns
 zero for all-zero particles</p>
 <p><strong>Arguments</strong></p>
@@ -385,9 +388,8 @@ zero for all-zero particles</p>
 </ul>
 <hr />
 <h3 id="phis_from_p4s">phis_from_p4s</h3>
-<pre><code class="python">energyflow.phis_from_p4s(p4s, phi_ref=None)
+<pre><code class="language-python">energyflow.phis_from_p4s(p4s, phi_ref=None)
 </code></pre>
-
 <p>Calculate the azimuthal angles of a collection of four-vectors.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -396,11 +398,11 @@ zero for all-zero particles</p>
 </ul>
 </li>
 <li><strong>phi_ref</strong> : {<em>float</em>, <em>numpy.ndarray</em>, <code>None</code>, <code>'hardest'</code>}<ul>
-<li>Used to help deal with the fact that $\phi$ is a periodic coordinate.
-If a float (which should be in $[0,2\pi)$), all phi values will be
-within $\pm\pi$ of this reference value. If <code>'\hardest'</code>, the phi of
+<li>Used to help deal with the fact that <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> is a periodic coordinate.
+If a float (which should be in <span><span class="MathJax_Preview">[0,2\pi)</span><script type="math/tex">[0,2\pi)</script></span>), all phi values will be
+within <span><span class="MathJax_Preview">\pm\pi</span><script type="math/tex">\pm\pi</script></span> of this reference value. If <code>'\hardest'</code>, the phi of
 the hardest particle is used as the reference value. If <code>None</code>, all
-phis will be in the range $[0,2\pi)$. An array is accepted in the case
+phis will be in the range <span><span class="MathJax_Preview">[0,2\pi)</span><script type="math/tex">[0,2\pi)</script></span>. An array is accepted in the case
 that <code>p4s</code> is an array of events, in which case the <code>phi_ref</code> array
 should have shape <code>(N,)</code> where <code>N</code> is the number of events.</li>
 </ul>
@@ -415,9 +417,8 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </ul>
 <hr />
 <h3 id="m2s_from_p4s">m2s_from_p4s</h3>
-<pre><code class="python">energyflow.m2s_from_p4s(p4s)
+<pre><code class="language-python">energyflow.m2s_from_p4s(p4s)
 </code></pre>
-
 <p>Calculate the squared masses of a collection of four-vectors.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -435,9 +436,8 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </ul>
 <hr />
 <h3 id="ms_from_p4s">ms_from_p4s</h3>
-<pre><code class="python">energyflow.ms_from_p4s(p4s)
+<pre><code class="language-python">energyflow.ms_from_p4s(p4s)
 </code></pre>
-
 <p>Calculate the masses of a collection of four-vectors.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -455,16 +455,15 @@ should have shape <code>(N,)</code> where <code>N</code> is the number of events
 </ul>
 <hr />
 <h3 id="ms_from_ps">ms_from_ps</h3>
-<pre><code class="python">energyflow.ms_from_ps(ps)
+<pre><code class="language-python">energyflow.ms_from_ps(ps)
 </code></pre>
-
 <p>Calculate the masses of a collection of Lorentz vectors in two or more
 spacetime dimensions.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ps</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
 <li>A single particle, event, or array of events in Cartesian
-coordinates in $d\ge2$ spacetime dimensions.</li>
+coordinates in <span><span class="MathJax_Preview">d\ge2</span><script type="math/tex">d\ge2</script></span> spacetime dimensions.</li>
 </ul>
 </li>
 </ul>
@@ -477,9 +476,8 @@ coordinates in $d\ge2$ spacetime dimensions.</li>
 </ul>
 <hr />
 <h3 id="etas_from_pts_ys_ms">etas_from_pts_ys_ms</h3>
-<pre><code class="python">energyflow.etas_from_pts_ys_ms(pts, ys, ms)
+<pre><code class="language-python">energyflow.etas_from_pts_ys_ms(pts, ys, ms)
 </code></pre>
-
 <p>Calculate pseudorapidities from transverse momenta, rapidities, and masses.
 All input arrays should have the same shape.</p>
 <p><strong>Arguments</strong></p>
@@ -506,9 +504,8 @@ All input arrays should have the same shape.</p>
 </ul>
 <hr />
 <h3 id="ys_from_pts_etas_ms">ys_from_pts_etas_ms</h3>
-<pre><code class="python">energyflow.ys_from_pts_etas_ms(pts, etas, ms)
+<pre><code class="language-python">energyflow.ys_from_pts_etas_ms(pts, etas, ms)
 </code></pre>
-
 <p>Calculate rapidities from transverse momenta, pseudorapidities, and masses.
 All input arrays should have the same shape.</p>
 <p><strong>Arguments</strong></p>
@@ -535,9 +532,8 @@ All input arrays should have the same shape.</p>
 </ul>
 <hr />
 <h3 id="p4s_from_ptyphims">p4s_from_ptyphims</h3>
-<pre><code class="python">energyflow.p4s_from_ptyphims(ptyphims)
+<pre><code class="language-python">energyflow.p4s_from_ptyphims(ptyphims)
 </code></pre>
-
 <p>Calculate Cartesian four-vectors from transverse momenta, rapidities,
 azimuthal angles, and (optionally) masses for each input.</p>
 <p><strong>Arguments</strong></p>
@@ -557,9 +553,8 @@ The mass is optional and if left out will be taken to be zero.</li>
 </ul>
 <hr />
 <h3 id="p4s_from_ptyphipids">p4s_from_ptyphipids</h3>
-<pre><code class="python">energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
+<pre><code class="language-python">energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
 </code></pre>
-
 <p>Calculate Cartesian four-vectors from transverse momenta, rapidities,
 azimuthal angles, and particle IDs for each input. The particle IDs are
 used to lookup the mass of the particle. Transverse momenta should have
@@ -585,9 +580,8 @@ where the mass is replaced by the PDG ID of the particle.</li>
 </ul>
 <hr />
 <h3 id="sum_ptyphims">sum_ptyphims</h3>
-<pre><code class="python">energyflow.sum_ptyphims(ptyphims, scheme='escheme')
+<pre><code class="language-python">energyflow.sum_ptyphims(ptyphims, scheme='escheme')
 </code></pre>
-
 <p>Add a collection of four-vectors that are expressed in hadronic
 coordinates by first converting to Cartesian coordinates and then summing.</p>
 <p><strong>Arguments</strong></p>
@@ -611,16 +605,15 @@ three-vector consisting of the jet <code>[pT,y,phi]</code> with no mass value.</
 <ul>
 <li><em>numpy.ndarray</em><ul>
 <li>Array of summed four-vectors, in hadronic coordinates. Note that when
-<code>scheme</code> is <code>'escheme'</code>, the $\phi$ value of the hardest particle is
+<code>scheme</code> is <code>'escheme'</code>, the <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> value of the hardest particle is
 used as the <code>phi_ref</code> when converting back to hadronic coordinates.</li>
 </ul>
 </li>
 </ul>
 <hr />
 <h3 id="sum_ptyphipids">sum_ptyphipids</h3>
-<pre><code class="python">energyflow.sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False)
+<pre><code class="language-python">energyflow.sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False)
 </code></pre>
-
 <p>Add a collection of four-vectors that are expressed as
 <code>[pT,y,phi,pdgid]</code>.</p>
 <p><strong>Arguments</strong></p>
@@ -643,16 +636,15 @@ is replaced by the PDG ID of the particle.</li>
 <ul>
 <li><em>numpy.ndarray</em><ul>
 <li>Array of summed four-vectors, in hadronic coordinates. Note that when
-<code>scheme</code> is <code>'escheme'</code>, the $\phi$ value of the hardest particle is
+<code>scheme</code> is <code>'escheme'</code>, the <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> value of the hardest particle is
 used as the <code>phi_ref</code> when converting back to hadronic coordinates.</li>
 </ul>
 </li>
 </ul>
 <hr />
 <h3 id="center_ptyphims">center_ptyphims</h3>
-<pre><code class="python">energyflow.center_ptyphims(ptyphims, axis=None, center='escheme', copy=True)
+<pre><code class="language-python">energyflow.center_ptyphims(ptyphims, axis=None, center='escheme', copy=True)
 </code></pre>
-
 <p>Center a collection of four-vectors according to a calculated or 
 provided axis.</p>
 <p><strong>Arguments</strong></p>
@@ -686,9 +678,8 @@ the origin.</li>
 </ul>
 <hr />
 <h3 id="rotate_ptyphims">rotate_ptyphims</h3>
-<pre><code class="python">energyflow.rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True)
+<pre><code class="language-python">energyflow.rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True)
 </code></pre>
-
 <p>Rotate a collection of four-vectors to vertically align the principal
 component of the energy flow. The principal component is obtained as the
 eigenvector of the energy flow with the largest eigenvalue. It is only
@@ -728,9 +719,8 @@ the origin.</li>
 </ul>
 <hr />
 <h3 id="reflect_ptyphims">reflect_ptyphims</h3>
-<pre><code class="python">energyflow.reflect_ptyphims(ptyphims, which='both', center=None, copy=True)
+<pre><code class="language-python">energyflow.reflect_ptyphims(ptyphims, which='both', center=None, copy=True)
 </code></pre>
-
 <p>Reflect a collection of four-vectors to arrange the highest-pT
 half or quadrant to have positive rapidity-azimuth coordinates.</p>
 <p><strong>Arguments</strong></p>
@@ -757,9 +747,8 @@ reflections.</li>
 </ul>
 <hr />
 <h3 id="pids2ms">pids2ms</h3>
-<pre><code class="python">energyflow.pids2ms(pids, error_on_unknown=False)
+<pre><code class="language-python">energyflow.pids2ms(pids, error_on_unknown=False)
 </code></pre>
-
 <p>Map an array of <a href="http://pdg.lbl.gov/2018/
 reviews/rpp2018-rev-monte-carlo-numbering.pdf">Particle Data Group IDs</a> to an array of the
 corresponding particle masses (in GeV).</p>
@@ -784,9 +773,8 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </ul>
 <hr />
 <h3 id="pids2chrgs">pids2chrgs</h3>
-<pre><code class="python">energyflow.pids2chrgs(pids, error_on_unknown=False)
+<pre><code class="language-python">energyflow.pids2chrgs(pids, error_on_unknown=False)
 </code></pre>
-
 <p>Map an array of <a href="http://pdg.lbl.gov/2018/
 reviews/rpp2018-rev-monte-carlo-numbering.pdf">Particle Data Group IDs</a> to an array of the
 corresponding particle charges (in fundamental units where the charge
@@ -812,9 +800,8 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </ul>
 <hr />
 <h3 id="ischrgd">ischrgd</h3>
-<pre><code class="python">energyflow.ischrgd(pids, ignored_pids=None)
+<pre><code class="language-python">energyflow.ischrgd(pids, ignored_pids=None)
 </code></pre>
-
 <p>Compute a boolean mask according to if the given PDG ID corresponds
 to a particle of non-zero charge.</p>
 <p><strong>Arguments</strong></p>
@@ -838,11 +825,10 @@ charged, for instance to avoid counting quarks as charged particles.</li>
 </ul>
 <hr />
 <h3 id="phi_fix">phi_fix</h3>
-<pre><code class="python">energyflow.phi_fix(phis, phi_ref, copy=True)
+<pre><code class="language-python">energyflow.phi_fix(phis, phi_ref, copy=True)
 </code></pre>
-
-<p>A function to ensure that all phis are within $\pi$ of <code>phi_ref</code>. It is
-assumed that all starting phi values are $\pm 2\pi$ of <code>phi_ref</code>.</p>
+<p>A function to ensure that all phis are within <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> of <code>phi_ref</code>. It is
+assumed that all starting phi values are <span><span class="MathJax_Preview">\pm 2\pi</span><script type="math/tex">\pm 2\pi</script></span> of <code>phi_ref</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>phis</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
@@ -850,7 +836,7 @@ assumed that all starting phi values are $\pm 2\pi$ of <code>phi_ref</code>.</p>
 </ul>
 </li>
 <li><strong>phi_ref</strong> : {<em>float</em> or <em>numpy.ndarray</em>}<ul>
-<li>A reference value used so that all phis will be within $\pm\pi$ of
+<li>A reference value used so that all phis will be within <span><span class="MathJax_Preview">\pm\pi</span><script type="math/tex">\pm\pi</script></span> of
 this value. Should have a shape of <code>phis.shape[:-1]</code>.</li>
 </ul>
 </li>
@@ -869,9 +855,8 @@ modified in place.</li>
 </ul>
 <hr />
 <h3 id="flat_metric">flat_metric</h3>
-<pre><code class="python">energyflow.flat_metric(dim)
+<pre><code class="language-python">energyflow.flat_metric(dim)
 </code></pre>
-
 <p>The Minkowski metric in <code>dim</code> spacetime dimensions in the mostly-minus
 convention.</p>
 <p><strong>Arguments</strong></p>
@@ -898,12 +883,11 @@ sampling uniform M-body massless phase space. Also includes other functions for
 various random, non-center of momentum, and non-uniform sampling.</p>
 <hr />
 <h3 id="gen_random_events">gen_random_events</h3>
-<pre><code class="python">energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0.0)
+<pre><code class="language-python">energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0.0)
 </code></pre>
-
 <p>Generate random events with a given number of particles in a given
 spacetime dimension. The spatial components of the momenta are
-distributed uniformly in $[-1,+1]$. These events are not guaranteed to 
+distributed uniformly in <span><span class="MathJax_Preview">[-1,+1]</span><script type="math/tex">[-1,+1]</script></span>. These events are not guaranteed to 
 uniformly sample phase space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -936,9 +920,8 @@ dropped.</li>
 </ul>
 <hr />
 <h3 id="gen_random_events_mcom">gen_random_events_mcom</h3>
-<pre><code class="python">energyflow.gen_random_events_mcom(nevents, nparticles, dim=4)
+<pre><code class="language-python">energyflow.gen_random_events_mcom(nevents, nparticles, dim=4)
 </code></pre>
-
 <p>Generate random events with a given number of massless particles in a
 given spacetime dimension. The total momentum are made to sum
 to zero. These events are not guaranteed to uniformly sample phase space.</p>
@@ -967,9 +950,8 @@ are specified as <code>[E,p1,p2,...]</code>.</li>
 </ul>
 <hr />
 <h3 id="gen_massless_phase_space">gen_massless_phase_space</h3>
-<pre><code class="python">energyflow.gen_massless_phase_space(nevents, nparticles, energy=1.0)
+<pre><code class="language-python">energyflow.gen_massless_phase_space(nevents, nparticles, energy=1.0)
 </code></pre>
-
 <p>Implementation of the <a href="https://doi.org/10.1016/0010-4655(86)90119-0">RAMBO</a>
 algorithm for uniformly sampling massless M-body phase space for any center
 of mass energy.</p>
@@ -1004,9 +986,8 @@ the top level <code>energyflow</code> module, but must instead be imported
 from <code>energyflow.utils</code>.</p>
 <hr />
 <h3 id="get_examples">get_examples</h3>
-<pre><code class="python">energyflow.utils.get_examples(path='~/.energyflow', which='all', overwrite=False)
+<pre><code class="language-python">energyflow.utils.get_examples(path='~/.energyflow', which='all', overwrite=False)
 </code></pre>
-
 <p>Pulls examples from GitHub. To ensure availability of all examples
 update EnergyFlow to the latest version.</p>
 <p><strong>Arguments</strong></p>
@@ -1028,9 +1009,8 @@ case all the available examples are downloaded.</li>
 </ul>
 <hr />
 <h3 id="data_split">data_split</h3>
-<pre><code class="python">energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
+<pre><code class="language-python">energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 </code></pre>
-
 <p>A function to split a dataset into train, test, and optionally 
 validation datasets.</p>
 <p><strong>Arguments</strong></p>
@@ -1079,9 +1059,8 @@ non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <cod
 </ul>
 <hr />
 <h3 id="to_categorical">to_categorical</h3>
-<pre><code class="python">energyflow.utils.to_categorical(labels, num_classes=None)
+<pre><code class="language-python">energyflow.utils.to_categorical(labels, num_classes=None)
 </code></pre>
-
 <p>One-hot encodes class labels.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1104,9 +1083,8 @@ maximum label plus one.</li>
 </ul>
 <hr />
 <h3 id="remap_pids">remap_pids</h3>
-<pre><code class="python">energyflow.utils.remap_pids(events, pid_i=3, error_on_unknown=True)
+<pre><code class="language-python">energyflow.utils.remap_pids(events, pid_i=3, error_on_unknown=True)
 </code></pre>
-
 <p>Remaps PDG id numbers to small floats for use in a neural network.
 <code>events</code> are modified in place and nothing is returned.</p>
 <p><strong>Arguments</strong></p>
@@ -1132,9 +1110,8 @@ not importable from the top level <code>energyflow</code> module, but must
 instead be imported from <code>energyflow.utils</code>.</p>
 <hr />
 <h3 id="pixelate">pixelate</h3>
-<pre><code class="python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
+<pre><code class="language-python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
 </code></pre>
-
 <p>A function for creating a jet image from an array of particles.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1156,12 +1133,12 @@ plane.</li>
 </li>
 <li><strong>nb_chan</strong> : {<code>1</code>, <code>2</code>}<ul>
 <li>The number of channels in the jet image. If <code>1</code>, then only a
-$p_T$ channel is constructed (grayscale). If <code>2</code>, then both a 
-$p_T$ channel and a count channel are formed (color).</li>
+<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel is constructed (grayscale). If <code>2</code>, then both a 
+<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel and a count channel are formed (color).</li>
 </ul>
 </li>
 <li><strong>norm</strong> : <em>bool</em><ul>
-<li>Whether to normalize the $p_T$ pixels to sum to <code>1</code>.</li>
+<li>Whether to normalize the <span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> pixels to sum to <code>1</code>.</li>
 </ul>
 </li>
 <li><strong>charged_counts_only</strong> : <em>bool</em><ul>
@@ -1180,9 +1157,8 @@ of the channels changed in version 1.0.3.</li>
 </ul>
 <hr />
 <h3 id="standardize">standardize</h3>
-<pre><code class="python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
+<pre><code class="language-python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
 </code></pre>
-
 <p>Normalizes each argument by the standard deviation of the pixels in 
 args[0]. The expected use case would be <code>standardize(X_train, X_val, 
 X_test)</code>.</p>
@@ -1217,9 +1193,8 @@ that this be kept consistent for images used with a given model.</li>
 </ul>
 <hr />
 <h3 id="zero_center">zero_center</h3>
-<pre><code class="python">energyflow.utils.zero_center(args, kwargs)
+<pre><code class="language-python">energyflow.utils.zero_center(args, kwargs)
 </code></pre>
-
 <p>Subtracts the mean of arg[0] from the arguments. The expected 
 use case would be <code>standardize(X_train, X_val, X_test)</code>.</p>
 <p><strong>Arguments</strong></p>
@@ -1259,9 +1234,8 @@ to be installed, but the following utilities are available assuming that
 errors will be issued but this module will not be usable).</p>
 <hr />
 <h3 id="pjs_from_ptyphims">pjs_from_ptyphims</h3>
-<pre><code class="python">energyflow.pjs_from_ptyphims(ptyphims)
+<pre><code class="language-python">energyflow.pjs_from_ptyphims(ptyphims)
 </code></pre>
-
 <p>Converts particles in hadronic coordinates to FastJet PseudoJets.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1281,9 +1255,8 @@ array.</li>
 </ul>
 <hr />
 <h3 id="ptyphims_from_pjs">ptyphims_from_pjs</h3>
-<pre><code class="python">energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
+<pre><code class="language-python">energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
 </code></pre>
-
 <p>Extracts hadronic four-vectors from FastJet PseudoJets.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1311,9 +1284,8 @@ phi fixing is performed.</li>
 </ul>
 <hr />
 <h3 id="cluster">cluster</h3>
-<pre><code class="python">energyflow.cluster(pjs, algorithm='ca', R=1000.0)
+<pre><code class="language-python">energyflow.cluster(pjs, algorithm='ca', R=1000.0)
 </code></pre>
-
 <p>Clusters a list of PseudoJets according to a specified jet
 algorithm and jet radius.</p>
 <p><strong>Arguments</strong></p>
@@ -1344,20 +1316,23 @@ because they are all used by the FastJet Python package.</li>
 </ul>
 <hr />
 <h3 id="softdrop">softdrop</h3>
-<pre><code class="python">energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
+<pre><code class="language-python">energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
-
 <p>Implements the SoftDrop grooming algorithm on a jet that has been
 found via clustering. Specifically, given a jet, it is recursively
 declustered and the softer branch removed until the SoftDrop condition
 is satisfied:</p>
-<p>
+<div>
+<div class="MathJax_Preview">
+\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} &gt; z_{\rm cut}
+\left(\frac{\Delta R_{12}}{R}\right)^\beta
+</div>
 <script type="math/tex; mode=display">
 \frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} > z_{\rm cut}
 \left(\frac{\Delta R_{12}}{R}\right)^\beta
 </script>
-</p>
-<p>where $1$ and $2$ refer to the two PseudoJets declustered at this stage.
+</div>
+<p>where <span><span class="MathJax_Preview">1</span><script type="math/tex">1</script></span> and <span><span class="MathJax_Preview">2</span><script type="math/tex">2</script></span> refer to the two PseudoJets declustered at this stage.
 See the <a href="https://arxiv.org/abs/1402.2657">SoftDrop paper</a> for a
 complete description of SoftDrop. If you use this function for your
 research, please cite <a href="https://doi.org/10.1007/
@@ -1370,12 +1345,12 @@ clustering (typically Cambridge/Aachen).</li>
 </ul>
 </li>
 <li><strong>zcut</strong> : <em>float</em><ul>
-<li>The $z_{\rm cut}$ parameter of SoftDrop. Should be between <code>0</code>
+<li>The <span><span class="MathJax_Preview">z_{\rm cut}</span><script type="math/tex">z_{\rm cut}</script></span> parameter of SoftDrop. Should be between <code>0</code>
 and <code>1</code>.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
-<li>The $\beta$ parameter of SoftDrop.</li>
+<li>The <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> parameter of SoftDrop.</li>
 </ul>
 </li>
 <li><strong>R</strong> : <em>float</em><ul>
@@ -1389,7 +1364,7 @@ and <code>1</code>.</li>
 <li>The groomed jet. Note that it will not necessarily have all of
 the same associated structure as the original jet, but it is
 suitable for obtaining kinematic quantities, e.g. <a href="/docs/
-obs/#zg_from_pj">$z_g$</a>.</li>
+obs/#zg_from_pj"><span><span class="MathJax_Preview">z_g</span><script type="math/tex">z_g</script></span></a>.</li>
 </ul>
 </li>
 </ul>
@@ -1437,8 +1412,9 @@ obs/#zg_from_pj">$z_g$</a>.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

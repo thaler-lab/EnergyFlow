@@ -158,11 +158,6 @@ docs = {
                 }
             ]
         },
-        {
-            'module': archs.utils,
-            'modpath': 'energyflow.archs.',
-            'functions': archs.utils.__all__
-        },
     ],
 
     'datasets': [

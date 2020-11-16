@@ -37,9 +37,7 @@ __all__ = [
 ALL_EXAMPLES = [
     'efn_example.py',
     'efn_regression_example.py',
-    'efn_tfdataset_example.py',
     'pfn_example.py',
-    'pfn_tfdataset_example.py',
     'cnn_example.py',
     'dnn_example.py',
     'efp_example.py',

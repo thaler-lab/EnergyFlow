@@ -6,8 +6,7 @@
 
 - EMD module now uses Wasserstein package for optimal transport computations by default. This should yield some speed and stability improvements while being mostly transparent to the user.
 - EMD Demo updated to use Wasserstein package for EMD computation and correlation dimension calculation.
-- Helper function `tf_point_cloud_dataset` added for facilitating usage of `tensorflow.data.Dataset`s when training EFNs/PFNs.
-- Examples added to demonstrate usage of `tf_point_cloud_dataset` to reduce memory usage and increase speed during training.
+- `remap_pids` now works on arrays of events (rather than arrays of padded events only.)
 
 ## 1.2.x
 

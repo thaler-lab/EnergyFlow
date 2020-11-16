@@ -195,11 +195,10 @@ if it's not, no warnings or errors will be issued, the observables will simply
 not be included in this module.</p>
 <hr />
 <h2 id="image_activity">image_activity</h2>
-<pre><code class="python">energyflow.image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None)
+<pre><code class="language-python">energyflow.image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None)
 </code></pre>
-
-<p>Image activity, also known as $N_f$, is the minimum number of pixels
-in an image that contain a fraction $f$ of the total pT.</p>
+<p>Image activity, also known as <span><span class="MathJax_Preview">N_f</span><script type="math/tex">N_f</script></span>, is the minimum number of pixels
+in an image that contain a fraction <span><span class="MathJax_Preview">f</span><script type="math/tex">f</script></span> of the total pT.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>ptyphis</strong> : <em>2d numpy.ndarray</em><ul>
@@ -208,7 +207,7 @@ since it is not used in the computation of this observable.</li>
 </ul>
 </li>
 <li><strong>f</strong> : <em>float</em><ul>
-<li>The fraction $f$ of total pT that is to be contained by the pixels.</li>
+<li>The fraction <span><span class="MathJax_Preview">f</span><script type="math/tex">f</script></span> of total pT that is to be contained by the pixels.</li>
 </ul>
 </li>
 <li><strong>R</strong> : <em>float</em><ul>
@@ -243,9 +242,8 @@ the center of the image will be at <code>(0,0)</code>.</li>
 </ul>
 <hr />
 <h2 id="zg">zg</h2>
-<pre><code class="python">energyflow.zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca')
+<pre><code class="language-python">energyflow.zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca')
 </code></pre>
-
 <p>Groomed momentum fraction of a jet, as calculated on an array of
 particles in hadronic coordinates. First, the particles are converted
 to FastJet PseudoJets and clustered according to the specified
@@ -261,12 +259,12 @@ clustered into a single jet and groomed.</li>
 </ul>
 </li>
 <li><strong>zcut</strong> : <em>float</em><ul>
-<li>The $z_{\rm cut}$ parameter of SoftDrop. Should be between <code>0</code>
+<li>The <span><span class="MathJax_Preview">z_{\rm cut}</span><script type="math/tex">z_{\rm cut}</script></span> parameter of SoftDrop. Should be between <code>0</code>
 and <code>1</code>.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
-<li>The $\beta$ parameter of SoftDrop.</li>
+<li>The <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> parameter of SoftDrop.</li>
 </ul>
 </li>
 <li><strong>R</strong> : <em>float</em><ul>
@@ -288,15 +286,14 @@ the argument of the same name of <a href="/docs/utils/#cluster"><code>cluster</c
 </ul>
 <hr />
 <h2 id="zg_from_pj">zg_from_pj</h2>
-<pre><code class="python">energyflow.zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0)
+<pre><code class="language-python">energyflow.zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0)
 </code></pre>
-
-<p>Groomed momentum fraction $z_g$, as calculated on an ungroomed (but
+<p>Groomed momentum fraction <span><span class="MathJax_Preview">z_g</span><script type="math/tex">z_g</script></span>, as calculated on an ungroomed (but
 already clustered) FastJet PseudoJet object. First, the jet is groomed
 according to the specified SoftDrop parameters and then the momentum
 fraction of the surviving pair of Pseudojets is computed. See the
 <a href="https://arxiv.org/abs/1402.2657">SoftDrop paper</a> for a complete
-description of SoftDrop. This version of $z_g$ is provided in addition
+description of SoftDrop. This version of <span><span class="MathJax_Preview">z_g</span><script type="math/tex">z_g</script></span> is provided in addition
 to the above function so that a jet does not need to be reclustered if
 multiple grooming parameters are to be used.</p>
 <p><strong>Arguments</strong></p>
@@ -307,12 +304,12 @@ clustering (typically Cambridge/Aachen for SoftDrop).</li>
 </ul>
 </li>
 <li><strong>zcut</strong> : <em>float</em><ul>
-<li>The $z_{\rm cut}$ parameter of SoftDrop. Should be between <code>0</code>
+<li>The <span><span class="MathJax_Preview">z_{\rm cut}</span><script type="math/tex">z_{\rm cut}</script></span> parameter of SoftDrop. Should be between <code>0</code>
 and <code>1</code>.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
-<li>The $\beta$ parameter of SoftDrop.</li>
+<li>The <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> parameter of SoftDrop.</li>
 </ul>
 </li>
 <li><strong>R</strong> : <em>float</em><ul>
@@ -335,10 +332,9 @@ tag two prong signals. In graphs, the formula is:</p>
 class="obs_center" width="20%"/></p>
 <p>For additional information, see the <a href="https://arxiv.org/
 abs/1409.6298">original paper</a>.</p>
-<pre><code class="python">energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
+<pre><code class="language-python">energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
               coords=None, check_input=True)
 </code></pre>
-
 <p>Since a <code>D2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
 keywords are accepted.</p>
 <p><strong>Arguments</strong></p>
@@ -349,13 +345,13 @@ info.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
+<li>The parameter <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> appearing in the measure. Must be greater
 than zero.</li>
 </ul>
 </li>
 <li><strong>strassen</strong> : <em>bool</em><ul>
 <li>Whether to use matrix multiplication to speed up the evaluation.
-Not recommended when $\beta=2$ since EFMs are faster.</li>
+Not recommended when <span><span class="MathJax_Preview">\beta=2</span><script type="math/tex">\beta=2</script></span> since EFMs are faster.</li>
 </ul>
 </li>
 <li><strong>reg</strong> : <em>float</em><ul>
@@ -364,8 +360,8 @@ that it is zero. Should typically be something less than 1e-30.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter <span><span class="MathJax_Preview">\kappa</span><script type="math/tex">\kappa</script></span>. If <code>'pf'</code>,
+use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex">\kappa=v-1</script></span> where <span><span class="MathJax_Preview">v</span><script type="math/tex">v</script></span> is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -384,9 +380,8 @@ first input type.</li>
 </li>
 </ul>
 <h3 id="compute">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+<pre><code class="language-python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
-
 <p>Computes the value of the observable on a single event. Note that
 the observable object is also callable, in which case this method is
 invoked.</p>
@@ -422,9 +417,8 @@ used.</li>
 </li>
 </ul>
 <h3 id="batch_compute">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
+<pre><code class="language-python">batch_compute(events, n_jobs=None)
 </code></pre>
-
 <p>Computes the value of the observable on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -448,9 +442,8 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 <h3 id="properties">properties</h3>
 <h4 id="efpset">efpset</h4>
-<pre><code class="python">efpset
+<pre><code class="language-python">efpset
 </code></pre>
-
 <p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
 <h2 id="c2">C2</h2>
@@ -460,10 +453,9 @@ In graphs, the formula is:</p>
 class="obs_center" width="20%"/></p>
 <p>For additional information, see the <a href="https://arxiv.org/
 abs/1305.0007">original paper</a>.</p>
-<pre><code class="python">energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
+<pre><code class="language-python">energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
               coords=None, check_input=True)
 </code></pre>
-
 <p>Since a <code>C2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
 keywords are accepted.</p>
 <p><strong>Arguments</strong></p>
@@ -474,13 +466,13 @@ info.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
+<li>The parameter <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> appearing in the measure. Must be greater
 than zero.</li>
 </ul>
 </li>
 <li><strong>strassen</strong> : <em>bool</em><ul>
 <li>Whether to use matrix multiplication to speed up the evaluation.
-Not recommended when $\beta=2$ since EFMs are faster.</li>
+Not recommended when <span><span class="MathJax_Preview">\beta=2</span><script type="math/tex">\beta=2</script></span> since EFMs are faster.</li>
 </ul>
 </li>
 <li><strong>reg</strong> : <em>float</em><ul>
@@ -489,8 +481,8 @@ that it is zero. Should typically be something less than 1e-30.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter <span><span class="MathJax_Preview">\kappa</span><script type="math/tex">\kappa</script></span>. If <code>'pf'</code>,
+use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex">\kappa=v-1</script></span> where <span><span class="MathJax_Preview">v</span><script type="math/tex">v</script></span> is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -509,9 +501,8 @@ first input type.</li>
 </li>
 </ul>
 <h3 id="compute_1">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+<pre><code class="language-python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
-
 <p>Computes the value of the observable on a single event. Note that
 the observable object is also callable, in which case this method is
 invoked.</p>
@@ -547,9 +538,8 @@ used.</li>
 </li>
 </ul>
 <h3 id="batch_compute_1">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
+<pre><code class="language-python">batch_compute(events, n_jobs=None)
 </code></pre>
-
 <p>Computes the value of the observable on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -573,9 +563,8 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 <h3 id="properties_1">properties</h3>
 <h4 id="efpset_1">efpset</h4>
-<pre><code class="python">efpset
+<pre><code class="language-python">efpset
 </code></pre>
-
 <p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
 <h2 id="c3">C3</h2>
@@ -585,10 +574,9 @@ signals. In graphs, the formula is:</p>
 class="obs_center" width="30%"/></p>
 <p>For additional information, see the <a href="https://arxiv.org/
 abs/1305.0007">original paper</a>.</p>
-<pre><code class="python">energyflow.C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
+<pre><code class="language-python">energyflow.C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
               coords=None, check_input=True)
 </code></pre>
-
 <p>Since a <code>D2</code> defines and holds a <code>Measure</code> instance, all <code>Measure</code>
 keywords are accepted.</p>
 <p><strong>Arguments</strong></p>
@@ -599,7 +587,7 @@ info.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
+<li>The parameter <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> appearing in the measure. Must be greater
 than zero.</li>
 </ul>
 </li>
@@ -609,8 +597,8 @@ that it is zero. Should typically be something less than 1e-30.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter <span><span class="MathJax_Preview">\kappa</span><script type="math/tex">\kappa</script></span>. If <code>'pf'</code>,
+use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex">\kappa=v-1</script></span> where <span><span class="MathJax_Preview">v</span><script type="math/tex">v</script></span> is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -629,9 +617,8 @@ first input type.</li>
 </li>
 </ul>
 <h3 id="compute_2">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+<pre><code class="language-python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
-
 <p>Computes the value of the observable on a single event. Note that
 the observable object is also callable, in which case this method is
 invoked.</p>
@@ -667,9 +654,8 @@ used.</li>
 </li>
 </ul>
 <h3 id="batch_compute_2">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
+<pre><code class="language-python">batch_compute(events, n_jobs=None)
 </code></pre>
-
 <p>Computes the value of the observable on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -693,9 +679,8 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 <h3 id="properties_2">properties</h3>
 <h4 id="efpset_2">efpset</h4>
-<pre><code class="python">efpset
+<pre><code class="language-python">efpset
 </code></pre>
-
 <p><code>EFPSet</code> held by the object to compute fundamental EFP values.</p>
 <hr />
               
@@ -745,8 +730,9 @@ use as many processes as there are CPUs on the machine.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

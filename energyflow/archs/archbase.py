@@ -6,14 +6,18 @@ variable-length sets of particles. Both EFNs and PFNs are parameterized by a
 learnable per-particle function $\Phi$ and latent space function $F$.
 
 An EFN takes the following form:
+
 $$\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)$$
+
 where $z_i$ is a measure of the energy of particle $i$, such as $z_i=p_{T,i}$,
 and $\hat p_i$ is a measure of the angular information of particle $i$, such as
 $\hat p_i = (y_i,\phi_i)$. Any infrared- and collinear-safe observable can be
 parameterized in this form.
 
 A PFN takes the following form:
+
 $$\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)$$
+
 where $p_i$ is the information of particle $i$, such as its four-momentum,
 charge, or flavor. Any observable can be parameterized in this form. See the
 [Deep Sets](https://arxiv.org/abs/1703.06114) framework for additional 
@@ -122,8 +126,7 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
 
         - ***args** : _numpy.ndarray_ or _tensorflow.data.Dataset_
             - Either the `X_train` and `Y_train` NumPy arrays or a TensorFlow
-            dataset. See [`tf_point_cloud_dataset`](#tf_point_cloud_dataset) for
-            contruction of TensorFlow datasets for EFN and PFN models.
+            dataset.
         - **kwargs** : _dict_
             - Keyword arguments passed on to the `.fit()` method of the
             underlying model. Most relevant for neural network models, where the

@@ -156,11 +156,11 @@
 <br><br></li>
 <li><a href="docs/emd">Energy Mover's Distance</a>: The EMD is a common metric between probability distributions that has been adapted for use as a metric between collider events. EnergyFlow contains code to facilitate the computation of the EMD between events based on an underlying implementation provided by the <a href="https://pot.readthedocs.io">Python Optimal Transport (POT)</a> library. Available from version <code>0.11.0</code> onward.
 <br><br></li>
-<li><a href="docs/efm">Energy Flow Moments</a>: EFMs are moments built out of particle energies and momenta that can be evaluated in linear time in the number of particles. They provide a highly efficient means of implementing $\beta=2$ EFPs and are also very useful for reasoning about linear redundancies that appear between EFPs. Available from version <code>1.0.0</code> onward.</li>
+<li><a href="docs/efm">Energy Flow Moments</a>: EFMs are moments built out of particle energies and momenta that can be evaluated in linear time in the number of particles. They provide a highly efficient means of implementing <span><span class="MathJax_Preview">\beta=2</span><script type="math/tex">\beta=2</script></span> EFPs and are also very useful for reasoning about linear redundancies that appear between EFPs. Available from version <code>1.0.0</code> onward.</li>
 </ul>
 <p>The EnergyFlow package also provides easy access to particle phyiscs datasets and useful supplementary features:</p>
 <ul>
-<li><a href="docs/datasets/#cms-open-data-and-the-mod-hdf5-format">CMS Open Data in MOD HDF5 Format</a>: Reprocessed datasets from the <a href="http://opendata.cern.ch/docs/cms-guide-for-research">CMS Open Data</a>, currently including jets with $p_T&gt;375$ GeV and associated detector-level and generator-level Monte Carlo samples. EnergyFlow provides tools for downloading, reading, and manipulating these datasets. 
+<li><a href="docs/datasets/#cms-open-data-and-the-mod-hdf5-format">CMS Open Data in MOD HDF5 Format</a>: Reprocessed datasets from the <a href="http://opendata.cern.ch/docs/cms-guide-for-research">CMS Open Data</a>, currently including jets with <span><span class="MathJax_Preview">p_T&gt;375</span><script type="math/tex">p_T>375</script></span> GeV and associated detector-level and generator-level Monte Carlo samples. EnergyFlow provides tools for downloading, reading, and manipulating these datasets. 
 <br><br></li>
 <li><a href="docs/datasets/#quark-and-gluon-jets">Jet Tagging Datasets</a>: Datasets of Pythia 8 and Herwig 7.1 simulated quark and gluon jets are provided, along with tools for downloading and reading them.
 <br><br></li>
@@ -225,8 +225,9 @@
 </div>
     <script>var base_url = '.';</script>
     <script src="js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="search/main.js" defer></script>
     <script defer>
         window.onload = function () {
@@ -239,5 +240,5 @@
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2020-11-04 22:14:20.787442+00:00
+Build Date UTC : 2020-11-16 19:20:04.719838+00:00
 -->

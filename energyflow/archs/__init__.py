@@ -10,13 +10,11 @@ try:
     from . import cnn
     from . import dnn
     from . import efn
-    from . import utils
     from .cnn import *
     from .dnn import *
     from .efn import *
-    from .utils import *
 
-    __all__ += cnn.__all__ + dnn.__all__ + efn.__all__ + utils.__all__
+    __all__ += cnn.__all__ + dnn.__all__ + efn.__all__
 
 except ImportError as e:
     warnings.warn('could not import some architectures - ' + str(e))

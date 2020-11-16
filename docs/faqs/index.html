@@ -266,7 +266,6 @@
   year          = &quot;2020&quot;
 }
 </code></pre>
-
 <h2 id="how-do-i-cite-the-datasets-available-through-energyflow">How do I cite the datasets available through EnergyFlow?</h2>
 <p>If any of the datasets provided through EnergyFlow are used in your research, we ask that you cite their Zenodo records, which are provided below in BibTeX format (confirmed to give a sensible citation in the JHEP and RevTeX bibliography styles).</p>
 <p><a href="/docs/datasets/#cms-open-data-and-the-mod-hdf5-format"><strong>CMS Open Data in MOD HDF5 Format</strong></a></p>
@@ -360,7 +359,6 @@
   doi     = {10.5281/zenodo.3341772}
 }
 </code></pre>
-
 <p><a href="https://
 doi.org/10.5281/zenodo.3340205"><img alt="DOI" src="/img/zenodo.3340205.svg" /></a> - CMS 2011A Jets, pT &gt; 375 GeV
 <br>
@@ -386,7 +384,7 @@ doi.org/10.5281/zenodo.3341502"><img alt="DOI" src="/img/zenodo.3341502.svg" /><
 doi.org/10.5281/zenodo.3341770"><img alt="DOI" src="/img/zenodo.3341770.svg" /></a> - SIM/GEN QCD Jets 1400-1800 GeV
 <br>
 <a href="https://
-doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /></a> - SIM/GEN QCD Jets 1800-$\infty$ GeV</p>
+doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /></a> - SIM/GEN QCD Jets 1800-<span><span class="MathJax_Preview">\infty</span><script type="math/tex">\infty</script></span> GeV</p>
 <p><a href="/docs/datasets/#quark-and-gluon-jets"><strong>Quark and Gluon Datasets</strong></a></p>
 <pre><code>@article{Zenodo:EnergyFlow:Pythia8QGs,
   author  = {Komiske, Patrick and Metodiev, Eric and Thaler, Jesse},
@@ -405,7 +403,6 @@ doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /><
   doi     = {10.5281/zenodo.3066475}
 }
 </code></pre>
-
 <p><a href="https://doi.org/10.5281/zenodo.3164691"><img alt="DOI" src="/img/zenodo.3164691.svg" /></a> - Pythia samples
 <br>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="/img/zenodo.3066475.svg" /></a> - Herwig samples</p>
@@ -419,7 +416,6 @@ doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /><
   doi     = {10.5281/zenodo.3548091}
 }
 </code></pre>
-
 <p><a href="https://doi.org/10.5281/zenodo.3548091"><img alt="DOI" src="/img/zenodo.3548091.svg" /></a> - Pythia/Herwig + Delphes samples</p>
 <h2 id="why-python-instead-of-c">Why Python instead of C++?</h2>
 <p>Computing the EFPs requires a function such as NumPy's <a href="https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.einsum.html">einsum</a> that can efficiently evaluate arbitrary tensor contractions. To write such a function from scratch in C++ is difficult, and there is no obvious library in C++ to use (though if one were to attempt this the <a href="http://tensor-compiler.org/">tensor algebra compiler</a> seems like a promising tool).</p>
@@ -478,8 +474,9 @@ doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /><
 </div>
     <script>var base_url = '..';</script>
     <script src="../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

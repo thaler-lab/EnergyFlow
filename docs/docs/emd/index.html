@@ -157,7 +157,6 @@
     <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
             type="video/mp4">
 </video>
-
 <p><br></p>
 <p>The Energy Mover's Distance (EMD), also known as the Earth Mover's Distance, is
 a metric between particle collider events introduced in <a href="https://
@@ -169,43 +168,49 @@ pot.readthedocs.io">Python Optimal Transport (POT)</a> library, one of which mus
 submodule.</p>
 <p>From Eqs. (1.2) and (1.3) in <a href="https://arxiv.org/abs/2004.04159">2004.04159</a>, the
 EMD between two events is the minimum ''work'' required to rearrange one event
-$\mathcal E$ into the other $\mathcal E'$ by movements of energy $f_{ij}$ from
-particle $i$ in one event to particle $j$ in the other:
-<script type="math/tex; mode=display">
-\text{EMD}_{\beta,R}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\ge0\}}\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}\left(\frac{
+<span><span class="MathJax_Preview">\mathcal E</span><script type="math/tex">\mathcal E</script></span> into the other <span><span class="MathJax_Preview">\mathcal E'</span><script type="math/tex">\mathcal E'</script></span> by movements of energy <span><span class="MathJax_Preview">f_{ij}</span><script type="math/tex">f_{ij}</script></span> from
+particle <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span> in one event to particle <span><span class="MathJax_Preview">j</span><script type="math/tex">j</script></span> in the other:</p>
+<div>
+<div class="MathJax_Preview">\text{EMD}_{\beta,R}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\ge0\}}\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}\left(\frac{
 \theta_{ij}}{R}\right)^\beta + \left|\sum_{i=1}^ME_i-\sum_{j=1}^{M'}E^\prime_j
-\right|,\\\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
-\quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},
-</script>
-where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
-$\theta_{ij}$ is an angular distance between particles, and 
-$E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)$ is
+\right|,</div>
+<script type="math/tex; mode=display">\text{EMD}_{\beta,R}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\ge0\}}\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}\left(\frac{
+\theta_{ij}}{R}\right)^\beta + \left|\sum_{i=1}^ME_i-\sum_{j=1}^{M'}E^\prime_j
+\right|,</script>
+</div>
+<div>
+<div class="MathJax_Preview">\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
+\quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},</div>
+<script type="math/tex; mode=display">\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
+\quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},</script>
+</div>
+<p>where <span><span class="MathJax_Preview">E_i,E^\prime_j</span><script type="math/tex">E_i,E^\prime_j</script></span> are the energies of the particles in the two events, 
+<span><span class="MathJax_Preview">\theta_{ij}</span><script type="math/tex">\theta_{ij}</script></span> is an angular distance between particles, and 
+<span><span class="MathJax_Preview">E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)</span><script type="math/tex">E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)</script></span> is
 the smaller of the two total energies. In a hadronic context, transverse momenta
 are used instead of energies.</p>
 <hr />
 <h3 id="emd">emd</h3>
-<pre><code class="python">energyflow.emd.emd(*args, **kwargs)
+<pre><code class="language-python">energyflow.emd.emd(*args, **kwargs)
 </code></pre>
-
 <p>Computes the EMD between two events. The <code>emd</code> function is set equal to
-either <code>emd_wasserstein</code> or <code>emd_pot</code>, with the former preferred unless the
-Wasserstein library is not available.</p>
+<a href="#emd_wasserstein"><code>emd_wasserstein</code></a> or <a href="#emd_pot"><code>emd_pot</code></a>, with the
+former preferred unless the Wasserstein library is not available.</p>
 <hr />
 <h3 id="emds">emds</h3>
-<pre><code class="python">energyflow.emd.emds(*args, **kwargs)
+<pre><code class="language-python">energyflow.emd.emds(*args, **kwargs)
 </code></pre>
-
 <p>Computes the EMDs between collections of events. The <code>emds</code> function is
-set equal to either <code>emds_wasserstein</code> or <code>emds_pot</code>, with the former
-preferred unless the Wasserstein library is not available.</p>
+set equal to <a href="#emds_wasserstein"><code>emds_wasserstein</code></a> or
+<a href="#emds_pot"><code>emds_pot</code></a>, with the former preferred unless the Wasserstein
+library is not available.</p>
 <hr />
 <h3 id="emd_wasserstein">emd_wasserstein</h3>
-<pre><code class="python">energyflow.emd.emd_wasserstein(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
+<pre><code class="language-python">energyflow.emd.emd_wasserstein(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
                                          return_flow=False, do_timing=False,
                                          n_iter_max=100000,
                                          epsilon_large_factor=10000.0, epsilon_small_factor=1.0)
 </code></pre>
-
 <p>Compute the EMD between two events using the Wasserstein library.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -303,14 +308,13 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds_wasserstein">emds_wasserstein</h3>
-<pre><code class="python">energyflow.emd.emds_wasserstein(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
+<pre><code class="language-python">energyflow.emd.emds_wasserstein(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
                                                        external_emd_handler=None,
                                                        n_jobs=-1, print_every=0, verbose=0,
                                                        throw_on_error=True, n_iter_max=100000,
                                                        epsilon_large_factor=10000.0,
                                                        epsilon_small_factor=1.0)
 </code></pre>
-
 <p>Compute the EMDs between collections of events. This can be used to
  compute EMDs between all pairs of events in a set or between events in
  two different sets.</p>
@@ -424,11 +428,10 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emd_pot">emd_pot</h3>
-<pre><code class="python">energyflow.emd.emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
+<pre><code class="language-python">energyflow.emd.emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
                                  return_flow=False, gdim=None, mask=False, n_iter_max=100000,
                                  periodic_phi=False, phi_col=2, empty_policy='error')
 </code></pre>
-
 <p>Compute the EMD between two events using the Python Optimal
 Transport library.</p>
 <p><strong>Arguments</strong></p>
@@ -510,14 +513,14 @@ problem.</li>
 </li>
 <li><strong>periodic_phi</strong> : <em>bool</em><ul>
 <li>Whether to expect (and therefore properly handle) periodicity
-in the coordinate corresponding to the azimuthal angle $\phi$.
+in the coordinate corresponding to the azimuthal angle <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span>.
 Should typically be <code>True</code> for event-level applications but can
 be set to <code>False</code> (which is slightly faster) for jet applications
-where all $\phi$ differences are less than or equal to $\pi$.</li>
+where all <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> differences are less than or equal to <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span>.</li>
 </ul>
 </li>
 <li><strong>phi_col</strong> : <em>int</em><ul>
-<li>The index of the column of $\phi$ values in the event array.</li>
+<li>The index of the column of <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> values in the event array.</li>
 </ul>
 </li>
 <li><strong>empty_policy</strong> : <em>float</em> or <code>'error'</code><ul>
@@ -543,12 +546,11 @@ and particle j in <code>ev1</code>.</li>
 </ul>
 <hr />
 <h3 id="emds_pot">emds_pot</h3>
-<pre><code class="python">energyflow.emd.emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
+<pre><code class="language-python">energyflow.emd.emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
                             gdim=None, mask=False, n_iter_max=100000, 
                             periodic_phi=False, phi_col=2, empty_policy='error',
                             n_jobs=None, verbose=0, print_every=10**6)
 </code></pre>
-
 <p>Compute the EMDs between collections of events. This can be used to
  compute EMDs between all pairs of events in a set or between events in
  two different sets.</p>
@@ -625,14 +627,14 @@ and particle j in <code>ev1</code>.</li>
 </li>
 <li><strong>periodic_phi</strong> : <em>bool</em><ul>
 <li>Whether to expect (and therefore properly handle) periodicity
- in the coordinate corresponding to the azimuthal angle $\phi$.
+ in the coordinate corresponding to the azimuthal angle <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span>.
  Should typically be <code>True</code> for event-level applications but can
  be set to <code>False</code> (which is slightly faster) for jet applications
- where all $\phi$ differences are less than or equal to $\pi$.</li>
+ where all <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> differences are less than or equal to <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span>.</li>
 </ul>
 </li>
 <li><strong>phi_col</strong> : <em>int</em><ul>
-<li>The index of the column of $\phi$ values in the event array.</li>
+<li>The index of the column of <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> values in the event array.</li>
 </ul>
 </li>
 <li><strong>empty_policy</strong> : <em>float</em> or <code>'error'</code><ul>
@@ -720,8 +722,9 @@ and particle j in <code>ev1</code>.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {
