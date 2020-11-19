@@ -3,7 +3,19 @@
 Implementations of come collider physics observables. Some observables
 require the [FastJet](http://fastjet.fr/) Python interface to be importable;
 if it's not, no warnings or errors will be issued, the observables will simply
-not be included in this module."""
+not be included in this module.
+"""
+
+#   ____  ____   _____
+#  / __ \|  _ \ / ____|
+# | |  | | |_) | (___
+# | |  | |  _ < \___ \
+# | |__| | |_) |____) |
+#  \____/|____/|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from abc import abstractmethod

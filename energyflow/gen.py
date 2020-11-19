@@ -1,6 +1,18 @@
 """# Multigraph Generation
 
-Implementation of EFP/EFM Generator class."""
+Implementation of EFP/EFM Generator class.
+"""
+
+#   _____ ______ _   _
+#  / ____|  ____| \ | |
+# | |  __| |__  |  \| |
+# | | |_ |  __| | . ` |
+# | |__| | |____| |\  |
+#  \_____|______|_| \_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from collections import Counter

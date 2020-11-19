@@ -59,6 +59,17 @@ doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 - A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
 OmniFold: A Method to Simultaneously Unfold All Observables, [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 """
+
+#  ______    _ ______ _______ _____          _____  ______ _      _____  _    _ ______  _____
+# |___  /   | |  ____|__   __/ ____         |  __ \|  ____| |    |  __ \| |  | |  ____|/ ____|
+#    / /    | | |__     | | | (___          | |  | | |__  | |    | |__) | |__| | |__  | (___
+#   / / _   | |  __|    | |  \___ \         | |  | |  __| | |    |  ___/|  __  |  __|  \___ \
+#  / /_| |__| | |____   | |  ____) | ______ | |__| | |____| |____| |    | |  | | |____ ____) |
+# /_____\____/|______|  |_| |_____/ |______||_____/|______|______|_|    |_|  |_|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import json

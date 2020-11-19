@@ -16,6 +16,22 @@ Note that the number of epochs is quite small because it is quite time consuming
 to train a CNN without a GPU (which will speed up this example immensely).
 """
 
+#   _____ _   _ _   _
+#  / ____| \ | | \ | |
+# | |    |  \| |  \| |
+# | |    | . ` | . ` |
+# | |____| |\  | |\  |
+#  \_____|_| \_|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 

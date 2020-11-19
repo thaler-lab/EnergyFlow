@@ -1,3 +1,13 @@
+#   _____ _   _ _   _
+#  / ____| \ | | \ | |
+# | |    |  \| |  \| |
+# | |    | . ` | . ` |
+# | |____| |\  | |\  |
+#  \_____|_| \_|_| \_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from tensorflow.keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialDropout2D

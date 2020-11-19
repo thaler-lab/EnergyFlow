@@ -14,6 +14,17 @@ measure of the angular separation between particles $i$ and $j$. The specific
 choices for "energy" and "angular" measure depend on the collider context and
 are discussed in the [Measures](../measures) section.
 """
+
+#  ______ ______ _____
+# |  ____|  ____|  __ \
+# | |__  | |__  | |__) |
+# |  __| |  __| |  ___/
+# | |____| |    | |
+# |______|_|    |_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from collections import Counter

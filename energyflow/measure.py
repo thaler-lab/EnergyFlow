@@ -77,6 +77,17 @@ The $e^+e^-$ EFM measure is `'eeefm'`, which is equivalent to `'ee'` with
 $\beta=2$ when used to compute EFPs, but works with the EFM-based
 implementation.
 """
+
+#  __  __ ______           _____ _    _ _____  ______
+# |  \/  |  ____|   /\    / ____| |  | |  __ \|  ____|
+# | \  / | |__     /  \  | (___ | |  | | |__) | |__
+# | |\/| |  __|   / /\ \  \___ \| |  | |  _  /|  __|
+# | |  | | |____ / ____ \ ____) | |__| | | \ \| |____
+# |_|  |_|______/_/    \_\_____/ \____/|_|  \_\______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod

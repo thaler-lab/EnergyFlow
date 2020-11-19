@@ -1,3 +1,13 @@
+#  _____  _   _ _   _
+# |  __ \| \ | | \ | |
+# | |  | |  \| |  \| |
+# | |  | | . ` | . ` |
+# | |__| | |\  | |\  |
+# |_____/|_| \_|_| \_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from tensorflow.keras.layers import Dense, Dropout, Input

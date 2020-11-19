@@ -4,6 +4,28 @@ used to construct the network architecture. The output of the example is a plot
 of the predicted and actual mass distributions.
 """
 
+#  ______ ______ _   _
+# |  ____|  ____| \ | |
+# | |__  | |__  |  \| |
+# |  __| |  __| | . ` |
+# | |____| |    | |\  |
+# |______|_|    |_| \_|
+#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _ 
+# |  __ \|  ____/ ____|  __ \|  ____|/ ____/ ____|_   _/ __ \| \ | |
+# | |__) | |__ | |  __| |__) | |__  | (___| (___   | || |  | |  \| |
+# |  _  /|  __|| | |_ |  _  /|  __|  \___ \\___ \  | || |  | | . ` |
+# | | \ \| |___| |__| | | \ \| |____ ____) |___) |_| || |__| | |\  |
+# |_|  \_\______\_____|_|  \_\______|_____/_____/|_____\____/|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 

@@ -33,6 +33,17 @@ $E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)$ is
 the smaller of the two total energies. In a hadronic context, transverse momenta
 are used instead of energies.
 """
+
+#  ______ __  __ _____
+# |  ____|  \/  |  __ \
+# | |__  | \  / | |  | |
+# |  __| | |\/| | |  | |
+# | |____| |  | | |__| |
+# |______|_|  |_|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import itertools

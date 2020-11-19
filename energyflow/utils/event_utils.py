@@ -5,7 +5,18 @@ of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
 sampling uniform M-body massless phase space. Also includes other functions for
 various random, non-center of momentum, and non-uniform sampling.
 """
-from __future__ import absolute_import
+
+#  ________      ________ _   _ _______         _    _ _______ _____ _       _____
+# |  ____\ \    / /  ____| \ | |__   __|       | |  | |__   __|_   _| |     / ____|
+# | |__   \ \  / /| |__  |  \| |  | |          | |  | |  | |    | | | |    | (___
+# |  __|   \ \/ / |  __| | . ` |  | |          | |  | |  | |    | | | |     \___ \
+# | |____   \  /  | |____| |\  |  | |   ______ | |__| |  | |   _| |_| |____ ____) |
+# |______|   \/   |______|_| \_|  |_|  |______| \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
+from __future__ import absolute_import, division, print_function
 
 import os
 

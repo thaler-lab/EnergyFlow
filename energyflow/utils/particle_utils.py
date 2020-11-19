@@ -38,6 +38,17 @@ three-dimensional array with shape `(N,M,4)` where `N` is the number of events.
 The valid inputs and outputs of the functions here will be described using
 this terminology.
 """
+
+#  _____        _____ _______ _____ _____ _      ______          _    _ _______ _____ _       _____
+# |  __ \ /\   |  __ \__   __|_   _/ ____| |    |  ____|        | |  | |__   __|_   _| |     / ____|
+# | |__) /  \  | |__) | | |    | || |    | |    | |__           | |  | |  | |    | | | |    | (___
+# |  ___/ /\ \ |  _  /  | |    | || |    | |    |  __|          | |  | |  | |    | | | |     \___ \
+# | |  / ____ \| | \ \  | |   _| || |____| |____| |____  ______ | |__| |  | |   _| |_| |____ ____) |
+# |_| /_/    \_\_|  \_\ |_|  |_____\_____|______|______||______| \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import warnings

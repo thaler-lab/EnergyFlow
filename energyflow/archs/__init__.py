@@ -1,3 +1,13 @@
+#           _____   _____ _    _  _____
+#     /\   |  __ \ / ____| |  | |/ ____|
+#    /  \  | |__) | |    | |__| | (___
+#   / /\ \ |  _  /| |    |  __  |\___ \
+#  / ____ \| | \ \| |____| |  | |____) |
+# /_/    \_\_|  \_\\_____|_|  |_|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import
 
 import warnings

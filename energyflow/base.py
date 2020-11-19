@@ -1,4 +1,15 @@
 """Base classes for EnergyFlow."""
+
+#  ____           _____ ______
+# |  _ \   /\    / ____|  ____|
+# | |_) | /  \  | (___ | |__
+# |  _ < / /\ \  \___ \|  __| 
+# | |_) / ____ \ ____) | |____
+# |____/_/    \_\_____/|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division
 
 from abc import ABCMeta, abstractmethod, abstractproperty

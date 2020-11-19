@@ -22,6 +22,18 @@ Support for using EFMs to compute $\beta=2$ EFPs is built in to the `EFP` and
 `EFPSet` classes using the classes and functions in this module. The `EFM` and
 `EFMSet` classes can also be used on their own, as can the `efp2efms` function.
 """
+
+#  ______ ______ __  __
+# |  ____|  ____|  \/  |
+# | |__  | |__  | \  / |
+# |  __| |  __| | |\/| |
+# | |____| |    | |  | |
+# |______|_|    |_|  |_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
+
 from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict

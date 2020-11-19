@@ -31,6 +31,17 @@ contains several additional model architectures for ease of using common models
 that frequently appear in the intersection of particle physics and machine
 learning.
 """
+
+#           _____   _____ _    _ ____           _____ ______
+#     /\   |  __ \ / ____| |  | |  _ \   /\    / ____|  ____|
+#    /  \  | |__) | |    | |__| | |_) | /  \  | (___ | |__
+#   / /\ \ |  _  /| |    |  __  |  _ < / /\ \  \___ \|  __|
+#  / ____ \| | \ \| |____| |  | | |_) / ____ \ ____) | |____
+# /_/    \_\_|  \_\\_____|_|  |_|____/_/    \_\_____/|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod, abstractproperty
