@@ -21,7 +21,8 @@ __all__ = [
 
 # tf_point_cloud_dataset(data_arrs, batch_size=None, dtype='float32')
 def tf_point_cloud_dataset(data_arrs, batch_size=100, dtype='float32',
-                                      prefetch=10, pad_val=0.,
+                                      prefetch=tf.data.experimental.AUTOTUNE,
+                                      pad_val=0.,
                                       generator_shapes=None, _xyweights=True):
     """Creates a TensorFlow dataset from NumPy arrays of events of particles,
     designed to be used as input to EFN and PFN models. The function uses a
