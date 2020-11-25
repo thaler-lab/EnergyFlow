@@ -9,3 +9,15 @@ energyflow/
 mkdocs/
 tests/
 test.npz
+.eggs
+*.sublime-*
+Icon?
+Moments/
+Networks/
+Polynomials/
+datasets/
+dist/
+fastjet-3.3.4
+taco/
+*.egg-info/
+clean.sh
