@@ -96,7 +96,7 @@ __all__ = [
     'flat_metric',
 ]
 
-def ptyphims_from_p4s(p4s, phi_ref=None):
+def ptyphims_from_p4s(p4s, phi_ref=None, mass=True):
     r"""Convert to hadronic coordinates `[pt,y,phi,m]` from Cartesian
     coordinates. All-zero four-vectors are left alone.
 
@@ -112,6 +112,8 @@ def ptyphims_from_p4s(p4s, phi_ref=None):
         phis will be in the range $[0,2\pi)$. An array is accepted in the case
         that `p4s` is an array of events, in which case the `phi_ref` array
         should have shape `(N,)` where `N` is the number of events.
+    - **mass** : _bool_
+        - Whether or not to include particle masses.
 
     **Returns**
 
@@ -123,11 +125,12 @@ def ptyphims_from_p4s(p4s, phi_ref=None):
     if p4s.shape[-1] != 4:
         raise ValueError("Last dimension of 'p4s' must have size 4.")
 
-    out = np.zeros(p4s.shape, dtype=float)
+    out = np.zeros(p4s.shape[:-1] + (4 if mass else 3,), dtype=float)
     out[...,0] = pts_from_p4s(p4s)
     out[...,1] = ys_from_p4s(p4s)
     out[...,2] = phis_from_p4s(p4s, phi_ref, _pts=out[...,0])
-    out[...,3] = ms_from_p4s(p4s)
+    if mass:
+        out[...,3] = ms_from_p4s(p4s)
 
     return out
 
