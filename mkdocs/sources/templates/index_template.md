@@ -35,6 +35,15 @@ The current version is `{current_version}`. Changes are summarized in the [Relea
 Get started by [installing EnergyFlow](installation), [exploring the demos](demos), and [running the examples](examples)!
 
 
+## Authors
+
+EnergyFlow is developed and maintained by:
+
+- [Patrick Komiske](https://pkomiske.com), primary developer
+- [Eric Metodiev](https://www.ericmetodiev.com/)
+- [Jesse Thaler](http://jthaler.net/)
+
+
 ## References
 
 [1] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Polynomials: A complete linear basis for jet substructure_, [JHEP __04__ (2018) 013](https://doi.org/10.1007/JHEP04(2018)013) [[1712.07124](https://arxiv.org/abs/1712.07124)].
