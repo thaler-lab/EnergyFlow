@@ -2,6 +2,10 @@
 
 ## NYT on the Theory of Everything
 
+<img src="https://github.com/pkomiske/EnergyFlow/raw/images/24SCI-AIPHYSICS-superJumbo.jpg" width="75%"/>
+<br/>
+Image: Alex Eben Meyer
+
 [**Can a Computer Devise a Theory of Everything?**](https://www.nytimes.com/2020/11/23/science/artificial-intelligence-ai-physics-theory.html)  
 *New York Times*, Dennis Overbye. November 23, 2020.
 
@@ -32,7 +36,7 @@ The [NSF has announced](https://www.nsf.gov/news/special_reports/announcements/0
 
 ## EMD Media Coverage
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/MIT-Particle-Networking.jpg" width="85%"/>
+<img src="https://github.com/pkomiske/EnergyFlow/raw/images/MIT-Particle-Networking.jpg" width="80%"/>
 <br/>
 Image: Chelsea Turner, MIT
 
