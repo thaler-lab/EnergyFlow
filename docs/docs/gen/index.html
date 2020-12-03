@@ -157,10 +157,9 @@
 <hr />
 <h2 id="generator">Generator</h2>
 <p>Generates non-isomorphic multigraphs according to provided specifications.</p>
-<pre><code class="python">energyflow.Generator(dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
+<pre><code class="language-python">energyflow.Generator(dmax=None, nmax=None, emax=None, cmax=None, vmax=None, comp_dmaxs=None,
                      filename=None, gen_efms=True, np_optimize='greedy', verbose=False)
 </code></pre>
-
 <p>Doing a fresh generation of connected multigraphs (<code>filename=None</code>)
 requires that <code>igraph</code> be installed.</p>
 <p><strong>Arguments</strong></p>
@@ -179,7 +178,7 @@ graphs.</li>
 </ul>
 </li>
 <li><strong>cmax</strong> : <em>int</em><ul>
-<li>The maximum VE complexity $\chi$ of the generated connected
+<li>The maximum VE complexity <span><span class="MathJax_Preview">\chi</span><script type="math/tex">\chi</script></span> of the generated connected
 graphs.</li>
 </ul>
 </li>
@@ -219,9 +218,8 @@ intensive part.</li>
 </li>
 </ul>
 <h3 id="save">save</h3>
-<pre><code class="python">save(filename, protocol='npz', compression=True)
+<pre><code class="language-python">save(filename, protocol='npz', compression=True)
 </code></pre>
-
 <p>Save the current generator to file.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -240,9 +238,8 @@ intensive part.</li>
 </ul>
 <h3 id="properties">properties</h3>
 <h4 id="specs">specs</h4>
-<pre><code class="python">specs
+<pre><code class="language-python">specs
 </code></pre>
-
 <p>An array of EFP specifications. Each row represents an EFP 
 and the columns represent the quantities indicated by <code>cols</code>.</p>
 <hr />
@@ -293,8 +290,9 @@ and the columns represent the quantities indicated by <code>cols</code>.</p>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

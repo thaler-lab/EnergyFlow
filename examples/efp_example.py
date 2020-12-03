@@ -7,6 +7,22 @@ numbers of EFPs as input, determined by taking all EFPs up to degree `d` with
 for the classifiers with different numbers of EFP inputs.
 """
 
+#  ______ ______ _____
+# |  ____|  ____|  __ \
+# | |__  | |__  | |__) |
+# |  __| |  __| |  ___/
+# | |____| |    | |
+# |______|_|    |_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 

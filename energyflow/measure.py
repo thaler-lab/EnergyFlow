@@ -45,16 +45,14 @@ There are two hadronic measures implemented in EnergyFlow that work for any
 $\beta$: `'hadr'` and `'hadrdot'`. These are listed explicitly below.
 
 `'hadr'`:
-$$
-z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + 
-\Delta\phi_{ij}^2)^{\beta/2}.
-$$
+
+\[z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + 
+\Delta\phi_{ij}^2)^{\beta/2}.\]
 
 `'hadrdot'`:
-$$
-z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=\left(\frac{2p^\mu_ip_{j\mu}}
-{p_{T,i}p_{T,j}}\right)^{\beta/2}.
-$$
+
+\[z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=\left(\frac{2p^\mu_ip_{j\mu}}
+{p_{T,i}p_{T,j}}\right)^{\beta/2}.\]
 
 The hadronic EFM measure is `'hadrefm'`, which is equivalent to `'hadrdot'`
 with $\beta=2$ when used to compute EFPs, but works with the EFM-based
@@ -71,15 +69,25 @@ four-momenta are used.
 There is one $e^+e^-$ measure implemented that works for any $\beta$.
 
 `'ee'`:
-$$
-z_i = E_{i}^{\kappa},\quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}
-{E_i E_j}\right)^{\beta/2}.
-$$
+
+\[z_i = E_{i}^{\kappa},\quad\quad \theta_{ij} = \left(\frac{2p_i^\mu p_{j \mu}}
+{E_i E_j}\right)^{\beta/2}.\]
 
 The $e^+e^-$ EFM measure is `'eeefm'`, which is equivalent to `'ee'` with
 $\beta=2$ when used to compute EFPs, but works with the EFM-based
 implementation.
 """
+
+#  __  __ ______           _____ _    _ _____  ______
+# |  \/  |  ____|   /\    / ____| |  | |  __ \|  ____|
+# | \  / | |__     /  \  | (___ | |  | | |__) | |__
+# | |\/| |  __|   / /\ \  \___ \| |  | |  _  /|  __|
+# | |  | | |____ / ____ \ ____) | |__| | | \ \| |____
+# |_|  |_|______/_/    \_\_____/ \____/|_|  \_\______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod

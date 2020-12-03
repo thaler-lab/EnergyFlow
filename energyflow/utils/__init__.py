@@ -1,4 +1,15 @@
 """Utility functions for various purposes relating to the uses of EnergyFlow."""
+
+#  _    _ _______ _____ _       _____
+# | |  | |__   __|_   _| |     / ____|
+# | |  | |  | |    | | | |    | (___
+# | |  | |  | |    | | | |     \___ \
+# | |__| |  | |   _| |_| |____ ____) |
+#  \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import
 
 from . import data_utils

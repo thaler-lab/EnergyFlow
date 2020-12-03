@@ -214,16 +214,22 @@
 <p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) are model
 architectures designed for learning from collider events as unordered,
 variable-length sets of particles. Both EFNs and PFNs are parameterized by a
-learnable per-particle function $\Phi$ and latent space function $F$.</p>
-<p>An EFN takes the following form:
+learnable per-particle function <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span> and latent space function <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>.</p>
+<p>An EFN takes the following form:</p>
+<div>
+<div class="MathJax_Preview">\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)</div>
 <script type="math/tex; mode=display">\text{EFN}=F\left(\sum_{i=1}^M z_i \Phi(\hat p_i)\right)</script>
-where $z_i$ is a measure of the energy of particle $i$, such as $z_i=p_{T,i}$,
-and $\hat p_i$ is a measure of the angular information of particle $i$, such as
-$\hat p_i = (y_i,\phi_i)$. Any infrared- and collinear-safe observable can be
+</div>
+<p>where <span><span class="MathJax_Preview">z_i</span><script type="math/tex">z_i</script></span> is a measure of the energy of particle <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span>, such as <span><span class="MathJax_Preview">z_i=p_{T,i}</span><script type="math/tex">z_i=p_{T,i}</script></span>,
+and <span><span class="MathJax_Preview">\hat p_i</span><script type="math/tex">\hat p_i</script></span> is a measure of the angular information of particle <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span>, such as
+<span><span class="MathJax_Preview">\hat p_i = (y_i,\phi_i)</span><script type="math/tex">\hat p_i = (y_i,\phi_i)</script></span>. Any infrared- and collinear-safe observable can be
 parameterized in this form.</p>
-<p>A PFN takes the following form:
+<p>A PFN takes the following form:</p>
+<div>
+<div class="MathJax_Preview">\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)</div>
 <script type="math/tex; mode=display">\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)</script>
-where $p_i$ is the information of particle $i$, such as its four-momentum,
+</div>
+<p>where <span><span class="MathJax_Preview">p_i</span><script type="math/tex">p_i</script></span> is the information of particle <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span>, such as its four-momentum,
 charge, or flavor. Any observable can be parameterized in this form. See the
 <a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional 
 discussion.</p>
@@ -240,9 +246,8 @@ learning.</p>
 specifying hyperparameters for all architectures is described here. Methods
 common to all architectures are documented here. Note that this class cannot
 be instantiated directly as it is an abstract base class.</p>
-<pre><code class="python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
+<pre><code class="language-python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
 </code></pre>
-
 <p>Accepts arbitrary arguments. Positional arguments (if present) are
 dictionaries of hyperparameters, keyword arguments (if present) are 
 hyperparameters directly. Keyword hyperparameters take precedence over
@@ -368,17 +373,15 @@ would be in order to use parts of this model in another model
 </li>
 </ul>
 <h3 id="fit">fit</h3>
-<pre><code class="python">fit(*args, **kwargs)
+<pre><code class="language-python">fit(*args, **kwargs)
 </code></pre>
-
 <p>Train the model by fitting the provided training dataset and labels.
 Transparently calls the <code>.fit()</code> method of the underlying model.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>*args</strong> : <em>numpy.ndarray</em> or <em>tensorflow.data.Dataset</em><ul>
 <li>Either the <code>X_train</code> and <code>Y_train</code> NumPy arrays or a TensorFlow
-dataset. See <a href="#tf_point_cloud_dataset"><code>tf_point_cloud_dataset</code></a> for
-contruction of TensorFlow datasets for EFN and PFN models.</li>
+dataset.</li>
 </ul>
 </li>
 <li><strong>kwargs</strong> : <em>dict</em><ul>
@@ -395,9 +398,8 @@ possible arguments.</li>
 <li>The return value of the the underlying model's <code>.fit()</code> method.</li>
 </ul>
 <h3 id="predict">predict</h3>
-<pre><code class="python">predict(X_test, **kwargs)
+<pre><code class="language-python">predict(X_test, **kwargs)
 </code></pre>
-
 <p>Evaluate the model on a dataset. Note that for the <code>LinearClassifier</code>
 this corresponds to the <code>predict_proba</code> method of the underlying 
 scikit-learn model.</p>
@@ -422,9 +424,8 @@ predicting on a dataset.</li>
 </ul>
 <h3 id="properties">properties</h3>
 <h4 id="model">model</h4>
-<pre><code class="python">model
+<pre><code class="language-python">model
 </code></pre>
-
 <p>The underlying model held by this architecture. Note that accessing
 an attribute that the architecture does not have will resulting in
 attempting to retrieve the attribute from this model. This allows for
@@ -446,9 +447,8 @@ is any EnergyFlow <code>LinearClassifier</code> instance.</li>
 <hr />
 <h2 id="efn">EFN</h2>
 <p>Energy Flow Network (EFN) architecture.</p>
-<pre><code class="python">energyflow.archs.EFN(*args, **kwargs)
+<pre><code class="language-python">energyflow.archs.EFN(*args, **kwargs)
 </code></pre>
-
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
 well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required EFN Hyperparameters</strong></p>
@@ -462,12 +462,12 @@ concatenated (see <code>additional_input_dims</code>).</li>
 </li>
 <li><strong>Phi_sizes</strong> (formerly <code>ppm_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>The sizes of the dense layers in the per-particle frontend module
-$\Phi$. The last element will be the number of latent observables
+<span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>. The last element will be the number of latent observables
 that the model defines.</li>
 </ul>
 </li>
 <li><strong>F_sizes</strong> (formerly <code>dense_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The sizes of the dense layers in the backend module $F$.</li>
+<li>The sizes of the dense layers in the backend module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>.</li>
 </ul>
 </li>
 </ul>
@@ -476,7 +476,7 @@ that the model defines.</li>
 <li><strong>Phi_acts</strong>=<code>'relu'</code> (formerly <code>ppm_acts</code>) : {<em>tuple</em>, <em>list</em>} of
 <em>str</em> or Keras activation<ul>
 <li>Activation functions(s) for the dense layers in the 
-per-particle frontend module $\Phi$. A single string or activation
+per-particle frontend module <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>. A single string or activation
 layer will apply the same activation to all layers. Keras advanced
 activation layers are also accepted, either as strings (which use
 the default arguments) or as Keras <code>Layer</code> instances. If passing a
@@ -491,14 +491,14 @@ docs</a> for more detail.</li>
 <li><strong>F_acts</strong>=<code>'relu'</code> (formerly <code>dense_acts</code>) : {<em>tuple</em>, <em>list</em>} of
 <em>str</em> or Keras activation<ul>
 <li>Activation functions(s) for the dense layers in the backend module
-$F$. A single string or activation layer will apply the same
+<span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. A single string or activation layer will apply the same
 activation to all layers.</li>
 </ul>
 </li>
 <li><strong>Phi_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>ppm_k_inits</code>) : {<em>tuple</em>,
 <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers in the per-particle
-frontend module $\Phi$. A single string will apply the same
+frontend module <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>. A single string will apply the same
 initializer to all layers. See the <a href="https://
 www.tensorflow.org/api_docs/python/tf/keras/initializers">Keras initializer docs</a> for more
 detail.</li>
@@ -507,7 +507,7 @@ detail.</li>
 <li><strong>F_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>dense_k_inits</code>) : {<em>tuple</em>,
 <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the dense layers in the backend module
-$F$. A single string will apply the same initializer to all layers.</li>
+<span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. A single string will apply the same initializer to all layers.</li>
 </ul>
 </li>
 <li><strong>latent_dropout</strong>=<code>0</code> : <em>float</em><ul>
@@ -518,20 +518,20 @@ for more detail.</li>
 </li>
 <li><strong>F_dropouts</strong>=<code>0</code> (formerly <code>dense_dropouts</code>) : {<em>tuple</em>, <em>list</em>}
 of <em>float</em><ul>
-<li>Dropout rates for the dense layers in the backend module $F$. A
+<li>Dropout rates for the dense layers in the backend module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. A
 single float will apply the same dropout rate to all dense layers.</li>
 </ul>
 </li>
 <li><strong>Phi_l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>$L_2$-regulatization strength for both the weights and biases of
-the layers in the $\Phi$ network. A single float will apply the same
-$L_2$-regulatization to all layers.</li>
+<li><span><span class="MathJax_Preview">L_2</span><script type="math/tex">L_2</script></span>-regulatization strength for both the weights and biases of
+the layers in the <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span> network. A single float will apply the same
+<span><span class="MathJax_Preview">L_2</span><script type="math/tex">L_2</script></span>-regulatization to all layers.</li>
 </ul>
 </li>
 <li><strong>F_l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>$L_2$-regulatization strength for both the weights and biases of
-the layers in the $F$ network. A single float will apply the same
-$L_2$-regulatization to all layers.</li>
+<li><span><span class="MathJax_Preview">L_2</span><script type="math/tex">L_2</script></span>-regulatization strength for both the weights and biases of
+the layers in the <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span> network. A single float will apply the same
+<span><span class="MathJax_Preview">L_2</span><script type="math/tex">L_2</script></span>-regulatization to all layers.</li>
 </ul>
 </li>
 <li><strong>mask_val</strong>=<code>0</code> : <em>float</em><ul>
@@ -560,10 +560,9 @@ instance, if there is an EFN1 and EFN2 architecture, the the
 </ul>
 </li>
 </ul>
-<pre><code class="python">Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...), 
+<pre><code class="language-python">Phi_sizes = [(Phi_sizes_EFN1_0, Phi_sizes_EFN1_1, ...), 
              (Phi_sizes_EFN2_0, Phi_sizes_EFN2_1, ...)]
 </code></pre>
-
 <ul>
 <li><strong>num_global_features</strong>=<code>None</code> : <em>int</em><ul>
 <li>Number of additional features to be concatenated with the latent
@@ -573,9 +572,8 @@ features are to be provided at the end of the list of inputs.</li>
 </li>
 </ul>
 <h3 id="eval_filters">eval_filters</h3>
-<pre><code class="python">eval_filters(patch, n=100, Phi_i=None, prune=True)
+<pre><code class="language-python">eval_filters(patch, n=100, Phi_i=None, prune=True)
 </code></pre>
-
 <p>Evaluates the latent space filters of this model on a patch of the 
 two-dimensional geometric input space.</p>
 <p><strong>Arguments</strong></p>
@@ -611,125 +609,107 @@ the value of the different filters at each point.</li>
 </ul>
 <h3 id="properties_1">properties</h3>
 <h4 id="inputs">inputs</h4>
-<pre><code class="python">inputs
+<pre><code class="language-python">inputs
 </code></pre>
-
 <p>List of input tensors to the model. EFNs have two input tensors per
 Phi component: <code>inputs[2*i]</code> corresponds to the <code>zs</code> input of Phi
 component <code>i</code> and <code>inputs[2*i+1]</code> corresponds to the <code>ps</code> input.
 Additionally, if any global features are present, they are final tensor
 in this list.</p>
 <h4 id="weights">weights</h4>
-<pre><code class="python">weights
+<pre><code class="language-python">weights
 </code></pre>
-
 <p>List of weight tensors for the model, one for each Phi component.
 For each of the Phi components, this is the <code>zs</code> input where entries
 equal to <code>mask_val</code> have been set to zero.</p>
 <h4 id="phi">Phi</h4>
-<pre><code class="python">Phi
+<pre><code class="language-python">Phi
 </code></pre>
-
-<p>List of lists of tensors corresponding to the layers in the $\Phi$
+<p>List of lists of tensors corresponding to the layers in the <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>
 network(s). The outer list will have length equal to the number of Phi
 components and each sublist contains the tensors for that particular
 component.</p>
 <h4 id="latent">latent</h4>
-<pre><code class="python">latent
+<pre><code class="language-python">latent
 </code></pre>
-
 <p>List of lists of tensors corresponding to the summation layer(s) in
 the network, including any latent dropout layers if present. The outer
 list will have length equal to the number of Phi components and each
 sublist contains the latent tensors for that particular component.</p>
 <h4 id="f">F</h4>
-<pre><code class="python">F
+<pre><code class="language-python">F
 </code></pre>
-
-<p>List of tensors corresponding to the layers in the $F$ network.</p>
+<p>List of tensors corresponding to the layers in the <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span> network.</p>
 <h4 id="output">output</h4>
-<pre><code class="python">output
+<pre><code class="language-python">output
 </code></pre>
-
 <p>Output tensor for the model.</p>
 <h4 id="layers">layers</h4>
-<pre><code class="python">layers
+<pre><code class="language-python">layers
 </code></pre>
-
 <p>List of all layers in the model. Order may be arbitrary since not
 every model can be unambiguously flattened. See also <code>layer_inds</code>.</p>
 <h4 id="tensors">tensors</h4>
-<pre><code class="python">tensors
+<pre><code class="language-python">tensors
 </code></pre>
-
 <p>List of all tensors in the model. Order may be arbitrary since not
 every model can be unambiguously flattened. See also <code>tensor_inds</code>.</p>
 <hr />
 <h2 id="pfn">PFN</h2>
 <p>Particle Flow Network (PFN) architecture. Accepts the same 
 hyperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
-<pre><code class="python">energyflow.archs.PFN(*args, **kwargs)
+<pre><code class="language-python">energyflow.archs.PFN(*args, **kwargs)
 </code></pre>
-
 <h3 id="properties_2">properties</h3>
 <h4 id="inputs_1">inputs</h4>
-<pre><code class="python">inputs
+<pre><code class="language-python">inputs
 </code></pre>
-
 <p>List of input tensors to the model. PFNs have one input tensor per
 Phi component corresponding to the <code>ps</code> input. Additionally, if there
 are any global features present, they are final tensor in this list.</p>
 <h4 id="weights_1">weights</h4>
-<pre><code class="python">weights
+<pre><code class="language-python">weights
 </code></pre>
-
 <p>List of weight tensors for the model, one for each Phi component.
 A weight of <code>0</code> is assigned to any particle which has all features
 equal to <code>mask_val</code>, and <code>1</code> is assigned otherwise.</p>
 <h4 id="phi_1">Phi</h4>
-<pre><code class="python">Phi
+<pre><code class="language-python">Phi
 </code></pre>
-
-<p>List of lists of tensors corresponding to the layers in the $\Phi$
+<p>List of lists of tensors corresponding to the layers in the <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>
 network(s). The outer list will have length equal to the number of Phi
 components and each sublist contains the tensors for that particular
 component.</p>
 <h4 id="latent_1">latent</h4>
-<pre><code class="python">latent
+<pre><code class="language-python">latent
 </code></pre>
-
 <p>List of lists of tensors corresponding to the summation layer(s) in
 the network, including any latent dropout layers if present. The outer
 list will have length equal to the number of Phi components and each
 sublist contains the latent tensors for that particular component.</p>
 <h4 id="f_1">F</h4>
-<pre><code class="python">F
+<pre><code class="language-python">F
 </code></pre>
-
-<p>List of tensors corresponding to the layers in the $F$ network.</p>
+<p>List of tensors corresponding to the layers in the <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span> network.</p>
 <h4 id="output_1">output</h4>
-<pre><code class="python">output
+<pre><code class="language-python">output
 </code></pre>
-
 <p>Output tensor for the model.</p>
 <h4 id="layers_1">layers</h4>
-<pre><code class="python">layers
+<pre><code class="language-python">layers
 </code></pre>
-
 <p>List of all layers in the model. Order may be arbitrary since not
 every model can be unambiguously flattened. See also <code>layer_inds</code>.</p>
 <h4 id="tensors_1">tensors</h4>
-<pre><code class="python">tensors
+<pre><code class="language-python">tensors
 </code></pre>
-
 <p>List of all tensors in the model. Order may be arbitrary since not
 every model can be unambiguously flattened. See also <code>tensor_inds</code>.</p>
 <hr />
 <h2 id="cnn">CNN</h2>
 <p>Convolutional Neural Network architecture.</p>
-<pre><code class="python">energyflow.archs.CNN(*args, **kwargs)
+<pre><code class="language-python">energyflow.archs.CNN(*args, **kwargs)
 </code></pre>
-
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
 well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required CNN Hyperparameters</strong></p>
@@ -834,9 +814,8 @@ tensorflow, so prefer <code>'channels_last'</code>.</li>
 <hr />
 <h2 id="dnn">DNN</h2>
 <p>Dense Neural Network architecture.</p>
-<pre><code class="python">energyflow.archs.DNN(*args, **kwargs)
+<pre><code class="language-python">energyflow.archs.DNN(*args, **kwargs)
 </code></pre>
-
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters as
 well as defaults common to all EnergyFlow neural network models.</p>
 <p><strong>Required DNN Hyperparameters</strong></p>
@@ -881,9 +860,9 @@ more detail.</li>
 </ul>
 </li>
 <li><strong>l2_regs</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>$L_2$-regulatization strength for both the weights and biases
+<li><span><span class="MathJax_Preview">L_2</span><script type="math/tex">L_2</script></span>-regulatization strength for both the weights and biases
 of the dense layers. A single float will apply the same
-$L_2$-regulatization to all layers.</li>
+<span><span class="MathJax_Preview">L_2</span><script type="math/tex">L_2</script></span>-regulatization to all layers.</li>
 </ul>
 </li>
 </ul>
@@ -892,9 +871,8 @@ $L_2$-regulatization to all layers.</li>
 <p>Linear classifier that can be either Fisher's linear discriminant
 or logistic regression. Relies on the <a href="https://scikit-learn.org/">scikit-learn</a>
 implementations of these classifiers.</p>
-<pre><code class="python">energyflow.archs.LinearClassifier(*args, **kwargs)
+<pre><code class="language-python">energyflow.archs.LinearClassifier(*args, **kwargs)
 </code></pre>
-
 <p>See <a href="#archbase"><code>ArchBase</code></a> for how to pass in hyperparameters.</p>
 <p><strong>Default Hyperparameters</strong></p>
 <ul>
@@ -978,8 +956,9 @@ convergence parameter.</li>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

@@ -1,3 +1,13 @@
+#  _      _____ _   _ ______          _____
+# | |    |_   _| \ | |  ____|   /\   |  __ \
+# | |      | | |  \| | |__     /  \  | |__) |
+# | |      | | | . ` |  __|   / /\ \ |  _  /
+# | |____ _| |_| |\  | |____ / ____ \| | \ \
+# |______|_____|_| \_|______/_/    \_\_|  \_\
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis

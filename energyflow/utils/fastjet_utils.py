@@ -11,6 +11,17 @@ to be installed, but the following utilities are available assuming that
 `import fastjet` succeeds in your Python environment (if not, no warnings or
 errors will be issued but this module will not be usable).
 """
+
+#  ______       _____ _______   _ ______ _______         _    _ _______ _____ _       _____
+# |  ____/\    / ____|__   __| | |  ____|__   __|       | |  | |__   __|_   _| |     / ____|
+# | |__ /  \  | (___    | |    | | |__     | |          | |  | |  | |    | | | |    | (___
+# |  __/ /\ \  \___ \   | |_   | |  __|    | |          | |  | |  | |    | | | |     \___ \
+# | | / ____ \ ____) |  | | |__| | |____   | |   ______ | |__| |  | |   _| |_| |____ ____) |
+# |_|/_/    \_\_____/   |_|\____/|______|  |_|  |______| \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import numpy as np

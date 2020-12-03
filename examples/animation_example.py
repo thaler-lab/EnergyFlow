@@ -4,6 +4,22 @@ the animation. Strange errors may result if there are issues with required
 software components.
 """
 
+#           _   _ _____ __  __       _______ _____ ____  _   _ 
+#     /\   | \ | |_   _|  \/  |   /\|__   __|_   _/ __ \| \ | |
+#    /  \  |  \| | | | | \  / |  /  \  | |    | || |  | |  \| |
+#   / /\ \ | . ` | | | | |\/| | / /\ \ | |    | || |  | | . ` |
+#  / ____ \| |\  |_| |_| |  | |/ ____ \| |   _| || |__| | |\  |
+# /_/    \_\_| \_|_____|_|  |_/_/    \_\_|  |_____\____/|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 

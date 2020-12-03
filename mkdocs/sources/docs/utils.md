@@ -8,23 +8,23 @@ momentum in `y` direction, momentum in `z` direction), or hadronic coordinates,
 `[pt,y,phi,m]` (transverse momentum, rapidity, azimuthal angle, mass), which
 are related via:
 
-$$p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
-\phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}$$
+\[p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+\phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}\]
 
 and inversely:
 
-$$E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
-p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.$$
+\[E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.\]
 
 The pseudorapidity `eta` can be obtained from a Cartesian four-momentum as:
 
-$$\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
-|\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},$$
+\[\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+|\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},\]
 
 and is related to the rapidity via
 
-$$\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
-y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).$$
+\[\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).\]
 
 Note that the above formulas are numerically stable up to values of rapidity or
 pseudorapidity of a few hundred, above which the formulas have numerical issues. 
@@ -43,7 +43,7 @@ this terminology.
 ### ptyphims_from_p4s
 
 ```python
-energyflow.ptyphims_from_p4s(p4s, phi_ref=None)
+energyflow.ptyphims_from_p4s(p4s, phi_ref=None, mass=True)
 ```
 
 Convert to hadronic coordinates `[pt,y,phi,m]` from Cartesian
@@ -61,6 +61,8 @@ coordinates. All-zero four-vectors are left alone.
     phis will be in the range $[0,2\pi)$. An array is accepted in the case
     that `p4s` is an array of events, in which case the `phi_ref` array
     should have shape `(N,)` where `N` is the number of events.
+- **mass** : _bool_
+    - Whether or not to include particle masses.
 
 **Returns**
 

@@ -7,13 +7,13 @@ are the scalar contractions of products of EFMs.
 
 The expression for a (normalized) hadronic EFM in terms of transverse momenta
 $\{p_{Ti}\}$ and particle momenta $\{p_i^\mu\}$ is:
-$$
-\mathcal I^{\mu_1\cdots\mu_v} = 2^{v/2}\sum_{i=1}^Mz_in_i^{\mu_1}\cdots n_i^{\mu_v},
-$$
+
+\[\mathcal I^{\mu_1\cdots\mu_v} = 2^{v/2}\sum_{i=1}^Mz_in_i^{\mu_1}\cdots n_i^{\mu_v},\]
+
 where
-$$
-z_i=\frac{p_{Ti}}{\sum_jp_{Tj}},\quad\quad n_i^\mu=\frac{p_i^\mu}{p_{Ti}}.
-$$
+
+\[z_i=\frac{p_{Ti}}{\sum_jp_{Tj}},\quad\quad n_i^\mu=\frac{p_i^\mu}{p_{Ti}}.\]
+
 Note that for an EFM in an $e^+e^-$ context, transverse momenta are replaced
 with energies.
 
@@ -22,6 +22,18 @@ Support for using EFMs to compute $\beta=2$ EFPs is built in to the `EFP` and
 `EFPSet` classes using the classes and functions in this module. The `EFM` and
 `EFMSet` classes can also be used on their own, as can the `efp2efms` function.
 """
+
+#  ______ ______ __  __
+# |  ____|  ____|  \/  |
+# | |__  | |__  | \  / |
+# |  __| |  __| | |\/| |
+# | |____| |    | |  | |
+# |______|_|    |_|  |_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
+
 from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict

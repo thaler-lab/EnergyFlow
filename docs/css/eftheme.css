@@ -62,6 +62,13 @@ a:visited code {
     max-width: 900px;
 }
 
+<<<<<<< HEAD
+=======
+.wy-side-nav-search input[type=text] {
+    border-color: #606060;
+}
+
+>>>>>>> master
 /*.wy-menu-vertical ul {
     margin-bottom: 0em;
 }

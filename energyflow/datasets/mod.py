@@ -69,6 +69,17 @@ CMS Open Data](https://arxiv.org/abs/1908.08542). To get started using the
 samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the 
 [`load`](#load) function.
 """
+
+#  __  __  ____  _____
+# |  \/  |/ __ \|  __ \
+# | \  / | |  | | |  | |
+# | |\/| | |  | | |  | |
+# | |  | | |__| | |__| |
+# |_|  |_|\____/|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import gc

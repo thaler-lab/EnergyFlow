@@ -5,13 +5,26 @@ non-isomorphic multigraphs, which linearly span the space of infrared and
 collinear (IRC) safe observables.
 
 An EFP, indexed by a multigraph $G$, takes the following form:
-$$\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
-\prod_{(k,\ell)\in G}\theta_{i_ki_\ell}$$
+
+\[\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
+\prod_{(k,\ell)\in G}\theta_{i_ki_\ell}\]
+
 where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a
 measure of the angular separation between particles $i$ and $j$. The specific
 choices for "energy" and "angular" measure depend on the collider context and
 are discussed in the [Measures](../measures) section.
 """
+
+#  ______ ______ _____
+# |  ____|  ____|  __ \
+# | |__  | |__  | |__) |
+# |  __| |  __| |  ___/
+# | |____| |    | |
+# |______|_|    |_|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 from collections import Counter

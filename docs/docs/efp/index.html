@@ -234,20 +234,23 @@
 <p>Energy Flow Polynomials (EFPs) are a set of observables, indexed by
 non-isomorphic multigraphs, which linearly span the space of infrared and
 collinear (IRC) safe observables.</p>
-<p>An EFP, indexed by a multigraph $G$, takes the following form:
+<p>An EFP, indexed by a multigraph <span><span class="MathJax_Preview">G</span><script type="math/tex">G</script></span>, takes the following form:</p>
+<div>
+<div class="MathJax_Preview">\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
+\prod_{(k,\ell)\in G}\theta_{i_ki_\ell}</div>
 <script type="math/tex; mode=display">\text{EFP}_G=\sum_{i_1=1}^M\cdots\sum_{i_N=1}^Mz_{i_1}\cdots z_{i_N}
 \prod_{(k,\ell)\in G}\theta_{i_ki_\ell}</script>
-where $z_i$ is a measure of the energy of particle $i$ and $\theta_{ij}$ is a
-measure of the angular separation between particles $i$ and $j$. The specific
+</div>
+<p>where <span><span class="MathJax_Preview">z_i</span><script type="math/tex">z_i</script></span> is a measure of the energy of particle <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span> and <span><span class="MathJax_Preview">\theta_{ij}</span><script type="math/tex">\theta_{ij}</script></span> is a
+measure of the angular separation between particles <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span> and <span><span class="MathJax_Preview">j</span><script type="math/tex">j</script></span>. The specific
 choices for "energy" and "angular" measure depend on the collider context and
 are discussed in the <a href="../measures">Measures</a> section.</p>
 <hr />
 <h2 id="efp">EFP</h2>
 <p>A class for representing and computing a single EFP.</p>
-<pre><code class="python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
+<pre><code class="language-python">energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
                       check_input=True, np_optimize=True)
 </code></pre>
-
 <p>Since a standalone EFP defines and holds a <code>Measure</code> instance, all
 <code>Measure</code> keywords are accepted.</p>
 <p><strong>Arguments</strong></p>
@@ -266,13 +269,13 @@ info.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
+<li>The parameter <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> appearing in the measure. Must be greater
 than zero.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter <span><span class="MathJax_Preview">\kappa</span><script type="math/tex">\kappa</script></span>. If <code>'pf'</code>,
+use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex">\kappa=v-1</script></span> where <span><span class="MathJax_Preview">v</span><script type="math/tex">v</script></span> is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -295,9 +298,8 @@ first input type.</li>
 </li>
 </ul>
 <h3 id="compute">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+<pre><code class="language-python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
-
 <p>Computes the value of the EFP on a single event. Note that <code>EFP</code>
 also is callable, in which case this method is invoked.</p>
 <p><strong>Arguments</strong></p>
@@ -332,9 +334,8 @@ used.</li>
 </li>
 </ul>
 <h3 id="batch_compute">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
+<pre><code class="language-python">batch_compute(events, n_jobs=None)
 </code></pre>
-
 <p>Computes the value of the observable on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -358,111 +359,90 @@ use as many processes as there are CPUs on the machine.</li>
 </ul>
 <h3 id="properties">properties</h3>
 <h4 id="graph">graph</h4>
-<pre><code class="python">graph
+<pre><code class="language-python">graph
 </code></pre>
-
 <p>Graph of this EFP represented by a list of edges.</p>
 <h4 id="simple_graph">simple_graph</h4>
-<pre><code class="python">simple_graph
+<pre><code class="language-python">simple_graph
 </code></pre>
-
 <p>Simple graph of this EFP (forgetting all multiedges)
 represented by a list of edges.</p>
 <h4 id="weights">weights</h4>
-<pre><code class="python">weights
+<pre><code class="language-python">weights
 </code></pre>
-
 <p>Edge weights (counts) for the graph of this EFP.</p>
 <h4 id="weight_set">weight_set</h4>
-<pre><code class="python">weight_set
+<pre><code class="language-python">weight_set
 </code></pre>
-
 <p>Set of edge weights (counts) for the graph of this EFP.</p>
 <h4 id="einstr">einstr</h4>
-<pre><code class="python">einstr
+<pre><code class="language-python">einstr
 </code></pre>
-
 <p>Einstein summation string for the EFP computation.</p>
 <h4 id="einpath">einpath</h4>
-<pre><code class="python">einpath
+<pre><code class="language-python">einpath
 </code></pre>
-
 <p>NumPy einsum path specification for EFP computation.</p>
 <h4 id="efm_spec">efm_spec</h4>
-<pre><code class="python">efm_spec
+<pre><code class="language-python">efm_spec
 </code></pre>
-
 <p>List of EFM signatures corresponding to efm_einstr.</p>
 <h4 id="efm_einstr">efm_einstr</h4>
-<pre><code class="python">efm_einstr
+<pre><code class="language-python">efm_einstr
 </code></pre>
-
 <p>Einstein summation string for the EFM computation.</p>
 <h4 id="efm_einpath">efm_einpath</h4>
-<pre><code class="python">efm_einpath
+<pre><code class="language-python">efm_einpath
 </code></pre>
-
 <p>NumPy einsum path specification for EFM computation.</p>
 <h4 id="efmset">efmset</h4>
-<pre><code class="python">efmset
+<pre><code class="language-python">efmset
 </code></pre>
-
 <p>Instance of <code>EFMSet</code> help by this EFP if using EFMs.</p>
 <h4 id="np_optimize">np_optimize</h4>
-<pre><code class="python">np_optimize
+<pre><code class="language-python">np_optimize
 </code></pre>
-
 <p>The np_optimize keyword argument that initialized this EFP instance.</p>
 <h4 id="n">n</h4>
-<pre><code class="python">n
+<pre><code class="language-python">n
 </code></pre>
-
 <p>Number of vertices in the graph of this EFP.</p>
 <h4 id="e">e</h4>
-<pre><code class="python">e
+<pre><code class="language-python">e
 </code></pre>
-
 <p>Number of edges in the simple graph of this EFP.</p>
 <h4 id="d">d</h4>
-<pre><code class="python">d
+<pre><code class="language-python">d
 </code></pre>
-
 <p>Degree, or number of edges, in the graph of this EFP.</p>
 <h4 id="v">v</h4>
-<pre><code class="python">v
+<pre><code class="language-python">v
 </code></pre>
-
 <p>Maximum valency of any vertex in the graph.</p>
 <h4 id="k">k</h4>
-<pre><code class="python">k
+<pre><code class="language-python">k
 </code></pre>
-
 <p>Index of this EFP. Determined by EFPSet or -1 otherwise.</p>
 <h4 id="c">c</h4>
-<pre><code class="python">c
+<pre><code class="language-python">c
 </code></pre>
-
-<p>VE complexity $\chi$ of this EFP.</p>
+<p>VE complexity <span><span class="MathJax_Preview">\chi</span><script type="math/tex">\chi</script></span> of this EFP.</p>
 <h4 id="p">p</h4>
-<pre><code class="python">p
+<pre><code class="language-python">p
 </code></pre>
-
 <p>Number of connected components of this EFP. Note that the empty
 graph conventionally has one connected component.</p>
 <h4 id="h">h</h4>
-<pre><code class="python">h
+<pre><code class="language-python">h
 </code></pre>
-
 <p>Number of valency 1 vertices ('hanging chads) of this EFP.</p>
 <h4 id="spec">spec</h4>
-<pre><code class="python">spec
+<pre><code class="language-python">spec
 </code></pre>
-
 <p>Specification array for this EFP.</p>
 <h4 id="ndk">ndk</h4>
-<pre><code class="python">ndk
+<pre><code class="language-python">ndk
 </code></pre>
-
 <p>Tuple of <code>n</code>, <code>d</code>, and <code>k</code> values which form a unique identifier of
 this EFP within an <code>EFPSet</code>.</p>
 <hr />
@@ -470,10 +450,9 @@ this EFP within an <code>EFPSet</code>.</p>
 <p>A class that holds a collection of EFPs and computes their values on
 events. Note that all keyword arguments are stored as properties of the
 <code>EFPSet</code> instance.</p>
-<pre><code class="python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
+<pre><code class="language-python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
                          coords=None, check_input=True, verbose=0)
 </code></pre>
-
 <p><code>EFPSet</code> can be initialized in one of three ways (in order of
 precedence):</p>
 <ol>
@@ -483,7 +462,7 @@ individual EFPs.</li>
 positional argument.</li>
 <li><strong>Custom File</strong> - Pass in the name of a <code>.npz</code> file saved with a
 custom <code>Generator</code>.</li>
-<li><strong>Default</strong> - Use the $d\le10$ EFPs that come installed with the
+<li><strong>Default</strong> - Use the <span><span class="MathJax_Preview">d\le10</span><script type="math/tex">d\le10</script></span> EFPs that come installed with the
 <code>EnergFlow</code> package.</li>
 </ol>
 <p>To control which EFPs are included, <code>EFPSet</code> accepts an arbitrary
@@ -513,13 +492,13 @@ graphs, if a file is needed at all.</li>
 </ul>
 </li>
 <li><strong>beta</strong> : <em>float</em><ul>
-<li>The parameter $\beta$ appearing in the measure. Must be greater
+<li>The parameter <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> appearing in the measure. Must be greater
 than zero.</li>
 </ul>
 </li>
 <li><strong>kappa</strong> : {<em>float</em>, <code>'pf'</code>}<ul>
-<li>If a number, the energy weighting parameter $\kappa$. If <code>'pf'</code>,
-use $\kappa=v-1$ where $v$ is the valency of the vertex.</li>
+<li>If a number, the energy weighting parameter <span><span class="MathJax_Preview">\kappa</span><script type="math/tex">\kappa</script></span>. If <code>'pf'</code>,
+use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex">\kappa=v-1</script></span> where <span><span class="MathJax_Preview">v</span><script type="math/tex">v</script></span> is the valency of the vertex.</li>
 </ul>
 </li>
 <li><strong>normed</strong> : <em>bool</em><ul>
@@ -543,9 +522,8 @@ first input type.</li>
 </li>
 </ul>
 <h3 id="compute_1">compute</h3>
-<pre><code class="python">compute(event=None, zs=None, thetas=None, nhats=None)
+<pre><code class="language-python">compute(event=None, zs=None, thetas=None, nhats=None)
 </code></pre>
-
 <p>Computes the values of the stored EFPs on a single event. Note that
 <code>EFPSet</code> also is callable, in which case this method is invoked.</p>
 <p><strong>Arguments</strong></p>
@@ -580,9 +558,8 @@ used.</li>
 </li>
 </ul>
 <h3 id="batch_compute_1">batch_compute</h3>
-<pre><code class="python">batch_compute(events, n_jobs=None)
+<pre><code class="language-python">batch_compute(events, n_jobs=None)
 </code></pre>
-
 <p>Computes the value of the stored EFPs on several events.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -605,9 +582,8 @@ attempt to use as many processes as there are CPUs on the machine.</li>
 </li>
 </ul>
 <h3 id="calc_disc">calc_disc</h3>
-<pre><code class="python">calc_disc(X)
+<pre><code class="language-python">calc_disc(X)
 </code></pre>
-
 <p>Computes disconnected EFPs according to the internal 
 specifications using the connected EFPs provided as input. Note that
 this function has no effect if the <code>EFPSet</code> was initialized with
@@ -632,9 +608,8 @@ function is used internally in <code>compute</code> and <code>batch_compute</cod
 </li>
 </ul>
 <h3 id="sel">sel</h3>
-<pre><code class="python">sel(*args)
+<pre><code class="language-python">sel(*args)
 </code></pre>
-
 <p>Computes a boolean mask of EFPs matching each of the
 specifications provided by the <code>args</code>. </p>
 <p><strong>Arguments</strong></p>
@@ -660,14 +635,12 @@ value is a variable that changes (such as in a list comprehension).</li>
 </li>
 </ul>
 <h3 id="csel">csel</h3>
-<pre><code class="python">csel(*args)
+<pre><code class="language-python">csel(*args)
 </code></pre>
-
 <p>Same as <code>sel</code> except using <code>cspecs</code> to select from.</p>
 <h3 id="count">count</h3>
-<pre><code class="python">count(*args)
+<pre><code class="language-python">count(*args)
 </code></pre>
-
 <p>Counts the number of EFPs meeting the specifications
 of the arguments using <code>sel</code>.</p>
 <p><strong>Arguments</strong> </p>
@@ -685,9 +658,8 @@ of the arguments using <code>sel</code>.</p>
 </li>
 </ul>
 <h3 id="graphs">graphs</h3>
-<pre><code class="python">graphs(*args)
+<pre><code class="language-python">graphs(*args)
 </code></pre>
-
 <p>Graphs meeting provided specifications.</p>
 <p><strong>Arguments</strong> </p>
 <ul>
@@ -710,9 +682,8 @@ specifications.</li>
 </li>
 </ul>
 <h3 id="simple_graphs">simple_graphs</h3>
-<pre><code class="python">simple_graphs(*args)
+<pre><code class="language-python">simple_graphs(*args)
 </code></pre>
-
 <p>Simple graphs meeting provided specifications.</p>
 <p><strong>Arguments</strong> </p>
 <ul>
@@ -736,36 +707,30 @@ specifications.</li>
 </ul>
 <h3 id="properties_1">properties</h3>
 <h4 id="efps">efps</h4>
-<pre><code class="python">efps
+<pre><code class="language-python">efps
 </code></pre>
-
 <p>List of EFPs held by the <code>EFPSet</code>.</p>
 <h4 id="efmset_1">efmset</h4>
-<pre><code class="python">efmset
+<pre><code class="language-python">efmset
 </code></pre>
-
 <p>The <code>EFMSet</code> held by the <code>EFPSet</code>, if using EFMs.</p>
 <h4 id="specs">specs</h4>
-<pre><code class="python">specs
+<pre><code class="language-python">specs
 </code></pre>
-
 <p>An array of EFP specifications. Each row represents an EFP 
 and the columns represent the quantities indicated by <code>cols</code>.</p>
 <h4 id="cspecs">cspecs</h4>
-<pre><code class="python">cspecs
+<pre><code class="language-python">cspecs
 </code></pre>
-
 <p>Specification array for connected EFPs.</p>
 <h4 id="weight_set_1">weight_set</h4>
-<pre><code class="python">weight_set
+<pre><code class="language-python">weight_set
 </code></pre>
-
 <p>The union of all weights needed by the EFPs stored by the 
 <code>EFPSet</code>.</p>
 <h4 id="cols">cols</h4>
-<pre><code class="python">cols
+<pre><code class="language-python">cols
 </code></pre>
-
 <p>Column labels for <code>specs</code>. Each EFP has a property corresponding to
 each column.</p>
 <ul>
@@ -774,7 +739,7 @@ each column.</p>
 <li><code>d</code> : Degree, or number of multiedges.</li>
 <li><code>v</code> : Maximum valency (number of edges touching a vertex).</li>
 <li><code>k</code> : Unique identifier within EFPs of this (n,d).</li>
-<li><code>c</code> : VE complexity $\chi$.</li>
+<li><code>c</code> : VE complexity <span><span class="MathJax_Preview">\chi</span><script type="math/tex">\chi</script></span>.</li>
 <li><code>p</code> : Number of prime factors (or connected components).</li>
 <li><code>h</code> : Number of valency 1 vertices (a.k.a. 'hanging chads').</li>
 </ul>
@@ -826,8 +791,9 @@ each column.</p>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

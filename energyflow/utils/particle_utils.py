@@ -8,23 +8,23 @@ momentum in `y` direction, momentum in `z` direction), or hadronic coordinates,
 `[pt,y,phi,m]` (transverse momentum, rapidity, azimuthal angle, mass), which
 are related via:
 
-$$p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
-\phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}$$
+\[p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+\phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}\]
 
 and inversely:
 
-$$E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
-p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.$$
+\[E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.\]
 
 The pseudorapidity `eta` can be obtained from a Cartesian four-momentum as:
 
-$$\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
-|\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},$$
+\[\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+|\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},\]
 
 and is related to the rapidity via
 
-$$\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
-y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).$$
+\[\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).\]
 
 Note that the above formulas are numerically stable up to values of rapidity or
 pseudorapidity of a few hundred, above which the formulas have numerical issues. 
@@ -38,6 +38,17 @@ three-dimensional array with shape `(N,M,4)` where `N` is the number of events.
 The valid inputs and outputs of the functions here will be described using
 this terminology.
 """
+
+#  _____        _____ _______ _____ _____ _      ______          _    _ _______ _____ _       _____
+# |  __ \ /\   |  __ \__   __|_   _/ ____| |    |  ____|        | |  | |__   __|_   _| |     / ____|
+# | |__) /  \  | |__) | | |    | || |    | |    | |__           | |  | |  | |    | | | |    | (___
+# |  ___/ /\ \ |  _  /  | |    | || |    | |    |  __|          | |  | |  | |    | | | |     \___ \
+# | |  / ____ \| | \ \  | |   _| || |____| |____| |____  ______ | |__| |  | |   _| |_| |____ ____) |
+# |_| /_/    \_\_|  \_\ |_|  |_____\_____|______|______||______| \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import warnings
@@ -85,7 +96,7 @@ __all__ = [
     'flat_metric',
 ]
 
-def ptyphims_from_p4s(p4s, phi_ref=None):
+def ptyphims_from_p4s(p4s, phi_ref=None, mass=True):
     r"""Convert to hadronic coordinates `[pt,y,phi,m]` from Cartesian
     coordinates. All-zero four-vectors are left alone.
 
@@ -101,6 +112,8 @@ def ptyphims_from_p4s(p4s, phi_ref=None):
         phis will be in the range $[0,2\pi)$. An array is accepted in the case
         that `p4s` is an array of events, in which case the `phi_ref` array
         should have shape `(N,)` where `N` is the number of events.
+    - **mass** : _bool_
+        - Whether or not to include particle masses.
 
     **Returns**
 
@@ -112,11 +125,12 @@ def ptyphims_from_p4s(p4s, phi_ref=None):
     if p4s.shape[-1] != 4:
         raise ValueError("Last dimension of 'p4s' must have size 4.")
 
-    out = np.zeros(p4s.shape, dtype=float)
+    out = np.zeros(p4s.shape[:-1] + (4 if mass else 3,), dtype=float)
     out[...,0] = pts_from_p4s(p4s)
     out[...,1] = ys_from_p4s(p4s)
     out[...,2] = phis_from_p4s(p4s, phi_ref, _pts=out[...,0])
-    out[...,3] = ms_from_p4s(p4s)
+    if mass:
+        out[...,3] = ms_from_p4s(p4s)
 
     return out
 

@@ -19,6 +19,22 @@ architecture. The output of the example is a plot of the ROC curves obtained
 by the EFN as well as the jet mass and constituent multiplicity observables.
 
 ```python
+#  ______ ______ _   _
+# |  ____|  ____| \ | |
+# | |__  | |__  |  \| |
+# |  __| |  __| | . ` |
+# | |____| |    | |\  |
+# |______|_|    |_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -166,6 +182,28 @@ used to construct the network architecture. The output of the example is a plot
 of the predicted and actual mass distributions.
 
 ```python
+#  ______ ______ _   _
+# |  ____|  ____| \ | |
+# | |__  | |__  |  \| |
+# |  __| |  __| | . ` |
+# | |____| |    | |\  |
+# |______|_|    |_| \_|
+#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _ 
+# |  __ \|  ____/ ____|  __ \|  ____|/ ____/ ____|_   _/ __ \| \ | |
+# | |__) | |__ | |  __| |__) | |__  | (___| (___   | || |  | |  \| |
+# |  _  /|  __|| | |_ |  _  /|  __|  \___ \\___ \  | || |  | | . ` |
+# | | \ \| |___| |__| | | \ \| |____ ____) |___) |_| || |__| | |\  |
+# |_|  \_\______\_____|_|  \_\______|_____/_____/|_____\____/|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -324,6 +362,22 @@ is a plot of the ROC curves obtained by the PFN as well as the jet mass and
 constituent multiplicity observables.
 
 ```python
+#  _____  ______ _   _ 
+# |  __ \|  ____| \ | |
+# | |__) | |__  |  \| |
+# |  ___/|  __| | . ` |
+# | |    | |    | |\  |
+# |_|    |_|    |_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -460,6 +514,22 @@ Note that the number of epochs is quite small because it is quite time consuming
 to train a CNN without a GPU (which will speed up this example immensely).
 
 ```python
+#   _____ _   _ _   _
+#  / ____| \ | | \ | |
+# | |    |  \| |  \| |
+# | |    | . ` | . ` |
+# | |____| |\  | |\  |
+#  \_____|_| \_|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -598,6 +668,22 @@ showing the ROC curves obtained from training the DNN on different numbers of
 $N$-subjettiness observables.
 
 ```python
+#  _____  _   _ _   _
+# |  __ \| \ | | \ | |
+# | |  | |  \| |  \| |
+# | |  | | . ` | . ` |
+# | |__| | |\  | |\  |
+# |_____/|_| \_|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -709,6 +795,22 @@ numbers of EFPs as input, determined by taking all EFPs up to degree `d` with
 for the classifiers with different numbers of EFP inputs.
 
 ```python
+#  ______ ______ _____
+# |  ____|  ____|  __ \
+# | |__  | |__  | |__) |
+# |  __| |  __| |  ___/
+# | |____| |    | |
+# |______|_|    |_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 
@@ -814,6 +916,22 @@ the animation. Strange errors may result if there are issues with required
 software components.
 
 ```python
+#           _   _ _____ __  __       _______ _____ ____  _   _ 
+#     /\   | \ | |_   _|  \/  |   /\|__   __|_   _/ __ \| \ | |
+#    /  \  |  \| | | | | \  / |  /  \  | |    | || |  | |  \| |
+#   / /\ \ | . ` | | | | |\/| | / /\ \ | |    | || |  | | . ` |
+#  / ____ \| |\  |_| |_| |  | |/ ____ \| |   _| || |__| | |\  |
+# /_/    \_\_| \_|_____|_|  |_/_/    \_\_|  |_____\____/|_| \_|
+#  ________   __          __  __ _____  _      ______
+# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
+# | |__   \ V /    /  \  | \  / | |__) | |    | |__
+# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
+# | |____ / . \  / ____ \| |  | | |    | |____| |____
+# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 # standard library imports
 from __future__ import absolute_import, division, print_function
 

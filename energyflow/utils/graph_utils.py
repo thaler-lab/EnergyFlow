@@ -1,4 +1,15 @@
 """Various useful functions on graphs."""
+
+#   _____ _____            _____  _    _          _    _ _______ _____ _       _____
+#  / ____|  __ \     /\   |  __ \| |  | |        | |  | |__   __|_   _| |     / ____|
+# | |  __| |__) |   /  \  | |__) | |__| |        | |  | |  | |    | | | |    | (___
+# | | |_ |  _  /   / /\ \ |  ___/|  __  |        | |  | |  | |    | | | |     \___ \
+# | |__| | | \ \  / ____ \| |    | |  | | ______ | |__| |  | |   _| |_| |____ ____) |
+#  \_____|_|  \_\/_/    \_\_|    |_|  |_||______| \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import
 
 from collections import Counter

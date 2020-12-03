@@ -19,18 +19,31 @@ From Eqs. (1.2) and (1.3) in [2004.04159](https://arxiv.org/abs/2004.04159), the
 EMD between two events is the minimum ''work'' required to rearrange one event
 $\mathcal E$ into the other $\mathcal E'$ by movements of energy $f_{ij}$ from
 particle $i$ in one event to particle $j$ in the other:
-$$
-\text{EMD}_{\beta,R}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\ge0\}}\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}\left(\frac{
+
+\[\text{EMD}_{\beta,R}(\mathcal E,\mathcal E^\prime)=\min_{\{f_{ij}\ge0\}}\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}\left(\frac{
 \theta_{ij}}{R}\right)^\beta + \left|\sum_{i=1}^ME_i-\sum_{j=1}^{M'}E^\prime_j
-\right|,\\\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
-\quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},
-$$
+\right|,\]
+
+\[\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
+\quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},\]
+
 where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
 $\theta_{ij}$ is an angular distance between particles, and 
 $E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)$ is
 the smaller of the two total energies. In a hadronic context, transverse momenta
 are used instead of energies.
 """
+
+#  ______ __  __ _____
+# |  ____|  \/  |  __ \
+# | |__  | \  / | |  | |
+# |  __| | |\/| | |  | |
+# | |____| |  | | |__| |
+# |______|_|  |_|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import itertools
@@ -69,8 +82,8 @@ __all__ = [
 # emd(*args, **kwargs)
 def emd4doc():
     """Computes the EMD between two events. The `emd` function is set equal to
-    either `emd_wasserstein` or `emd_pot`, with the former preferred unless the
-    Wasserstein library is not available.
+    [`emd_wasserstein`](#emd_wasserstein) or [`emd_pot`](#emd_pot), with the
+    former preferred unless the Wasserstein library is not available.
     """
 
     pass
@@ -78,8 +91,9 @@ def emd4doc():
 # emds(*args, **kwargs)
 def emds4doc():
     """Computes the EMDs between collections of events. The `emds` function is
-    set equal to either `emds_wasserstein` or `emds_pot`, with the former
-    preferred unless the Wasserstein library is not available.
+    set equal to [`emds_wasserstein`](#emds_wasserstein) or
+    [`emds_pot`](#emds_pot), with the former preferred unless the Wasserstein
+    library is not available.
     """
 
     pass

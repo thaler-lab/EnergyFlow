@@ -255,7 +255,7 @@ doi.org/10.5281/zenodo.3341502"><img alt="DOI" src="/img/zenodo.3341502.svg" /><
 doi.org/10.5281/zenodo.3341770"><img alt="DOI" src="/img/zenodo.3341770.svg" /></a> - SIM/GEN QCD Jets 1400-1800 GeV
 <br>
 <a href="https://
-doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /></a> - SIM/GEN QCD Jets 1800-$\infty$ GeV</p>
+doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /></a> - SIM/GEN QCD Jets 1800-<span><span class="MathJax_Preview">\infty</span><script type="math/tex">\infty</script></span> GeV</p>
 <p>For more details regarding the creation of these samples, as well as for the
 DOIs of the original CMS Open Datasets, see <a href="https://arxiv.org/abs/1908.08542">Exploring the Space of Jets with
 CMS Open Data</a>. To get started using the
@@ -263,11 +263,10 @@ samples, see the <a href="/demos/#mod-jet-demo">MOD Jet Demo</a> which makes use
 <a href="#load"><code>load</code></a> function.</p>
 <hr />
 <h3 id="load">load</h3>
-<pre><code class="python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', 
+<pre><code class="language-python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', 
                            dataset='cms', subdatasets=None, validate_files=False,
                            store_pfcs=True, store_gens=True, verbose=0)
 </code></pre>
-
 <p>Loads samples from the specified MOD dataset. Any file that is needed
 that has not been cached will be automatically downloaded from Zenodo.
 Downloaded files are cached for later use. File checksums are optionally
@@ -312,7 +311,7 @@ collection is <code>'CMS2011AJets'</code>, though more may be added in the futur
 subdatasets. Currently, for the <code>'CMS2011AJets'</code> collection, the
 <code>'cms'</code> dataset has one subdataset, <code>'CMS_Jet300_pT375-infGeV'</code>, the
 <code>'sim'</code> dataset has eight subdatasets arrange according to generator
-$\hat p_T$, e.g. <code>'SIM470_Jet300_pT375-infGeV'</code>, and the <code>'gen'</code>
+<span><span class="MathJax_Preview">\hat p_T</span><script type="math/tex">\hat p_T</script></span>, e.g. <code>'SIM470_Jet300_pT375-infGeV'</code>, and the <code>'gen'</code>
 dataset also has eight subdatasets arranged similaraly, e.g.
 <code>'GEN470_pT375-infGeV'</code>.</li>
 </ul>
@@ -348,10 +347,9 @@ specified collection, dataset, and subdatasets.</li>
 </ul>
 <hr />
 <h3 id="filter_particles">filter_particles</h3>
-<pre><code class="python">energyflow.mod.filter_particles(particles, which='all', pt_cut=None, chs=False,
+<pre><code class="language-python">energyflow.mod.filter_particles(particles, which='all', pt_cut=None, chs=False,
                                            pt_i=0, pid_i=4, vertex_i=5)
 </code></pre>
-
 <p>Constructs a mask that will select particles according to specified
 properties. Currently supported are selecting particles according to their
 charge, removing particles associated to a pileup vertex, and implementing
@@ -401,10 +399,9 @@ those particles passing the specified cuts.</li>
 </ul>
 <hr />
 <h3 id="kfactors">kfactors</h3>
-<pre><code class="python">energyflow.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
+<pre><code class="language-python">energyflow.mod.kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
                                       apply_residual_correction=True)
 </code></pre>
-
 <p>Evaluates k-factors used by a particular collection. Currently, since
 CMS2011AJets is the only supported collection, some of the arguments are
 specific to the details of this collection (such as the use of jet pTs) and
@@ -566,10 +563,9 @@ i.e. <code>modds.jet_pts*modds.jecs</code>.</p>
 <p><code>MODDataset</code> supports the builtin <code>len()</code> method, which returns the number
 of jets currently stored in the dataset, as well as the <code>print()</code> method,
 which prints a summary of the dataset.</p>
-<pre><code class="python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, 
+<pre><code class="language-python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, 
                                  store_pfcs=True, store_gens=True)
 </code></pre>
-
 <p><code>MODDataset</code> can be initialized from a MOD HDF5 file or from a list
 of existing <code>MODDataset</code>s. In the first case, the filename should be
 given as the first positional argument. In the second case, the 
@@ -635,9 +631,8 @@ of the events that are ultimately stored by the <code>MODDataset</code> object.<
 </li>
 </ul>
 <h4 id="sel">sel</h4>
-<pre><code class="python">sel(args, kwargs)
+<pre><code class="language-python">sel(args, kwargs)
 </code></pre>
-
 <p>Returns a boolean mask that selects jets according to the specified
 requirements.</p>
 <p><strong>Arguments</strong></p>
@@ -658,9 +653,8 @@ specified requirements.</li>
 </li>
 </ul>
 <h4 id="apply_mask">apply_mask</h4>
-<pre><code class="python">apply_mask(mask, preserve_total_weight=False)
+<pre><code class="language-python">apply_mask(mask, preserve_total_weight=False)
 </code></pre>
-
 <p>Subselects jets held by the <code>MODDataset</code> according to a boolean
 mask.</p>
 <p><strong>Arguments</strong></p>
@@ -677,9 +671,8 @@ fixed after the selection.</li>
 </li>
 </ul>
 <h4 id="save">save</h4>
-<pre><code class="python">save(filepath, npf=-1, compression=None, verbose=1, n_jobs=1)
+<pre><code class="language-python">save(filepath, npf=-1, compression=None, verbose=1, n_jobs=1)
 </code></pre>
-
 <p>Saves a <code>MODDataset</code> in the MOD HDF5 format.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -712,48 +705,40 @@ relevant when <code>npf!=-1</code>.</li>
 </li>
 </ul>
 <h4 id="close">close</h4>
-<pre><code class="python">close()
+<pre><code class="language-python">close()
 </code></pre>
-
 <p>Closes the underlying HDF5 file, if one is associated with the
 <code>MODDataset</code> object. Note that associated HDF5 files are closed by
 default when the <code>MODDataset</code> object is deleted.</p>
 <h4 id="properties">properties</h4>
 <h5 id="jets_i">jets_i</h5>
-<pre><code class="python">jets_i
+<pre><code class="language-python">jets_i
 </code></pre>
-
 <p>The <code>jets_i</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
 <h5 id="jets_f">jets_f</h5>
-<pre><code class="python">jets_f
+<pre><code class="language-python">jets_f
 </code></pre>
-
 <p>The <code>jets_f</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
 <h5 id="pfcs">pfcs</h5>
-<pre><code class="python">pfcs
+<pre><code class="language-python">pfcs
 </code></pre>
-
 <p>The <code>pfcs</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
 <h5 id="gens">gens</h5>
-<pre><code class="python">gens
+<pre><code class="language-python">gens
 </code></pre>
-
 <p>The <code>gens</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
 <h5 id="particles">particles</h5>
-<pre><code class="python">particles
+<pre><code class="language-python">particles
 </code></pre>
-
 <p>If this is a CMS or SIM dataset, <code>particles</code> is the same as <code>pfcs</code>;
 for GEN it is the same as <code>gens</code>.</p>
 <h5 id="filenames">filenames</h5>
-<pre><code class="python">filenames
+<pre><code class="language-python">filenames
 </code></pre>
-
 <p>The <code>filenames</code> array, described under <a href="#moddataset"><code>MODDataset</code></a>.</p>
 <h5 id="hf">hf</h5>
-<pre><code class="python">hf
+<pre><code class="language-python">hf
 </code></pre>
-
 <p>The underlying HDF5 file, if one is associated to the <code>MODDataset</code>.</p>
 <hr />
 <h2 id="z-jets-with-delphes-simulation">Z + Jets with Delphes Simulation</h2>
@@ -766,44 +751,47 @@ different datasets are present:</p>
 <li>Pythia 8.243 with tune 25 (ATLAS A14 variation 2+ of tune 21)</li>
 <li>Pythia 8.243 with tune 26 (ATLAS A14 variation 2- of tune 21)</li>
 </ul>
-<p>$Z$ + jet events (with the $Z$ set to be stable) were generated for each of the
-above generator/tune pairs with the $Z$ boson $\hat p_T^\text{min} &gt; 150$ GeV
-and $\sqrt{s}=14$ TeV. Events were then passed through the Delphes 3.4.2 fast
-detector simulation of the CMS detector. Jets with radius parameter $R=0.4$
+<p><span><span class="MathJax_Preview">Z</span><script type="math/tex">Z</script></span> + jet events (with the <span><span class="MathJax_Preview">Z</span><script type="math/tex">Z</script></span> set to be stable) were generated for each of the
+above generator/tune pairs with the <span><span class="MathJax_Preview">Z</span><script type="math/tex">Z</script></span> boson <span><span class="MathJax_Preview">\hat p_T^\text{min} &gt; 150</span><script type="math/tex">\hat p_T^\text{min} > 150</script></span> GeV
+and <span><span class="MathJax_Preview">\sqrt{s}=14</span><script type="math/tex">\sqrt{s}=14</script></span> TeV. Events were then passed through the Delphes 3.4.2 fast
+detector simulation of the CMS detector. Jets with radius parameter <span><span class="MathJax_Preview">R=0.4</span><script type="math/tex">R=0.4</script></span>
 were found with the anti-kt algorithm at both particle level ("gen"), where all
-non-neutrino, non-$Z$ particle are used, and detector level ("sim"), where
+non-neutrino, non-<span><span class="MathJax_Preview">Z</span><script type="math/tex">Z</script></span> particle are used, and detector level ("sim"), where
 reconstructed energy flow objects (tracks, electromagnetic calorimeter cells,
 and hadronic calorimeter cells) are used. Only jets with transverse momentum
 greater than  are kept (note that sim jets have a simple jet energy correction
-applied by Delphes). The hardest jet from events with a $Z$ boson with a final
+applied by Delphes). The hardest jet from events with a <span><span class="MathJax_Preview">Z</span><script type="math/tex">Z</script></span> boson with a final
 transverse momentum of 200 GeV or greater are kept, yielding approximately 1.6
 million jets at both gen-level and sim-level for each generator/tune pair.</p>
 <p>Each zipped NumPy file consists of several arrays, the names of which begin
 with either 'gen_' or 'sim_' depending on which set of jets they correspond
 to. The name of each array ends in a key word indicating what it contains. With
-the exception of 'gen_Zs' (which contains the $(p_T,\,y,\,\phi)$ of the final
-$Z$ boson), there is both a gen and sim version of each array. The included
+the exception of 'gen_Zs' (which contains the <span><span class="MathJax_Preview">(p_T,\,y,\,\phi)</span><script type="math/tex">(p_T,\,y,\,\phi)</script></span> of the final
+<span><span class="MathJax_Preview">Z</span><script type="math/tex">Z</script></span> boson), there is both a gen and sim version of each array. The included
 arrays are (listed by their key words):</p>
 <ul>
-<li><code>'jets'</code> - The jet axis four vector, as $(p_T^\text{jet},\,y^\text{jet},\,
-\phi^\text{jet},\,m^\text{jet})$ where $y^\text{jet}$ is the jet rapidity,
-$\phi^\text{jet}$ is the jet azimuthal angle, and $m^\text{jet}$ is the jet
+<li><code>'jets'</code> - The jet axis four vector, as <span><span class="MathJax_Preview">(p_T^\text{jet},\,y^\text{jet},\,
+\phi^\text{jet},\,m^\text{jet})</span><script type="math/tex">(p_T^\text{jet},\,y^\text{jet},\,
+\phi^\text{jet},\,m^\text{jet})</script></span> where <span><span class="MathJax_Preview">y^\text{jet}</span><script type="math/tex">y^\text{jet}</script></span> is the jet rapidity,
+<span><span class="MathJax_Preview">\phi^\text{jet}</span><script type="math/tex">\phi^\text{jet}</script></span> is the jet azimuthal angle, and <span><span class="MathJax_Preview">m^\text{jet}</span><script type="math/tex">m^\text{jet}</script></span> is the jet
 mass.</li>
-<li><code>'particles'</code> - The rescaled and translated constituents of the jets as $(p_T/100,\,y-y^\text{jet},\,\phi-\phi^\text{jet},\,f_\text{PID})$ where
-$f_\text{PID}$ is a small float corresponding to the PDG ID of the particle.
-The PIDs are remapped according to $22\to0.0$, $211\to0.1$, $-211\to0.2$, $130
-\to0.3$, $11\to0.4$, $-11\to0.5$, $13\to0.6$, $-13\to0.7$, $321\to0.8$, $-321
-\to0.9$, $2212\to1.0$, $-2212\to1.1$, $2112\to1.2$, $-2112\to1.3$. Note that
+<li><code>'particles'</code> - The rescaled and translated constituents of the jets as <span><span class="MathJax_Preview">(p_T/100,\,y-y^\text{jet},\,\phi-\phi^\text{jet},\,f_\text{PID})</span><script type="math/tex">(p_T/100,\,y-y^\text{jet},\,\phi-\phi^\text{jet},\,f_\text{PID})</script></span> where
+<span><span class="MathJax_Preview">f_\text{PID}</span><script type="math/tex">f_\text{PID}</script></span> is a small float corresponding to the PDG ID of the particle.
+The PIDs are remapped according to <span><span class="MathJax_Preview">22\to0.0</span><script type="math/tex">22\to0.0</script></span>, <span><span class="MathJax_Preview">211\to0.1</span><script type="math/tex">211\to0.1</script></span>, <span><span class="MathJax_Preview">-211\to0.2</span><script type="math/tex">-211\to0.2</script></span>, <span><span class="MathJax_Preview">130
+\to0.3</span><script type="math/tex">130
+\to0.3</script></span>, <span><span class="MathJax_Preview">11\to0.4</span><script type="math/tex">11\to0.4</script></span>, <span><span class="MathJax_Preview">-11\to0.5</span><script type="math/tex">-11\to0.5</script></span>, <span><span class="MathJax_Preview">13\to0.6</span><script type="math/tex">13\to0.6</script></span>, <span><span class="MathJax_Preview">-13\to0.7</span><script type="math/tex">-13\to0.7</script></span>, <span><span class="MathJax_Preview">321\to0.8</span><script type="math/tex">321\to0.8</script></span>, <span><span class="MathJax_Preview">-321
+\to0.9</span><script type="math/tex">-321
+\to0.9</script></span>, <span><span class="MathJax_Preview">2212\to1.0</span><script type="math/tex">2212\to1.0</script></span>, <span><span class="MathJax_Preview">-2212\to1.1</span><script type="math/tex">-2212\to1.1</script></span>, <span><span class="MathJax_Preview">2112\to1.2</span><script type="math/tex">2112\to1.2</script></span>, <span><span class="MathJax_Preview">-2112\to1.3</span><script type="math/tex">-2112\to1.3</script></span>. Note that
 ECAL cells are treated as photons (id 22) and HCAL cells are treated as 
-$K_L^0$ (id 130). </li>
+<span><span class="MathJax_Preview">K_L^0</span><script type="math/tex">K_L^0</script></span> (id 130). </li>
 <li><code>'mults'</code> - The constituent multiplicity of the jet.</li>
-<li><code>'lhas'</code> - The Les Houches ($\beta=1/2$) angularity.</li>
+<li><code>'lhas'</code> - The Les Houches (<span><span class="MathJax_Preview">\beta=1/2</span><script type="math/tex">\beta=1/2</script></span>) angularity.</li>
 <li><code>'widths'</code> - The jet width ($\beta=1 angularity).</li>
-<li><code>'ang2s'</code> - The $\beta=2$ angularity (note that this is very similar to the jet
+<li><code>'ang2s'</code> - The <span><span class="MathJax_Preview">\beta=2</span><script type="math/tex">\beta=2</script></span> angularity (note that this is very similar to the jet
 mass, but does not depend on particle masses).</li>
-<li><code>'tau2s'</code> - The 2-subjettiness value with $\beta=1$.</li>
-<li><code>'sdms'</code> - The groomed mass with Soft Drop parameters $z_\text{cut}=0.1$ and
-$\beta=0$.</li>
+<li><code>'tau2s'</code> - The 2-subjettiness value with <span><span class="MathJax_Preview">\beta=1</span><script type="math/tex">\beta=1</script></span>.</li>
+<li><code>'sdms'</code> - The groomed mass with Soft Drop parameters <span><span class="MathJax_Preview">z_\text{cut}=0.1</span><script type="math/tex">z_\text{cut}=0.1</script></span> and
+<span><span class="MathJax_Preview">\beta=0</span><script type="math/tex">\beta=0</script></span>.</li>
 <li><code>'zgs'</code> - The groomed momentum fraction (same Soft Drop parameters as above).</li>
 </ul>
 <p>If you use this dataset, please cite the Zenodo record as well as the
@@ -816,11 +804,10 @@ OmniFold: A Method to Simultaneously Unfold All Observables, <a href="https://a
 </ul>
 <hr />
 <h4 id="load_1">load</h4>
-<pre><code class="python">energyflow.zjets_delphes.load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
+<pre><code class="language-python">energyflow.zjets_delphes.load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
                                        source='zenodo', which='all',
                                        include_keys=None, exclude_keys=None)
 </code></pre>
-
 <p>Loads in the Z+jet Pythia/Herwig + Delphes datasets. Any file that is
 needed that has not been cached will be automatically downloaded.
 Downloaded files are cached for later use. Checksum verification is
@@ -906,16 +893,16 @@ comparisons.</p>
 <p>The jets are padded with zero-particles in order to make a contiguous array.
 The particles are given as <code>(pt,y,phi,pid)</code> values, where <code>pid</code> is the
 particle's <a href="http://pdg.lbl.gov/2018/reviews/rpp2018-rev-monte
--carlo-numbering.pdf">PDG id</a>. Quark jets either include or exclude $c$ and $b$
+-carlo-numbering.pdf">PDG id</a>. Quark jets either include or exclude <span><span class="MathJax_Preview">c</span><script type="math/tex">c</script></span> and <span><span class="MathJax_Preview">b</span><script type="math/tex">b</script></span>
 quarks depending on the <code>with_bc</code> argument.</p>
-<p>The samples are generated from $q\bar q\to Z(\to\nu\bar\nu)+g$ and
-$qg\to Z(\to\nu\bar\nu)+(uds[cb])$ processes in $pp$ collisions at
-$\sqrt{s}=14$ TeV. Hadronization and multiple parton interactions (i.e.
+<p>The samples are generated from <span><span class="MathJax_Preview">q\bar q\to Z(\to\nu\bar\nu)+g</span><script type="math/tex">q\bar q\to Z(\to\nu\bar\nu)+g</script></span> and
+<span><span class="MathJax_Preview">qg\to Z(\to\nu\bar\nu)+(uds[cb])</span><script type="math/tex">qg\to Z(\to\nu\bar\nu)+(uds[cb])</script></span> processes in <span><span class="MathJax_Preview">pp</span><script type="math/tex">pp</script></span> collisions at
+<span><span class="MathJax_Preview">\sqrt{s}=14</span><script type="math/tex">\sqrt{s}=14</script></span> TeV. Hadronization and multiple parton interactions (i.e.
 underlying event) are turned on and the default tunings and shower parameters
-are used. Final state non-neutrino particles are clustered into $R=0.4$
-anti-$k_T$ jets using FastJet 3.3.0. Jets with transverse momentum
-$p_T\in[500,550]$ GeV and rapidity $|y|&lt;1.7$ are kept. Particles are ensured
-have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity 
+are used. Final state non-neutrino particles are clustered into <span><span class="MathJax_Preview">R=0.4</span><script type="math/tex">R=0.4</script></span>
+anti-<span><span class="MathJax_Preview">k_T</span><script type="math/tex">k_T</script></span> jets using FastJet 3.3.0. Jets with transverse momentum
+<span><span class="MathJax_Preview">p_T\in[500,550]</span><script type="math/tex">p_T\in[500,550]</script></span> GeV and rapidity <span><span class="MathJax_Preview">|y|&lt;1.7</span><script type="math/tex">|y|<1.7</script></span> are kept. Particles are ensured
+have to <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> values within <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> of the jet (i.e. no <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span>-periodicity 
 issues). No detector simulation is performed.</p>
 <p>The samples are also hosted on Zenodo and we ask that you cite them
 appropriately if they are useful to your research. For BibTex entries,
@@ -925,10 +912,9 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <a href="https://doi.org/10.5281/zenodo.3066475"><img alt="DOI" src="/img/zenodo.3066475.svg" /></a> - Herwig samples</p>
 <hr />
 <h4 id="load_2">load</h4>
-<pre><code class="python">energyflow.qg_jets.load(num_data=100000, pad=True, ncol=4, generator='pythia',
+<pre><code class="language-python">energyflow.qg_jets.load(num_data=100000, pad=True, ncol=4, generator='pythia',
                         with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
-
 <p>Loads samples from the dataset (which in total is contained in twenty 
 files). Any file that is needed that has not been cached will be 
 automatically downloaded. Downloading a file causes it to be cached for
@@ -984,25 +970,26 @@ each of which is a 2-d ndarray.</li>
 </ul>
 <hr />
 <h2 id="quark-and-gluon-nsubs">Quark and Gluon Nsubs</h2>
-<p>A dataset consisting of 45 $N$-subjettiness observables for 100k quark and 
+<p>A dataset consisting of 45 <span><span class="MathJax_Preview">N</span><script type="math/tex">N</script></span>-subjettiness observables for 100k quark and 
 gluon jets generated with Pythia 8.230. Following <a href="https:
 //arxiv.org/abs/1704.08249">1704.08249</a>, the observables are in the following order:</p>
-<p>
-<script type="math/tex; mode=display">
-\{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
+<div>
+<div class="MathJax_Preview">\{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
 \tau_2^{(\beta=0.5)},\tau_2^{(\beta=1.0)},\tau_2^{(\beta=2.0)},
 \ldots,
-\tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.
-</script>
-</p>
+\tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.</div>
+<script type="math/tex; mode=display">\{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
+\tau_2^{(\beta=0.5)},\tau_2^{(\beta=1.0)},\tau_2^{(\beta=2.0)},
+\ldots,
+\tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.</script>
+</div>
 <p>The dataset contains two members: <code>'X'</code> which is a numpy array of the nsubs
 that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h4 id="load_3">load</h4>
-<pre><code class="python">energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
+<pre><code class="language-python">energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
 </code></pre>
-
 <p>Loads the dataset. The first time this is called, it will automatically
 download the dataset. Future calls will attempt to use the cached dataset 
 prior to redownloading.</p>
@@ -1072,8 +1059,9 @@ prior to redownloading.</p>
 </div>
     <script>var base_url = '../..';</script>
     <script src="../../js/theme.js" defer></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML" defer></script>
       <script src="../../js/eftheme.js" defer></script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" defer></script>
       <script src="../../search/main.js" defer></script>
     <script defer>
         window.onload = function () {

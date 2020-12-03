@@ -4,6 +4,17 @@ Functions for dealing with image representations of events. These are
 not importable from the top level `energyflow` module, but must 
 instead be imported from `energyflow.utils`.
 """
+
+#  _____ __  __          _____ ______          _    _ _______ _____ _       _____
+# |_   _|  \/  |   /\   / ____|  ____|        | |  | |__   __|_   _| |     / ____|
+#   | | | \  / |  /  \ | |  __| |__           | |  | |  | |    | | | |    | (___
+#   | | | |\/| | / /\ \| | |_ |  __|          | |  | |  | |    | | | |     \___ \
+#  _| |_| |  | |/ ____ \ |__| | |____  ______ | |__| |  | |   _| |_| |____ ____) |
+# |_____|_|  |_/_/    \_\_____|______||______| \____/   |_|  |_____|______|_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import numpy as np

@@ -47,6 +47,17 @@ see the [FAQs](/faqs/#how-do-i-cite-the-energyflow-package).
 <br>
 [![DOI](/img/zenodo.3066475.svg)](https://doi.org/10.5281/zenodo.3066475) - Herwig samples
 """
+
+#   ____   _____               _ ______ _______ _____
+#  / __ \ / ____|             | |  ____|__   __/ ____|
+# | |  | | |  __              | | |__     | | | (___
+# | |  | | | |_ |         _   | |  __|    | |  \___ \
+# | |__| | |__| | ______ | |__| | |____   | |  ____) |
+#  \___\_\\_____||______||\____/|______|  |_| |_____/
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division, print_function
 
 import warnings
