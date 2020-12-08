@@ -18,15 +18,20 @@ various random, non-center of momentum, and non-uniform sampling.
 
 from __future__ import absolute_import, division, print_function
 
-import os
-
 import numpy as np
 
 __all__ = [
     'gen_random_events',
     'gen_random_events_mcom',
-    'gen_massless_phase_space'
+    'gen_massless_phase_space',
+    'random',
 ]
+
+# random number generator
+if hasattr(np.random, 'default_rng'):
+    random = np.random.default_rng()
+else:
+    random = np.random.RandomState
 
 def gen_random_events(nevents, nparticles, dim=4, mass=0.):
     r"""Generate random events with a given number of particles in a given
@@ -54,10 +59,10 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
         dropped.
     """
 
-    spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
+    spatial_ps = 2*random.random((nevents, nparticles, dim-1)) - 1
 
     if isinstance(mass, str) and mass == 'random':
-        mass = np.random.rand(nevents, nparticles)
+        mass = random.random((nevents, nparticles))
 
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
     events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1)
@@ -85,8 +90,8 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
         are specified as `[E,p1,p2,...]`.
     """
 
-    events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
-    events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
+    events_1_sp = 2*random.random((nevents, int(np.ceil(nparticles/2)-1), dim-1)) - 1
+    events_2_sp = 2*random.random((nevents, int(np.floor(nparticles/2)-1), dim-1)) - 1
     
     events_1_sp_com = np.concatenate((events_1_sp, -np.sum(events_1_sp, axis=1)[:,np.newaxis]), axis=1)
     events_2_sp_com = np.concatenate((events_2_sp, -np.sum(events_2_sp, axis=1)[:,np.newaxis]), axis=1)
@@ -133,7 +138,7 @@ def gen_massless_phase_space(nevents, nparticles, energy=1.):
     ps = np.empty((nevents, nparticles, 4))
     
     # randomly sample from the qs as stated in the RAMBO paper
-    r = np.random.random((4, nevents, nparticles))
+    r = random.random((4, nevents, nparticles))
 
     c = 2*r[0] - 1
     phi = 2*np.pi*r[1]

@@ -35,7 +35,6 @@ import matplotlib.pyplot as plt
 
 # energyflow imports
 import energyflow as ef
-from energyflow.archs import EFN
 
 ################################### SETTINGS ##################################
 
@@ -54,10 +53,7 @@ batch_size = 250
 ###############################################################################
 
 # load data
-X, y = ef.qg_jets.load(train + val + test)
-
-# ignore pid information
-X = X[:,:,:3]
+X, y = ef.qg_jets.load(train + val + test, ncol=3, pad=False)
 
 print('Loaded quark and gluon jets')
 
@@ -82,16 +78,17 @@ obs /= obs_std
 
 print('Finished computing observables')
 
-# do train/val/test split 
+# do train/val/test split
+X_padded = ef.utils.pad_events(X)
 (z_train, z_val, z_test, 
  p_train, p_val, p_test,
- y_train, y_val, y_test) = ef.utils.data_split(X[:,:,0], X[:,:,1:], obs, val=val, test=test)
+ y_train, y_val, y_test) = ef.utils.data_split(X_padded[:,:,0], X_padded[:,:,1:], obs, val=val, test=test)
 
 print('Done train/val/test split')
 
 # build architecture
-efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes, 
-          output_act=output_act, output_dim=output_dim, loss=loss, metrics=[])
+efn = ef.archs.EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes, 
+                   output_act=output_act, output_dim=output_dim, loss=loss, metrics=[])
 
 # train model
 efn.fit([z_train, p_train], y_train,

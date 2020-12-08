@@ -10,10 +10,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tensorflow.keras.layers import Dense, Dropout, Input
-from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l2
-
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.utils import iter_or_rep
 
@@ -28,6 +24,9 @@ def construct_dense(input_tensor, sizes,
                     dropouts=0., l2_regs=0.,
                     names=None, act_names=None):
     """"""
+
+    from tensorflow.keras.layers import Dense, Dropout
+    from tensorflow.keras.regularizers import L2
     
     # repeat options if singletons
     acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
@@ -42,7 +41,7 @@ def construct_dense(input_tensor, sizes,
     for s, act, k_init, dropout, l2_reg, name, act_name in z:
 
         # get layers and append them to list
-        kwargs = ({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)} 
+        kwargs = ({'kernel_regularizer': L2(l2_reg), 'bias_regularizer': L2(l2_reg)} 
                   if l2_reg > 0. else {})
         dense_layer = Dense(s, kernel_initializer=k_init, name=name, **kwargs)
         act_layer = _get_act_layer(act, name=act_name)
@@ -131,6 +130,9 @@ class DNN(NNBase):
         self._verify_empty_hps()
 
     def _construct_model(self):
+
+        from tensorflow.keras.layers import Dense, Input
+        from tensorflow.keras.models import Model
 
         # get an input tensor
         self._input = Input(shape=(self.input_dim,), name=self._proc_name('input'))

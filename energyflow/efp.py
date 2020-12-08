@@ -40,7 +40,7 @@ from energyflow.base import EFPBase
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.measure import PF_MARKER
 from energyflow.utils import (concat_specs, create_pool, explicit_comp,
-                              kwargs_check, load_efp_file, sel_arg_check)
+                              kwargs_check, load_efp_file)
 from energyflow.utils.graph_utils import *
 
 __all__ = ['EFP', 'EFPSet']
@@ -429,7 +429,10 @@ class EFPSet(EFPBase):
         elemvs = ['edges', 'weights', 'einstrs', 'einpaths']
         efmvs = ['efm_einstrs', 'efm_einpaths', 'efm_specs']
         miscattrs = ['cols', 'gen_efms', 'c_specs', 'disc_specs', 'disc_formulae']
-        if len(args) >= 1 and not sel_arg_check(args[0]) and not isinstance(args[0], Generator):
+        if not (len(args) == 0
+            or isinstance(args[0], six.string_types)
+            or (len(args[0]) == 2 and isinstance(args[0][0], six.string_types))
+            or isinstance(args[0], Generator)):
             gen = False
         elif len(args) >= 1 and isinstance(args[0], Generator):
             constructor_attrs = maxs + elemvs + efmvs + miscattrs

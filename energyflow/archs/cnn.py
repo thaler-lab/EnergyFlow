@@ -10,9 +10,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tensorflow.keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialDropout2D
-from tensorflow.keras.models import Sequential
-
 from energyflow.archs.archbase import NNBase
 from energyflow.utils import iter_or_rep
 
@@ -141,6 +138,9 @@ class CNN(NNBase):
         self._verify_empty_hps()
 
     def _construct_model(self):
+
+        from tensorflow.keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialDropout2D
+        from tensorflow.keras.models import Sequential
 
         # fresh model
         self._model = Sequential(name=self.model_name)

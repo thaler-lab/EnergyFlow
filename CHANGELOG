@@ -2,6 +2,10 @@
 
 - EFN/PFN architectures setup to have multiple Phi components that embed their inputs in separate latent spaces which are then concatenated together.
 - Activation function layers have more descriptive names.
+- PointCloudDataset and subclasses defined to aid with providing data to EFN and PFN models.
+- `archs` submodule now imported by default; tensorflow/sklearn imports delayed until needed.
+- Renamed the `event_utils` submodule to `random_utils` since it deals with the generation of random collections of momenta.
+- No longer supporting python 2
 
 ## 1.3.x
 

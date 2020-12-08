@@ -91,10 +91,6 @@ docs = {
             'functions': ef.utils.particle_utils.__all__
         },
         {
-            'module': ef.utils.event_utils,
-            'functions': ef.utils.event_utils.__all__
-        },
-        {
             'module': ef.utils.data_utils,
             'modpath': 'energyflow.utils.',
             'functions': ef.utils.data_utils.__all__
@@ -107,6 +103,10 @@ docs = {
         {
             'module': ef.utils.fastjet_utils,
             'functions': ef.utils.fastjet_utils.__all__
+        },
+        {
+            'module': ef.utils.random_utils,
+            'functions': ef.utils.random_utils.__all__[:-1]
         },
     ],
 
@@ -158,11 +158,11 @@ docs = {
                 }
             ]
         },
-        #{
-        #    'module': archs.utils,
-        #    'modpath': 'energyflow.archs.',
-        #    'functions': archs.utils.__all__
-        #},
+        {
+            'module': archs.utils,
+            'modpath': 'energyflow.archs.',
+            'functions': archs.utils.__all__
+        },
     ],
 
     'datasets': [

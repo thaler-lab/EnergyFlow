@@ -25,18 +25,15 @@ for the classifiers with different numbers of EFP inputs.
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
+import sys
 
-# standard numerical library imports
+# standard scientific python libraries
+import matplotlib.pyplot as plt
 import numpy as np
+import sklearn.metrics
 
 # energyflow imports
 import energyflow as ef
-from energyflow.archs import LinearClassifier
-from energyflow.datasets import qg_jets
-from energyflow.utils import data_split, standardize, to_categorical
-
-from sklearn.metrics import roc_auc_score, roc_curve
-import matplotlib.pyplot as plt
 
 ################################### SETTINGS ###################################
 
@@ -55,15 +52,14 @@ colors = ['tab:red', 'tab:orange', 'tab:olive', 'tab:green', 'tab:blue']
 ################################################################################
 
 # load data
-X, y = qg_jets.load(num_data)
+X, y = ef.qg_jets.load(num_data, pad=False)
 
 print('Loaded quark and gluon jets')
 
 # calculate EFPs
 print('Calculating d <= {} EFPs for {} jets... '.format(dmax, num_data), end='')
 efpset = ef.EFPSet(('d<=', dmax), measure='hadr', beta=beta)
-masked_X = [x[x[:,0] > 0] for x in X]
-X = efpset.batch_compute(masked_X)
+X = efpset.batch_compute(X)
 print('Done')
 
 # train models with different numbers of EFPs as input
@@ -71,13 +67,13 @@ rocs = []
 for d in range(1, dmax+1):
 
     # build architecture
-    model = LinearClassifier(linclass_type='lda')
+    model = ef.archs.LinearClassifier(linclass_type='lda')
 
     # select EFPs with degree <= d
     X_d = X[:,efpset.sel(('d<=', d))]
 
     # do train/val/test split 
-    (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
+    (X_train, X_test, y_train, y_test) = ef.utils.data_split(X_d, y, val=0, test=test_frac)
     print('Done train/val/test split')
 
     # train model
@@ -87,33 +83,34 @@ for d in range(1, dmax+1):
     preds = model.predict(X_test)
 
     # get ROC curve if we have sklearn
-    if roc_curve:
-        rocs.append(roc_curve(y_test, preds[:,1]))
+    rocs.append(sklearn.metrics.roc_curve(y_test, preds[:,1]))
 
-        # get area under the ROC curve
-        auc = roc_auc_score(y_test, preds[:,1])
-        print()
-        print('EFPs d <= {} AUC:'.format(d), auc)
-        print()
+    # get area under the ROC curve
+    auc = sklearn.metrics.roc_auc_score(y_test, preds[:,1])
+    print()
+    print('EFPs d <= {} AUC:'.format(d), auc)
+    print()
 
-# some nicer plot settings 
-plt.rcParams['figure.figsize'] = (4,4)
-plt.rcParams['font.family'] = 'serif'
-plt.rcParams['figure.autolayout'] = True
+if len(sys.argv) == 1 or bool(sys.argv[1]):
 
-# iterate over the ROC curves and plot them
-for i,d in enumerate(range(1, dmax+1)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
-                                            label='LDA: d <= {} EFPs'.format(d))
+    # some nicer plot settings 
+    plt.rcParams['figure.figsize'] = (4,4)
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['figure.autolayout'] = True
 
-# axes labels
-plt.xlabel('Quark Jet Efficiency')
-plt.ylabel('Gluon Jet Rejection')
+    # iterate over the ROC curves and plot them
+    for i,d in enumerate(range(1, dmax+1)):
+        plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+                                                label='LDA: d <= {} EFPs'.format(d))
 
-# axes limits
-plt.xlim(0, 1)
-plt.ylim(0, 1)
+    # axes labels
+    plt.xlabel('Quark Jet Efficiency')
+    plt.ylabel('Gluon Jet Rejection')
 
-# make legend and show plot
-plt.legend(loc='lower left', frameon=False)
-plt.show()
+    # axes limits
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    # make legend and show plot
+    plt.legend(loc='lower left', frameon=False)
+    plt.show()

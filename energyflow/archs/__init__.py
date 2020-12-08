@@ -10,31 +10,21 @@
 
 from __future__ import absolute_import
 
-import warnings
+# requires keras/tensorflow, but import now delayed until needed
+from . import archbase
+from . import cnn
+from . import dnn
+from . import efn
+from energyflow.utils import arch_utils as utils
+from .cnn import *
+from .dnn import *
+from .efn import *
+from energyflow.utils.arch_utils import *
 
-__all__ = []
+__all__ = cnn.__all__ + dnn.__all__ + efn.__all__ + utils.__all__
 
-# requires keras/tensorflow
-try:
-    from . import archbase
-    from . import cnn
-    from . import dnn
-    from . import efn
-    from .cnn import *
-    from .dnn import *
-    from .efn import *
+# requires sklearn, but import now delayed until needed
+from . import linear
+from .linear import *
 
-    __all__ += cnn.__all__ + dnn.__all__ + efn.__all__
-
-except ImportError as e:
-    warnings.warn('could not import some architectures - ' + str(e))
-
-# requires sklearn
-try:
-    from . import linear
-    from .linear import *
-
-    __all__ += linear.__all__
-
-except ImportError as e:
-    warnings.warn('could not import some architectures - ' + str(e))
+__all__ += linear.__all__

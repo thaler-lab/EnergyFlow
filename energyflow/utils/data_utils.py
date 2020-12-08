@@ -25,6 +25,7 @@ import numpy as np
 from six.moves.urllib.error import HTTPError, URLError
 
 from energyflow.utils.generic_utils import ALL_EXAMPLES
+from energyflow.utils.random_utils import random
 
 __all__ = [
     'get_examples', 
@@ -143,7 +144,7 @@ def data_split(*args, **kwargs):
     assert num_train + num_val + num_test <= n_samples, 'too few samples for requested data split'
     
     # calculate masks 
-    perm = np.random.permutation(n_samples) if shuffle else np.arange(n_samples)
+    perm = random.permutation(n_samples) if shuffle else np.arange(n_samples)
     train_mask = perm[:num_train]
     val_mask = perm[-num_val:]
     test_mask = perm[num_train:num_train+num_test]

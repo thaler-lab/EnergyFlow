@@ -10,9 +10,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.linear_model import LogisticRegression
-
 from energyflow.archs.archbase import ArchBase
 
 __all__ = ['LinearClassifier']
@@ -72,8 +69,10 @@ class LinearClassifier(ArchBase):
 
         # setup linear model according to linclass_type
         if self.linclass_type == 'lda':
+            from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
             self._model = LinearDiscriminantAnalysis(solver=self.solver, tol=self.tol)
         elif self.linclass_type == 'lr':
+            from sklearn.linear_model import LogisticRegression
             self._model = LogisticRegression(**self.LR_hps)
         else:
             raise ValueError('linclass_type can only be lda or lr')

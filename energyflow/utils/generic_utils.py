@@ -22,7 +22,6 @@ import time
 import warnings
 
 import numpy as np
-import six
 
 __all__ = [
     'ALL_EXAMPLES',
@@ -34,11 +33,9 @@ __all__ = [
     'concat_specs',
     'create_pool',
     'explicit_comp',
-    'import_fastjet',
     'iter_or_rep', 
     'kwargs_check',
     'load_efp_file',
-    'sel_arg_check',
     'timing', 
     'transfer'
 ]
@@ -73,27 +70,27 @@ COMP_MAP = {
 ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
 
 # handle pickling methods in python 2
-if sys.version_info[0] == 2:
-    import copy_reg
-    import types
-
-    def pickle_method(method):
-        func_name = method.__name__
-        obj = method.__self__
-        cls = obj.__class__
-        return unpickle_method, (func_name, obj, cls)
-
-    def unpickle_method(func_name, obj, cls):
-        for cls in cls.mro():
-            try:
-                func = cls.__dict__[func_name]
-            except KeyError:
-                pass
-            else:
-                break
-        return func.__get__(obj, cls)
-
-    copy_reg.pickle(types.MethodType, pickle_method, unpickle_method)
+#if sys.version_info[0] == 2:
+#    import copy_reg
+#    import types
+#
+#    def pickle_method(method):
+#        func_name = method.__name__
+#        obj = method.__self__
+#        cls = obj.__class__
+#        return unpickle_method, (func_name, obj, cls)
+#
+#    def unpickle_method(func_name, obj, cls):
+#        for cls in cls.mro():
+#            try:
+#                func = cls.__dict__[func_name]
+#            except KeyError:
+#                pass
+#            else:
+#                break
+#        return func.__get__(obj, cls)
+#
+#    copy_reg.pickle(types.MethodType, pickle_method, unpickle_method)
 
 # concatenates con. and disc. specs along axis 0, handling empty disc. specs
 def concat_specs(c_specs, d_specs):
@@ -105,31 +102,23 @@ def concat_specs(c_specs, d_specs):
 # handle Pool not being a context manager in Python < 3.4
 @contextlib.contextmanager
 def create_pool(*args, **kwargs):
-    if sys.version_info < (3, 4):
-        pool = multiprocessing.Pool(*args, **kwargs)
-        yield pool
-        pool.terminate()
+    #if sys.version_info < (3, 4):
+    #    pool = multiprocessing.Pool(*args, **kwargs)
+    #    yield pool
+    #    pool.terminate()
+    #else:
+    if 'fork' not in multiprocessing.get_all_start_methods():
+        warnings.warn("'fork' is not available as a multiprocessing start method, "
+                      + "EnergyFlow multicore functionality may not work properly")
+        with multiprocessing.Pool(*args, **kwargs) as pool:
+            yield pool
     else:
-        if 'fork' not in multiprocessing.get_all_start_methods():
-            warnings.warn("'fork' is not available as a multiprocessing start method, "
-                          + "EnergyFlow multicore functionality may not work properly")
-            with multiprocessing.Pool(*args, **kwargs) as pool:
-                yield pool
-        else:
-            with multiprocessing.get_context('fork').Pool(*args, **kwargs) as pool:
-                yield pool
+        with multiprocessing.get_context('fork').Pool(*args, **kwargs) as pool:
+            yield pool
 
 # applies comprison comp of obj on val
 def explicit_comp(obj, comp, val):
     return getattr(obj, COMP_MAP[comp])(val)
-
-# determine if fastjet can be imported, returns either the fastjet module or false
-def import_fastjet():
-    try:
-        import fastjet
-    except:
-        fastjet = False
-    return fastjet
 
 # return argument if iterable else make repeat generator
 def iter_or_rep(arg):
@@ -169,11 +158,6 @@ def load_efp_file(filename):
                 return json.load(f)
 
     return None
-
-# check that an argument is well-formed to EFPSet.sel
-def sel_arg_check(arg):
-    return (isinstance(arg, six.string_types) or 
-            (len(arg) == 2 and isinstance(arg[0], six.string_types)))
 
 # timing meta-decorator
 def timing(obj, func):

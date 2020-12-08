@@ -1,25 +1,11 @@
 """An example involving Particle Flow Networks (PFNs), which were introduced in
 [1810.05165](https://arxiv.org/abs/1810.05165). The [`PFN`](../docs/archs/#pfn)
-class is used to construct the network architecture. The output of the example
-is a plot of the ROC curves obtained by the PFN as well as the jet mass and
-constituent multiplicity observables.
+class is used to construct the network architecture. This example is meant to
+highlight the usafe of PFNs with Tensorflow datasets, in particular the function
+`tf_point_cloud_dataset` which helpfully formats things in the proper way. Like
+the bse PFN example, the output is a plot of the ROC curves obtained by the PFN
+as well as the jet mass and constituent multiplicity observables.
 """
-
-#  _____  ______ _   _ 
-# |  __ \|  ____| \ | |
-# | |__) | |__  |  \| |
-# |  ___/|  __| | . ` |
-# | |    | |    | |\  |
-# |_|    |_|    |_| \_|
-#  ________   __          __  __ _____  _      ______
-# |  ____\ \ / /    /\   |  \/  |  __ \| |    |  ____|
-# | |__   \ V /    /  \  | \  / | |__) | |    | |__
-# |  __|   > <    / /\ \ | |\/| |  ___/| |    |  __|
-# | |____ / . \  / ____ \| |  | | |    | |____| |____
-# |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
-
-# EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -38,18 +24,18 @@ import energyflow as ef
 ###############################################################################
 
 # data controls, can go up to 2000000 for full dataset
-train, val, test = 75000, 10000, 15000
+train, val, test = 7500, 1000, 1500
 # train, val, test = 1000000, 200000, 200000
-use_pids = True
+use_pids = False
 use_global_features = False
 
 # network architecture parameters
-Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
+Phi_sizes, F_sizes = [(100, 100, 128), (10, 20)], (100, 100, 100)
 # Phi_sizes, F_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
 num_epoch = 1
-batch_size = 250
+batch_size = 100
 
 ################################################################################
 
@@ -85,23 +71,27 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-pfn = ef.archs.PFN(input_dim=ncol, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
-                   num_global_features=(4 if use_global_features else None))
+pfn = ef.archs.PFN(input_dim=(ncol, 2*ncol), Phi_sizes=Phi_sizes, F_sizes=F_sizes, weight_coeffs=(1.0, 0.001))
 
-# specify inputs
-d_train = [ef.utils.pad_events(X_train)] + ([g_train] if use_pids else [])
-d_val = [ef.utils.pad_events(X_val)] + ([g_val] if use_pids else [])
-d_test = [ef.utils.pad_events(X_test)] + ([g_test] if use_pids else [])
+# construct lists of dataset inputs
+X_train = [X_train, ef.archs.PairedPointCloudDataset(X_train).unpack()] + ([g_train] if use_global_features else [])
+X_val = [X_val, ef.archs.PairedPointCloudDataset(X_val).unpack()] + ([g_val] if use_global_features else [])
+X_test = [X_test, ef.archs.PairedPointCloudDataset(X_test).unpack()] + ([g_test] if use_global_features else [])
+
+# construct point cloud datasets
+d_train = ef.archs.PointCloudDataset([X_train, Y_train], batch_size=batch_size)
+d_val = ef.archs.PointCloudDataset([X_val, Y_val])
+d_test = ef.archs.PointCloudDataset([X_test, Y_test])
+
+print('training', d_train)
+print('validation', d_val)
+print('testing', d_test)
 
 # train model
-pfn.fit(d_train, Y_train,
-        epochs=num_epoch,
-        batch_size=batch_size,
-        validation_data=(d_val, Y_val),
-        verbose=1)
+pfn.fit(d_train, epochs=num_epoch, validation_data=d_val)
 
 # get predictions on test data
-preds = pfn.predict(d_test, batch_size=1000)
+preds = pfn.predict(d_test)
 
 # get ROC curve
 pfn_fp, pfn_tp, threshs = sklearn.metrics.roc_curve(Y_test[:,1], preds[:,1])

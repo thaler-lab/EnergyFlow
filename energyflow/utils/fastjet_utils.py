@@ -26,16 +26,22 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
-from energyflow.utils.generic_utils import import_fastjet
 from energyflow.utils.particle_utils import phi_fix
 
-fj = import_fastjet()
+# determine if fastjet can be imported, returns either the fastjet module or false
+def import_fastjet():
+    try:
+        import fastjet
+    except:
+        fastjet = False
+    return fastjet
 
-__all__ = []
+__all__ = ['import_fastjet']
+fj = import_fastjet()
 
 if fj:
 
-    __all__ = ['pjs_from_ptyphims', 'ptyphims_from_pjs', 'cluster', 'softdrop']
+    __all__ += ['pjs_from_ptyphims', 'ptyphims_from_pjs', 'cluster', 'softdrop']
 
     def pjs_from_ptyphims(ptyphims):
         """Converts particles in hadronic coordinates to FastJet PseudoJets.

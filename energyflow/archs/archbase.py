@@ -50,9 +50,6 @@ import os
 import sys
 import warnings
 
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from tensorflow.keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
-
 import six
 
 from energyflow.utils import iter_or_rep
@@ -361,6 +358,9 @@ class NNBase(ArchBase):
 
     def fit(self, *args, **kwargs):
 
+        # callbacks used here
+        from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+
         # list of callback functions
         callbacks = []
 
@@ -406,17 +406,24 @@ class NNBase(ArchBase):
 # Activation Functions
 ###############################################################################
 
-ACT_DICT = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
+def _act_dict():
+    global ACT_DICT
+    if 'ACT_DICT' not in globals():
+        from tensorflow.keras.layers import LeakyReLU, PReLU, ThresholdedReLU
+        ACT_DICT = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
+    return ACT_DICT
 
 def _get_act_layer(act, name=None):
+
+    from tensorflow.keras.layers import Activation, Layer
 
     # handle case of act as a layer
     if isinstance(act, Layer):
         return act
 
     # determine name
-    if isinstance(act, six.string_types) and act in ACT_DICT:
-        return ACT_DICT[act](name=name)
+    if isinstance(act, six.string_types) and act in _act_dict():
+        return _act_dict()[act](name=name)
 
     # default case of passing act into Activation layer
     return Activation(act, name=name)

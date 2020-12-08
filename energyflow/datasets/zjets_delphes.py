@@ -1,3 +1,4 @@
+# coding: utf-8
 r"""## Z + Jets with Delphes Simulation
 
 Datasets of QCD jets used for studying unfolding in [OmniFold: A Method to
@@ -57,7 +58,8 @@ corresponding paper:
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
 - A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
-OmniFold: A Method to Simultaneously Unfold All Observables, [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
+OmniFold: A Method to Simultaneously Unfold All Observables,
+[arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 """
 
 #  ______    _ ______ _______ _____          _____  ______ _      _____  _    _ ______  _____
@@ -160,10 +162,10 @@ def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source=
     """
 
     # load info from JSON file
-    if 'INFO' not in globals():
-        global INFO
+    if 'ZJD_INFO' not in globals():
+        global ZJD_INFO
         with open(os.path.join(EF_DATA_DIR, 'ZjetsDelphes.json'), 'r') as f:
-            INFO = json.load(f)
+            ZJD_INFO = json.load(f)
 
     # check that options are valid
     dataset_low = dataset.lower()
@@ -194,13 +196,13 @@ def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source=
 
     # get urls
     if source == 'dropbox':
-        db_link_hashes = INFO['dropbox_link_hashes'][dataset_low]
+        db_link_hashes = ZJD_INFO['dropbox_link_hashes'][dataset_low]
         urls = [DROPBOX_URL_PATTERN.format(dl, fn) for dl,fn in zip(db_link_hashes, filenames)]
     elif source == 'zenodo':
         urls = [ZENODO_URL_PATTERN.format(ZENODO_RECORD, fn) for fn in filenames]
 
     # get hashes
-    hashes = INFO['hashes'][dataset_low]['sha256']
+    hashes = ZJD_INFO['hashes'][dataset_low]['sha256']
 
     n = 0
     subdir = os.path.join('datasets', 'ZjetsDelphes')

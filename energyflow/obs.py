@@ -24,7 +24,7 @@ import numpy as np
 from numpy.core.multiarray import c_einsum
 
 from energyflow.base import SingleEnergyCorrelatorBase
-from energyflow.utils import import_fastjet, transfer
+from energyflow.utils import transfer
 from energyflow.utils.fastjet_utils import *
 from energyflow.utils.particle_utils import *
 

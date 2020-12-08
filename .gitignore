@@ -1,6 +1,6 @@
 **/__pycache__
 .ipynb_checkpoints
-clean
+clean.sh
 dist/
 .DS_Store
 .eggs/

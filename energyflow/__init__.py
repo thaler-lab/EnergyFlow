@@ -32,6 +32,7 @@ from __future__ import absolute_import
 
 # import top-level submodules
 from . import algorithms
+from . import archs
 from . import base
 from . import datasets
 from . import efm
