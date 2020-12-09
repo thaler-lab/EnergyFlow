@@ -80,8 +80,9 @@ import warnings
 
 import numpy as np
 
-from energyflow.utils import EF_DATA_DIR, ZENODO_URL_PATTERN
-from energyflow.utils.data_utils import _get_filepath, _pad_events_axis1
+from energyflow.utils.generic_utils import EF_DATA_DIR, ZENODO_URL_PATTERN
+from energyflow.utils.data_utils import (_determine_cache_dir, _get_filepath,
+                                         _pad_events_axis1)
 
 __all__ = ['load']
 
@@ -172,8 +173,7 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
             ZJD_INFO = json.load(f)
 
     # determine cache_dir
-    if cache_dir is None:
-        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
+    cache_dir = _determine_cache_dir(cache_dir)
 
     # check that options are valid
     dataset_low = dataset.lower()

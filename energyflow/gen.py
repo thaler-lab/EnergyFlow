@@ -26,10 +26,8 @@ import numpy as np
 from energyflow.algorithms import *
 from energyflow.efm import efp2efms
 from energyflow.efp import EFP
-from energyflow.utils import concat_specs, load_efp_file, transfer
+from energyflow.utils.generic_utils import concat_specs, load_efp_file, transfer
 from energyflow.utils.graph_utils import *
-
-igraph = import_igraph()
 
 __all__ = ['Generator']
 
@@ -263,9 +261,6 @@ class PrimeGenerator(object):
 
     def __init__(self, dmax, nmax, emax, cmax, vmax, gen_efms, np_optimize, verbose, start):
         """PrimeGenerator __init__."""
-
-        if not igraph:
-            raise NotImplementedError('cannot use PrimeGenerator without igraph')
         
         self.ve = VariableElimination(np_optimize)
 
@@ -312,6 +307,12 @@ class PrimeGenerator(object):
 
     # generates simple graphs subject to constraints
     def _generate_simple(self):
+
+        # try importing igraph
+        try:
+            import igraph
+        except:
+            raise NotImplementedError('cannot use PrimeGenerator without igraph')
 
         self.base_edges = {n: list(itertools.combinations(range(n), 2)) for n in self.ns}
 
@@ -430,8 +431,8 @@ class PrimeGenerator(object):
 
         # handle n=1 case specially
         c_specs.append([1,0,0,0,0,1,1,0])
-        self.edges.append(())
-        self.weights.append(())
+        self.edges.append([])
+        self.weights.append([])
         self.einstrs.append(self.einstrs_d[(1,0)][0])
         self.einpaths.append(self.einpaths_d[(1,0)][0])
 

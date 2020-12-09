@@ -26,11 +26,9 @@ labels (quark=`1` and gluon=`0`).
 
 from __future__ import absolute_import, division, print_function
 
-import os
-
 import numpy as np
 
-from energyflow.utils.data_utils import _get_filepath
+from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath
 
 __all__ = ['load']
 
@@ -56,14 +54,10 @@ def load(num_data=-1, cache_dir=None):
         - The `X` and `y` components of the dataset as specified above.
     """
 
-    # determine cache_dir
-    if cache_dir is None:
-        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
-
     fpath = _get_filepath('QG_nsubs.npz', 
                       url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
                       file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
-                      cache_dir=cache_dir)
+                      cache_dir=_determine_cache_dir(cache_dir))
 
     with np.load(fpath) as f:
         X, y = f['X'], f['y']

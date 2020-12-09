@@ -19,21 +19,13 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
+from energyflow.utils.particle_utils import ischrgd
+
 __all__ = [
     'pixelate',
     'standardize',
     'zero_center',
 ]
-
-# PDGid to isCharged dictionary
-pid2abschg_mapping = {22: 0,             # photon
-                      211: 1, -211: 1,   # pi+-
-                      321: 1, -321: 1,   # K+-
-                      130: 0,            # K-long
-                      2112: 0, -2112: 0, # neutron, anti-neutron
-                      2212: 1, -2212: 1, # proton, anti-proton
-                      11: 1, -11: 1,     # electron, positron
-                      13: 1, -13: 1}     # muon, anti-muon
 
 def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False):
     """A function for creating a jet image from an array of particles.
@@ -88,28 +80,28 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
     phi_indices = np.ceil(jet[:,phi_i]/pix_width - 0.5) - phi_pt_cent_index
 
     # delete elements outside of range
-    mask = np.ones(jet[:,rap_i].shape).astype(bool)
+    mask = np.ones(jet[:,rap_i].shape).astype(bool, copy=False)
     mask[rap_indices < 0] = False
     mask[phi_indices < 0] = False
     mask[rap_indices >= npix] = False
     mask[phi_indices >= npix] = False
-    rap_indices = rap_indices[mask].astype(int)
-    phi_indices = phi_indices[mask].astype(int)
+    rap_indices = rap_indices[mask].astype(int, copy=False)
+    phi_indices = phi_indices[mask].astype(int, copy=False)
 
     # construct grayscale image
     if nb_chan == 1: 
-        for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices): 
+        for pt,y,phi in zip(jet[mask,pT_i], rap_indices, phi_indices): 
             jet_image[phi, y, 0] += pt
 
     # construct two-channel image
     elif nb_chan == 2:
         if charged_counts_only:
-            for pt,y,phi,pid in zip(jet[:,pT_i][mask], rap_indices, 
-                                    phi_indices, jet[:,pid_i][mask].astype(int)):
+            for pt,y,phi,is_charged in zip(jet[mask,pT_i], rap_indices, phi_indices,
+                                           ischrgd(jet[mask,pid_i])):
                 jet_image[phi, y, 0] += pt
-                jet_image[phi, y, 1] += pid2abschg_mapping.get(pid, 0)
+                jet_image[phi, y, 1] += is_charged
         else:
-            for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices): 
+            for pt,y,phi in zip(jet[mask,pT_i], rap_indices, phi_indices): 
                 jet_image[phi, y, 0] += pt
                 jet_image[phi, y, 1] += 1
     else:

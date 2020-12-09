@@ -24,7 +24,6 @@ import sys
 import numpy as np
 from six.moves.urllib.error import HTTPError, URLError
 
-from energyflow.utils.generic_utils import ALL_EXAMPLES
 from energyflow.utils.random_utils import random
 
 __all__ = [
@@ -34,15 +33,31 @@ __all__ = [
     'remap_pids'
 ]
 
-def get_examples(path='~/.energyflow', which='all', overwrite=False):
+# list of examples
+ALL_EXAMPLES = [
+    'efn_example.py',
+    'efn_regression_example.py',
+    #'efn_tfdataset_example.py',
+    'pfn_example.py',
+    #'pfn_tfdataset_example.py',
+    'cnn_example.py',
+    'dnn_example.py',
+    'efp_example.py',
+    'animation_example.py'
+]
+
+def get_examples(cache_dir='~/.energyflow', which='all', overwrite=False):
     """Pulls examples from GitHub. To ensure availability of all examples
     update EnergyFlow to the latest version.
 
     **Arguments**
 
-    - **path** : _str_
-        - The destination for the downloaded files. Note that `examples`
-        is automatically appended to the end of this path.
+    - **cache_dir** : _str_
+        - The directory where to store/look for the files. Note that 
+        `'examples'` is automatically appended to the end of this path. If
+        `None`, the default path of `~/.energyflow` is used, unless the
+        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+        is used instead.
     - **which** : {_list_, `'all'`}
         - List of examples to download, or the string `'all'` in which 
         case all the available examples are downloaded.
@@ -62,7 +77,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
         examples = all_examples.intersection(which)
 
     base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
-    cache_dir = os.path.expanduser(path)
+    cache_dir = os.path.expanduser(_determine_cache_dir(cache_dir))
 
     # get each example
     files = []
@@ -243,6 +258,11 @@ def _pad_events_axis1(events, axis1_shape):
         return np.concatenate((events, zeros), axis=1)
 
     return events
+
+def _determine_cache_dir(cache_dir):
+    if cache_dir is None:
+        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
+    return cache_dir
 
 # the following code is closely based on analogous parts of Keras
 if sys.version_info[0] == 2:

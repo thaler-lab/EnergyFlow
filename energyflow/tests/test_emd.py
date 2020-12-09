@@ -11,18 +11,17 @@ import ot
 import pytest
 
 import energyflow as ef
-from energyflow import emd
 from test_utils import epsilon_percent, epsilon_diff
 
 #warnings.filterwarnings('error')
 
 @pytest.mark.emd
 def test_has_emd():
-    assert emd.emd
+    assert ef.emd.emd
 
 @pytest.mark.emd
 def test_has_emds():
-    assert emd.emds
+    assert ef.emd.emds
 
 nev = 15
 
@@ -40,8 +39,8 @@ def test_emd_equivalence(M1, M2, norm, R):
     emds1 = np.zeros((nev, nev))
     for i,ev1 in enumerate(events1):
         for j,ev2 in enumerate(events2):
-            emds1[i,j] = emd.emd(ev1, ev2, R=R, norm=norm, gdim=gdim)
-    emds2 = emd.emds(events1, events2, R=R, norm=norm, verbose=0, n_jobs=1, gdim=gdim)
+            emds1[i,j] = ef.emd.emd(ev1, ev2, R=R, norm=norm, gdim=gdim)
+    emds2 = ef.emd.emds(events1, events2, R=R, norm=norm, verbose=0, n_jobs=1, gdim=gdim)
 
     assert epsilon_diff(emds1, emds2, 10**-12)
 
@@ -49,9 +48,9 @@ def test_emd_equivalence(M1, M2, norm, R):
     emds1 = np.zeros((nev, nev))
     for i,ev1 in enumerate(events1):
         for j in range(i):
-            emds1[i,j] = emd.emd(ev1, events1[j], R=R, norm=norm, gdim=gdim)
+            emds1[i,j] = ef.emd.emd(ev1, events1[j], R=R, norm=norm, gdim=gdim)
     emds1 += emds1.T
-    emds2 = emd.emds(events1, R=R, norm=norm, verbose=0, n_jobs=1, gdim=gdim)
+    emds2 = ef.emd.emds(events1, R=R, norm=norm, verbose=0, n_jobs=1, gdim=gdim)
 
     assert epsilon_diff(emds1, emds2, 10**-12)
 
@@ -64,9 +63,9 @@ def test_n_jobs(n_jobs, M, norm, R):
     emds1 = np.zeros((nev, nev))
     for i,ev1 in enumerate(events):
         for j in range(i):
-            emds1[i,j] = emd.emd(ev1, events[j], R=R, norm=norm)
+            emds1[i,j] = ef.emd.emd(ev1, events[j], R=R, norm=norm)
     emds1 += emds1.T
-    emds2 = emd.emds(events, R=R, norm=norm, verbose=0, n_jobs=n_jobs)
+    emds2 = ef.emd.emds(events, R=R, norm=norm, verbose=0, n_jobs=n_jobs)
 
     assert epsilon_diff(emds1, emds2, 10**-12)
 
@@ -79,8 +78,8 @@ def test_gdim(gdim, evdim, M, norm, R):
     if R < np.sqrt(gdim)/2:
         pytest.skip('R too small')
     events = np.random.rand(nev, M, 1+evdim)
-    emds1 = emd.emds(events, gdim=gdim, norm=norm, R=R, n_jobs=1, verbose=0)
-    emds2 = emd.emds(events[:,:,:1+gdim], gdim=100, norm=norm, R=R, n_jobs=1, verbose=0)
+    emds1 = ef.emd.emds(events, gdim=gdim, norm=norm, R=R, n_jobs=1, verbose=0)
+    emds2 = ef.emd.emds(events[:,:,:1+gdim], gdim=100, norm=norm, R=R, n_jobs=1, verbose=0)
 
     assert epsilon_diff(emds1, emds2, 10**-13)
 
@@ -91,10 +90,10 @@ def test_gdim(gdim, evdim, M, norm, R):
 def test_periodic_phi(gdim, M):
     events = np.random.rand(nev, M, 1+gdim)
     for phi_col in range(1,gdim+1):
-        emds1 = emd.emds_pot(events, R=1.0, gdim=gdim, n_jobs=1, verbose=0)
+        emds1 = ef.emd.emds_pot(events, R=1.0, gdim=gdim, n_jobs=1, verbose=0)
         events_c = np.copy(events)
         events_c[:,:,phi_col] += 2*np.pi*np.random.randint(-10, 10, size=(nev, M))
-        emds2 = emd.emds_pot(events_c, R=1.0, gdim=gdim, periodic_phi=True, phi_col=phi_col, n_jobs=1, verbose=0)
+        emds2 = ef.emd.emds_pot(events_c, R=1.0, gdim=gdim, periodic_phi=True, phi_col=phi_col, n_jobs=1, verbose=0)
         assert epsilon_diff(emds1, emds2, 10**-12)
 
         ev1 = np.random.rand(10, 1+gdim) * 4*np.pi
@@ -120,8 +119,8 @@ def test_periodic_phi(gdim, M):
         zs2 = np.ascontiguousarray(ev2[:,0]/np.sum(ev2[:,0]))
         ot_w, ot_r = ot.emd2(zs1, zs2, thetaw), ot.emd2(zs1, zs2, thetar)
 
-        ef_w = emd.emd_pot(ev1, ev2, norm=True, gdim=gdim, periodic_phi=False, phi_col=phi_col)
-        ef_r = emd.emd_pot(ev1, ev2, norm=True, gdim=gdim, periodic_phi=True, phi_col=phi_col)
+        ef_w = ef.emd.emd_pot(ev1, ev2, norm=True, gdim=gdim, periodic_phi=False, phi_col=phi_col)
+        ef_r = ef.emd.emd_pot(ev1, ev2, norm=True, gdim=gdim, periodic_phi=True, phi_col=phi_col)
         
         assert epsilon_diff(ot_w, ef_w, 10**-14)
         assert epsilon_diff(ot_r, ef_r, 10**-14)
@@ -153,9 +152,9 @@ def test_emd_return_flow(dt, M, R):
             else:
                 Gshape = (len(ev1), len(ev2)+1)
 
-            cost, G = emd.emd(ev1, ev2, R=R, norm=(dt == 'nt'), return_flow=True)
+            cost, G = ef.emd.emd(ev1, ev2, R=R, norm=(dt == 'nt'), return_flow=True)
 
-            assert G.shape == Gshape or emd._EMD.weightdiff() < 1e-13
+            assert G.shape == Gshape or ef.emd._EMD.weightdiff() < 1e-13
 
 @pytest.mark.emd
 @pytest.mark.byhand
@@ -167,7 +166,7 @@ def test_emd_byhand_1_1(gdim, norm, R):
         ev1 = np.random.rand(1+gdim)
         for j in range(nev):
             ev2 = np.random.rand(1+gdim)
-            ef_emd = emd.emd(ev1, ev2, norm=norm, R=R, gdim=gdim)
+            ef_emd = ef.emd.emd(ev1, ev2, norm=norm, R=R, gdim=gdim)
             if norm:
                 byhand_emd = np.linalg.norm(ev1[1:]-ev2[1:])/R
             else:
@@ -207,7 +206,7 @@ def test_emde(M, R, beta):
 
     for ev1 in events1:
         for ev2 in events2:
-            ef_emd = emd.emd(ev1, ev2, R=R, beta=beta)
+            ef_emd = ef.emd.emd(ev1, ev2, R=R, beta=beta)
             emde_emd = emde(ev1, ev2, R=R, beta=beta)/R**beta
             if emde_emd == 0:
                 continue
@@ -215,7 +214,7 @@ def test_emde(M, R, beta):
 
     for i,ev1 in enumerate(events1):
         for j in range(i):
-            ef_emd = emd.emd(ev1, events1[j], R=R, beta=beta)
+            ef_emd = ef.emd.emd(ev1, events1[j], R=R, beta=beta)
             emde_emd = emde(ev1, events1[j], R=R, beta=beta)/R**beta
             if emde_emd == 0:
                 continue

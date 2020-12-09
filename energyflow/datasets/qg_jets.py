@@ -60,12 +60,12 @@ see the [FAQs](/faqs/#how-do-i-cite-the-energyflow-package).
 
 from __future__ import absolute_import, division, print_function
 
-import os
 import warnings
 
 import numpy as np
 
-from energyflow.utils.data_utils import _get_filepath, _pad_events_axis1
+from energyflow.utils.data_utils import (_determine_cache_dir, _get_filepath, 
+                                         _pad_events_axis1)
 
 __all__ = ['load']
 
@@ -513,8 +513,7 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia',
         raise ValueError("'generator' must be in " + str(GENERATORS))
 
     # determine cache_dir
-    if cache_dir is None:
-        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
+    cache_dir = _determine_cache_dir(cache_dir)
 
     # get number of files we need
     num_files = int(np.ceil(num_data/NUM_PER_FILE)) if num_data > -1 else MAX_NUM_FILES

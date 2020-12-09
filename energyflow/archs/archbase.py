@@ -52,7 +52,7 @@ import warnings
 
 import six
 
-from energyflow.utils import iter_or_rep
+from energyflow.utils.generic_utils import iter_or_rep
 
 __all__ = ['ArchBase', 'NNBase']
 

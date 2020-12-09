@@ -11,7 +11,7 @@
 from __future__ import absolute_import, division, print_function
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
-from energyflow.utils import iter_or_rep
+from energyflow.utils.generic_utils import iter_or_rep
 
 __all__ = ['DNN']
 

@@ -45,7 +45,8 @@ from numpy.core.multiarray import c_einsum
 
 from energyflow.algorithms import einsum
 from energyflow.base import EFMBase
-from energyflow.utils import flat_metric, timing
+from energyflow.utils import flat_metric
+from energyflow.utils.generic_utils import timing
 from energyflow.utils.graph_utils import *
 
 __all__ = ['EFM', 'EFMSet', 'efp2efms']

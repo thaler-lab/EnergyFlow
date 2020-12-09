@@ -10,27 +10,18 @@
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from collections import Counter
 import itertools
 
 __all__ = [
-    'import_igraph', 
     'get_components',
     'get_valency_structure',
     'graph_union',
     'nvert', 
     'valencies'
 ]
-
-# determine if igraph can be imported, returns either the igraph module or false
-def import_igraph():
-    try:
-        import igraph
-    except:
-        igraph = False
-    return igraph
 
 # standard graph form:
 #   - a graph is a list of tuples

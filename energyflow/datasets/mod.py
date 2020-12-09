@@ -95,9 +95,9 @@ import h5py
 import numpy as np
 import six
 
-from energyflow.utils.data_utils import _get_filepath
-from energyflow.utils import (COMP_MAP, EF_DATA_DIR, REVERSE_COMPS, ZENODO_URL_PATTERN,
-                              create_pool, explicit_comp, ischrgd, kwargs_check)
+from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath
+from energyflow.utils.generic_utils import *
+from energyflow.utils.particle_utils import ischrgd
 
 __all__ = ['MODDataset', 'load', 'filter_particles', 'kfactors']
 
@@ -229,14 +229,10 @@ def load(*args, **kwargs):
 
     # store arguments
     amount = kwargs['amount']
-    cache_dir = kwargs['cache_dir']
+    cache_dir = _determine_cache_dir(kwargs['cache_dir'])
     validate_files = kwargs['validate_files']
     verbose = kwargs['verbose']
     moddset_kwargs = {kw: kwargs[kw] for kw in ['store_gens', 'store_pfcs']}
-
-    # determine cache_dir
-    if cache_dir is None:
-        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
 
     # verify collection
     cname = kwargs['collection']

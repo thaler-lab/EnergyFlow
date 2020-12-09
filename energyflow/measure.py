@@ -96,7 +96,7 @@ import warnings
 import numpy as np
 import six
 
-from energyflow.utils import transfer
+from energyflow.utils.generic_utils import transfer
 from energyflow.utils.particle_utils import *
 
 __all__ = ['Measure']

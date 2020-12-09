@@ -28,18 +28,18 @@ import numpy as np
 
 from energyflow.utils.particle_utils import phi_fix
 
+__all__ = []
+
 # determine if fastjet can be imported, returns either the fastjet module or false
-def import_fastjet():
+def _import_fastjet():
     try:
         import fastjet
     except:
         fastjet = False
     return fastjet
 
-__all__ = ['import_fastjet']
-fj = import_fastjet()
-
-if fj:
+fastjet = _import_fastjet()
+if fastjet:
 
     __all__ += ['pjs_from_ptyphims', 'ptyphims_from_pjs', 'cluster', 'softdrop']
 
@@ -59,7 +59,7 @@ if fj:
             array.
         """
 
-        return [fj.PtYPhiM(*ptyphim[:4]) for ptyphim in ptyphims]
+        return [fastjet.PtYPhiM(*ptyphim[:4]) for ptyphim in ptyphims]
 
     def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
         """Extracts hadronic four-vectors from FastJet PseudoJets.
@@ -91,7 +91,7 @@ if fj:
 
         return event
 
-    def cluster(pjs, algorithm='ca', R=fj.JetDefinition.max_allowable_R):
+    def cluster(pjs, algorithm='ca', R=fastjet.JetDefinition.max_allowable_R):
         """Clusters a list of PseudoJets according to a specified jet
         algorithm and jet radius.
 
@@ -116,15 +116,15 @@ if fj:
 
         algorithm_l = algorithm.lower()
         if algorithm_l  == 'kt':
-            jet_alg = fj.kt_algorithm
+            jet_alg = fastjet.kt_algorithm
         elif algorithm_l == 'antikt' or algorithm_l == 'akt':
-            jet_alg = fj.antikt_algorithm
+            jet_alg = fastjet.antikt_algorithm
         elif algorithm_l in {'ca', 'cambridge', 'cambridge_aachen'}:
-            jet_alg = fj.cambridge_algorithm
+            jet_alg = fastjet.cambridge_algorithm
         else:
             raise ValueError("algorithm '{}' not understood".format(algorithm))
 
-        return fj.JetDefinition(jet_alg, float(R))(pjs)
+        return fastjet.JetDefinition(jet_alg, float(R))(pjs)
 
     def softdrop(jet, zcut=0.1, beta=0, R=1.0):
         r"""Implements the SoftDrop grooming algorithm on a jet that has been
@@ -165,7 +165,7 @@ if fj:
             obs/#zg_from_pj).
         """
 
-        parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
+        parent1, parent2 = fastjet.PseudoJet(), fastjet.PseudoJet()
         if not jet.has_parents(parent1, parent2):
             return jet
         

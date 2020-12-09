@@ -11,9 +11,9 @@
 from __future__ import absolute_import, division, print_function
 
 import contextlib
-from functools import wraps
+import functools
 import gzip
-from itertools import repeat
+import itertools
 import json
 import multiprocessing
 import os
@@ -24,7 +24,6 @@ import warnings
 import numpy as np
 
 __all__ = [
-    'ALL_EXAMPLES',
     'COMP_MAP',
     'DEFAULT_EFP_FILE',
     'EF_DATA_DIR',
@@ -40,23 +39,11 @@ __all__ = [
     'transfer'
 ]
 
-# list of examples
-ALL_EXAMPLES = [
-    'efn_example.py',
-    'efn_regression_example.py',
-    #'efn_tfdataset_example.py',
-    'pfn_example.py',
-    #'pfn_tfdataset_example.py',
-    'cnn_example.py',
-    'dnn_example.py',
-    'efp_example.py',
-    'animation_example.py'
-]
-
 # get access to the data directory of the installed package and the default efp file
 EF_DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.json.gz')
-REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
+
+# dictionaries for helping with automated comparisons
 COMP_MAP = {
     '>':  '__gt__', 
     '<':  '__lt__', 
@@ -65,32 +52,10 @@ COMP_MAP = {
     '==': '__eq__', 
     '!=': '__ne__'
 }
+REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 
 # zenodo URL pattern
 ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
-
-# handle pickling methods in python 2
-#if sys.version_info[0] == 2:
-#    import copy_reg
-#    import types
-#
-#    def pickle_method(method):
-#        func_name = method.__name__
-#        obj = method.__self__
-#        cls = obj.__class__
-#        return unpickle_method, (func_name, obj, cls)
-#
-#    def unpickle_method(func_name, obj, cls):
-#        for cls in cls.mro():
-#            try:
-#                func = cls.__dict__[func_name]
-#            except KeyError:
-#                pass
-#            else:
-#                break
-#        return func.__get__(obj, cls)
-#
-#    copy_reg.pickle(types.MethodType, pickle_method, unpickle_method)
 
 # concatenates con. and disc. specs along axis 0, handling empty disc. specs
 def concat_specs(c_specs, d_specs):
@@ -102,21 +67,21 @@ def concat_specs(c_specs, d_specs):
 # handle Pool not being a context manager in Python < 3.4
 @contextlib.contextmanager
 def create_pool(*args, **kwargs):
-    #if sys.version_info < (3, 4):
-    #    pool = multiprocessing.Pool(*args, **kwargs)
-    #    yield pool
-    #    pool.terminate()
-    #else:
-    if 'fork' not in multiprocessing.get_all_start_methods():
-        warnings.warn("'fork' is not available as a multiprocessing start method, "
-                      + "EnergyFlow multicore functionality may not work properly")
-        with multiprocessing.Pool(*args, **kwargs) as pool:
-            yield pool
+    if sys.version_info < (3, 4):
+        pool = multiprocessing.Pool(*args, **kwargs)
+        yield pool
+        pool.terminate()
     else:
-        with multiprocessing.get_context('fork').Pool(*args, **kwargs) as pool:
-            yield pool
+        if 'fork' not in multiprocessing.get_all_start_methods():
+            warnings.warn("'fork' is not available as a multiprocessing start method, "
+                          + "EnergyFlow multicore functionality may not work properly")
+            with multiprocessing.Pool(*args, **kwargs) as pool:
+                yield pool
+        else:
+            with multiprocessing.get_context('fork').Pool(*args, **kwargs) as pool:
+                yield pool
 
-# applies comprison comp of obj on val
+# applies comparison comp of obj on val
 def explicit_comp(obj, comp, val):
     return getattr(obj, COMP_MAP[comp])(val)
 
@@ -124,13 +89,13 @@ def explicit_comp(obj, comp, val):
 def iter_or_rep(arg):
     if isinstance(arg, (tuple, list)):
         if len(arg) == 1:
-            return repeat(arg[0])
+            return itertools.repeat(arg[0])
         else:
             return arg
-    elif isinstance(arg, repeat):
+    elif isinstance(arg, itertools.repeat):
         return arg
     else:
-        return repeat(arg)
+        return itertools.repeat(arg)
 
 # raises TypeError if unexpected keyword left in kwargs
 def kwargs_check(name, kwargs, allowed=None):
@@ -161,7 +126,7 @@ def load_efp_file(filename):
 
 # timing meta-decorator
 def timing(obj, func):
-    @wraps(func)
+    @functools.wraps(func)
     def decorated(*args, **kwargs):
         ts = time.process_time()
         r = func(*args, **kwargs)
@@ -178,3 +143,26 @@ def transfer(obj1, obj2, attrs):
     else:
         for attr in attrs:
             setattr(obj1, attr, getattr(obj2, attr))
+
+# handle pickling methods in python 2
+if sys.version_info[0] == 2:
+    import copy_reg
+    import types
+
+    def pickle_method(method):
+        func_name = method.__name__
+        obj = method.__self__
+        cls = obj.__class__
+        return unpickle_method, (func_name, obj, cls)
+
+    def unpickle_method(func_name, obj, cls):
+        for cls in cls.mro():
+            try:
+                func = cls.__dict__[func_name]
+            except KeyError:
+                pass
+            else:
+                break
+        return func.__get__(obj, cls)
+
+    copy_reg.pickle(types.MethodType, pickle_method, unpickle_method)

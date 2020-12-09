@@ -91,6 +91,12 @@ __all__ = [
     'pids2chrgs',
     'ischrgd',
 
+    # particle properties functions
+    'particle_properties',
+    'particle_masses',
+    'particle_charges',
+    'charged_pids',
+
     # other functions
     'phi_fix',
     'flat_metric',
@@ -720,77 +726,103 @@ def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
 
     return ptyphims
 
-# charges and masses (in GeV) of particles by pdgid
-# obtained from the Pythia8 Particle Data page
-# http://home.thep.lu.se/~torbjorn/pythia82html/ParticleData.html
-# includes fundamental particles and most ground state uds mesons and baryons 
-# as well as some things that have shown up at Pythia parton level
-PARTICLE_PROPERTIES = {
-#   PDGID     CHARGE MASS          NAME
-    0:       ( 0.,   0.,      ), # void
-    1:       (-1./3, 0.33,    ), # down
-    2:       ( 2./3, 0.33,    ), # up
-    3:       (-1./3, 0.50,    ), # strange
-    4:       ( 2./3, 1.50,    ), # charm
-    5:       (-1./3, 4.80,    ), # bottom
-    6:       ( 2./3, 171.,    ), # top
-    11:      (-1.,   5.11e-4, ), # e-
-    12:      ( 0.,   0.,      ), # nu_e
-    13:      (-1.,   0.10566, ), # mu-
-    14:      ( 0.,   0.,      ), # nu_mu
-    15:      (-1.,   1.77682, ), # tau-
-    16:      ( 0.,   0.,      ), # nu_tau
-    21:      ( 0.,   0.,      ), # gluon
-    22:      ( 0.,   0.,      ), # photon
-    23:      ( 0.,   91.1876, ), # Z
-    24:      ( 1.,   80.385,  ), # W+
-    25:      ( 0.,   125.,    ), # Higgs
-    111:     ( 0.,   0.13498, ), # pi0
-    113:     ( 0.,   0.77549, ), # rho0
-    130:     ( 0.,   0.49761, ), # K0-long
-    211:     ( 1.,   0.13957, ), # pi+
-    213:     ( 1.,   0.77549, ), # rho+
-    221:     ( 0.,   0.54785, ), # eta
-    223:     ( 0.,   0.78265, ), # omega
-    310:     ( 0.,   0.49761, ), # K0-short
-    321:     ( 1.,   0.49368, ), # K+
-    331:     ( 0.,   0.95778, ), # eta'
-    333:     ( 0.,   1.01946, ), # phi
-    445:     ( 0.,   3.55620, ), # chi_2c
-    555:     ( 0.,   9.91220, ), # chi_2b
-    2101:    ( 1./3, 0.57933, ), # ud_0
-    2112:    ( 0.,   0.93957, ), # neutron
-    2203:    ( 4./3, 0.77133, ), # uu_1
-    2212:    ( 1.,   0.93827, ), # proton
-    1114:    (-1.,   1.232,   ), # Delta-
-    2114:    ( 0.,   1.232,   ), # Delta0
-    2214:    ( 1.,   1.232,   ), # Delta+
-    2224:    ( 2.,   1.232,   ), # Delta++
-    3122:    ( 0.,   1.11568, ), # Lambda0
-    3222:    ( 1.,   1.18937, ), # Sigma+
-    3212:    ( 0.,   1.19264, ), # Sigma0
-    3112:    (-1.,   1.19745, ), # Sigma-
-    3312:    (-1.,   1.32171, ), # Xi-
-    3322:    ( 0.,   1.31486, ), # Xi0
-    3334:    (-1.,   1.67245, ), # Omega-
-    10441:   ( 0.,   3.41475, ), # chi_0c
-    10551:   ( 0.,   9.85940, ), # chi_0b
-    20443:   ( 0.,   3.51066, ), # chi_1c
-    9940003: ( 0.,   3.29692, ), # J/psi[3S1(8)]
-    9940005: ( 0.,   3.75620, ), # chi_2c[3S1(8)]
-    9940011: ( 0.,   3.61475, ), # chi_0c[3S1(8)]
-    9940023: ( 0.,   3.71066, ), # chi_1c[3S1(8)]
-    9940103: ( 0.,   3.88611, ), # psi(2S)[3S1(8)]
-    9941003: ( 0.,   3.29692, ), # J/psi[1S0(8)]
-    9942003: ( 0.,   3.29692, ), # J/psi[3PJ(8)]
-    9942033: ( 0.,   3.97315, ), # psi(3770)[3PJ(8)]
-    9950203: ( 0.,   10.5552, ), # Upsilon(3S)[3S1(8)]
-}
+_PARTICLE_PROPERTIES_DEFINED = False
+def _ensure_particle_properties():
 
-# dictionaries derived from the main one above
-PARTICLE_CHARGES = {pdgid: props[0] for pdgid,props in PARTICLE_PROPERTIES.items()}
-PARTICLE_MASSES  = {pdgid: props[1] for pdgid,props in PARTICLE_PROPERTIES.items()}
-CHARGED_PIDS = frozenset(pdgid for pdgid,charge in PARTICLE_CHARGES.items() if charge != 0.)
+    global _PARTICLE_PROPERTIES_DEFINED
+    if _PARTICLE_PROPERTIES_DEFINED:
+        return
+    _PARTICLE_PROPERTIES_DEFINED = True
+
+    # charges and masses (in GeV) of particles by pdgid
+    # obtained from the Pythia8 Particle Data page
+    # http://home.thep.lu.se/~torbjorn/pythia82html/ParticleData.html
+    # includes fundamental particles and most ground state uds mesons and baryons 
+    # as well as some things that have shown up at Pythia parton level
+    global PARTICLE_PROPERTIES
+    PARTICLE_PROPERTIES = {
+    #   PDGID     CHARGE MASS          NAME
+        0:       ( 0.,   0.,      ), # void
+        1:       (-1./3, 0.33,    ), # down
+        2:       ( 2./3, 0.33,    ), # up
+        3:       (-1./3, 0.50,    ), # strange
+        4:       ( 2./3, 1.50,    ), # charm
+        5:       (-1./3, 4.80,    ), # bottom
+        6:       ( 2./3, 171.,    ), # top
+        11:      (-1.,   5.11e-4, ), # e-
+        12:      ( 0.,   0.,      ), # nu_e
+        13:      (-1.,   0.10566, ), # mu-
+        14:      ( 0.,   0.,      ), # nu_mu
+        15:      (-1.,   1.77682, ), # tau-
+        16:      ( 0.,   0.,      ), # nu_tau
+        21:      ( 0.,   0.,      ), # gluon
+        22:      ( 0.,   0.,      ), # photon
+        23:      ( 0.,   91.1876, ), # Z
+        24:      ( 1.,   80.385,  ), # W+
+        25:      ( 0.,   125.,    ), # Higgs
+        111:     ( 0.,   0.13498, ), # pi0
+        113:     ( 0.,   0.77549, ), # rho0
+        130:     ( 0.,   0.49761, ), # K0-long
+        211:     ( 1.,   0.13957, ), # pi+
+        213:     ( 1.,   0.77549, ), # rho+
+        221:     ( 0.,   0.54785, ), # eta
+        223:     ( 0.,   0.78265, ), # omega
+        310:     ( 0.,   0.49761, ), # K0-short
+        321:     ( 1.,   0.49368, ), # K+
+        331:     ( 0.,   0.95778, ), # eta'
+        333:     ( 0.,   1.01946, ), # phi
+        445:     ( 0.,   3.55620, ), # chi_2c
+        555:     ( 0.,   9.91220, ), # chi_2b
+        2101:    ( 1./3, 0.57933, ), # ud_0
+        2112:    ( 0.,   0.93957, ), # neutron
+        2203:    ( 4./3, 0.77133, ), # uu_1
+        2212:    ( 1.,   0.93827, ), # proton
+        1114:    (-1.,   1.232,   ), # Delta-
+        2114:    ( 0.,   1.232,   ), # Delta0
+        2214:    ( 1.,   1.232,   ), # Delta+
+        2224:    ( 2.,   1.232,   ), # Delta++
+        3122:    ( 0.,   1.11568, ), # Lambda0
+        3222:    ( 1.,   1.18937, ), # Sigma+
+        3212:    ( 0.,   1.19264, ), # Sigma0
+        3112:    (-1.,   1.19745, ), # Sigma-
+        3312:    (-1.,   1.32171, ), # Xi-
+        3322:    ( 0.,   1.31486, ), # Xi0
+        3334:    (-1.,   1.67245, ), # Omega-
+        10441:   ( 0.,   3.41475, ), # chi_0c
+        10551:   ( 0.,   9.85940, ), # chi_0b
+        20443:   ( 0.,   3.51066, ), # chi_1c
+        9940003: ( 0.,   3.29692, ), # J/psi[3S1(8)]
+        9940005: ( 0.,   3.75620, ), # chi_2c[3S1(8)]
+        9940011: ( 0.,   3.61475, ), # chi_0c[3S1(8)]
+        9940023: ( 0.,   3.71066, ), # chi_1c[3S1(8)]
+        9940103: ( 0.,   3.88611, ), # psi(2S)[3S1(8)]
+        9941003: ( 0.,   3.29692, ), # J/psi[1S0(8)]
+        9942003: ( 0.,   3.29692, ), # J/psi[3PJ(8)]
+        9942033: ( 0.,   3.97315, ), # psi(3770)[3PJ(8)]
+        9950203: ( 0.,   10.5552, ), # Upsilon(3S)[3S1(8)]
+    }
+
+    # dictionaries derived from the main one above
+    global PARTICLE_CHARGES, PARTICLE_MASSES, CHARGED_PIDS
+    PARTICLE_CHARGES = {pdgid: props[0] for pdgid,props in PARTICLE_PROPERTIES.items()}
+    PARTICLE_MASSES  = {pdgid: props[1] for pdgid,props in PARTICLE_PROPERTIES.items()}
+    CHARGED_PIDS = frozenset(pdgid for pdgid,charge in PARTICLE_CHARGES.items() if charge != 0.)
+
+def particle_properties():
+    _ensure_particle_properties()
+    return PARTICLE_PROPERTIES
+
+def particle_masses():
+    _ensure_particle_properties()
+    return PARTICLE_MASSES
+
+def particle_charges():
+    _ensure_particle_properties()
+    return PARTICLE_CHARGES
+
+def charged_pids():
+    _ensure_particle_properties()
+    return CHARGED_PIDS
 
 def pids2ms(pids, error_on_unknown=False):
     r"""Map an array of [Particle Data Group IDs](http://pdg.lbl.gov/2018/
@@ -815,10 +847,11 @@ def pids2ms(pids, error_on_unknown=False):
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
 
+    p_ms = particle_masses()
     if error_on_unknown:
-        masses = [PARTICLE_MASSES[pid] for pid in abspids]
+        masses = [p_ms[pid] for pid in abspids]
     else:
-        masses = [PARTICLE_MASSES.get(pid, 0.) for pid in abspids]
+        masses = [p_ms.get(pid, 0.) for pid in abspids]
 
     return np.asarray(masses, dtype=float).reshape(orig_shape)
 
@@ -847,10 +880,11 @@ def pids2chrgs(pids, error_on_unknown=False):
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
 
+    p_chrgs = particle_charges()
     if error_on_unknown:
-        charges = [PARTICLE_CHARGES[pid] for pid in abspids]
+        charges = [p_chrgs[pid] for pid in abspids]
     else:
-        charges = [PARTICLE_CHARGES.get(pid, 0.) for pid in abspids]
+        charges = [p_chrgs.get(pid, 0.) for pid in abspids]
 
     return signs * np.asarray(charges, dtype=float).reshape(orig_shape)
 
@@ -876,10 +910,11 @@ def ischrgd(pids, ignored_pids=None):
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
 
+    chrgd_pids = charged_pids()
     if ignored_pids is None:
-        charged = np.asarray([pid in CHARGED_PIDS for pid in abspids], dtype=bool)
+        charged = np.asarray([pid in chrgd_pids for pid in abspids], dtype=bool)
     else:
-        charged = np.asarray([(pid in CHARGED_PIDS) and (pid not in ignored_pids) 
+        charged = np.asarray([(pid in chrgd_pids) and (pid not in ignored_pids) 
                               for pid in abspids], dtype=bool)
 
     return charged.reshape(orig_shape)

@@ -21,7 +21,7 @@ import numpy as np
 import six
 
 from energyflow.measure import Measure, MEASURE_KWARGS
-from energyflow.utils import create_pool, kwargs_check
+from energyflow.utils.generic_utils import create_pool, kwargs_check
 
 ###############################################################################
 # EFBase

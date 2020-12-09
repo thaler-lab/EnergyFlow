@@ -17,7 +17,8 @@ import numpy as np
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.archs.dnn import construct_dense
-from energyflow.utils import PointCloudDataset, iter_or_rep, kwargs_check
+from energyflow.utils.arch_utils import PointCloudDataset
+from energyflow.utils.generic_utils import iter_or_rep, kwargs_check
 
 __all__ = [
 
@@ -52,11 +53,14 @@ def _dot_axis():
 ################################################################################
 
 def _ensure_keras_imported():
-    global Dense, Dot, Dropout, TimeDistributed
-    from tensorflow.keras.layers import Dense, Dot, Dropout, TimeDistributed
+    global Dense, Dot, Dropout, Lambda, TimeDistributed
+    from tensorflow.keras.layers import Dense, Dot, Dropout, Lambda, TimeDistributed
 
     global L2
     from tensorflow.keras.regularizers import L2
+
+    global K
+    import tensorflow.keras.backend as K
 
 ################################################################################
 # Input Functions
@@ -143,8 +147,7 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
 def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
     """"""
 
-    from tensorflow.keras.layers import Lambda
-    import tensorflow.keras.backend as K
+    _ensure_keras_imported()
 
     # define a function which maps the given mask_val to zero
     def mask_func(X):
@@ -160,8 +163,7 @@ def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
 def construct_point_cloud_mask(input_tensors, mask_val=0., name=None, coeffs=None):
     """"""
 
-    from tensorflow.keras.layers import Lambda
-    import tensorflow.keras.backend as K
+    _ensure_keras_imported()
 
     # define a function which maps the given mask_val to zero
     def mask_func(X):

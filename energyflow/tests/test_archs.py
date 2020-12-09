@@ -3,6 +3,9 @@
 
 from __future__ import absolute_import, division
 
+import os
+import shutil
+
 import numpy as np
 import pytest
 
@@ -10,7 +13,7 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.layers import PReLU
 from tensorflow.keras.initializers import Constant
 
-from energyflow import archs
+import energyflow as ef
 from test_utils import epsilon_percent, epsilon_diff
 
 @pytest.mark.arch
@@ -22,7 +25,7 @@ def test_DNN1(sizes, acts, k_inits):
     n, input_dim = 50, 10
     X_train = np.random.rand(n, input_dim)
     Y_train = np.random.rand(n, 2)
-    dnn = archs.DNN(input_dim=input_dim, dense_sizes=sizes, acts=acts, k_inits=k_inits, summary=False, output_dim=2)
+    dnn = ef.archs.DNN(input_dim=input_dim, dense_sizes=sizes, acts=acts, k_inits=k_inits, summary=False, output_dim=2)
     dnn.fit(X_train, Y_train, epochs=1, batch_size=10)
 
 @pytest.mark.arch
@@ -35,8 +38,8 @@ def test_DNN2(sizes, dropouts, l2_regs, output_dim):
     n, input_dim = 50, 10
     X_train = np.random.rand(n, input_dim)
     Y_train = np.random.rand(n, output_dim)
-    dnn = archs.DNN(input_dim=input_dim, dense_sizes=sizes, dropouts=dropouts, 
-              l2_regs=l2_regs, summary=False, output_dim=output_dim)
+    dnn = ef.archs.DNN(input_dim=input_dim, dense_sizes=sizes, dropouts=dropouts, 
+                       l2_regs=l2_regs, summary=False, output_dim=output_dim)
     dnn.fit(X_train, Y_train, epochs=1, batch_size=10)
 
 @pytest.mark.arch
@@ -56,8 +59,8 @@ def test_CNN_required(data_format, nb_chan, npix, filter_sizes, num_filters, den
 
     X_train = np.random.rand(50, *input_shape)
     Y_train = np.random.rand(50, 2)
-    cnn = archs.CNN(input_shape=input_shape, filter_sizes=filter_sizes, num_filters=num_filters, 
-                    dense_sizes=dense_sizes, pool_sizes=pool_sizes, summary=False, data_format=data_format)
+    cnn = ef.archs.CNN(input_shape=input_shape, filter_sizes=filter_sizes, num_filters=num_filters, 
+                       dense_sizes=dense_sizes, pool_sizes=pool_sizes, summary=False, data_format=data_format)
     cnn.fit(X_train, Y_train, epochs=1, batch_size=10)
 
 @pytest.mark.arch
@@ -69,7 +72,7 @@ def test_EFN_required(input_dim, Phi_sizes, F_sizes):
     n, m = 50, 10
     X_train = [np.random.rand(n, m), np.random.rand(n, m, input_dim)]
     Y_train = np.random.rand(n, 2)
-    efn = archs.EFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
+    efn = ef.archs.EFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
     efn.fit(X_train, Y_train, epochs=1, batch_size=10)
     efn.inputs, efn.latent, efn.weights, efn.outputs, efn.Phi, efn.F
 
@@ -82,7 +85,7 @@ def test_PFN_required(input_dim, Phi_sizes, F_sizes):
     n, m = 50, 10
     X_train = np.random.rand(n, m, input_dim)
     Y_train = np.random.rand(n, 2)
-    pfn = archs.PFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
+    pfn = ef.archs.PFN(input_dim=input_dim, Phi_sizes=Phi_sizes, F_sizes=F_sizes, summary=False)
     pfn.fit(X_train, Y_train, epochs=1, batch_size=10)
     pfn.inputs, pfn.latent, pfn.weights, pfn.outputs, pfn.Phi, pfn.F
 
@@ -91,17 +94,20 @@ def test_PFN_required(input_dim, Phi_sizes, F_sizes):
 @pytest.mark.parametrize('modelcheck_opts', [{}, {'save_best_only': False}])
 @pytest.mark.parametrize('save_weights_only', [True, False])
 @pytest.mark.parametrize('save_while_training', [True, False])
-@pytest.mark.parametrize('model_path', ['', 'efn_test_model.h5'])
+@pytest.mark.parametrize('model_path', ['', '.test/efn_test_model'])
 def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, modelcheck_opts):
     n, m = 50, 10
     X_train = [np.random.rand(n, m), np.random.rand(n, m, 2)]
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2)]
     Y_val = np.random.rand(n//10, 2)
-    efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], summary=False, filepath=model_path, 
-                    save_while_training=save_while_training, save_weights_only=save_weights_only,
-                    modelcheck_opts=modelcheck_opts)
+    efn = ef.archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], summary=False, filepath=model_path, 
+                       save_while_training=save_while_training, save_weights_only=save_weights_only,
+                       modelcheck_opts=modelcheck_opts)
     hist = efn.fit(X_train, Y_train, epochs=1, batch_size=10, validation_data=[X_val, Y_val])
+
+    if len(model_path) and os.path.exists(os.path.dirname(model_path)):
+        shutil.rmtree(os.path.dirname(model_path))
 
 @pytest.mark.arch
 @pytest.mark.masking
@@ -114,7 +120,7 @@ def test_EFN_masking(mask_val):
     X_train = [np.random.rand(n,m1), np.random.rand(n,m1,input_dim)]
     y_train = np.random.rand(n, 2)
 
-    efn = archs.EFN(input_dim=input_dim, Phi_sizes=[10], F_sizes=[10], mask_val=mask_val)
+    efn = ef.archs.EFN(input_dim=input_dim, Phi_sizes=[10], F_sizes=[10], mask_val=mask_val)
     efn.fit(X_train, y_train, epochs=1)
 
     X_test = [np.random.rand(n,m2), np.random.rand(n,m2,input_dim)]
@@ -138,7 +144,7 @@ def test_PFN_masking(mask_val):
     X_train = np.random.rand(n,m1,input_dim)
     y_train = np.random.rand(n, 2)
 
-    pfn = archs.PFN(input_dim=input_dim, Phi_sizes=[10], F_sizes=[10], mask_val=mask_val)
+    pfn = ef.archs.PFN(input_dim=input_dim, Phi_sizes=[10], F_sizes=[10], mask_val=mask_val)
     pfn.fit(X_train, y_train, epochs=1)
 
     X_test = np.random.rand(n,m2,input_dim)
@@ -165,7 +171,7 @@ def test_PFN_masking(mask_val):
 
     assert epsilon_diff(pfn.predict(X_test), pfn.predict(X_test_mask), 10**-15)
 
-    kf = tf.keras.backend.function(inputs=pfn.inputs, outputs=pfn.latent[0])
+    kf = K.function(inputs=pfn.inputs, outputs=pfn.latent[0])
     pure_mask = kf([0*X_test[0] + mask_val, 0*X_test[1] + mask_val])[0]
     assert epsilon_diff(pure_mask, 0, 10**-15)
 
@@ -179,7 +185,7 @@ def test_EFN_global_features(nglobal):
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2), np.random.rand(n//10, nglobal)]
     Y_val = np.random.rand(n//10, 2)
-    efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
+    efn = ef.archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
     hist = efn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=[X_val, Y_val])
     efn.global_feature_tensor
 
@@ -193,7 +199,7 @@ def test_PFN_global_features(nglobal):
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m, 3), np.random.rand(n//10, nglobal)]
     Y_val = np.random.rand(n//10, 2)
-    pfn = archs.PFN(input_dim=3, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
+    pfn = ef.archs.PFN(input_dim=3, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
     hist = pfn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=[X_val, Y_val])
     pfn.global_feature_tensor
 

@@ -92,7 +92,7 @@ def test_shapes_from_ptyphis(method, nevents, nparticles):
 
     elif 'pids' in method:
         ptyphims[...,3] = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
-                           np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+                           np.random.choice(list(ef.particle_masses().keys()), 
                                             size=(nevents, nparticles)))
         results = func(ptyphims)
 
@@ -338,7 +338,7 @@ def test_sum_ptyphims(nparticles, scheme):
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_pids2ms(nevents, nparticles):
     pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
-            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+            np.random.choice(list(ef.particle_masses().keys()), 
                              size=(nevents, nparticles)))
     
     # test shapes
@@ -360,7 +360,7 @@ def test_pids2ms(nevents, nparticles):
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_pids2chrgs(nevents, nparticles):
     pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
-            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+            np.random.choice(list(ef.particle_masses().keys()), 
                              size=(nevents, nparticles)))
     
     # test shapes
@@ -385,7 +385,7 @@ def test_pids2chrgs(nevents, nparticles):
 @pytest.mark.utils
 def test_get_graph_components():
     efpset = ef.EFPSet()
-    ps = np.array([len(ef.utils.get_components(graph)) for graph in efpset.graphs()])
+    ps = np.array([len(ef.utils.graph_utils.get_components(graph)) for graph in efpset.graphs()])
 
     # note that the empty graph is recorded as having 1 connected component by EFPSet
     assert np.all(ps[1:] == efpset.specs[1:,-2])

@@ -39,8 +39,8 @@ from energyflow.algorithms import VariableElimination, einsum_path, einsum
 from energyflow.base import EFPBase
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.measure import PF_MARKER
-from energyflow.utils import (concat_specs, create_pool, explicit_comp,
-                              kwargs_check, load_efp_file)
+from energyflow.utils.generic_utils import (concat_specs, create_pool, explicit_comp,
+                                            kwargs_check, load_efp_file)
 from energyflow.utils.graph_utils import *
 
 __all__ = ['EFP', 'EFPSet']
@@ -423,6 +423,9 @@ class EFPSet(EFPBase):
 
         # initialize EFPBase
         super(EFPSet, self).__init__(kwargs)
+
+        # delay this import until here to avoid circular dependency
+        from energyflow.gen import Generator
 
         # handle different methods of initialization
         maxs = ['nmax', 'emax', 'dmax', 'cmax', 'vmax', 'comp_dmaxs']
@@ -842,6 +845,3 @@ class EFPSet(EFPBase):
         """
 
         return self._cols
-
-# put gen import here so it succeeds
-from energyflow.gen import Generator

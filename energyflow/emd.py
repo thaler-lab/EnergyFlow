@@ -67,7 +67,8 @@ try:
 except:
     wasserstein = False
 
-from energyflow.utils import create_pool, kwargs_check, p4s_from_ptyphims
+from energyflow.utils import p4s_from_ptyphims
+from energyflow.utils.generic_utils import create_pool, kwargs_check
 
 __all__ = [
     'emd', 'emds',

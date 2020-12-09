@@ -6,6 +6,9 @@
 - `archs` submodule now imported by default; tensorflow/sklearn imports delayed until needed.
 - Renamed the `event_utils` submodule to `random_utils` since it deals with the generation of random collections of momenta.
 - Environment variable added for energyflow cache_dir.
+- Renamed `path` keyword argument to `cache_dir` in the `get_examples` function.
+- `arch_utils` created and imported at the top level.
+- `data_utils` moved to the top level.
 
 ## 1.3.x
 
