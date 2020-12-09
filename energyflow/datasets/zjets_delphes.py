@@ -117,7 +117,7 @@ ZENODO_RECORD = '3548091'
 # load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
 #               source='zenodo', which='all',
 #               include_keys=None, exclude_keys=None)
-def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo', 
+def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo', 
                   which='all', include_keys=None, exclude_keys=None):
     """Loads in the Z+jet Pythia/Herwig + Delphes datasets. Any file that is
     needed that has not been cached will be automatically downloaded.
@@ -136,8 +136,12 @@ def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source=
     - **pad**: _bool_
         - Whether to pad the particles with zeros in order to form contiguous
         arrays.
-    - **cache_dir**: _str_
-        - Path to the directory where the dataset files should be stored.
+    - **cache_dir** : _str_
+        - The directory where to store/look for the files. Note that 
+        `'datasets'` is automatically appended to the end of this path. If
+        `None`, the default path of `~/.energyflow` is used, unless the
+        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+        is used instead.
     - **source**: {`'dropbox'`, `'zenodo'`}
         - Which location to obtain the files from.
     - **which**: {`'gen'`, `'sim'`, `'all'`}
@@ -166,6 +170,10 @@ def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source=
         global ZJD_INFO
         with open(os.path.join(EF_DATA_DIR, 'ZjetsDelphes.json'), 'r') as f:
             ZJD_INFO = json.load(f)
+
+    # determine cache_dir
+    if cache_dir is None:
+        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
 
     # check that options are valid
     dataset_low = dataset.lower()

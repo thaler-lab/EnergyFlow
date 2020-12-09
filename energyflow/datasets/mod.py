@@ -167,6 +167,14 @@ def load(*args, **kwargs):
         `'datasets'` is automatically appended to the end of this path, as well
         as the collection name. For example, the default is to download/look
         for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`.
+    - **cache_dir** : _str_
+        - The directory where to store/look for the files. Note that 
+        `'datasets'` is automatically appended to the end of this path, as well
+        as the collection name. For example, the default is to download/look
+        for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`. If
+        `None`, the default path of `~/.energyflow` is used, unless the
+        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+        is used instead.
     - **collection** : _str_
         - Name of the collection of datasets to consider. Currently the only
         collection is `'CMS2011AJets'`, though more may be added in the future.
@@ -203,7 +211,7 @@ def load(*args, **kwargs):
 
     default_kwargs = {
         'amount': 1,
-        'cache_dir': '~/.energyflow',
+        'cache_dir': None,
         'collection': 'CMS2011AJets',
         'dataset': 'cms',
         'subdatasets': None,
@@ -225,6 +233,10 @@ def load(*args, **kwargs):
     validate_files = kwargs['validate_files']
     verbose = kwargs['verbose']
     moddset_kwargs = {kw: kwargs[kw] for kw in ['store_gens', 'store_pfcs']}
+
+    # determine cache_dir
+    if cache_dir is None:
+        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
 
     # verify collection
     cname = kwargs['collection']

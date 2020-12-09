@@ -24,7 +24,7 @@ import energyflow as ef
 ###############################################################################
 
 # data controls, can go up to 2000000 for full dataset
-train, val, test = 7500, 1000, 1500
+train, val, test = 75000, 10000, 15000
 # train, val, test = 1000000, 200000, 200000
 use_pids = False
 use_global_features = False
@@ -74,9 +74,9 @@ print('Model summary:')
 pfn = ef.archs.PFN(input_dim=(ncol, 2*ncol), Phi_sizes=Phi_sizes, F_sizes=F_sizes, weight_coeffs=(1.0, 0.001))
 
 # construct lists of dataset inputs
-X_train = [X_train, ef.archs.PairedPointCloudDataset(X_train).unpack()] + ([g_train] if use_global_features else [])
-X_val = [X_val, ef.archs.PairedPointCloudDataset(X_val).unpack()] + ([g_val] if use_global_features else [])
-X_test = [X_test, ef.archs.PairedPointCloudDataset(X_test).unpack()] + ([g_test] if use_global_features else [])
+X_train = [X_train, ef.archs.PairedPointCloudDataset(X_train)] + ([g_train] if use_global_features else [])
+X_val = [X_val, ef.archs.PairedPointCloudDataset(X_val)] + ([g_val] if use_global_features else [])
+X_test = [X_test, ef.archs.PairedPointCloudDataset(X_test)] + ([g_test] if use_global_features else [])
 
 # construct point cloud datasets
 d_train = ef.archs.PointCloudDataset([X_train, Y_train], batch_size=batch_size)

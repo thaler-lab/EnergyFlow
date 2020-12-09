@@ -70,12 +70,9 @@ efn = ef.archs.EFN(input_dim=(2, 4), Phi_sizes=Phi_sizes, F_sizes=F_sizes,
                    num_global_features=(4 if use_global_features else None))
 
 # get datasets
-X_train = [ef.archs.WeightedPointCloudDataset(X_train).unpack(),
-           ef.archs.PairedWeightedPointCloudDataset(X_train).unpack()]
-X_val = [ef.archs.WeightedPointCloudDataset(X_val).unpack(),
-         ef.archs.PairedWeightedPointCloudDataset(X_val).unpack()]
-X_test = [ef.archs.WeightedPointCloudDataset(X_test).unpack(),
-          ef.archs.PairedWeightedPointCloudDataset(X_test).unpack()]
+X_train = [ef.archs.WeightedPointCloudDataset(X_train), ef.archs.PairedWeightedPointCloudDataset(X_train)]
+X_val = [ef.archs.WeightedPointCloudDataset(X_val), ef.archs.PairedWeightedPointCloudDataset(X_val)]
+X_test = [ef.archs.WeightedPointCloudDataset(X_test), ef.archs.PairedWeightedPointCloudDataset(X_test)]
 if use_global_features:
     X_train += [g_train]
     X_val += [g_val]

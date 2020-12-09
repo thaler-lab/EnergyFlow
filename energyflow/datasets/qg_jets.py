@@ -60,6 +60,7 @@ see the [FAQs](/faqs/#how-do-i-cite-the-energyflow-package).
 
 from __future__ import absolute_import, division, print_function
 
+import os
 import warnings
 
 import numpy as np
@@ -464,7 +465,7 @@ SOURCES = ['dropbox', 'zenodo']
 # load(num_data=100000, pad=True, ncol=4, generator='pythia',
 #      with_bc=False, cache_dir='~/.energyflow')
 def load(num_data=100000, pad=True, ncol=4, generator='pythia',
-         with_bc=False, cache_dir='~/.energyflow', dtype='float64'):
+         with_bc=False, cache_dir=None, dtype='float64'):
     """Loads samples from the dataset (which in total is contained in twenty 
     files). Any file that is needed that has not been cached will be 
     automatically downloaded. Downloading a file causes it to be cached for
@@ -491,7 +492,10 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia',
         not be combined.
     - **cache_dir** : _str_
         - The directory where to store/look for the files. Note that 
-        `'datasets'` is automatically appended to the end of this path.
+        `'datasets'` is automatically appended to the end of this path. If
+        `None`, the default path of `~/.energyflow` is used, unless the
+        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+        is used instead.
     - **dtype** : _str_ or _numpy.dtype_
         - The dtype of the resulting NumPy arrays. For ML applications it may be
         preferred to use 32-bit floats.
@@ -507,6 +511,10 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia',
     # check for valid options
     if generator not in GENERATORS:
         raise ValueError("'generator' must be in " + str(GENERATORS))
+
+    # determine cache_dir
+    if cache_dir is None:
+        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
 
     # get number of files we need
     num_files = int(np.ceil(num_data/NUM_PER_FILE)) if num_data > -1 else MAX_NUM_FILES

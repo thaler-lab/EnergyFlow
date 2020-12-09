@@ -26,13 +26,15 @@ labels (quark=`1` and gluon=`0`).
 
 from __future__ import absolute_import, division, print_function
 
+import os
+
 import numpy as np
 
 from energyflow.utils.data_utils import _get_filepath
 
 __all__ = ['load']
 
-def load(num_data=-1, cache_dir='~/.energyflow'):
+def load(num_data=-1, cache_dir=None):
     """Loads the dataset. The first time this is called, it will automatically
     download the dataset. Future calls will attempt to use the cached dataset 
     prior to redownloading.
@@ -42,13 +44,21 @@ def load(num_data=-1, cache_dir='~/.energyflow'):
     - **num_data** : _int_
         - The number of events to return. A value of `-1` means read in all events.
     - **cache_dir** : _str_
-        - The directory where to store/look for the file.
+        - The directory where to store/look for the files. Note that 
+        `'datasets'` is automatically appended to the end of this path. If
+        `None`, the default path of `~/.energyflow` is used, unless the
+        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+        is used instead.
 
     **Returns**
 
     - _3-d numpy.ndarray_, _1-d numpy.ndarray_
         - The `X` and `y` components of the dataset as specified above.
     """
+
+    # determine cache_dir
+    if cache_dir is None:
+        cache_dir = os.environ.get('ENERGYFLOW_CACHE_DIR', '~/.energyflow')
 
     fpath = _get_filepath('QG_nsubs.npz', 
                       url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
