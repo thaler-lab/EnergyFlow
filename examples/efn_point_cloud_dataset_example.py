@@ -27,14 +27,14 @@ import energyflow as ef
 # data controls, can go up to 2000000 total for full dataset
 train, val, test = 75000, 10000, 15000
 # train, val, test = 1000000, 200000, 200000
-use_global_features = True
+use_global_features = False
 
 # network architecture parameters
 Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
 # Phi_sizes, F_sizes = (100, 100, 256), (100, 100, 100)
 
 # network training parameters
-num_epoch = 1
+num_epoch = 2
 batch_size = 250
 
 ###############################################################################
@@ -74,12 +74,12 @@ if use_global_features:
     d_train = ef.archs.PointCloudDataset([[ef.archs.WeightedPointCloudDataset(X_train), g_train], Y_train],
                                          batch_size=batch_size)
     d_val = ef.archs.PointCloudDataset([[ef.archs.WeightedPointCloudDataset(X_val), g_val], Y_val])
-    d_test = ef.archs.PointCloudDataset([[ef.archs.WeightedPointCloudDataset(X_test), g_test]])
+    d_test = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_test), g_test]).wrap()
 else:
     d_train = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_train), Y_train],
                                          batch_size=batch_size)
     d_val = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_val), Y_val])
-    d_test = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_test)])
+    d_test = ef.archs.WeightedPointCloudDataset(X_test).wrap()
 
 print('training', d_train)
 print('validation', d_val)

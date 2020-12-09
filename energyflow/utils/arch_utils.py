@@ -48,7 +48,7 @@ def convert_dtype(X, dtype):
         raise TypeError('argument must be a numpy ndarray')
 
     # object arrays are special
-    if X.dtype == np.dtype('O'):
+    if X.dtype == 'O':
         return np.asarray([convert_dtype(x, dtype) for x in X], dtype='O')
     else:
         return X.astype(dtype, copy=False)
@@ -128,7 +128,7 @@ def product_2d_weights(weights):
 class PointCloudDataset(object):
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
-                                  shuffle=True, seed=None, infinite=False, pack=0):
+                                  shuffle=True, seed=None, infinite=False):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
         designed to be used as input to EFN and PFN models. The function uses a
         generator to spool events from the arrays as needed and pad them on the fly.
@@ -205,11 +205,7 @@ class PointCloudDataset(object):
         self.seed = seed
         self.dtype = dtype
         self.infinite = infinite
-        self._pack = pack
-
-        # check that pack is -1, 0, or 1
-        if self._pack not in {-1, 0, 1}:
-            raise ValueError('pack must be in {-1, 0, 1}')
+        self._wrap = False
 
         # check for proper data_args
         if not isinstance(data_args, (list, tuple)):
@@ -233,9 +229,6 @@ class PointCloudDataset(object):
 
             self.data_args.append(data_arg)
 
-        self._ndata_args = len(self.data_args)
-        self._done_init = False
-
     def __len__(self):
         return self._len
 
@@ -247,41 +240,39 @@ class PointCloudDataset(object):
         s = '{}\n'.format(self.__class__.__name__)
         s += '  length - {}\n'.format(len(self))
         s += '  batch_size - {}\n'.format(self.batch_size)
-        s += '\n'
         s += '  batch_dtypes - {}\n'.format(repr(self.batch_dtypes))
         s += '  batch_shapes - {}\n'.format(repr(self.batch_shapes))
         s += '  data_args - {}\n'.format([arg.__class__.__name__ for arg in self.data_args])
 
         return s
 
-    def unpack(self):
-        self._pack = -1
-        return self
-
-    def pack(self):
-        self._pack = 1
+    def wrap(self):
+        self._wrap = True
         return self
 
     @property
     def _state(self):
         return (self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite)
 
-    def _update(self, state):
+    @_state.setter
+    def _state(self, state):
         self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite = state
-
-    @property
-    def ndata_args(self):
-        return self._ndata_args
 
     @property
     def batch_dtypes(self):
         if hasattr(self, '_batch_dtypes'):
-            return tuple(self._batch_dtypes)# if len(self._batch_dtypes) != 1 else self._batch_dtypes[0]
+
+            # unpack single element lists and convert rest to tuple
+            bdt = self._batch_dtypes[0] if len(self._batch_dtypes) == 1 else tuple(self._batch_dtypes)
+            return (bdt,) if self._wrap else bdt
 
     @property
     def batch_shapes(self):
         if hasattr(self, '_batch_shapes'):
-            return tuple(self._batch_shapes)# if len(self._batch_shapes) != 1 else self._batch_shapes[0]
+
+            # unpack single element lists and convert rest to tuple
+            bs = self._batch_shapes[0] if len(self._batch_shapes) == 1 else tuple(self._batch_shapes)
+            return (bs,) if self._wrap else bs
 
     @property
     def steps_per_epoch(self):
@@ -300,50 +291,44 @@ class PointCloudDataset(object):
             raise ValueError('inconsistent batch_sizes')
         if self.shuffle != other.shuffle:
             raise ValueError('inconsistent shuffling')
-        if self.infinite != other.infinite:
-            raise ValueError('inconsistent setting for infinite')
         if self.seed != other.seed:
             warnings.warn('seeds do not match')
+        if self.infinite != other.infinite:
+            raise ValueError('inconsistent setting for infinite')
 
     # function to enable lazy init
     def _init(self, state=None):
         import tensorflow as tf
 
-        # ensure consistent randomness
+        # ensure consistent state (randomness in particular)
         if state is not None:
-            self._update(state)
+            self.toplevel = False
+            self._state = state
+        else:
+            self.toplevel = True
         
         # determine if we need to get a new rng
         if self.shuffle and self.seed is None:
             self.seed = random._bit_generator._seed_seq.spawn(1)[0]
         self._rng = np.random.default_rng(self.seed) if self.shuffle else random
 
-        # check for unpack error
-        #if self._pack == -1 and self.ndata_args == 1:
-        #    raise RuntimeError('cannot unpack a single argument')
-
+        # initialize subcomponents of this dataset
         for arg in self.data_args:
             if isinstance(arg, PointCloudDataset):
                 arg._init(self._state)
 
         # process data_args
         self._batch_dtypes, self._batch_shapes, self._zero_pad = [], [], []
+        self.tensor_batch_size = self.batch_size if self.steps_per_epoch*self.batch_size == len(self) else None
         for i,data_arg in enumerate(self.data_args):
 
             # handle PointCloudDataset
             if isinstance(data_arg, PointCloudDataset):
                 self._check_compatibility(data_arg)
-                if data_arg._pack == -1:
-                    self._batch_dtypes.extend(data_arg.batch_dtypes)
-                    self._batch_shapes.extend(data_arg.batch_shapes)
-                elif data_arg._pack == 1:
-                    self._batch_dtypes.append((data_arg.batch_dtypes),)
-                    self._batch_shapes.append((data_arg.batch_shapes),)
-                else:    
-                    self._batch_dtypes.append(data_arg.batch_dtypes)
-                    self._batch_shapes.append(data_arg.batch_shapes)
+                self._batch_dtypes.append(data_arg.batch_dtypes)
+                self._batch_shapes.append(data_arg.batch_shapes)
 
-            # handle tf dataset
+            # tf dataset not handled yet
             elif isinstance(data_arg, tf.data.Dataset):
                 print(data_arg.element_spec)
                 raise TypeError('tensorflow dataset not supported here yet')
@@ -358,9 +343,9 @@ class PointCloudDataset(object):
                 # object array
                 if data_arg.ndim == 1 and len(data_arg) and isinstance(data_arg[0], np.ndarray):
                     if data_arg[0].ndim == 2:
-                        self._batch_shapes.append((self.batch_size, None, data_arg[0].shape[1]))
+                        self._batch_shapes.append((self.tensor_batch_size, None, data_arg[0].shape[1]))
                     elif data_arg[0].ndim == 1:
-                        self._batch_shapes.append((self.batch_size, None,))
+                        self._batch_shapes.append((self.tensor_batch_size, None,))
                     else:
                         raise IndexError('array dimensions not understood')
 
@@ -369,12 +354,15 @@ class PointCloudDataset(object):
 
                 # rectangular array
                 else:
-                    self._batch_shapes.append((self.batch_size,) + data_arg.shape[1:])    
+                    self._batch_shapes.append((self.tensor_batch_size,) + data_arg.shape[1:])    
 
                 self._batch_dtypes.append(self.dtype)
                 self.data_args[i] = convert_dtype(data_arg, self.dtype)
 
-    def as_tf_dataset(self, prefetch=5):
+    def as_tf_dataset(self, prefetch=4):
+
+        # ensure we're initialized
+        self._init()
 
         # get tensorflow dataset from generator
         import tensorflow as tf
@@ -399,7 +387,8 @@ class PointCloudDataset(object):
         batch = self.batch_callback(args)
 
         # unpack single element lists
-        return tuple(batch)# if len(batch) > 1 else batch[0]
+        ret = batch[0] if len(batch) == 1 else tuple(batch)
+        return (ret,) if self._wrap else ret
 
     def get_batch_generator(self):
         """Returns a function that when called returns a generator that yields
@@ -419,132 +408,71 @@ class PointCloudDataset(object):
             from the given arrays.
         """
 
-        # ensure we're initialized
-        self._init()
-
-        # get generators as needed
+        # these quantities don't change inbetween instantiations of the generator
         gens = [isinstance(arg, PointCloudDataset) for arg in self.data_args]
-        data_args = [arg.get_batch_generator()() if g else arg
-                     for arg,g in zip(self.data_args, gens)]
+        self.batch_inds = [(i*self.batch_size, min((i+1)*self.batch_size, len(self)))
+                           for i in range(self.steps_per_epoch)]
 
-        # handle packing/unpacking of arguments
-        packs = [arg._pack if g else None for arg,g in zip(self.data_args, gens)]
-        pack_funcs = [((lambda x: list(next(x))) if arg._pack == -1 else (lambda x: [next(x)])) if g else None
-                      for arg,g in zip(self.data_args, gens)]
-        for arg,g,pack in zip(self.data_args, gens, packs):
+        def batch_generator():
 
-            # we're only going to have a function if dealing with a generator
-            if g:
-
-                # unpack
-                if pack == -1:
-                    pack_funcs.append(lambda x: list(next(x)))
-
-                # regular
-                elif pack == 0:
-                    pack_funcs.append(lambda x: [next(x)])
-
-                # extra pack
-                else:
-                    raise NotImplementedError('pack = 1 not supported yet')
-                    pack_funcs.append(lambda x: [[next(x)]])
-
-            # append placeholder
-            else:
-                pack_funcs.append(None)
-
-        def batch_generator():            
+            # get generators anew, in case infinite=False and we have subgenerators
+            data_args = [arg.get_batch_generator()() if g else arg
+                         for arg,g in zip(self.data_args, gens)]
             
             # loop over epochs
+            arr_func = lambda arg, start, end: arg[start:end]
             while True:
 
                 # get a new permutation each epoch
-                perm = self._rng.permutation(len(self)) if self.shuffle else np.arange(len(self))
-                start = 0
+                if self.shuffle:
+                    perm = self._rng.permutation(len(self))
+                    arr_func = lambda arg, start, end: arg[perm[start:end]]
 
                 # special case 1 (for speed)
                 if len(data_args) == 1:
                     arg0 = data_args[0]
                     if gens[0]:
-                        pack0 = pack_funcs[0]
-                        while start < self._len:
-                            end = min(start + self.batch_size, self._len)
-                            yield self._construct_batch(pack0(arg0))
-                            start = end
+                        for _ in self.batch_inds:
+                            yield self._construct_batch([next(arg0)])
                     else:
-                        while start < self._len:
-                            end = min(start + self.batch_size, self._len)
-                            yield self._construct_batch([arg0[perm[start:end]]])
-                            start = end
+                        for start, end in self.batch_inds:
+                            yield self._construct_batch([arr_func(arg0, start, end)])
 
                 # special case 2 (for speed)
-                if len(data_args) == 2:
+                elif len(data_args) == 2:
                     arg0, arg1 = data_args
                     if gens[0]:
-                        pack0 = pack_funcs[0]
                         if gens[1]:
-                            pack1 = pack_funcs[1]
-                            while start < self._len:
-                                end = min(start + self.batch_size, self._len)
-                                yield self._construct_batch(pack0(arg0) + pack1(arg1))
-                                start = end
+                            for _ in self.batch_inds:
+                                yield self._construct_batch([next(arg0), next(arg1)])
                         else:
-                            while start < self._len:
-                                end = min(start + self.batch_size, self._len)
-                                yield self._construct_batch(pack0(arg0) + [arg1[perm[start:end]]])
-                                start = end
+                            for start, end in self.batch_inds:
+                                yield self._construct_batch([next(arg0), arr_func(arg1, start, end)])
                     else:
                         if gens[1]:
-                            pack1 = pack_funcs[1]
-                            while start < self._len:
-                                end = min(start + self.batch_size, self._len)
-                                yield self._construct_batch([arg0[perm[start:end]]] + pack1(arg1))
-                                start = end
+                            for start, end in self.batch_inds:
+                                yield self._construct_batch([arr_func(arg0, start, end), next(arg1)])
                         else:
-                            while start < self._len:
-                                end = min(start + self.batch_size, self._len)
-                                yield self._construct_batch([arg0[perm[start:end]], arg1[perm[start:end]]])
-                                start = end
+                            for start, end in self.batch_inds:
+                                yield self._construct_batch([arr_func(arg0, start, end), arr_func(arg1, start, end)])
 
                 # general case
                 else:
-                    while start < self._len:
-                        end = min(start + self.batch_size, self._len)
-                        batch_args = []
-                        for arg, g, pack in zip(data_args, gens, packs):
-                            if g:
-                                if pack == 0:
-                                    batch_args.append(next(arg))
-                                elif pack == -1:
-                                    batch_args.extend(list(next(arg)))
-                                else:
-                                    batch_args.append([next(arg)])
-                            else:
-                                batch_args.append(arg[perm[start:end]])
-
-                        yield self._construct_batch(batch_args)
-                        start = end
+                    for start, end in self.batch_inds:
+                        yield self._construct_batch([next(arg) if g else arr_func(arg, start, end)
+                                                     for arg, g in zip(data_args, gens)])
 
                 # consider ending iteration
                 if not self.infinite:
-                    return
+                    break
 
         return batch_generator
 
 class WeightedPointCloudDataset(PointCloudDataset):
 
-    def __init__(self, *args, **kwargs):
-
-        # initialize base class
-        super().__init__(*args, **kwargs)
-
-        # update ndata_args
-        self._n_orig_args = self.ndata_args
-        self._ndata_args = 2*self.ndata_args
-        self._assume_padded = True
-
     def _init(self, state=None):
         super()._init(state)
+        self._assume_padded = True
 
         # duplicate batch dtypes
         self._batch_dtypes = [bdtype for bdtype in self._batch_dtypes for i in range(2)]
@@ -571,16 +499,18 @@ class PairedPointCloudDataset(PointCloudDataset):
     def _init(self, state=None):
         super()._init(state)
 
-        self._paired_args_need_padding = self.ndata_args*[False]
-        for i in range(self.ndata_args):
+        self._paired_args_need_padding = len(self.data_args)*[False]
+        for i in range(len(self.data_args)):
 
-            # remove from zero pad and add to our own list
+            # add to our own list
             if i in self._zero_pad:
-                del self._zero_pad[self._zero_pad.index(i)]
                 self._paired_args_need_padding[i] = True
 
             # get new shape resulting from pairing
             self._update_shape(i)
+
+        # zero padding handled separately
+        self._zero_pad.clear()
 
     def _update_shape(self, i):
         self._batch_shapes[i] = self._batch_shapes[i][:2] + (2*self._batch_shapes[i][2],)
@@ -593,21 +523,13 @@ class PairedPointCloudDataset(PointCloudDataset):
 class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointCloudDataset):
 
     def _init(self, state=None):
-
-        # initialize weighted dataset first, ignoring PairedPointCloudDataset._init
-        super(PairedPointCloudDataset, self)._init(state)
-
+        super()._init(state)
         self._assume_padded = False
-        self._args_need_padding = self._n_orig_args*[False]
-        for i in range(self._n_orig_args):
 
-            # remove from zero pad and add to our own list
-            if i in self._zero_pad:
-                del self._zero_pad[self._zero_pad.index(i)]
-                self._args_need_padding[i] = True
-
-            # update shape of features only, not weights
-            self._update_shape(2*i + 1)
+    # update shape for features only, not weights
+    def _update_shape(self, i):
+        j = 2*i + 1
+        self._batch_shapes[j] = self._batch_shapes[j][:2] + (2*self._batch_shapes[j][2],)
 
     def batch_callback(self, args):
 
@@ -615,7 +537,7 @@ class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointClou
         args = super(PairedPointCloudDataset, self).batch_callback(args)
 
         paired_weighted_args = []
-        for i, need_padding in enumerate(self._args_need_padding):
+        for i, need_padding in enumerate(self._paired_args_need_padding):
             weights, features = args[2*i], args[2*i+1]
             if need_padding:
                 paired_weighted_args.extend(pair_and_pad_weighted_events(weights, features))
