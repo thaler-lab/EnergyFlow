@@ -13,7 +13,7 @@ because these import tensorflow, which the main package avoids doing.
 
 from __future__ import absolute_import, division, print_function
 
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABCMeta, abstractmethod
 import math
 import types
 import warnings
@@ -29,9 +29,10 @@ __all__ = [
     'convert_dtype',
     'pad_events',
     'pair_and_pad_events',
-    'product_and_pad_weights',
-    'pair_and_pad_weighted_events',
     'pair_3d_array_axis1',
+    'pair_distances_and_pad_events',
+    'pair_distances_3d_array',
+    'product_and_pad_weights',
     'product_2d_weights',
 
     # classes representing point cloud datasets
@@ -85,10 +86,51 @@ def pair_and_pad_events(X, pad_val=0., max_len=None):
     for i, x in enumerate(X):
         lenx = len(x)
         paired_shape = (lenx, lenx, nfeatures)
-        x0 = np.broadcast_to(x[None,:], paired_shape)
-        x1 = np.broadcast_to(x[:,None], paired_shape)
+        x0 = np.broadcast_to(x[:,None], paired_shape)
+        x1 = np.broadcast_to(x[None,:], paired_shape)
         pairedx = np.concatenate((x0, x1), axis=2).reshape(-1, two_nfeatures)
         output[i,:len(pairedx)] = pairedx
+
+    return output
+
+def pair_3d_array_axis1(X):
+    max_len = X.shape[1]
+    paired_shape = (len(X), max_len, max_len, X.shape[2])
+    X0 = np.broadcast_to(X[:,:,None], paired_shape)
+    X1 = np.broadcast_to(X[:,None,:], paired_shape)
+    return np.concatenate((X0, X1), axis=3).reshape(len(X), -1, 2*X.shape[2])
+
+def pair_distances_and_pad_events(X, pad_val=0., max_len=None, coord_cols=slice(0, 2)):
+    
+    # get a rectangular array which will hold the padded events
+    if max_len is None:
+        max_len = max([len(x) for x in X])
+
+    nfeatures = 3
+    if pad_val == 0.:
+        output = np.zeros((len(X), max_len*max_len, nfeatures), dtype=X[0].dtype)
+    else:
+        output = np.full((len(X), max_len*max_len, nfeatures), pad_val, dtype=X[0].dtype)
+
+    # set events in the array
+    for i, x in enumerate(X):
+        dists = np.linalg.norm(x[None,:,coord_cols] - x[:,None,coord_cols], axis=2).reshape(-1)
+        output[i,:len(dists),0] = dists
+
+    # distance to center
+    dists_to_center = np.asarray([np.linalg.norm(x[:,coord_cols], axis=1)[:,None] for x in X], dtype='O')
+    output[:,:,1:] = pair_and_pad_events(dists_to_center, pad_val, max_len)
+
+    return output
+
+def pair_distances_3d_array(X, coord_cols=slice(0, 2)):
+    batch_size, mult = X.shape[:2]
+    output = np.empty((batch_size, mult*mult, 3), dtype=X.dtype)
+    output[:,:,0] = np.linalg.norm(X[:,None,:,coord_cols] - X[:,:,None,coord_cols], axis=3).reshape(batch_size, -1)
+
+    dists = np.linalg.norm(X[:,:,coord_cols], axis=2)[:]
+    output[:,:,1] = np.broadcast_to(dists[:,:,None], (batch_size, mult, mult)).reshape(batch_size, -1)
+    output[:,:,2] = np.broadcast_to(dists[:,None,:], (batch_size, mult, mult)).reshape(batch_size, -1)
 
     return output
 
@@ -108,27 +150,13 @@ def product_and_pad_weights(weights, max_len=None):
 
     return output
 
-def pair_and_pad_weighted_events(weights, X, pad_val=0.):
-
-    # determine the max length
-    max_len = max([len(x) for x in X])
-
-    return product_and_pad_weights(weights, max_len), pair_and_pad_events(X, pad_val, max_len)
-
-def pair_3d_array_axis1(X, pad_val=0.):
-    max_len = X.shape[1]
-    paired_shape = (len(X), max_len, max_len, X.shape[2])
-    X0 = np.broadcast_to(X[:,None,:], paired_shape)
-    X1 = np.broadcast_to(X[:,:,None], paired_shape)
-    return np.concatenate((X0, X1), axis=3).reshape(len(X), -1, 2*X.shape[2])
-
 def product_2d_weights(weights):
     return (weights[:,None,:] * weights[:,:,None]).reshape(len(weights), -1)
 
 class PointCloudDataset(object):
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
-                                  shuffle=True, seed=None, infinite=False):
+                                  shuffle=True, seed=None, infinite=False, pad_val=0.):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
         designed to be used as input to EFN and PFN models. The function uses a
         generator to spool events from the arrays as needed and pad them on the fly.
@@ -205,6 +233,7 @@ class PointCloudDataset(object):
         self.seed = seed
         self.dtype = dtype
         self.infinite = infinite
+        self.pad_val = pad_val
         self._wrap = False
 
         # check for proper data_args
@@ -252,11 +281,11 @@ class PointCloudDataset(object):
 
     @property
     def _state(self):
-        return (self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite)
+        return (self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite, self.pad_val)
 
     @_state.setter
     def _state(self, state):
-        self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite = state
+        self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite, self.pad_val = state
 
     @property
     def batch_dtypes(self):
@@ -381,7 +410,7 @@ class PointCloudDataset(object):
 
     def _construct_batch(self, args):
         for z in self._zero_pad:
-            args[z] = pad_events(args[z])
+            args[z] = pad_events(args[z], self.pad_val)
 
         # apply callback to batch
         batch = self.batch_callback(args)
@@ -469,10 +498,10 @@ class PointCloudDataset(object):
         return batch_generator
 
 class WeightedPointCloudDataset(PointCloudDataset):
+    _assume_padded = True
 
     def _init(self, state=None):
         super()._init(state)
-        self._assume_padded = True
 
         # duplicate batch dtypes
         self._batch_dtypes = [bdtype for bdtype in self._batch_dtypes for i in range(2)]
@@ -496,6 +525,21 @@ class WeightedPointCloudDataset(PointCloudDataset):
 
 class PairedPointCloudDataset(PointCloudDataset):
 
+    def __init__(self, *args, **kwargs):
+        self.pairer = self.pairing = kwargs.pop('pairing', 'concat')
+
+        super().__init__(*args, **kwargs)
+
+        if self.pairing == 'concat':
+            self.pairer = ConcatenatePairer
+        elif self.pairing == 'distance':
+            self.pairer = DistancePairer
+        else:
+            raise ValueError("pairing '{}' not recognized".format(self.pairing))
+
+        self.pair_and_pad_func = self.pairer.pair_and_pad_func
+        self.pair_no_pad_func = self.pairer.pair_no_pad_func
+
     def _init(self, state=None):
         super()._init(state)
 
@@ -513,23 +557,37 @@ class PairedPointCloudDataset(PointCloudDataset):
         self._zero_pad.clear()
 
     def _update_shape(self, i):
-        self._batch_shapes[i] = self._batch_shapes[i][:2] + (2*self._batch_shapes[i][2],)
+        self.pairer._update_shape(self, i)
 
     # pair objects in a point cloud dataset
     def batch_callback(self, args):
-        return [pair_and_pad_events(arg) if need_padding else pair_3d_array_axis1(arg)
+        return [self.pair_and_pad_func(arg, self.pad_val) if need_padding else self.pair_no_pad_func(arg)
                 for arg, need_padding in zip(args, self._paired_args_need_padding)]
 
-class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointCloudDataset):
+class ConcatenatePairer:
 
-    def _init(self, state=None):
-        super()._init(state)
-        self._assume_padded = False
+    @staticmethod
+    def _update_shape(self, i):
+        self._batch_shapes[i] = self._batch_shapes[i][:2] + (2*self._batch_shapes[i][2],)
+
+    pair_and_pad_func = pair_and_pad_events
+    pair_no_pad_func = pair_3d_array_axis1
+
+class DistancePairer:
+
+    @staticmethod
+    def _update_shape(self, i):
+        self._batch_shapes[i] = self._batch_shapes[i][:2] + (3,)
+
+    pair_and_pad_func = pair_distances_and_pad_events
+    pair_no_pad_func = pair_distances_3d_array
+
+class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointCloudDataset):
+    _assume_padded = False
 
     # update shape for features only, not weights
     def _update_shape(self, i):
-        j = 2*i + 1
-        self._batch_shapes[j] = self._batch_shapes[j][:2] + (2*self._batch_shapes[j][2],)
+        super()._update_shape(2*i + 1)
 
     def batch_callback(self, args):
 
@@ -540,8 +598,9 @@ class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointClou
         for i, need_padding in enumerate(self._paired_args_need_padding):
             weights, features = args[2*i], args[2*i+1]
             if need_padding:
-                paired_weighted_args.extend(pair_and_pad_weighted_events(weights, features))
+                max_len = max([len(w) for w in weights])
+                paired_weighted_args.extend([product_and_pad_weights(weights, max_len), self.pair_and_pad_func(features, self.pad_val, max_len)])
             else:
-                paired_weighted_args.extend([product_2d_weights(weights), pair_3d_array_axis1(features)])
+                paired_weighted_args.extend([product_2d_weights(weights), self.pair_no_pad_func(features)])
 
         return paired_weighted_args

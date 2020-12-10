@@ -9,6 +9,8 @@
 - Renamed `path` keyword argument to `cache_dir` in the `get_examples` function.
 - `arch_utils` created and imported at the top level.
 - `data_utils` moved to the top level.
+- Generated new default EFPs (igraph has changed the order around); removed availability of `npz` encoding of default EFP file.
+- Removed `check_input` from Measure keyword arguments.
 
 ## 1.3.x
 

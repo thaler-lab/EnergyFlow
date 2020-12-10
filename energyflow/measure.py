@@ -124,9 +124,6 @@ def _phat_func(Es, ps):
 def _pf_phat_func(Es, ps):
     return ps
 
-MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords', 
-                  'check_input', 'kappa_normed_behavior'}
-
 ###############################################################################
 # Measure 
 ###############################################################################
@@ -134,6 +131,10 @@ MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords',
 class Measure(six.with_metaclass(ABCMeta, object)):
     
     """Class for handling measure options, described above."""
+
+
+    KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords', 
+              'kappa_normed_behavior'}
 
     def __new__(cls, *args, **kwargs):
         if cls is Measure:
@@ -147,9 +148,9 @@ class Measure(six.with_metaclass(ABCMeta, object)):
             return super(Measure, cls).__new__(cls)
 
     # Measure(measure, beta=1, kappa=1, normed=True, coords=None,
-    #                  check_input=True, kappa_normed_behavior='new')
+    #                  kappa_normed_behavior='new')
     def __init__(self, measure, beta=1, kappa=1, normed=True, coords=None,
-                                check_input=True, kappa_normed_behavior='new'):
+                                kappa_normed_behavior='new'):
         r"""Processes inputs according to the measure choice and other options.
 
         **Arguments**
@@ -170,9 +171,6 @@ class Measure(six.with_metaclass(ABCMeta, object)):
             massless particles are assumed if it is not present. If `None`,
             coords with be `'ptyphim'` if using a hadronic measure and
             `'epxpypz'` if using the e+e- measure.
-        - **check_input** : bool
-            - Whether to check the type of input each time or assume the first
-            input type.
         - **kappa_normed_behavior** : {`'new'`, `'orig'`}
             - Determines how `'kappa'`!=1 interacts with normalization of the
             energies. A value of `'new'` will ensure that `z` is truly the
@@ -184,7 +182,7 @@ class Measure(six.with_metaclass(ABCMeta, object)):
 
         # store parameters
         transfer(self, locals(), ['measure', 'kappa', 'normed', 'coords', 
-                                  'check_input', 'kappa_normed_behavior'])
+                                  'kappa_normed_behavior'])
 
         # check that options are appropriate
         if self.coords not in {None, 'epxpypz', 'ptyphim'}:
@@ -196,9 +194,6 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         self.beta = float(beta)
         self.half_beta = self.beta/2
         assert self.beta > 0
-
-        # measure function is not yet set
-        self.need_meas_func = True
 
         # handle normed and kappa options
         self._z_func, self._phat_func = self._z_unnormed_func, _phat_func
@@ -261,11 +256,8 @@ class Measure(six.with_metaclass(ABCMeta, object)):
             context.)
         """
 
-        # check type only if needed
-        if self.need_meas_func or self.check_input:
-            self.set_meas_func(arg)
-
         # get zs and angles (already normalized)
+        self.set_meas_func(arg)
         return self.meas_func(arg)
 
     def set_meas_func(self, arg):
@@ -288,8 +280,6 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         # raise error if not one of these types
         else:
             raise TypeError('arg is not one of numpy.ndarray, list, or fastjet.PseudoJet')
-
-        self.need_meas_func = False
 
     @abstractmethod
     def array_handler(self, dim):

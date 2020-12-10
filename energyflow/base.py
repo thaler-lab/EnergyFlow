@@ -20,7 +20,7 @@ import warnings
 import numpy as np
 import six
 
-from energyflow.measure import Measure, MEASURE_KWARGS
+from energyflow.measure import Measure
 from energyflow.utils.generic_utils import create_pool, kwargs_check
 
 ###############################################################################
@@ -33,7 +33,7 @@ class EFBase(six.with_metaclass(ABCMeta, object)):
 
     def __init__(self, kwargs):
 
-        kwargs_check('EFBase', kwargs, allowed=MEASURE_KWARGS)
+        kwargs_check('EFBase', kwargs, allowed=Measure.KWARGS)
         self._measure = Measure(kwargs.pop('measure'), **kwargs)
 
     def __call__(self, *args, **kwargs):
@@ -62,10 +62,6 @@ class EFBase(six.with_metaclass(ABCMeta, object)):
     @property
     def coords(self):
         return self._measure.coords if self.has_measure else None
-
-    @property
-    def check_input(self):
-        return self._measure.check_input if self.has_measure else None
 
     @property
     def kappa_normed_behavior(self):
@@ -126,7 +122,7 @@ class EFPBase(EFBase):
     def __init__(self, kwargs):
 
         # initialize base class if measure needed
-        if not kwargs.pop('no_measure', False):
+        if not kwargs.pop('_no_measure', False):
 
             # set default measure for EFPs
             kwargs.setdefault('measure', 'hadr')
@@ -175,7 +171,7 @@ class EFMBase(EFBase):
         assert 'efm' in kwargs.setdefault('measure', 'hadrefm'), 'Must use an efm measure.'
 
         # initialize base class if measure needed
-        if not kwargs.pop('no_measure', False):
+        if not kwargs.pop('_no_measure', False):
             super(EFMBase, self).__init__(kwargs)
             self._measure.beta = None
 

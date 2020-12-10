@@ -31,12 +31,14 @@ from energyflow.utils.graph_utils import *
 
 __all__ = ['Generator']
 
+
 ###############################################################################
 # Generator helpers
 ###############################################################################
 
 def none2inf(x):
     return np.inf if x is None else x
+
 
 ###############################################################################
 # Generator
@@ -153,6 +155,56 @@ class Generator(object):
         # get results and store
         transfer(self, self.comp_gen, self._comp_attrs())
 
+    ################
+    # PUBLIC METHODS
+    ################
+
+    def save(self, filename, protocol='json', compression=True):
+        """Save the current generator to file.
+
+        **Arguments**
+
+        - **filename** : _str_
+            - The path to save the file.
+        - **protocol** : {`'json'`}
+            - The file format to be used.
+        - **compression** : _bool_
+            - Whether to compress the resulting file or not.R
+        """
+        
+        arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
+                    'cols', 'np_optimize', 'gen_efms'])
+        arrs |= self._prime_attrs() | self._comp_attrs()
+        d = {arr: getattr(self, arr) for arr in arrs}
+
+        if not filename.endswith('.' + protocol):
+            filename += '.' + protocol
+
+        if protocol == 'json':
+            for arr in ['c_specs', 'disc_formulae', 'disc_specs']:
+                d[arr] = d[arr].tolist()
+
+            if compression:
+                if not filename.endswith('.gz'):
+                    filename += '.gz'
+
+                with gzip.open(filename, 'wt') as f:
+                    json.dump(d, f)
+            else:
+                with open(filename, 'wt') as f:
+                    json.dump(d, f)
+        else:
+            raise ValueError('protocol {} not allowed'.format(protocol))
+
+    @property
+    def specs(self):
+        """An array of EFP specifications. Each row represents an EFP 
+        and the columns represent the quantities indicated by `cols`."""
+        
+        if not hasattr(self, '_specs'):
+            self._specs = concat_specs(self.c_specs, self.disc_specs)
+        return self._specs
+
     #################
     # PRIVATE METHODS
     #################
@@ -189,57 +241,6 @@ class Generator(object):
     def _comp_attrs(self):
         return set(['disc_specs', 'disc_formulae'])
 
-    ################
-    # PUBLIC METHODS
-    ################
-
-    def save(self, filename, protocol='npz', compression=True):
-        """Save the current generator to file.
-
-        **Arguments**
-
-        - **filename** : _str_
-            - The path to save the file.
-        - **protocol** : {`'npz'`, `'json'`}
-            - The file format to be used.
-        - **compression** : _bool_
-            - Whether to compress the resulting file or not.R
-        """
-        
-        arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
-                    'cols', 'np_optimize', 'gen_efms'])
-        arrs |= self._prime_attrs() | self._comp_attrs()
-        d = {arr: getattr(self, arr) for arr in arrs}
-
-        if protocol == 'npz':
-            if compression:
-                np.savez_compressed(filename, **d)
-            else:
-                np.savez(filename, **d)
-        elif protocol == 'json':
-            for arr in ['c_specs', 'disc_formulae', 'disc_specs']:
-                d[arr] = d[arr].tolist()
-
-            if compression:
-                if not filename.endswith('.gz'):
-                    filename += '.gz'
-
-                with gzip.open(filename, 'wt') as f:
-                    json.dump(d, f)
-            else:
-                with open(filename, 'wt') as f:
-                    json.dump(d, f)
-        else:
-            raise ValueError('protocol {} not allowed'.format(protocol))
-
-    @property
-    def specs(self):
-        """An array of EFP specifications. Each row represents an EFP 
-        and the columns represent the quantities indicated by `cols`."""
-        
-        if not hasattr(self, '_specs'):
-            self._specs = concat_specs(self.c_specs, self.disc_specs)
-        return self._specs
 
 ###############################################################################
 # PrimeGenerator
@@ -462,9 +463,10 @@ class PrimeGenerator(object):
                 einstr, efm_spec = efp2efms(EFP(edgs, weights=ws).graph)
                 self.efm_einstrs.append(einstr)
                 self.efm_specs.append(efm_spec)
-                self.efm_einpaths.append(np.einsum_path(einstr, 
-                                                        *[np.empty([4]*sum(s)) for s in efm_spec],
-                                                        optimize=self.ve.np_optimize)[0])
+                self.efm_einpaths.append(einsum_path(einstr, 
+                                                     *[np.empty([4]*sum(s)) for s in efm_spec],
+                                                     optimize=self.ve.np_optimize)[0])
+
 
 ###############################################################################
 # CompositeGenerator

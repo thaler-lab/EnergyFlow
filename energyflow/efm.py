@@ -140,8 +140,7 @@ class EFM(EFMBase):
 
     """A class representing and computing a single EFM."""
 
-    # EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
-    #                  coords=None, check_input=True)
+    # EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, coords=None)
     def __init__(self, nup, nlow=0, rl_from=None, subslice_from=None, **kwargs):
         r"""Since EFMs are fully symmetric tensors, they can be specified by
         just two integers: the number of raised and number of lowered indices
@@ -174,9 +173,6 @@ class EFM(EFMBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         """
 
         # initialize base class
@@ -362,7 +358,7 @@ class EFMSet(EFMBase):
     """A class for holding and efficiently constructing a collection of EFMs."""
 
     # EFMSet(efm_specs=None, vmax=None, measure='hadrefm', beta=2, kappa=1,
-    #        normed=None, coords=None, check_input=True)
+    #        normed=None, coords=None)
     def __init__(self, efm_specs=None, vmax=None, **kwargs):
         r"""An `EFMSet` can be initialized two ways (in order of precedence):
 
@@ -399,9 +395,6 @@ class EFMSet(EFMBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         """
 
         hidden_subslicing = kwargs.pop('subslicing', False)

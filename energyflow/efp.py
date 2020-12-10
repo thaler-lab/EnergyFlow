@@ -53,9 +53,8 @@ class EFP(EFPBase):
 
     """A class for representing and computing a single EFP."""
 
-    # EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
-    #            check_input=True, np_optimize=True)
-    def __init__(self, edges, weights=None, efpset_args=None, np_optimize=True, **kwargs):
+    # EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None, np_optimize=True)
+    def __init__(self, edges, weights=None, np_optimize=True, _efpset_args=None, **kwargs):
         r"""Since a standalone EFP defines and holds a `Measure` instance, all
         `Measure` keywords are accepted.
 
@@ -79,9 +78,6 @@ class EFP(EFPBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
             - The `optimize` keyword of `numpy.einsum_path`.
         """
@@ -94,9 +90,9 @@ class EFP(EFPBase):
         self._weights = weights
 
         # generate our own information from the edges
-        if efpset_args is not None:
+        if _efpset_args is not None:
             (self._einstr, self._einpath, self._spec, self._efm_einstr,
-             self._efm_einpath, self._efm_spec) = efpset_args
+             self._efm_einpath, self._efm_spec) = _efpset_args
 
             # ensure that EFM spec is a list of tuples
             if self.efm_spec is not None:
@@ -106,14 +102,14 @@ class EFP(EFPBase):
         self._process_edges(edges, self.weights)
 
         # compute specs if needed
-        if efpset_args is None:
+        if _efpset_args is None:
 
             # compute EFM specs
             self._efm_einstr, self._efm_spec = efp2efms(self.graph)
 
             # only store an EFMSet if this is an external EFP using EFMs
             if self.has_measure and self.use_efms:
-                self._efmset = EFMSet(self._efm_spec, subslicing=self.subslicing, no_measure=True)
+                self._efmset = EFMSet(self._efm_spec, subslicing=self.subslicing, _no_measure=True)
             args = [np.empty([4]*sum(s)) for s in self._efm_spec]
             self._efm_einpath = einsum_path(self._efm_einstr, *args, optimize=np_optimize)[0]
             
@@ -360,7 +356,7 @@ class EFPSet(EFPBase):
     """
 
     # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
-    #               coords=None, check_input=True, verbose=0)
+    #               coords=None, verbose=0)
     def __init__(self, *args, **kwargs):
         r"""`EFPSet` can be initialized in one of three ways (in order of
         precedence):
@@ -407,9 +403,6 @@ class EFPSet(EFPBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         - **verbose** : _int_
             - Controls printed output when initializing `EFPSet` from a file or
             `Generator`.
@@ -455,7 +448,7 @@ class EFPSet(EFPBase):
         # initialize from given graphs
         if not gen:
             self._disc_col_inds = None
-            self._efps = [EFP(graph, no_measure=True) for graph in args]
+            self._efps = [EFP(graph, _no_measure=True) for graph in args]
             self._cspecs = self._specs = np.asarray([efp.spec for efp in self.efps])
 
         # initialize from a generator
@@ -482,7 +475,7 @@ class EFPSet(EFPBase):
             # make EFP list
             z = zip(*([gen[v] for v in elemvs] + [orig_c_specs] +
                       [gen[v] if self.use_efms else itertools.repeat(None) for v in efmvs]))
-            self._efps = [EFP(args[0], weights=args[1], no_measure=True, efpset_args=args[2:]) 
+            self._efps = [EFP(args[0], weights=args[1], _no_measure=True, _efpset_args=args[2:]) 
                           for m,args in enumerate(z) if c_mask[m]]
 
             # get col indices for disconnected formulae

@@ -66,13 +66,13 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-efn = ef.archs.EFN(input_dim=(2, 4), Phi_sizes=Phi_sizes, F_sizes=F_sizes,
+efn = ef.archs.EFN(input_dim=(2, 3), Phi_sizes=Phi_sizes, F_sizes=F_sizes,
                    num_global_features=(4 if use_global_features else None))
 
 # get datasets
-X_train = [ef.archs.WeightedPointCloudDataset(X_train), ef.archs.PairedWeightedPointCloudDataset(X_train)]
-X_val = [ef.archs.WeightedPointCloudDataset(X_val), ef.archs.PairedWeightedPointCloudDataset(X_val)]
-X_test = [ef.archs.WeightedPointCloudDataset(X_test), ef.archs.PairedWeightedPointCloudDataset(X_test)]
+X_train = [ef.archs.WeightedPointCloudDataset(X_train), ef.archs.PairedWeightedPointCloudDataset(X_train, pairing='distance')]
+X_val = [ef.archs.WeightedPointCloudDataset(X_val), ef.archs.PairedWeightedPointCloudDataset(X_val, pairing='distance')]
+X_test = [ef.archs.WeightedPointCloudDataset(X_test), ef.archs.PairedWeightedPointCloudDataset(X_test, pairing='distance')]
 if use_global_features:
     X_train += [g_train]
     X_val += [g_val]

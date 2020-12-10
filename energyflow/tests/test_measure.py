@@ -135,20 +135,3 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed, kappa_normed_behavior
 
     assert epsilon_diff(ezs, zs, 10**-13)
     assert epsilon_percent(ethetas, thetas, 10**-theta_eps)
-
-@pytest.mark.measure
-@pytest.mark.parametrize('check_input', [True, False])
-@pytest.mark.parametrize('event', ef.gen_random_events(2,15))
-@pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'ee', 'eeefm'])
-def test_measure_list_input(measure, event, check_input):
-    meas = ef.Measure(measure, check_input=check_input)
-    list_event = event.tolist()
-    nd0, nd1 = meas.evaluate(event)
-    try:
-        list0, list1 = meas.evaluate(list_event)
-    except:
-        assert not check_input
-    else:
-        assert check_input
-        assert epsilon_diff(nd0, list0, 10**-14)
-        assert epsilon_diff(nd1, list1, 10**-14)

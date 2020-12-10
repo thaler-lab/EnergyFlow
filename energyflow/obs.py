@@ -50,8 +50,7 @@ class D2(SingleEnergyCorrelatorBase):
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
     
-    # D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
-    #    coords=None, check_input=True)
+    # D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True, coords=None)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
         r"""Since a `D2` defines and holds a `Measure` instance, all `Measure`
         keywords are accepted.
@@ -78,9 +77,6 @@ class D2(SingleEnergyCorrelatorBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         """
 
         # initialize base class
@@ -129,8 +125,7 @@ class C2(SingleEnergyCorrelatorBase):
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
     
-    # C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
-    #    coords=None, check_input=True)
+    # C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True, coords=None)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
         r"""Since a `C2` defines and holds a `Measure` instance, all `Measure`
         keywords are accepted.
@@ -157,9 +152,6 @@ class C2(SingleEnergyCorrelatorBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         """
 
         # initialize base class
@@ -208,8 +200,7 @@ class C3(SingleEnergyCorrelatorBase):
     # line, triangle, and kite EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)], [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]]
     
-    # C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
-    #    coords=None, check_input=True)
+    # C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True, coords=None)
     def __init__(self, measure='hadr', beta=2, reg=0., **kwargs):
         r"""Since a `D2` defines and holds a `Measure` instance, all `Measure`
         keywords are accepted.
@@ -233,9 +224,6 @@ class C3(SingleEnergyCorrelatorBase):
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
             - Controls which coordinates are assumed for the input. See 
             [Measures](../measures) for additional info.
-        - **check_input** : _bool_
-            - Whether to check the type of the input each time or assume the
-            first input type.
         """
 
         # initialize base class
