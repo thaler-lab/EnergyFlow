@@ -459,7 +459,7 @@ class EFMSet(EFMBase):
 
         # the first one must be raw constructed
         sig0 = self._sorted_efms[0]
-        self.efms[sig0] = EFM(*sig0, no_measure=True)
+        self.efms[sig0] = EFM(*sig0, _no_measure=True)
         self._args[sig0] = 'r'
         self.rules[sig0] = 'constructing raw'
 
@@ -468,14 +468,14 @@ class EFMSet(EFMBase):
             # determine if we can subslice
             big_spec = self._find_subslice(sig)
             if big_spec is not None:
-                self.efms[sig] = EFM(*sig, subslice_from=big_spec, no_measure=True)
+                self.efms[sig] = EFM(*sig, subslice_from=big_spec, _no_measure=True)
                 self._args[sig] = big_spec
                 self.rules[sig] = 'subslicing from {}'.format(big_spec)
 
             # find best raise/lower available
             else:
                 rlsig = self._find_minimum_rl(sig)
-                self.efms[sig] = EFM(*sig, rl_from=rlsig, no_measure=True)
+                self.efms[sig] = EFM(*sig, rl_from=rlsig, _no_measure=True)
                 self._args[sig] = rlsig
                 rl_n = abs(rlsig[0] - sig[0])
                 self.rules[sig] = 'raising/lowering from {}, {}'.format(rlsig, rl_n)
@@ -495,13 +495,13 @@ class EFMSet(EFMBase):
 
             # construct raw (all up) if this is a new valency
             if v != vprev:
-                self.efms[sig] = EFM(*sig, no_measure=True)
+                self.efms[sig] = EFM(*sig, _no_measure=True)
                 self._args[sig] = 'r'
                 self.rules[sig] = 'constructing raw'
 
             # construct from lowering if we have a previous EFM with this v
             else:
-                self.efms[sig] = EFM(*sig, rl_from=sigprev, no_measure=True)
+                self.efms[sig] = EFM(*sig, rl_from=sigprev, _no_measure=True)
                 self._args[sig] = sigprev
                 self.rules[sig] = 'lowering from {}'.format(sigprev)
 

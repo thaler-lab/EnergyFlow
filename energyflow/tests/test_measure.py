@@ -23,7 +23,7 @@ def test_measure_hadr_ptyphi(pts, ys, phis, beta, kappa, normed, kappa_normed_be
     M = len(pts)
     
     # compute using the energyflow package
-    hmeas = ef.Measure('hadr', beta, kappa, normed, 'ptyphim', True, kappa_normed_behavior)
+    hmeas = ef.Measure('hadr', beta, kappa, normed, 'ptyphim', kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(np.vstack((pts,ys,phis)).T)
     
     # compute naively
@@ -48,7 +48,7 @@ def test_measure_hadr_p4s(event, beta, kappa, normed, kappa_normed_behavior):
     phis = np.arctan2(event[:,2], event[:,1])
     
     # compute using the energyflow package
-    hmeas = ef.Measure('hadr', beta, kappa, normed, 'epxpypz', True, kappa_normed_behavior)
+    hmeas = ef.Measure('hadr', beta, kappa, normed, 'epxpypz', kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(event)
     
     # compute naively
@@ -74,7 +74,7 @@ def test_measure_hadrdot_ptyphi(event, beta, theta_eps, kappa, normed, kappa_nor
     ps  = np.asarray([pT*np.asarray([np.cosh(y),np.cos(phi),np.sin(phi),np.sinh(y)]) for (pT,y,phi) in event])
    
     # compute using the energyflow package
-    hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'ptyphim', True, kappa_normed_behavior)
+    hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'ptyphim', kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(event)
         
     # compute naively
@@ -100,7 +100,7 @@ def test_measure_hadrdot_p4s(event, beta, theta_eps, kappa, normed, kappa_normed
     ps  = event
    
     # compute using the energyflow package
-    hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'epxpypz', True, kappa_normed_behavior)
+    hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'epxpypz', kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(event)
         
     # compute naively
@@ -124,7 +124,7 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed, kappa_normed_behavior
 
     Es = event[:,0]
 
-    emeas = ef.Measure('ee', beta, kappa, normed, 'epxpypz', True, kappa_normed_behavior)
+    emeas = ef.Measure('ee', beta, kappa, normed, 'epxpypz', kappa_normed_behavior)
     ezs, ethetas = emeas.evaluate(event)
 
     # compute naively

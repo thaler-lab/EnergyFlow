@@ -62,3 +62,7 @@ __all__ = (datasets.__all__ +
 
 __author__ = 'Patrick T. Komiske III <pkomiske@mit.edu>'
 __version__ = '1.3.0'
+
+# python 2 warning
+import sys
+if sys.version_info < (3, 5)
