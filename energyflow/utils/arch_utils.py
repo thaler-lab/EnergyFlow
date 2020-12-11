@@ -192,12 +192,11 @@ class PointCloudDataset(object):
         s += '  data_args:\n'
         for arg in self.data_args:
             if isinstance(arg, PointCloudDataset):
-                s += ('\n- ' + repr(arg)[:-1]).replace('\n', '\n    ') + '\n'
+                s += ('    - ' + repr(arg)).replace('\n', '\n      ')
             elif isinstance(arg, np.ndarray):
                 s += '    - numpy.ndarray | {} | {}\n'.format(arg.dtype, arg.shape)
             else:
                 s += '    - {}\n'.format(arg.__class__.__name__)
-        s += '\n'
 
         return s
 
@@ -476,6 +475,10 @@ class PairedPointCloudDataset(PointCloudDataset):
         self.pair_and_pad_func = self.pairer.get_pair_and_pad_func()
         self.pair_array_func = self.pairer.get_pair_array_func()
 
+    def __repr__(self):
+        s = super().__repr__()
+        return s + '  ' + repr(self.pairer)[:-1].replace('\n', '\n  ') + '\n'
+
     def _init(self, state=None):
         super()._init(state)
 
@@ -556,6 +559,9 @@ class FeaturePairerBase(six.with_metaclass(ABCMeta, object)):
     def __call__(self):
         return self
 
+    def __repr__(self):
+        return self.__class__.__name__
+
     def _update_shape(self, batch_shapes, i):
         batch_shapes[i] = batch_shapes[i][:2] + (self.get_new_nfeatures(batch_shapes, i),)
 
@@ -590,6 +596,12 @@ class PairedFeatureCombiner(FeaturePairerBase):
         for pairer in self.pairers:
             pairer().features_will_be_combined = True
         return self
+
+    def __repr__(self):
+        s = 'PairedFeatureCombiner:\n'
+        for pairer in self.pairers:
+            s += '  - {}\n'.format(repr(pairer))
+        return s
 
     def get_new_nfeatures(self, batch_shapes, i):
         return sum([pairer.get_new_nfeatures(batch_shapes, i) for pairer in self.pairers])
