@@ -63,6 +63,9 @@ __all__ = (datasets.__all__ +
 __author__ = 'Patrick T. Komiske III <pkomiske@mit.edu>'
 __version__ = '1.3.0'
 
-# python 2 warning
-import sys
-if sys.version_info < (3, 5)
+# python < 3.5 warning
+import sys, warnings
+if sys.version_info < (3, 5):
+    m = 'Using EnergyFlow with Python {}.{} is deprecated; support will be removed in the future'
+    warnings.warn(FutureWarning(m.format(*sys.version_info[:2])))
+del sys, warnings
