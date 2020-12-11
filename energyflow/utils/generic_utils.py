@@ -24,10 +24,11 @@ import warnings
 import numpy as np
 
 __all__ = [
-    'COMP_MAP',
-    'DEFAULT_EFP_FILE',
     'EF_DATA_DIR',
+    'DEFAULT_EFP_FILE',
+    'COMP_MAP',
     'REVERSE_COMPS',
+    'DROPBOX_URL_PATTERN',
     'ZENODO_URL_PATTERN',
     'concat_specs',
     'create_pool',
@@ -54,7 +55,8 @@ COMP_MAP = {
 }
 REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 
-# zenodo URL pattern
+# URL patterns
+DROPBOX_URL_PATTERN = 'https://www.dropbox.com/s/{}/{}?dl=1'
 ZENODO_URL_PATTERN = 'https://zenodo.org/record/{}/files/{}?download=1'
 
 # concatenates con. and disc. specs along axis 0, handling empty disc. specs

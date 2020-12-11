@@ -28,18 +28,18 @@ __all__ = [
     # helper functions
     'convert_dtype',
     'pad_events',
-    'pair_and_pad_events',
-    'pair_3d_array_axis1',
-    'pair_distances_and_pad_events',
-    'pair_distances_3d_array',
-    'product_and_pad_weights',
-    'product_2d_weights',
 
     # classes representing point cloud datasets
     'PointCloudDataset',
     'WeightedPointCloudDataset',
     'PairedPointCloudDataset',
     'PairedWeightedPointCloudDataset',
+
+    # classes to help with pairing features
+    'PairedFeatureCombiner',
+    'ConcatenatePairer',
+    'ParticleDistancePairer',
+    'OriginDistancePairer'
 ]
 
 def convert_dtype(X, dtype):
@@ -54,104 +54,22 @@ def convert_dtype(X, dtype):
     else:
         return X.astype(dtype, copy=False)
 
-def pad_events(X, pad_val=0.):
+def pad_events(X, pad_val=0., max_len=None):
 
-    # get a rectangular array which will hold the padded events
-    lens = [len(x) for x in X]
-    if pad_val == 0.:
-        output = np.zeros(((len(X), max(lens),) + X[0].shape[1:]), dtype=X[0].dtype)
-    else:
-        output = np.full(((len(X), max(lens),) + X[0].shape[1:]), pad_val, dtype=X[0].dtype)
-
-    # set events into the array
-    for i, (x, lenx) in enumerate(zip(X, lens)):
-        output[i,:lenx] = x
-
-    return output
-
-def pair_and_pad_events(X, pad_val=0., max_len=None):
-
-    # get a rectangular array which will hold the padded events
     if max_len is None:
         max_len = max([len(x) for x in X])
 
-    nfeatures = X[0].shape[1]
-    two_nfeatures = 2*nfeatures
+    output_shape = (len(X), max_len, X[0].shape[1])
     if pad_val == 0.:
-        output = np.zeros((len(X), max_len*max_len, two_nfeatures), dtype=X[0].dtype)
+        output = np.zeros(output_shape, dtype=X[0].dtype)
     else:
-        output = np.full((len(X), max_len*max_len, two_nfeatures), pad_val, dtype=X[0].dtype)
+        output = np.full(output_shape, pad_val, dtype=X[0].dtype)
 
-    # set events in the array
+    # set events in padded array
     for i, x in enumerate(X):
-        lenx = len(x)
-        paired_shape = (lenx, lenx, nfeatures)
-        x0 = np.broadcast_to(x[:,None], paired_shape)
-        x1 = np.broadcast_to(x[None,:], paired_shape)
-        pairedx = np.concatenate((x0, x1), axis=2).reshape(-1, two_nfeatures)
-        output[i,:len(pairedx)] = pairedx
+        output[i,:len(x)] = x
 
     return output
-
-def pair_3d_array_axis1(X):
-    max_len = X.shape[1]
-    paired_shape = (len(X), max_len, max_len, X.shape[2])
-    X0 = np.broadcast_to(X[:,:,None], paired_shape)
-    X1 = np.broadcast_to(X[:,None,:], paired_shape)
-    return np.concatenate((X0, X1), axis=3).reshape(len(X), -1, 2*X.shape[2])
-
-def pair_distances_and_pad_events(X, pad_val=0., max_len=None, coord_cols=slice(0, 2)):
-    
-    # get a rectangular array which will hold the padded events
-    if max_len is None:
-        max_len = max([len(x) for x in X])
-
-    nfeatures = 3
-    if pad_val == 0.:
-        output = np.zeros((len(X), max_len*max_len, nfeatures), dtype=X[0].dtype)
-    else:
-        output = np.full((len(X), max_len*max_len, nfeatures), pad_val, dtype=X[0].dtype)
-
-    # set events in the array
-    for i, x in enumerate(X):
-        dists = np.linalg.norm(x[None,:,coord_cols] - x[:,None,coord_cols], axis=2).reshape(-1)
-        output[i,:len(dists),0] = dists
-
-    # distance to center
-    dists_to_center = np.asarray([np.linalg.norm(x[:,coord_cols], axis=1)[:,None] for x in X], dtype='O')
-    output[:,:,1:] = pair_and_pad_events(dists_to_center, pad_val, max_len)
-
-    return output
-
-def pair_distances_3d_array(X, coord_cols=slice(0, 2)):
-    batch_size, mult = X.shape[:2]
-    output = np.empty((batch_size, mult*mult, 3), dtype=X.dtype)
-    output[:,:,0] = np.linalg.norm(X[:,None,:,coord_cols] - X[:,:,None,coord_cols], axis=3).reshape(batch_size, -1)
-
-    dists = np.linalg.norm(X[:,:,coord_cols], axis=2)[:]
-    output[:,:,1] = np.broadcast_to(dists[:,:,None], (batch_size, mult, mult)).reshape(batch_size, -1)
-    output[:,:,2] = np.broadcast_to(dists[:,None,:], (batch_size, mult, mult)).reshape(batch_size, -1)
-
-    return output
-
-def product_and_pad_weights(weights, max_len=None):
-
-    # get a rectangular array which will hold the padded events
-    if max_len is None:
-        max_len = max([len(x) for x in weights])
-
-    # get array to hold result
-    output = np.zeros((len(weights), max_len*max_len), dtype=weights[0].dtype)
-
-    # set events in the array
-    for i, x in enumerate(weights):
-        x_prod = (x[None,:] * x[:,None]).reshape(-1)
-        output[i,:len(x_prod)] = x_prod
-
-    return output
-
-def product_2d_weights(weights):
-    return (weights[:,None,:] * weights[:,:,None]).reshape(len(weights), -1)
 
 class PointCloudDataset(object):
 
@@ -267,11 +185,19 @@ class PointCloudDataset(object):
         self._init()
 
         s = '{}\n'.format(self.__class__.__name__)
-        s += '  length - {}\n'.format(len(self))
-        s += '  batch_size - {}\n'.format(self.batch_size)
-        s += '  batch_dtypes - {}\n'.format(repr(self.batch_dtypes))
-        s += '  batch_shapes - {}\n'.format(repr(self.batch_shapes))
-        s += '  data_args - {}\n'.format([arg.__class__.__name__ for arg in self.data_args])
+        s += '  length: {}\n'.format(len(self))
+        s += '  batch_size: {}\n'.format(self.batch_size)
+        s += '  batch_dtypes: {}\n'.format(repr(self.batch_dtypes))
+        s += '  batch_shapes: {}\n'.format(repr(self.batch_shapes))
+        s += '  data_args:\n'
+        for arg in self.data_args:
+            if isinstance(arg, PointCloudDataset):
+                s += ('\n- ' + repr(arg)[:-1]).replace('\n', '\n    ') + '\n'
+            elif isinstance(arg, np.ndarray):
+                s += '    - numpy.ndarray | {} | {}\n'.format(arg.dtype, arg.shape)
+            else:
+                s += '    - {}\n'.format(arg.__class__.__name__)
+        s += '\n'
 
         return s
 
@@ -498,7 +424,10 @@ class PointCloudDataset(object):
         return batch_generator
 
 class WeightedPointCloudDataset(PointCloudDataset):
-    _assume_padded = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._assume_padded = True
 
     def _init(self, state=None):
         super()._init(state)
@@ -526,19 +455,26 @@ class WeightedPointCloudDataset(PointCloudDataset):
 class PairedPointCloudDataset(PointCloudDataset):
 
     def __init__(self, *args, **kwargs):
-        self.pairer = self.pairing = kwargs.pop('pairing', 'concat')
+        self.pairing = kwargs.pop('pairing', 'concat')
 
         super().__init__(*args, **kwargs)
 
-        if self.pairing == 'concat':
-            self.pairer = ConcatenatePairer
-        elif self.pairing == 'distance':
-            self.pairer = DistancePairer
+        if isinstance(self.pairing, (tuple, list)):
+            self.pairer = PairedFeatureCombiner(self.pairing)
+        elif isinstance(self.pairing, six.string_types):
+            if self.pairing == 'concat':
+                self.pairer = ConcatenatePairer()
+            elif self.pairing == 'distance':
+                self.pairer = DistancePairer()
+            else:
+                raise ValueError("pairing '{}' not recognized".format(self.pairing))
+        elif isinstance(self.pairing, FeaturePairerBase) or issubclass(self.pairing, FeaturePairerBase):
+            self.pairer = self.pairing()
         else:
             raise ValueError("pairing '{}' not recognized".format(self.pairing))
 
-        self.pair_and_pad_func = self.pairer.pair_and_pad_func
-        self.pair_no_pad_func = self.pairer.pair_no_pad_func
+        self.pair_and_pad_func = self.pairer.get_pair_and_pad_func()
+        self.pair_array_func = self.pairer.get_pair_array_func()
 
     def _init(self, state=None):
         super()._init(state)
@@ -548,6 +484,7 @@ class PairedPointCloudDataset(PointCloudDataset):
 
             # add to our own list
             if i in self._zero_pad:
+                self._assume_padded = False
                 self._paired_args_need_padding[i] = True
 
             # get new shape resulting from pairing
@@ -557,33 +494,16 @@ class PairedPointCloudDataset(PointCloudDataset):
         self._zero_pad.clear()
 
     def _update_shape(self, i):
-        self.pairer._update_shape(self, i)
+        self.pairer._update_shape(self._batch_shapes, i)
 
     # pair objects in a point cloud dataset
     def batch_callback(self, args):
-        return [self.pair_and_pad_func(arg, self.pad_val) if need_padding else self.pair_no_pad_func(arg)
+        return [self.pair_and_pad_func(arg, self.pad_val, max([len(x) for x in arg])) 
+                if need_padding else self.pair_array_func(arg)
                 for arg, need_padding in zip(args, self._paired_args_need_padding)]
 
-class ConcatenatePairer:
-
-    @staticmethod
-    def _update_shape(self, i):
-        self._batch_shapes[i] = self._batch_shapes[i][:2] + (2*self._batch_shapes[i][2],)
-
-    pair_and_pad_func = pair_and_pad_events
-    pair_no_pad_func = pair_3d_array_axis1
-
-class DistancePairer:
-
-    @staticmethod
-    def _update_shape(self, i):
-        self._batch_shapes[i] = self._batch_shapes[i][:2] + (3,)
-
-    pair_and_pad_func = pair_distances_and_pad_events
-    pair_no_pad_func = pair_distances_3d_array
-
 class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointCloudDataset):
-    _assume_padded = False
+        
 
     # update shape for features only, not weights
     def _update_shape(self, i):
@@ -599,8 +519,232 @@ class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointClou
             weights, features = args[2*i], args[2*i+1]
             if need_padding:
                 max_len = max([len(w) for w in weights])
-                paired_weighted_args.extend([product_and_pad_weights(weights, max_len), self.pair_and_pad_func(features, self.pad_val, max_len)])
+                paired_weighted_args.extend([self.product_and_pad_weights(weights, max_len),
+                                             self.pair_and_pad_func(features, self.pad_val, max_len)])
             else:
-                paired_weighted_args.extend([product_2d_weights(weights), self.pair_no_pad_func(features)])
+                paired_weighted_args.extend([self.product_2d_weights(weights),
+                                             self.pair_array_func(features)])
 
         return paired_weighted_args
+
+    @staticmethod
+    def product_and_pad_weights(weights, max_len=None):
+
+        # get a rectangular array which will hold the padded events
+        if max_len is None:
+            max_len = max([len(x) for x in weights])
+
+        # get array to hold result
+        output = np.zeros((len(weights), max_len*max_len), dtype=weights[0].dtype)
+
+        # set events in the array
+        for i, x in enumerate(weights):
+            x_prod = (x[None,:] * x[:,None]).reshape(-1)
+            output[i,:len(x_prod)] = x_prod
+
+        return output
+
+    @staticmethod
+    def product_2d_weights(weights):
+        return (weights[:,None,:] * weights[:,:,None]).reshape(len(weights), -1)
+
+class FeaturePairerBase(six.with_metaclass(ABCMeta, object)):
+
+    def __init__(self):
+        self.features_will_be_combined = False
+
+    def __call__(self):
+        return self
+
+    def _update_shape(self, batch_shapes, i):
+        batch_shapes[i] = batch_shapes[i][:2] + (self.get_new_nfeatures(batch_shapes, i),)
+
+    @abstractmethod
+    def get_new_nfeatures(self, batch_shapes, i):
+        pass
+
+    def get_pair_and_pad_func(self):
+        pair_func = self.get_pair_func()
+        if self.features_will_be_combined:
+            return pair_func
+        else:
+            return lambda X, pad_val, max_len: pad_events(pair_func(X), pad_val, max_len*max_len)
+
+    @abstractmethod
+    def get_pair_func(self):
+        pass
+
+    @abstractmethod
+    def get_pair_array_func(self):
+        pass
+
+class PairedFeatureCombiner(FeaturePairerBase):
+
+    def __init__(self, pairers):
+        super().__init__()
+        self.pairers = [pairer() for pairer in pairers]
+        for pairer in self.pairers:
+            pairer.features_will_be_combined = True
+
+    def __call__(self):
+        for pairer in self.pairers:
+            pairer().features_will_be_combined = True
+        return self
+
+    def get_new_nfeatures(self, batch_shapes, i):
+        return sum([pairer.get_new_nfeatures(batch_shapes, i) for pairer in self.pairers])
+
+    @staticmethod
+    def pair_and_pad_func(pair_funcs):
+        n2combine = len(pair_funcs)
+        def combined_pair_func(X, pad_val, max_len):
+            pairs = [pair_func(X) for pair_func in pair_funcs]
+            nfeatures = [p[0].shape[1] for p in pairs]
+
+            output_shape = (len(X), max_len*max_len, sum(nfeatures))
+            if pad_val == 0.:
+                output = np.zeros(output_shape, dtype=X[0].dtype)
+            else:
+                output = np.full(output_shape, pad_val, dtype=X[0].dtype)
+
+            # set events in padded array
+            feature_slices = n2combine*[None]
+            start = 0
+            for i,nf in enumerate(nfeatures):
+                end = start + nf
+                feature_slices[i] = slice(start, end)
+                start = end
+
+            for i in range(len(X)):
+                start = 0
+                len_i = len(pairs[0][i])
+                for p,feature_slice in zip(pairs, feature_slices):
+                    end = start + nf
+                    output[i,:len_i,feature_slice] = p[i]
+                    start = end
+
+            return output
+        return combined_pair_func
+
+    @staticmethod
+    def pair_array_func(pair_array_funcs):
+        def combined_pair_array_func(X):
+            return np.concatenate([pair_array_func(X) for pair_array_func in pair_array_funcs], axis=2)
+        return combined_pair_array_func
+
+    def get_pair_and_pad_func(self):
+        return self.pair_and_pad_func([pairer.get_pair_func() for pairer in self.pairers])
+
+    def get_pair_func(self):
+        raise RuntimeError('this method should never be called')
+
+    def get_pair_array_func(self):
+        return self.pair_array_func([pairer.get_pair_array_func() for pairer in self.pairers])
+
+class ConcatenatePairer(FeaturePairerBase):
+
+    def __init__(self, *args, **kwargs):
+        self.cols = kwargs.pop('cols', None)
+        super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def pair_func(X, cols=None):
+
+        paired_X = np.empty(len(X), dtype='O')
+        if cols is None:
+            nfeatures = X[0].shape[1]
+            two_nfeatures = 2*nfeatures
+
+            for i, x in enumerate(X):
+                lenx = len(x)
+                paired_shape = (lenx, lenx, nfeatures)
+                x0 = np.broadcast_to(x[:,None], paired_shape)
+                x1 = np.broadcast_to(x[None,:], paired_shape)
+                paired_X[i] = np.concatenate((x0, x1), axis=2).reshape(-1, two_nfeatures)
+
+        else:
+            nfeatures = cols.stop - cols.start if isinstance(cols, slice) else len(cols)
+            two_nfeatures = 2*nfeatures
+
+            for i, x in enumerate(X):
+                lenx = len(x)
+                paired_shape = (lenx, lenx, nfeatures)
+                x = x[:,cols]
+                x0 = np.broadcast_to(x[:,None], paired_shape)
+                x1 = np.broadcast_to(x[None,:], paired_shape)
+                paired_X[i] = np.concatenate((x0, x1), axis=2).reshape(-1, two_nfeatures)
+
+        return paired_X
+
+    @staticmethod
+    def pair_array_func(X, cols=None):
+        if cols is None:
+            nfeatures = X.shape[2]
+        else:
+            nfeatures = cols.stop - cols.start if isinstance(cols, slice) else len(cols)
+            X = X[:,:,cols]
+
+        max_len = X.shape[1]
+        paired_shape = (len(X), max_len, max_len, nfeatures)
+        X0 = np.broadcast_to(X[:,:,None], paired_shape)
+        X1 = np.broadcast_to(X[:,None,:], paired_shape)
+        return np.concatenate((X0, X1), axis=3).reshape(len(X), -1, 2*nfeatures)
+
+    def get_new_nfeatures(self, batch_shapes, i):
+        if self.cols is None:
+            nfeatures = batch_shapes[i][2]
+        else:
+            nfeatures = (self.cols.stop - self.cols.start 
+                         if isinstance(self.cols, slice) else len(self.cols))
+
+        return 2*nfeatures
+
+    def get_pair_func(self):
+        return lambda X: self.pair_func(X, self.cols)
+
+    def get_pair_array_func(self):
+        return lambda X: self.pair_array_func(X, self.cols)
+
+class DistancePairerBase(object):
+
+    def __init__(self, *args, **kwargs):
+        self.coord_cols = kwargs.pop('coord_cols', slice(0, 2))
+        super().__init__(*args, **kwargs)
+
+    def get_pair_func(self):
+        return lambda X: self.pair_func(X, self.coord_cols)
+
+    def get_pair_array_func(self):
+        return lambda X: self.pair_array_func(X, self.coord_cols)
+
+class ParticleDistancePairer(DistancePairerBase, FeaturePairerBase):
+
+    @staticmethod
+    def pair_func(X, coord_cols=slice(0, 2)):
+        paired_X = np.empty(len(X), dtype='O')
+        for i, x in enumerate(X):
+            paired_X[i] = np.linalg.norm(x[None,:,coord_cols] - x[:,None,coord_cols], axis=2).reshape(-1, 1)
+        return paired_X
+
+    @staticmethod
+    def pair_array_func(X, coord_cols=slice(0, 2)):
+        distance_matrices = np.linalg.norm(X[:,None,:,coord_cols] - X[:,:,None,coord_cols], axis=3)
+        return distance_matrices.reshape(len(X), -1, 1)
+
+    def get_new_nfeatures(self, batch_shapes, i):
+        return 1
+
+class OriginDistancePairer(DistancePairerBase, FeaturePairerBase):
+
+    @staticmethod
+    def pair_func(X, coord_cols=slice(0, 2)):
+        dists_to_origin = np.asarray([np.linalg.norm(x[:,coord_cols], axis=1)[:,None] for x in X], dtype='O')
+        return ConcatenatePairer.pair_func(dists_to_origin)
+    
+    @staticmethod
+    def pair_array_func(X, coord_cols=slice(0, 2)):
+        distance_matrices = np.linalg.norm(X[:,:,coord_cols], axis=2)[:,:,None]
+        return ConcatenatePairer.pair_array_func(distance_matrices)
+
+    def get_new_nfeatures(self, batch_shapes, i):
+        return 2

@@ -80,13 +80,11 @@ import warnings
 
 import numpy as np
 
-from energyflow.utils.generic_utils import EF_DATA_DIR, ZENODO_URL_PATTERN
-from energyflow.utils.data_utils import (_determine_cache_dir, _get_filepath,
-                                         _pad_events_axis1)
+from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath, _pad_events_axis1
+from energyflow.utils.generic_utils import EF_DATA_DIR, DROPBOX_URL_PATTERN, ZENODO_URL_PATTERN
 
 __all__ = ['load']
 
-DROPBOX_URL_PATTERN = 'https://www.dropbox.com/s/{}/{}?dl=1'
 FILENAME_PATTERNS = {
     'pythia21': 'Pythia21_Zjet_pTZ-200GeV_{}.npz',
     'pythia25': 'Pythia25_Zjet_pTZ-200GeV_{}.npz',
@@ -112,7 +110,6 @@ KEYS = {
     'zgs': 'Groomed momentum fraction, zcut = 0.1, beta = 0',
 }
 NUM_FILES = 17
-SOURCES = ['dropbox', 'zenodo']
 ZENODO_RECORD = '3548091'
 
 # load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
@@ -169,7 +166,7 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
     # load info from JSON file
     if 'ZJD_INFO' not in globals():
         global ZJD_INFO
-        with open(os.path.join(EF_DATA_DIR, 'ZjetsDelphes.json'), 'r') as f:
+        with open(os.path.join(EF_DATA_DIR, 'zjets_delphes.json'), 'r') as f:
             ZJD_INFO = json.load(f)
 
     # determine cache_dir
@@ -179,8 +176,6 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
     dataset_low = dataset.lower()
     if dataset_low not in DATASETS:
         raise ValueError("Invalid dataset '{}'".format(dataset))
-    if source not in SOURCES:
-        raise ValueError("Invalud source '{}'".format(source))
 
     # handle selecting keys
     keys = set(KEYS.keys()) if include_keys is None else set(include_keys)
