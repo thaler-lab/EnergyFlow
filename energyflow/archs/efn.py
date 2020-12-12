@@ -149,13 +149,7 @@ def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
 
     _ensure_keras_imported()
 
-    # define a function which maps the given mask_val to zero
-    def mask_func(X):
-    
-        # map mask_val to zero and leave everything else alone
-        return X * K.cast(K.not_equal(X, mask_val), K.dtype(X))
-
-    mask_layer = Lambda(mask_func, name=name)
+    mask_layer = Lambda(lambda X: X * K.cast(K.not_equal(X, mask_val), K.dtype(X)), name=name)
 
     # return layer and tensors
     return [mask_layer], [mask_layer(input_tensor) for input_tensor in input_tensors]
@@ -165,22 +159,17 @@ def construct_point_cloud_mask(input_tensors, mask_val=0., name=None, coeffs=Non
 
     _ensure_keras_imported()
 
-    # define a function which maps the given mask_val to zero
-    def mask_func(X):
-
-        # map mask_val to zero and return 1 elsewhere
-        return K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X))
-
-    # can use a single function here
     if coeffs is None:
-        mask_layer = Lambda(mask_func, name=name)
+        mask_layer = Lambda(lambda X: K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name)
         return [mask_layer], [mask_layer(input_tensor) for input_tensor in input_tensors]
 
     else:
         mask_layers, mask_tensors = [], []
         for i, (tensor, coeff) in enumerate(zip(input_tensors, coeffs)):
-            mask_layers.append(Lambda(lambda x: coeff*mask_func(x), name=None if name is None else '{}_{}'.format(name, i)))
-            mask_tensors.append(mask_layers[-1](tensor))
+            name_i = None if name is None else '{}_{}'.format(name, i)
+            mask_layer = Lambda(lambda X: coeff*K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name_i)
+            mask_layers.append(mask_layer)
+            mask_tensors.append(mask_layer(tensor))
 
         return mask_layers, mask_tensors
 
