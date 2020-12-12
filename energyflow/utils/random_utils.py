@@ -31,7 +31,7 @@ __all__ = [
 if hasattr(np.random, 'default_rng'):
     random = np.random.default_rng()
 else:
-    random = np.random.RandomState
+    random = np.random
 
 def gen_random_events(nevents, nparticles, dim=4, mass=0.):
     r"""Generate random events with a given number of particles in a given
