@@ -27,6 +27,7 @@ from six.moves.urllib.error import HTTPError, URLError
 from energyflow.utils.random_utils import random
 
 __all__ = [
+    'ALL_EXAMPLES',
     'get_examples', 
     'data_split', 
     'to_categorical',
@@ -37,9 +38,11 @@ __all__ = [
 ALL_EXAMPLES = [
     'efn_example.py',
     'efn_regression_example.py',
-    #'efn_tfdataset_example.py',
+    'efn_point_cloud_dataset_example.py',
+    'efn_multiple_phis.py',
     'pfn_example.py',
-    #'pfn_tfdataset_example.py',
+    'pfn_point_cloud_dataset_example.py',
+    'pfn_multiple_phis.py',
     'cnn_example.py',
     'dnn_example.py',
     'efp_example.py',

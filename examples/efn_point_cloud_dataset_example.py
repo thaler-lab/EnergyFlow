@@ -35,7 +35,7 @@ Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
 
 # network training parameters
 num_epoch = 2
-batch_size = 250
+batch_size = 100
 
 ###############################################################################
 

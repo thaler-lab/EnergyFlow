@@ -4,17 +4,14 @@ os: linux
 dist: bionic
 
 install: |
-  pip install --upgrade cython scipy
-  pip install --upgrade pot pytest scikit-learn wasserstein
-  if [ $(python -c "import sys; print(sys.version_info[0])") -eq 2 ]; then
-    pip install tensorflow==1.14
-  else
-    pip install tensorflow
-  fi
+  pip install -U cython scipy
+  pip install -U pot pytest scikit-learn wasserstein
+  pip install tensorflow
   pip install .
 
-script:
-  - pytest -v energyflow
+script: |
+  pytest -v energyflow
+  python run_all_examples.py
 
 stages:
   - test

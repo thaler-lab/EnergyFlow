@@ -66,7 +66,7 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-efn = ef.archs.EFN(input_dim=(2, 3), Phi_sizes=Phi_sizes, F_sizes=F_sizes,
+efn = ef.archs.EFN(input_dim=(2, 1), Phi_sizes=Phi_sizes, F_sizes=F_sizes,
                    num_global_features=(4 if use_global_features else None))
 
 # get datasets

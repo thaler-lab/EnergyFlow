@@ -38,8 +38,7 @@ __all__ = [
     # classes to help with pairing features
     'PairedFeatureCombiner',
     'ConcatenatePairer',
-    'ParticleDistancePairer',
-    'OriginDistancePairer'
+    'ParticleDistancePairer'
 ]
 
 def convert_dtype(X, dtype):
@@ -464,7 +463,7 @@ class PairedPointCloudDataset(PointCloudDataset):
             if self.pairing == 'concat':
                 self.pairer = ConcatenatePairer()
             elif self.pairing == 'distance':
-                self.pairer = DistancePairer()
+                self.pairer = ParticleDistancePairer()
             else:
                 raise ValueError("pairing '{}' not recognized".format(self.pairing))
         elif isinstance(self.pairing, FeaturePairerBase) or issubclass(self.pairing, FeaturePairerBase):
@@ -746,17 +745,17 @@ class ParticleDistancePairer(DistancePairerBase, FeaturePairerBase):
     def get_new_nfeatures(self, batch_shapes, i):
         return 1
 
-class OriginDistancePairer(DistancePairerBase, FeaturePairerBase):
-
-    @staticmethod
-    def pair_func(X, coord_cols=slice(0, 2)):
-        dists_to_origin = np.asarray([np.linalg.norm(x[:,coord_cols], axis=1)[:,None] for x in X], dtype='O')
-        return ConcatenatePairer.pair_func(dists_to_origin)
-    
-    @staticmethod
-    def pair_array_func(X, coord_cols=slice(0, 2)):
-        distance_matrices = np.linalg.norm(X[:,:,coord_cols], axis=2)[:,:,None]
-        return ConcatenatePairer.pair_array_func(distance_matrices)
-
-    def get_new_nfeatures(self, batch_shapes, i):
-        return 2
+#class OriginDistancePairer(DistancePairerBase, FeaturePairerBase):
+#
+#    @staticmethod
+#    def pair_func(X, coord_cols=slice(0, 2)):
+#        dists_to_origin = np.asarray([np.linalg.norm(x[:,coord_cols], axis=1)[:,None] for x in X], dtype='O')
+#        return ConcatenatePairer.pair_func(dists_to_origin)
+#    
+#    @staticmethod
+#    def pair_array_func(X, coord_cols=slice(0, 2)):
+#        distance_matrices = np.linalg.norm(X[:,:,coord_cols], axis=2)[:,:,None]
+#        return ConcatenatePairer.pair_array_func(distance_matrices)
+#
+#    def get_new_nfeatures(self, batch_shapes, i):
+#        return 2
