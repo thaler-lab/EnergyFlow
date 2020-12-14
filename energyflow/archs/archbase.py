@@ -97,6 +97,23 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
         # construct model
         self._construct_model()
 
+    def __call__(self, *args, **kwargs):
+        if callable(self.model):
+            return self.model(*args, **kwargs)
+        else:
+            raise RuntimeError('underlying model is not callable')
+
+    # pass on unknown attribute lookups to the underlying model
+    def __getattr__(self, attr):
+
+        if hasattr(self.model, attr):
+            return getattr(self.model, attr)
+
+        else:
+            name = self.__class__.__name__
+            raise AttributeError("'{}' object has no attribute '{}', ".format(name, attr)
+                                 + "check of underlying model failed")
+
     def _proc_arg(self, name, **kwargs):
         if 'old' in kwargs and kwargs['old'] in self.hps:
             old = kwargs['old']
@@ -146,7 +163,6 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
 
         - The return value of the the underlying model's `.fit()` method.
         """
-
         pass
 
     # predict(X_test, **kwargs)
@@ -169,7 +185,6 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
         - _numpy.ndarray_
             - The value of the model on the input dataset.
         """
-
         pass
 
     @abstractproperty
@@ -189,26 +204,14 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
             - `model.coef_` will return the coefficients, where `model`
             is any EnergyFlow `LinearClassifier` instance.
         """
-
         pass
-
-    # pass on unknown attribute lookups to the underlying model
-    def __getattr__(self, attr):
-
-        if hasattr(self.model, attr):
-            return getattr(self.model, attr)
-
-        else:
-            name = self.__class__.__name__
-            raise AttributeError("'{}' object has no attribute '{}', ".format(name, attr)
-                                 + "check of underlying model failed")
 
 
 ###############################################################################
 # NNBase
 ###############################################################################
 
-class NNBase(ArchBase):        
+class NNBase(ArchBase):
 
     def _process_hps(self):
         """**Default NN Hyperparameters**
@@ -378,7 +381,7 @@ class NNBase(ArchBase):
         # do the fitting
         hist = self.model.fit(*args, **kwargs)
 
-        # handle saving at the end, if we weren't already saving throughout 
+        # handle saving at the end, if we weren't already saving throughout
         if self.filepath and not self.save_while_training:
             if self.save_weights_only:
                 self.model.save_weights(self.filepath)
