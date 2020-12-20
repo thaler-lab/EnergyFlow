@@ -4,7 +4,7 @@ os: linux
 dist: bionic
 
 install:
-  - pip install .[all]
+  - pip install .[tests]
 
 script:
   - python setup.py test -v
