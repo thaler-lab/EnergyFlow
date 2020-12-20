@@ -101,7 +101,7 @@ def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, mode
     efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], summary=False, filepath=model_path, 
                     save_while_training=save_while_training, save_weights_only=save_weights_only,
                     modelcheck_opts=modelcheck_opts)
-    hist = efn.fit(X_train, Y_train, epochs=1, batch_size=10, validation_data=[X_val, Y_val])
+    hist = efn.fit(X_train, Y_train, epochs=1, batch_size=10, validation_data=(X_val, Y_val))
 
 @pytest.mark.arch
 @pytest.mark.masking
@@ -161,7 +161,7 @@ def test_EFN_global_features(nglobal):
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2), np.random.rand(n//10, nglobal)]
     Y_val = np.random.rand(n//10, 2)
     efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
-    hist = efn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=[X_val, Y_val])
+    hist = efn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=(X_val, Y_val))
     efn._global_feature_tensor
 
 @pytest.mark.arch
@@ -175,6 +175,6 @@ def test_PFN_required(nglobal):
     X_val = [np.random.rand(n//10, m, 3), np.random.rand(n//10, nglobal)]
     Y_val = np.random.rand(n//10, 2)
     pfn = archs.PFN(input_dim=3, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
-    hist = pfn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=[X_val, Y_val])
+    hist = pfn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=(X_val, Y_val))
     pfn._global_feature_tensor
 
