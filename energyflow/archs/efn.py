@@ -591,8 +591,8 @@ class SymmetricPointCloudNN(NNBase):
 
         # handle predicting on a PointCloudDataset
         if len(args) and isinstance(args[0], PointCloudDataset):
-            args[0].shuffle = False
             args[0].infinite = False
+            args[0].shuffle = False
             args = (args[0].as_tf_dataset(),) + args[1:]
 
         return super().predict(*args, **kwargs)

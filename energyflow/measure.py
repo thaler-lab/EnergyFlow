@@ -310,7 +310,7 @@ class HadronicMeasure(Measure):
             raise ValueError('Hadronic measure {} not understood'.format(measure))
 
     def __init__(self, *args, **kwargs):
-        super(HadronicMeasure, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.coords is None:
             self.coords = 'ptyphim'
         self.epxpypz = (self.coords == 'epxpypz')
@@ -358,7 +358,7 @@ class EEMeasure(Measure):
             raise ValueError('EE measure {} not understood'.format(measure))
 
     def __init__(self, *args, **kwargs):
-        super(EEMeasure, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.coords is None:
             self.coords = 'epxpypz'
         self.epxpypz = self.coords == 'epxpypz'
@@ -390,7 +390,7 @@ class HadronicDefaultMeasure(HadronicMeasure):
     subslicing = None
 
     def __init__(self, *args, **kwargs):
-        super(HadronicDefaultMeasure, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.kappa == PF_MARKER:
             raise ValueError('particle flow not available for HadronicDefaultMeasure')
 
@@ -404,7 +404,7 @@ class HadronicDefaultMeasure(HadronicMeasure):
             return self.ndarray_dim3(arg[:,:3])
 
     def pseudojet(self, arg):
-        pts, constituents = super(HadronicDefaultMeasure, self).pseudojet(arg)
+        pts, constituents = super().pseudojet(arg)
         thetas = np.asarray([[c1.delta_R(c2) for c2 in constituents] for c1 in constituents])
         return self._z_func(pts), thetas**self.beta
 
@@ -422,11 +422,11 @@ class HadronicDotMeasure(HadronicMeasure):
         return self._z_func(arg[:,0]), self._ps_dot(phats)**self.half_beta
 
     def ndarray_dim4(self, arg):
-        pts, ps = super(HadronicDotMeasure, self).ndarray_dim4(arg)
+        pts, ps = super().ndarray_dim4(arg)
         return self._z_func(pts), self._ps_dot(self._phat_func(pts, ps))**self.half_beta
 
     def pseudojet(self, arg):
-        pts, constituents = super(HadronicDotMeasure, self).pseudojet(arg)
+        pts, constituents = super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return self._z_func(pts), self._ps_dot(self._phat_func(pts, p4s))**self.half_beta
 
@@ -439,18 +439,18 @@ class HadronicEFMMeasure(HadronicMeasure):
     subslicing = False
 
     def __init__(self, *args, **kwargs):
-        super(HadronicEFMMeasure, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.beta, self.half_beta = 2, 1
 
     def ndarray_dim3(self, arg):
         return self._z_func(arg[:,0]), self._phat_func(arg[:,0], np.atleast_2d(p4s_from_ptyphims(arg)))
 
     def ndarray_dim4(self, arg):
-        pts, ps = super(HadronicEFMMeasure, self).ndarray_dim4(arg)
+        pts, ps = super().ndarray_dim4(arg)
         return self._z_func(pts), self._phat_func(pts, ps)
 
     def pseudojet(self, arg):
-        pts, constituents = super(HadronicEFMMeasure, self).pseudojet(arg)
+        pts, constituents = super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return self._z_func(pts), self._phat_func(pts, p4s)
 
@@ -468,7 +468,7 @@ class EEDefaultMeasure(EEMeasure):
         return self._z_func(arg[:,0]), self._ps_dot(self._phat_func(arg[:,0], arg))**self.half_beta
 
     def pseudojet(self, arg):
-        Es, constituents =  super(EEDefaultMeasure, self).pseudojet(arg)
+        Es, constituents =  super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return self._z_func(Es), self._ps_dot(self._phat_func(Es, p4s))**self.half_beta
 
@@ -481,7 +481,7 @@ class EEEFMMeasure(EEMeasure):
     subslicing = True
 
     def __init__(self, *args, **kwargs):
-        super(EEEFMMeasure, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.beta, self.half_beta = 2, 1
 
     def ndarray_dim_arb(self, arg):
@@ -490,6 +490,6 @@ class EEEFMMeasure(EEMeasure):
         return self._z_func(arg[:,0]), self._phat_func(arg[:,0], arg)
 
     def pseudojet(self, arg):
-        Es, constituents = super(EEEFMMeasure, self).pseudojet(arg)
+        Es, constituents = super().pseudojet(arg)
         p4s = np.asarray([[c.e(), c.px(), c.py(), c.pz()] for c in constituents])
         return self._z_func(Es), self._phat_func(Es, p4s)

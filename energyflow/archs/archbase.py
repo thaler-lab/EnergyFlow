@@ -324,8 +324,8 @@ class NNBase(ArchBase):
 
         # flags
         self.name_layers = self._proc_arg('name_layers', default=True)
-        self.compile = self._proc_arg('compile', default=True)
-        self.summary = self._proc_arg('summary', default=True)
+        self.compile_model = self._proc_arg('compile_model', default=True)
+        self.print_summary = self._proc_arg('print_summary', default=True)
 
         # model name
         self.model_name = self._proc_arg('model_name', default=None)
@@ -352,11 +352,11 @@ class NNBase(ArchBase):
     def _compile_model(self):
 
         # compile model if specified
-        if self.compile: 
+        if self.compile_model: 
             self.model.compile(**self.compile_opts)
 
             # print summary
-            if self.summary: 
+            if self.print_summary: 
                 self.model.summary()
 
     def fit(self, *args, **kwargs):

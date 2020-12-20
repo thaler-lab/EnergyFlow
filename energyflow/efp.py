@@ -83,7 +83,7 @@ class EFP(EFPBase):
         """
 
         # initialize base class
-        super(EFP, self).__init__(kwargs)
+        super().__init__(kwargs)
 
         # store options
         self._np_optimize = np_optimize
@@ -415,7 +415,7 @@ class EFPSet(EFPBase):
             setattr(self, k, kwargs.pop(k))
 
         # initialize EFPBase
-        super(EFPSet, self).__init__(kwargs)
+        super().__init__(kwargs)
 
         # delay this import until here to avoid circular dependency
         from energyflow.gen import Generator
@@ -605,7 +605,7 @@ class EFPSet(EFPBase):
             - An array of the EFP values for each event.
         """
 
-        return self.calc_disc(super(EFPSet, self).batch_compute(events, n_jobs))
+        return self.calc_disc(super().batch_compute(events, n_jobs))
 
     # sel(*args)
     def sel(self, *args, **kwargs):

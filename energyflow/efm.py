@@ -176,7 +176,7 @@ class EFM(EFMBase):
         """
 
         # initialize base class
-        super(EFM, self).__init__(kwargs)
+        super().__init__(kwargs)
 
         # store inputs
         self._nup, self._nlow = nup, nlow
@@ -295,7 +295,7 @@ class EFM(EFMBase):
             are the first `nup` and the lowered indices are the last `nlow`.
         """
 
-        return self._raw_construct(super(EFM, self).compute(event, zs, nhats))
+        return self._raw_construct(super().compute(event, zs, nhats))
 
     def batch_compute(self, events, n_jobs=None):
         """Evaluates the EFM on several events.
@@ -315,7 +315,7 @@ class EFM(EFMBase):
             - Array of EFM tensor values on the events.
         """
 
-        return super(EFM, self).batch_compute(events, n_jobs)
+        return super().batch_compute(events, n_jobs)
 
     def set_timer(self):
         self.times = []
@@ -400,7 +400,7 @@ class EFMSet(EFMBase):
         hidden_subslicing = kwargs.pop('subslicing', False)
 
         # initialize base class
-        super(EFMSet, self).__init__(kwargs)
+        super().__init__(kwargs)
 
         if efm_specs is None:
             if vmax is not None:
@@ -535,7 +535,7 @@ class EFMSet(EFMBase):
             - A dictionary of EFM tensors indexed by their signatures.
         """
 
-        zsnhats = super(EFMSet, self).compute(event, zs, nhats)
+        zsnhats = super().compute(event, zs, nhats)
 
         efm_dict = {}
         for sig in self._sorted_efms:
@@ -564,7 +564,7 @@ class EFMSet(EFMBase):
             signatures.
         """
 
-        return super(EFMSet, self).batch_compute(events, n_jobs)
+        return super().batch_compute(events, n_jobs)
 
     def set_timers(self):
         for efm in self.efms.values():

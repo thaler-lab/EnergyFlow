@@ -126,7 +126,7 @@ class EFPBase(EFBase):
 
             # set default measure for EFPs
             kwargs.setdefault('measure', 'hadr')
-            super(EFPBase, self).__init__(kwargs)
+            super().__init__(kwargs)
 
             self.use_efms = 'efm' in self.measure
 
@@ -172,7 +172,7 @@ class EFMBase(EFBase):
 
         # initialize base class if measure needed
         if not kwargs.pop('_no_measure', False):
-            super(EFMBase, self).__init__(kwargs)
+            super().__init__(kwargs)
             self._measure.beta = None
 
     @abstractmethod
@@ -195,7 +195,7 @@ class SingleEnergyCorrelatorBase(EFBase):
 
         kwargs.setdefault('measure', measure)
         kwargs.setdefault('beta', beta)
-        super(SingleEnergyCorrelatorBase, self).__init__(kwargs)
+        super().__init__(kwargs)
 
         # use strassen if requested and it's possible
         self.strassen = strassen
