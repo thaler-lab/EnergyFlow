@@ -9,7 +9,7 @@
 - Renamed `path` keyword argument to `cache_dir` in the `get_examples` function.
 - `arch_utils` created and imported at the top level.
 - `data_utils` moved to the top level.
-- Generated new default EFPs (igraph has changed the order around); removed availability of `npz` encoding of default EFP file.
+- Generated new default EFPs (the order has changed on Python 3.8 and higher, due either to a change in igraph or to dictionaries being ordered by default); removed availability of `npz` encoding of default EFP file.
 - Removed `check_input` from Measure keyword arguments.
 - EnergyFlow architecture objects are now callable, by forward `__call__` to the underlying model.
 - Renamed `summary` argument of neural network models to `print_summary`.
