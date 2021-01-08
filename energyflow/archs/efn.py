@@ -370,7 +370,7 @@ class SymmetricPointCloudNN(NNBase):
         self.Phi_l2_regs = self._proc_Phi_arg('Phi_l2_regs', default=0.)
         self.latent_dropout = self._proc_arg('latent_dropout', default=0.)
         self.F_dropouts = iter_or_rep(self._proc_arg('F_dropouts', default=0., old='dense_dropouts'))
-        self.F_l2_regs   = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))
+        self.F_l2_regs = iter_or_rep(self._proc_arg('F_l2_regs', default=0.))
 
         # handle latent dropout
         if not isinstance(self.latent_dropout, (tuple, list)):

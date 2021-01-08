@@ -73,7 +73,7 @@ __all__ = [
     'etas_from_pts_ys_ms',
     'ys_from_pts_etas_ms',
 
-    # from_ptyphims functions
+    # p4s_from functions
     'p4s_from_ptyphims',
     'p4s_from_ptyphipids',
 

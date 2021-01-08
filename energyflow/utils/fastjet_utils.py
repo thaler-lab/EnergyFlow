@@ -41,7 +41,14 @@ def _import_fastjet():
 fastjet = _import_fastjet()
 if fastjet:
 
-    __all__ += ['pjs_from_ptyphims', 'ptyphims_from_pjs', 'cluster', 'softdrop']
+    __all__ += [
+        'pjs_from_ptyphims',
+        'pjs_from_p4s',
+        'ptyphims_from_pjs',
+        'p4s_from_pjs',
+        'cluster',
+        'softdrop',
+    ]
 
     def pjs_from_ptyphims(ptyphims):
         """Converts particles in hadronic coordinates to FastJet PseudoJets.
@@ -59,7 +66,27 @@ if fastjet:
             array.
         """
 
-        return [fastjet.PtYPhiM(*ptyphim[:4]) for ptyphim in ptyphims]
+        if ptyphims.shape[1] >= 4:
+            return [fastjet.PtYPhiM(p[0], p[1], p[2], p[3]) for p in ptyphims]
+        else:
+            return [fastjet.PtYPhiM(p[0], p[1], p[2]) for p in ptyphims]
+
+    def pjs_from_p4s(p4s):
+        """Converts particles in Cartesian coordinates to FastJet PseudoJets.
+
+        **Arguments**
+
+        - **p4s** : _2d numpy.ndarray_
+            - An array of particles in Cartesian coordinates, `[E, px, py, pz]`.
+
+        **Returns**
+
+        - _list_ of _fastjet.PseudoJet_
+            - A list of PseudoJets corresponding to the particles in the given
+            array.
+        """
+
+        return [fastjet.PseudoJet(p4[1], p4[2], p4[3], p4[0]) for p4 in p4s]
 
     def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
         """Extracts hadronic four-vectors from FastJet PseudoJets.
@@ -90,6 +117,23 @@ if fastjet:
             phi_fix(event[:,2], phi_ref, copy=False)
 
         return event
+
+    def p4s_from_pjs(pjs):
+        """Extracts Cartesian four-vectors from FastJet PseudoJets.
+
+        **Arguments**
+
+        - **pjs** : _list_ of _fastjet.PseudoJet_
+            - An iterable of PseudoJets.
+
+        **Returns**
+
+        - _numpy.ndarray_
+            - An array of four-vectors corresponding to the given PseudoJets as
+            `[E, px, py, pz]`.
+        """
+
+        return np.asarray([[pj.E(), pj.px(), pj.py(), pj.pz()] for pj in pjs])
 
     def cluster(pjs, algorithm='ca', R=fastjet.JetDefinition.max_allowable_R):
         """Clusters a list of PseudoJets according to a specified jet

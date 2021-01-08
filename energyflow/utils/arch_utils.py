@@ -505,7 +505,6 @@ class PairedPointCloudDataset(PointCloudDataset):
                 for arg, need_padding in zip(args, self._paired_args_need_padding)]
 
 class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointCloudDataset):
-        
 
     # update shape for features only, not weights
     def _update_shape(self, i):

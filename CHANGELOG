@@ -13,6 +13,7 @@
 - Removed `check_input` from Measure keyword arguments.
 - EnergyFlow architecture objects are now callable, by forward `__call__` to the underlying model.
 - Renamed `summary` argument of neural network models to `print_summary`.
+- Added functions in `fastjet_utils` to convert to/from PseudoJet's and events in Cartesian coordinates.
 
 ## 1.3.x
 
