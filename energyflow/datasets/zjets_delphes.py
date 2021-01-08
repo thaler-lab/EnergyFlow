@@ -1,3 +1,4 @@
+# coding: utf-8
 r"""## Z + Jets with Delphes Simulation
 
 Datasets of QCD jets used for studying unfolding in [OmniFold: A Method to
@@ -57,7 +58,8 @@ corresponding paper:
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
 - A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
-OmniFold: A Method to Simultaneously Unfold All Observables, [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
+OmniFold: A Method to Simultaneously Unfold All Observables,
+[arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 """
 
 #  ______    _ ______ _______ _____          _____  ______ _      _____  _    _ ______  _____
