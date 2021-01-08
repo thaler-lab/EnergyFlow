@@ -174,7 +174,7 @@ class Measure(six.with_metaclass(ABCMeta, object)):
             - Whether to check the type of input each time or assume the first
             input type.
         - **kappa_normed_behavior** : {`'new'`, `'orig'`}
-            - Determines how `'kappa'`≠1 interacts with normalization of the
+            - Determines how `'kappa'`!=1 interacts with normalization of the
             energies. A value of `'new'` will ensure that `z` is truly the
             energy fraction of a particle, so that $z_i=E_i^\kappa/\left(
             \sum_{i=1}^ME_i\right)^\kappa$. A value of `'orig'` will keep the
