@@ -22,7 +22,7 @@ collinear-safe observables.
 Prior to version `1.1.0`, the interaction of the `kappa` and `normed` options
 resulted in potentially unexpected behavior. As of version `1.1.0`, the flag
 `kappa_normed_behavior` has been added to give the user explicit control over
-the behavior when `normed=True` and `kappa≠1`. See the description of this
+the behavior when `normed=True` and `kappa!=1`. See the description of this
 option below for more detailed information.
 
 The usage of EFMs throughout the EnergyFlow package is also controlled through

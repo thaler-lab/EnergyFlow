@@ -3,6 +3,8 @@
 
 from __future__ import absolute_import
 
+import sys
+
 import numpy as np
 import pytest
 
@@ -27,6 +29,8 @@ table2b = [
 ]
 
 @pytest.mark.gen
+@pytest.mark.skipif(sys.version_info > (3, 7),
+                    reason='order of generated EFPs different on Python 3.8 and higher')
 def test_gen_matches_file():
     pytest.importorskip('igraph')
     g_7 = ef.Generator(dmax=7)
