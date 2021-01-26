@@ -206,6 +206,14 @@ class PointCloudDataset(object):
 
     def split(self, split_arg):
 
+        # check split arg
+        if callable(split_arg):
+            split_func = split_arg
+        elif not isinstance(split_arg, np.ndarray):
+            raise ValueError('`split_arg` should be callable or a numpy array')
+        else:
+            split_func = lambda x: x[split_arg]
+
         # ensure we're initialized
         self._init()
 
@@ -215,21 +223,77 @@ class PointCloudDataset(object):
 
             # handle PointCloudDataset
             if isinstance(data_arg, PointCloudDataset):
-                new_data_args.append(data_arg.split(split_arg))
+                new_data_args.append(data_arg.split(split_func))
 
             # numpy array
             else:
-                if callable(split_arg):
-                    new_data_args.append(split_arg(data_arg))
-                else:
-                    try:
-                        new_data_args.append(data_arg[split_arg])
-                    except:
-                        m = '`split_arg` of type {} unable to index into data_arg of shape {}'
-                        raise ValueError(m.format(type(split_arg), data_arg.shape))
+                new_data_args.append(split_func(data_arg))
 
         # create new object from clone of current one
         return self.__class__(new_data_args, **self._clone_kwargs)
+
+    def join(self, other, join_method='concat'):
+
+        # check joining method
+        if isinstance(join_method, six.string_types):
+            if join_method != 'concat':
+                raise ValueError('unrecognized join_method `{}`'.format(join_method))
+            join_method = lambda x, y: np.concatenate((x, y))
+        elif not callable(join_method):
+            raise ValueError("`join_method` should be 'concat' or a callable")
+
+        # ensure we're initialized
+        self._init()
+
+        # join data_args
+        new_data_args = []
+        for data_arg, other_data_arg in zip(self.data_args, other.data_args):
+
+            # check that types match
+            assert type(data_arg) == type(other_data_arg), 'cannot join incompatible types'
+
+            # handle PointCloudDataset
+            if isinstance(data_arg, PointCloudDataset):
+
+                # check some basic compatibility
+                batch_shapes_match = self._match_batch_shapes(data_arg.batch_shapes, other_data_arg.batch_shapes)
+                assert data_arg.batch_dtypes == other_data_arg.batch_dtypes, 'batch_dtypes must match'
+                assert batch_shapes_match, 'batch_shapes must match'
+
+                # join datasets
+                new_data_args.append(data_arg.join(other_data_arg, join_method))
+
+            # numpy array
+            else:
+                new_data_args.append(join_method(data_arg, other_data_arg))
+
+        # create new object from clone of current one
+        return self.__class__(new_data_args, **self._clone_kwargs)
+
+    # this method is needed so that None matches anything
+    @staticmethod
+    def _match_batch_shapes(batch_shapes, other_batch_shapes):
+
+        # they don't match if they're different lengths
+        if len(batch_shapes) != len(other_batch_shapes):
+            return False
+
+        # check each element in the shape
+        for bs1, bs2 in zip(batch_shapes, other_batch_shapes):
+
+            # check for compatibility of two shape tuples
+            assert isinstance(bs1, tuple) and isinstance(bs2, tuple), 'expected tuples'
+
+            # check lengths
+            if len(bs1) != len(bs2_):
+                return False
+
+            # detect if these contain any nested structures
+            if any([not isinstance(b, (None, int)) for bs in [bs1, bs2] for b in bs]):
+                return PointCloudDataset._match_batch_shapes(bs1, bs2)
+
+            # we have tuples of int/None here
+            return ((bs1[1:] == bs2[1:]) and ((bs1[0] == bs2[0]) or (bs1[0] is None) or (bs2[0] is None)))
 
     @property
     def _clone_kwargs(self):
