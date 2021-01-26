@@ -215,9 +215,6 @@ class PointCloudDataset(object):
         else:
             split_func = lambda x: x[split_arg]
 
-        # ensure we're initialized
-        self._init()
-
         # split data_args
         new_data_args = []
         for data_arg in self.data_args:
@@ -234,7 +231,7 @@ class PointCloudDataset(object):
         return self._clone_with_new_data_args(new_data_args)
 
     # note that the settings of the primary dataset will be used for the new one
-    def chain(self, other, chain_method='concat'):
+    def chain(self, other, chain_method='concat', force_init=False):
 
         # check chaining method
         if isinstance(chain_method, six.string_types):
@@ -244,8 +241,8 @@ class PointCloudDataset(object):
         elif not callable(chain_method):
             raise ValueError("`chain_method` should be 'concat' or a callable")
 
-        # ensure we're initialized
-        self._init()
+        if force_init:
+            self._init()
 
         # chain data_args
         new_data_args = []
@@ -256,11 +253,14 @@ class PointCloudDataset(object):
 
             # handle PointCloudDataset
             if isinstance(data_arg, PointCloudDataset):
+                if force_init:
+                    other_data_arg._init()
 
                 # check some basic compatibility
-                batch_shapes_match = self._match_batch_shapes(data_arg.batch_shapes, other_data_arg.batch_shapes)
-                assert data_arg.batch_dtypes == other_data_arg.batch_dtypes, 'batch_dtypes must match'
-                assert batch_shapes_match, 'batch_shapes must match'
+                if data_arg.batch_shapes is not None and other_data_arg.batch_shapes is not None:
+                    batch_shapes_match = self._match_batch_shapes(data_arg.batch_shapes, other_data_arg.batch_shapes)
+                    assert data_arg.batch_dtypes == other_data_arg.batch_dtypes, 'batch_dtypes must match'
+                    assert batch_shapes_match, 'batch_shapes must match'
 
                 # chain datasets
                 new_data_args.append(data_arg.chain(other_data_arg, chain_method))
