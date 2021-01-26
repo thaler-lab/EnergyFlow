@@ -233,25 +233,25 @@ class PointCloudDataset(object):
         return self._clone_with_new_data_args(new_data_args)
 
     # note that the settings of the primary dataset will be used for the new one
-    def join(self, other, join_method='concat'):
+    def chain(self, other, chain_method='concat'):
 
-        # check joining method
-        if isinstance(join_method, six.string_types):
-            if join_method != 'concat':
-                raise ValueError('unrecognized join_method `{}`'.format(join_method))
-            join_method = lambda x, y: np.concatenate((x, y))
-        elif not callable(join_method):
-            raise ValueError("`join_method` should be 'concat' or a callable")
+        # check chaining method
+        if isinstance(chain_method, six.string_types):
+            if chain_method != 'concat':
+                raise ValueError('unrecognized chain_method `{}`'.format(chain_method))
+            chain_method = lambda x, y: np.concatenate((x, y))
+        elif not callable(chain_method):
+            raise ValueError("`chain_method` should be 'concat' or a callable")
 
         # ensure we're initialized
         self._init()
 
-        # join data_args
+        # chain data_args
         new_data_args = []
         for data_arg, other_data_arg in zip(self.data_args, other.data_args):
 
             # check that types match
-            assert type(data_arg) == type(other_data_arg), 'cannot join incompatible types'
+            assert type(data_arg) == type(other_data_arg), 'cannot chain incompatible types'
 
             # handle PointCloudDataset
             if isinstance(data_arg, PointCloudDataset):
@@ -261,12 +261,12 @@ class PointCloudDataset(object):
                 assert data_arg.batch_dtypes == other_data_arg.batch_dtypes, 'batch_dtypes must match'
                 assert batch_shapes_match, 'batch_shapes must match'
 
-                # join datasets
-                new_data_args.append(data_arg.join(other_data_arg, join_method))
+                # chain datasets
+                new_data_args.append(data_arg.chain(other_data_arg, chain_method))
 
             # numpy array
             else:
-                new_data_args.append(join_method(data_arg, other_data_arg))
+                new_data_args.append(chain_method(data_arg, other_data_arg))
 
         return self._clone_with_new_data_args(new_data_args)
 
