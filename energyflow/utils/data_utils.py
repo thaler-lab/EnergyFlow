@@ -235,7 +235,7 @@ def remap_pids(events, pid_i=3, error_on_unknown=True):
             events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP[pid]
                                             for pid in pids]).reshape(events.shape[:2])
         else:
-            events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
+            events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0.)
                                             for pid in pids]).reshape(events.shape[:2])
     else:
         if error_on_unknown:
@@ -244,7 +244,7 @@ def remap_pids(events, pid_i=3, error_on_unknown=True):
                                              for pid in event[:,pid_i].astype(int)])
         else:
             for event in events:
-                event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0)
+                event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0.)
                                              for pid in event[:,pid_i].astype(int)])
 
 def _pad_events_axis1(events, axis1_shape):

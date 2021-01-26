@@ -312,7 +312,7 @@ class PointCloudDataset(object):
                 self._batch_dtypes.append(self.dtype)
                 self.data_args[i] = convert_dtype(data_arg, self.dtype)
 
-    def as_tf_dataset(self, prefetch=4):
+    def as_tf_dataset(self, prefetch=None):
 
         # ensure we're initialized
         self._init()
@@ -324,6 +324,8 @@ class PointCloudDataset(object):
                                               output_shapes=self.batch_shapes)
 
         # set prefetch amount
+        if prefetch is None:
+            prefetch = 4
         if prefetch:
             tfds = tfds.prefetch(prefetch)
 

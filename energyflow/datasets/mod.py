@@ -161,12 +161,7 @@ def load(*args, **kwargs):
         number of available files to load, rounded up to the nearest whole
         number. Note that since ints and floats are treated different, a value
         of `1` loads one file whereas `1.0` loads the entire dataset. A value
-        of `-1` also loads the entire dataset. 
-    - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
-        `'datasets'` is automatically appended to the end of this path, as well
-        as the collection name. For example, the default is to download/look
-        for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`.
+        of `-1` also loads the entire dataset.
     - **cache_dir** : _str_
         - The directory where to store/look for the files. Note that 
         `'datasets'` is automatically appended to the end of this path, as well
@@ -695,7 +690,7 @@ class MODDataset(object):
             - The number of events or jets to keep after subselections are
             applied. A value of `-1` keeps the entire dataset. The weights
             are properly rescaled to preserve the total cross section of the
-            selection.
+            selection. Ignored when initializing from existing datasets.
         - **shuffle** : _bool_
             - When subselecting a fraction of the dataset (i.e. `num!=-1`),
             if `False` the first `num` events passing cuts will be kept, if
