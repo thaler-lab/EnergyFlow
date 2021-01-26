@@ -73,7 +73,8 @@ def pad_events(X, pad_val=0., max_len=None):
 class PointCloudDataset(object):
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
-                                  shuffle=True, seed=None, infinite=False, pad_val=0.):
+                                  shuffle=True, seed=None, infinite=False, pad_val=0.,
+                                  _wrap=False):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
         designed to be used as input to EFN and PFN models. The function uses a
         generator to spool events from the arrays as needed and pad them on the fly.
@@ -146,12 +147,12 @@ class PointCloudDataset(object):
 
         # store inputs
         self.batch_size = batch_size
+        self.dtype = dtype
         self.shuffle = shuffle
         self.seed = seed
-        self.dtype = dtype
         self.infinite = infinite
         self.pad_val = pad_val
-        self._wrap = False
+        self._wrap = _wrap
 
         # check for proper data_args
         if not isinstance(data_args, (list, tuple)):
@@ -202,6 +203,37 @@ class PointCloudDataset(object):
     def wrap(self):
         self._wrap = True
         return self
+
+    def split(self, split_arg):
+
+        # ensure we're initialized
+        self._init()
+
+        # split data_args
+        new_data_args = []
+        for data_arg in self.data_args:
+
+            # handle PointCloudDataset
+            if isinstance(data_arg, PointCloudDataset):
+                new_data_args.append(data_arg.split(split_arg))
+
+            # numpy array
+            else:
+                if callable(split_arg):
+                    new_data_args.append(split_arg(data_arg))
+                else:
+                    try:
+                        new_data_args.append(data_arg[split_arg])
+                    except:
+                        m = '`split_arg` of type {} unable to index into data_arg of shape {}'
+                        raise ValueError(m.format(type(split_arg), data_arg.shape))
+
+        # create new object from clone of current one
+        return self.__class__(new_data_args, **self._clone_kwargs)
+
+    @property
+    def _clone_kwargs(self):
+        return {'_wrap': self._wrap}
 
     @property
     def _state(self):
@@ -307,7 +339,7 @@ class PointCloudDataset(object):
 
                 # rectangular array
                 else:
-                    self._batch_shapes.append((self.tensor_batch_size,) + data_arg.shape[1:])    
+                    self._batch_shapes.append((self.tensor_batch_size,) + data_arg.shape[1:])
 
                 self._batch_dtypes.append(self.dtype)
                 self.data_args[i] = convert_dtype(data_arg, self.dtype)
@@ -479,6 +511,12 @@ class PairedPointCloudDataset(PointCloudDataset):
     def __repr__(self):
         s = super().__repr__()
         return s + '  ' + repr(self.pairer)[:-1].replace('\n', '\n  ') + '\n'
+
+    @property
+    def _clone_kwargs(self):
+        kwargs = super()._clone_kwargs
+        kwargs.update({'pairing': self.pairing})
+        return kwargs
 
     def _init(self, state=None):
         super()._init(state)
