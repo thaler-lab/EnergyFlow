@@ -230,8 +230,9 @@ class PointCloudDataset(object):
                 new_data_args.append(split_func(data_arg))
 
         # create new object from clone of current one
-        return self.__class__(new_data_args, **self._clone_kwargs)
+        return self._clone_with_new_data_args(new_data_args)
 
+    # note that the settings of the primary dataset will be used for the new one
     def join(self, other, join_method='concat'):
 
         # check joining method
@@ -267,8 +268,14 @@ class PointCloudDataset(object):
             else:
                 new_data_args.append(join_method(data_arg, other_data_arg))
 
+        return self._clone_with_new_data_args(new_data_args)
+
+    def _clone_with_new_data_args(self, new_data_args):
+
         # create new object from clone of current one
-        return self.__class__(new_data_args, **self._clone_kwargs)
+        new_dset = self.__class__(new_data_args, **self._clone_kwargs)
+        new_dset._state = self._state
+        return new_dset
 
     # this method is needed so that None matches anything
     @staticmethod
