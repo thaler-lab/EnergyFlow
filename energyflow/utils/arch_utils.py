@@ -192,11 +192,12 @@ class PointCloudDataset(object):
         s += '  data_args:\n'
         for arg in self.data_args:
             if isinstance(arg, PointCloudDataset):
-                s += ('    - ' + repr(arg)).replace('\n', '\n      ')
+                s += ('    - ' + repr(arg)[:-1]).replace('\n', '\n      ')
             elif isinstance(arg, np.ndarray):
-                s += '    - numpy.ndarray | {} | {}\n'.format(arg.dtype, arg.shape)
+                s += '    - numpy.ndarray | {} | {}'.format(arg.dtype, arg.shape)
             else:
-                s += '    - {}\n'.format(arg.__class__.__name__)
+                s += '    - {}'.format(arg.__class__.__name__)
+            s += '\n'
 
         return s
 
