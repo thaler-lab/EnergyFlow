@@ -229,6 +229,7 @@ def remap_pids(events, pid_i=3, error_on_unknown=True):
         encountered. If `False`, unknown PDG IDs will map to zero.
     """
 
+    # contiguous array of events
     if events.ndim == 3:
         pids = events[:,:,pid_i].astype(int).reshape((events.shape[0]*events.shape[1]))
         if error_on_unknown:
@@ -237,6 +238,17 @@ def remap_pids(events, pid_i=3, error_on_unknown=True):
         else:
             events[:,:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0.)
                                             for pid in pids]).reshape(events.shape[:2])
+
+
+    # single event
+    elif events.ndim == 2:
+        if error_on_unknown:
+            event[:,pid_i] = np.asarray([PID2FLOAT_MAP[pid] for pid in event[:,pid_i].astype(int)])
+        else:
+            event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0.)
+                                         for pid in event[:,pid_i].astype(int)])
+
+    # many ragged events
     else:
         if error_on_unknown:
             for event in events:
