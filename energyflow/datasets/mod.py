@@ -256,7 +256,7 @@ def load(*args, **kwargs):
                              + ', acceptable values are {}'.format(allowed_sds))
 
     # get file info
-    info = _get_dataset_info(cname)
+    info = _get_dataset_info(cname, kwargs['float_dtype'])
     hashes, total_weights = info['md5_hashes'], info['total_weights']
 
     # iterate over subdatasets
@@ -461,13 +461,13 @@ def _get_dataset(collection, dname):
 
     return collection[dname]
 
-def _get_dataset_info(cname, dtype=None):
+def _get_dataset_info(cname, float_dtype=None):
 
     # get collection
     collection = _get_collection(cname)
 
     # cache info if not already stored
-    if 'info' not in collection:
+    if 'info' not in collection or collection.setdefault('float_dtype', float_dtype) != float_dtype:
 
         fpath = os.path.join(EF_DATA_DIR, '{}.json'.format(cname))
         with open(fpath, 'r') as f:
@@ -475,7 +475,7 @@ def _get_dataset_info(cname, dtype=None):
 
         # convert to numpy arrays
         for key in ['kfactor_x', 'kfactor_y', 'npv_hist_ratios']:
-            info[key] = convert_dtype(np.asarray(info[key]), dtype)
+            info[key] = convert_dtype(np.asarray(info[key]), float_dtype)
 
         collection['info'] = info
 
