@@ -375,7 +375,7 @@ def filter_particles(particles, which='all', pt_cut=None, chs=False,
 # kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
 #                        apply_residual_correction=True)
 def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
-                           apply_residual_correction=True, dtype=None):
+                           apply_residual_correction=True, float_dtype=None):
     """Evaluates k-factors used by a particular collection. Currently, since
     CMS2011AJets is the only supported collection, some of the arguments are
     specific to the details of this collection (such as the use of jet pTs) and
@@ -420,10 +420,11 @@ def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
         raise ValueError("dataset must be one of 'sim' or 'gen'")
 
     # get info for the specified collection
-    info = _get_dataset_info(collection, dtype)
+    info = _get_dataset_info(collection, float_dtype)
 
     # base kfactors from https://arxiv.org/abs/1309.5311
-    base_kfactors = np.interp(convert_dtype(pts, dtype), info['kfactor_x'], info['kfactor_y'])
+    base_kfactors = convert_dtype(np.interp(pts, info['kfactor_x'], info['kfactor_y']), float_dtype)
+    print(base_kfactors.dtype)
 
     # include npv reweighting if sim
     if dataset == 'sim':
@@ -476,6 +477,8 @@ def _get_dataset_info(cname, float_dtype=None):
         # convert to numpy arrays
         for key in ['kfactor_x', 'kfactor_y', 'npv_hist_ratios']:
             info[key] = convert_dtype(np.asarray(info[key]), float_dtype)
+        #if float_dtype is not None:
+        #    info['residual_factor'] = getattr(np, float_dtype)(info['residual_factor'])
 
         collection['info'] = info
 
