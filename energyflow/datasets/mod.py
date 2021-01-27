@@ -717,7 +717,8 @@ class MODDataset(object):
             'shuffle': True,
             'store_gens': True,
             'store_pfcs': True,
-            'float_dtype': None
+            'float_dtype': None,
+            'verbose': 0
         }
 
         # process kwargs
@@ -732,6 +733,7 @@ class MODDataset(object):
         self.store_pfcs = kwargs.pop('store_pfcs')
         self.store_gens = kwargs.pop('store_gens')
         self.float_dtype = kwargs.pop('float_dtype')
+        self.verbose = kwargs.pop('verbose')
         datasets = kwargs.pop('datasets')
 
         # check for disallowed kwargs
@@ -873,6 +875,8 @@ class MODDataset(object):
 
     def _init_from_filename(self, filename, path):
 
+        start = time.time()
+
         # handle suffix
         if not filename.endswith('.h5'):
             filename += '.h5'
@@ -937,6 +941,11 @@ class MODDataset(object):
         self._jets_i = self.jets_i[self._mask]
         self._jets_f = self.jets_f[self._mask]
 
+        # print update
+        if self.verbose >= 1:
+            print('Loaded jets_i and jets_f in {:.3f}s'.format(time.time() - start))
+            start = time.time()
+
         # alter weights due to subselection
         self._jets_f[:,self.weight] *= weight_factor
 
@@ -955,6 +964,11 @@ class MODDataset(object):
             # store pfcs cols
             self._store_cols('pfcs')
 
+            # print update
+            if self.verbose >= 1:
+                print('Loaded pfcs in {:.3f}s'.format(time.time() - start))
+                start = time.time()
+
         if self.store_gens:
 
             # read in gens_index
@@ -966,6 +980,11 @@ class MODDataset(object):
 
             # store gens cols
             self._store_cols('gens', allow_multiple=self.store_pfcs)
+
+            # print update
+            if self.verbose >= 1:
+                print('Loaded gens in {:.3f}s'.format(time.time() - start))
+                start = time.time()
 
         # store filenames
         self._filenames = self.hf['filenames'][:].astype('U')
@@ -1245,7 +1264,7 @@ class MODDataset(object):
 
         return (mask, specs) if return_specs else mask
 
-    def save(self, filepath, npf=-1, compression=None, verbose=1, n_jobs=1):
+    def save(self, filepath, npf=-1, compression=None, verbose=None, n_jobs=1):
         """Saves a `MODDataset` in the MOD HDF5 format.
 
         **Arguments**
@@ -1268,6 +1287,9 @@ class MODDataset(object):
             - The number of processes to use when saving the files; only
             relevant when `npf!=-1`.
         """
+
+        if verbose is None:
+            verbose = self.verbose
 
         path, name = os.path.split(filepath)
         if name.endswith('.h5'):
