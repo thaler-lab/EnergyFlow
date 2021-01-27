@@ -242,11 +242,11 @@ def remap_pids(events, pid_i=3, error_on_unknown=True):
 
     # single event
     elif events.ndim == 2:
+        pids = events[:,pid_i].astype(int)
         if error_on_unknown:
-            event[:,pid_i] = np.asarray([PID2FLOAT_MAP[pid] for pid in event[:,pid_i].astype(int)])
+            events[:,pid_i] = np.asarray([PID2FLOAT_MAP[pid] for pid in pids])
         else:
-            event[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0.)
-                                         for pid in event[:,pid_i].astype(int)])
+            events[:,pid_i] = np.asarray([PID2FLOAT_MAP.get(pid, 0.) for pid in pids])
 
     # many ragged events
     else:
