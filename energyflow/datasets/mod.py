@@ -95,6 +95,7 @@ import h5py
 import numpy as np
 import six
 
+from energyflow.utils.arch_utils import convert_dtype
 from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath
 from energyflow.utils.generic_utils import *
 from energyflow.utils.particle_utils import ischrgd
@@ -213,7 +214,7 @@ def load(*args, **kwargs):
         'validate_files': False,
         'store_gens': True,
         'store_pfcs': True,
-        'float_dtype': 'float64',
+        'float_dtype': None,
         'verbose': 0,
     }
 
@@ -373,7 +374,8 @@ def filter_particles(particles, which='all', pt_cut=None, chs=False,
 
 # kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
 #                        apply_residual_correction=True)
-def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_correction=True):
+def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
+                           apply_residual_correction=True, dtype=None):
     """Evaluates k-factors used by a particular collection. Currently, since
     CMS2011AJets is the only supported collection, some of the arguments are
     specific to the details of this collection (such as the use of jet pTs) and
@@ -403,6 +405,7 @@ def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_
         - Whether or not to apply a residual correction derived from the first
         bin of the pT spectrum that corrects for the remaining difference
         between data and simulation.
+    - **dtype** : _str_
 
     **Returns**
 
@@ -417,10 +420,10 @@ def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets', apply_residual_
         raise ValueError("dataset must be one of 'sim' or 'gen'")
 
     # get info for the specified collection
-    info = _get_dataset_info(collection)
+    info = _get_dataset_info(collection, dtype)
 
     # base kfactors from https://arxiv.org/abs/1309.5311
-    base_kfactors = np.interp(pts, info['kfactor_x'], info['kfactor_y'])
+    base_kfactors = np.interp(convert_dtype(pts, dtype), info['kfactor_x'], info['kfactor_y'])
 
     # include npv reweighting if sim
     if dataset == 'sim':
@@ -458,7 +461,7 @@ def _get_dataset(collection, dname):
 
     return collection[dname]
 
-def _get_dataset_info(cname):
+def _get_dataset_info(cname, dtype=None):
 
     # get collection
     collection = _get_collection(cname)
@@ -472,7 +475,7 @@ def _get_dataset_info(cname):
 
         # convert to numpy arrays
         for key in ['kfactor_x', 'kfactor_y', 'npv_hist_ratios']:
-            info[key] = np.asarray(info[key])
+            info[key] = convert_dtype(np.asarray(info[key]), dtype)
 
         collection['info'] = info
 
@@ -714,7 +717,7 @@ class MODDataset(object):
             'shuffle': True,
             'store_gens': True,
             'store_pfcs': True,
-            'float_dtype': 'float64'
+            'float_dtype': None
         }
 
         # process kwargs
@@ -891,7 +894,7 @@ class MODDataset(object):
 
         # load selected jets
         self._jets_i = self.hf['jets_i'][:]
-        self._jets_f = self.hf['jets_f'][:].astype(self.float_dtype, copy=False)
+        self._jets_f = convert_dtype(self.hf['jets_f'][:], self.float_dtype)
 
         # update store particles based on availability
         self.store_pfcs &= ('pfcs' in self.hf)
@@ -946,7 +949,7 @@ class MODDataset(object):
             self.pfcs_index = self.hf['pfcs_index'][:]
 
             # store pfcs as separate arrays
-            self._pfcs = _separate_particle_arrays(self.hf['pfcs'][:].astype(self.float_dtype, copy=False),
+            self._pfcs = _separate_particle_arrays(convert_dtype(self.hf['pfcs'][:], self.float_dtype),
                                                    self.pfcs_index, self._mask, copy=self.copy_particles)
 
             # store pfcs cols
@@ -958,7 +961,7 @@ class MODDataset(object):
             self.gens_index = self.hf['gens_index'][:]
 
             # store gens as separate arrays
-            self._gens = _separate_particle_arrays(self.hf['gens'][:].astype(self.float_dtype, copy=False),
+            self._gens = _separate_particle_arrays(convert_dtype(self.hf['gens'][:], self.float_dtype),
                                                    self.gens_index, self._mask, copy=self.copy_particles)
 
             # store gens cols

@@ -43,6 +43,10 @@ __all__ = [
 
 def convert_dtype(X, dtype):
 
+    # if dtype is None, do nothing
+    if dtype is None:
+        return X
+
     # check for proper argument type
     if not isinstance(X, np.ndarray):
         raise TypeError('argument must be a numpy ndarray')
@@ -411,7 +415,8 @@ class PointCloudDataset(object):
                     self._batch_shapes.append((self.tensor_batch_size,) + data_arg.shape[1:])
 
                 self._batch_dtypes.append(self.dtype)
-                self.data_args[i] = (convert_dtype(data_arg, self.dtype) if convert_dtypes else data_arg)
+                self.data_args[i] = (convert_dtype(data_arg, getattr(np, self.dtype)) 
+                                     if convert_dtypes else data_arg)
 
     def as_tf_dataset(self, prefetch=None):
 
