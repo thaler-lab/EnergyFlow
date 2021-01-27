@@ -213,6 +213,7 @@ def load(*args, **kwargs):
         'validate_files': False,
         'store_gens': True,
         'store_pfcs': True,
+        'float_dtype': 'float64',
         'verbose': 0,
     }
 
@@ -227,7 +228,7 @@ def load(*args, **kwargs):
     cache_dir = _determine_cache_dir(kwargs['cache_dir'])
     validate_files = kwargs['validate_files']
     verbose = kwargs['verbose']
-    moddset_kwargs = {kw: kwargs[kw] for kw in ['store_gens', 'store_pfcs']}
+    moddset_kwargs = {kw: kwargs[kw] for kw in ['store_gens', 'store_pfcs', 'float_dtype']}
 
     # verify collection
     cname = kwargs['collection']
@@ -713,6 +714,7 @@ class MODDataset(object):
             'shuffle': True,
             'store_gens': True,
             'store_pfcs': True,
+            'float_dtype': 'float64'
         }
 
         # process kwargs
@@ -726,6 +728,7 @@ class MODDataset(object):
         self.shuffle = kwargs.pop('shuffle')
         self.store_pfcs = kwargs.pop('store_pfcs')
         self.store_gens = kwargs.pop('store_gens')
+        self.float_dtype = kwargs.pop('float_dtype')
         datasets = kwargs.pop('datasets')
 
         # check for disallowed kwargs
@@ -888,7 +891,7 @@ class MODDataset(object):
 
         # load selected jets
         self._jets_i = self.hf['jets_i'][:]
-        self._jets_f = self.hf['jets_f'][:]
+        self._jets_f = self.hf['jets_f'][:].astype(self.float_dtype, copy=False)
 
         # update store particles based on availability
         self.store_pfcs &= ('pfcs' in self.hf)
@@ -943,7 +946,8 @@ class MODDataset(object):
             self.pfcs_index = self.hf['pfcs_index'][:]
 
             # store pfcs as separate arrays
-            self._pfcs = _separate_particle_arrays(self.hf['pfcs'][:], self.pfcs_index, self._mask, copy=self.copy_particles)
+            self._pfcs = _separate_particle_arrays(self.hf['pfcs'][:].astype(self.float_dtype, copy=False),
+                                                   self.pfcs_index, self._mask, copy=self.copy_particles)
 
             # store pfcs cols
             self._store_cols('pfcs')
@@ -954,7 +958,8 @@ class MODDataset(object):
             self.gens_index = self.hf['gens_index'][:]
 
             # store gens as separate arrays
-            self._gens = _separate_particle_arrays(self.hf['gens'][:], self.gens_index, self._mask, copy=self.copy_particles)
+            self._gens = _separate_particle_arrays(self.hf['gens'][:].astype(self.float_dtype, copy=False),
+                                                   self.gens_index, self._mask, copy=self.copy_particles)
 
             # store gens cols
             self._store_cols('gens', allow_multiple=self.store_pfcs)
