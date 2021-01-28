@@ -424,7 +424,6 @@ def kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
 
     # base kfactors from https://arxiv.org/abs/1309.5311
     base_kfactors = convert_dtype(np.interp(pts, info['kfactor_x'], info['kfactor_y']), float_dtype)
-    print(base_kfactors.dtype)
 
     # include npv reweighting if sim
     if dataset == 'sim':

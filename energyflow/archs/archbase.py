@@ -325,7 +325,7 @@ class NNBase(ArchBase):
         # flags
         self.name_layers = self._proc_arg('name_layers', default=True)
         self.compile_model = self._proc_arg('compile_model', default=True)
-        self.print_summary = self._proc_arg('print_summary', default=True)
+        self.print_summary = self._proc_arg('print_summary', default=True, old='summary')
 
         # model name
         self.model_name = self._proc_arg('model_name', default=None)
