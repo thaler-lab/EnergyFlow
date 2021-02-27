@@ -280,7 +280,7 @@ The valid inputs and outputs of the functions here will be described using
 this terminology.</p>
 <hr />
 <h3 id="ptyphims_from_p4s">ptyphims_from_p4s</h3>
-<pre><code class="language-python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None)
+<pre><code class="language-python">energyflow.ptyphims_from_p4s(p4s, phi_ref=None, mass=True)
 </code></pre>
 <p>Convert to hadronic coordinates <code>[pt,y,phi,m]</code> from Cartesian
 coordinates. All-zero four-vectors are left alone.</p>
@@ -298,6 +298,10 @@ the hardest particle is used as the reference value. If <code>None</code>, all
 phis will be in the range <span><span class="MathJax_Preview">[0,2\pi)</span><script type="math/tex">[0,2\pi)</script></span>. An array is accepted in the case
 that <code>p4s</code> is an array of events, in which case the <code>phi_ref</code> array
 should have shape <code>(N,)</code> where <code>N</code> is the number of events.</li>
+</ul>
+</li>
+<li><strong>mass</strong> : <em>bool</em><ul>
+<li>Whether or not to include particle masses.</li>
 </ul>
 </li>
 </ul>
@@ -1386,6 +1390,8 @@ obs/#zg_from_pj"><span><span class="MathJax_Preview">z_g</span><script type="mat
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
     
   </div>
 

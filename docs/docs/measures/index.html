@@ -171,7 +171,7 @@ collinear-safe observables.</p>
 <p>Prior to version <code>1.1.0</code>, the interaction of the <code>kappa</code> and <code>normed</code> options
 resulted in potentially unexpected behavior. As of version <code>1.1.0</code>, the flag
 <code>kappa_normed_behavior</code> has been added to give the user explicit control over
-the behavior when <code>normed=True</code> and <code>kappa≠1</code>. See the description of this
+the behavior when <code>normed=True</code> and <code>kappa!=1</code>. See the description of this
 option below for more detailed information.</p>
 <p>The usage of EFMs throughout the EnergyFlow package is also controlled through
 the <code>Measure</code> interface. There are special measure, <code>'hadrefm'</code> and <code>'eeefm'</code>
@@ -262,7 +262,7 @@ input type.</li>
 </ul>
 </li>
 <li><strong>kappa_normed_behavior</strong> : {<code>'new'</code>, <code>'orig'</code>}<ul>
-<li>Determines how <code>'kappa'</code>≠1 interacts with normalization of the
+<li>Determines how <code>'kappa'</code>!=1 interacts with normalization of the
 energies. A value of <code>'new'</code> will ensure that <code>z</code> is truly the
 energy fraction of a particle, so that <span><span class="MathJax_Preview">z_i=E_i^\kappa/\left(
 \sum_{i=1}^ME_i\right)^\kappa</span><script type="math/tex">z_i=E_i^\kappa/\left(
@@ -319,6 +319,8 @@ context.)</li>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
     
   </div>
 

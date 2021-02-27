@@ -2,6 +2,11 @@
 
 ## 1.3.x
 
+**1.3.1**
+
+- Fixed typo in `MODDataset` code that caused `abs_gen_jet_y` and `abs_get_jet_eta` to be invalid selectors.
+- Added `mass` option to `ptyphims_from_p4s` to mirror `ptyphims_from_pjs`.
+
 **1.3.0**
 
 - EMD module now uses Wasserstein package for optimal transport computations by default. This should yield some speed and stability improvements while being mostly transparent to the user.

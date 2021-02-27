@@ -6,7 +6,7 @@
 # |______|_|    |_| \_|
                       
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
 
@@ -46,7 +46,7 @@ __all__ = [
 if __keras_version__.endswith('-tf'):
     __keras_version__ = __keras_version__[:-3]
 keras_version_tuple = tuple(map(int, __keras_version__.split('.')))
-DOT_AXIS = 0 if keras_version_tuple <= (2, 2, 4) else 1
+DOT_AXIS = 1
 
 ################################################################################
 # INPUT FUNCTIONS

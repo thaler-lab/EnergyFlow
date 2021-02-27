@@ -585,7 +585,8 @@ corresponding paper:
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
 - A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
-OmniFold: A Method to Simultaneously Unfold All Observables, [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
+OmniFold: A Method to Simultaneously Unfold All Observables,
+[arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 
 ----
 
@@ -743,12 +744,10 @@ A dataset consisting of 45 $N$-subjettiness observables for 100k quark and
 gluon jets generated with Pythia 8.230. Following [1704.08249](https:
 //arxiv.org/abs/1704.08249), the observables are in the following order:
 
-$$
-\{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
+\[\{\tau_1^{(\beta=0.5)},\tau_1^{(\beta=1.0)},\tau_1^{(\beta=2.0)},
 \tau_2^{(\beta=0.5)},\tau_2^{(\beta=1.0)},\tau_2^{(\beta=2.0)},
 \ldots,
-\tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.
-$$
+\tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.\]
 
 The dataset contains two members: `'X'` which is a numpy array of the nsubs
 that has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon 
