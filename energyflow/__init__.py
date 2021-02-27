@@ -59,4 +59,4 @@ __all__ = (datasets.__all__ +
            obs.__all__ +
            utils.__all__)
 
-__version__ = '1.3.1'
+__version__ = '1.3.2'

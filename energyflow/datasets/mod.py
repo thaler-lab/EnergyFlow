@@ -1168,7 +1168,7 @@ class MODDataset(object):
             self.selection_cols += ['corr_jet_pt', 'abs_jet_eta', 'abs_jet_y']
             
             # handle special cases for sim
-            if 'get_jet_eta' in self.selection_cols:
+            if 'gen_jet_eta' in self.selection_cols:
                 self.selection_cols += ['abs_gen_jet_eta', 'abs_gen_jet_y']
 
             # special cases for gen

@@ -30,7 +30,7 @@ The EnergyFlow package also provides easy access to particle phyiscs datasets an
 - [Detailed Examples](examples): Examples showcasing EFPs, EFNs, PFNs, EMDs, and more.
 
 
-The current version is `1.3.1`. Changes are summarized in the [Release Notes](releases). Using the most up-to-date version is recommended. As of version `0.7.0`, tests have been written covering the majority of the EFP and EMD code. The architectures code is currently tested by running the examples. The source code can be found on [GitHub](https://github.com/pkomiske/EnergyFlow).
+The current version is `1.3.2`. Changes are summarized in the [Release Notes](releases). Using the most up-to-date version is recommended. As of version `0.7.0`, tests have been written covering the majority of the EFP and EMD code. The architectures code is currently tested by running the examples. The source code can be found on [GitHub](https://github.com/pkomiske/EnergyFlow).
 
 Get started by [installing EnergyFlow](installation), [exploring the demos](demos), and [running the examples](examples)!
 
