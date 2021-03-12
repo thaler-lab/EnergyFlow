@@ -25,6 +25,7 @@ errors will be issued but this module will not be usable).
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
+import six
 
 from energyflow.utils.particle_utils import phi_fix
 
@@ -135,7 +136,23 @@ if fastjet:
 
         return np.asarray([[pj.E(), pj.px(), pj.py(), pj.pz()] for pj in pjs])
 
-    def cluster(pjs, algorithm='ca', R=fastjet.JetDefinition.max_allowable_R):
+    def jet_def(algorithm=fastjet.cambridge_algorithm, R=fastjet.JetDefinition.max_allowable_R, recomb=fastjet.E_scheme):
+        """"""
+
+        if isinstance(algorithm, six.string_types):
+            algorithm_l = algorithm.lower()
+            if algorithm_l  == 'kt':
+                algorithm = fastjet.kt_algorithm
+            elif algorithm_l == 'antikt' or algorithm_l == 'akt':
+                algorithm = fastjet.antikt_algorithm
+            elif algorithm_l in {'ca', 'cambridge', 'cambridge_aachen'}:
+                algorithm = fastjet.cambridge_algorithm
+            else:
+                raise ValueError("algorithm '{}' not understood".format(algorithm))
+
+        return fastjet.JetDefinition(algorithm, float(R), recomb)
+
+    def cluster(pjs, N=None, ptmin=0., dcut=None, **kwargs):
         """Clusters a list of PseudoJets according to a specified jet
         algorithm and jet radius.
 
@@ -151,6 +168,9 @@ if fastjet:
         - **R** : _float_
             - The jet radius. The default value corresponds to
             `max_allowable_R` as defined by the FastJet python package.
+        - **N** : _int_ or `None`
+            - If `None`, then the inclusive jets will be returned. If `N` is a
+            _float_, then it is treated as 
 
         **Returns**
 
@@ -158,17 +178,19 @@ if fastjet:
             - A list of PseudoJets corresponding to the clustered jets.
         """
 
-        algorithm_l = algorithm.lower()
-        if algorithm_l  == 'kt':
-            jet_alg = fastjet.kt_algorithm
-        elif algorithm_l == 'antikt' or algorithm_l == 'akt':
-            jet_alg = fastjet.antikt_algorithm
-        elif algorithm_l in {'ca', 'cambridge', 'cambridge_aachen'}:
-            jet_alg = fastjet.cambridge_algorithm
-        else:
-            raise ValueError("algorithm '{}' not understood".format(algorithm))
+        cs = fastjet.ClusterSequence(pjs, jet_def(**kwargs))
+        cs.thisown = False
 
-        return fastjet.JetDefinition(jet_alg, float(R))(pjs)
+        # not specify N means we want inclusive jets
+        if N is None:
+            return cs.inclusive_jets(ptmin)
+
+        # we want exlusive_jets_up_to N
+        if dcut is None:
+            return cs.exclusive_jets_up_to(N)
+
+        # we want exclusive jets on dcut
+        return cs.exclusive_jets(dcut)
 
     def softdrop(jet, zcut=0.1, beta=0, R=1.0):
         r"""Implements the SoftDrop grooming algorithm on a jet that has been
