@@ -697,3 +697,109 @@ See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
 ----
 
+## Utilities 
+
+Utilities for EnergyFlow architectures, split out from the utils submodule
+because these import tensorflow, which the main package avoids doing.
+
+----
+
+### convert_dtype
+
+```python
+energyflow.archs.convert_dtype(X, dtype)
+```
+
+
+
+
+----
+
+### pad_events
+
+```python
+energyflow.archs.pad_events(X, pad_val=0.0, max_len=None)
+```
+
+
+
+
+----
+
+### PointCloudDataset
+
+```python
+energyflow.archs.PointCloudDataset(data_args, batch_size=100, dtype='float32', shuffle=True, seed=None, infinite=False, pad_val=0.0, _wrap=False)
+```
+
+
+
+
+----
+
+### WeightedPointCloudDataset
+
+```python
+energyflow.archs.WeightedPointCloudDataset(args, kwargs)
+```
+
+
+
+
+----
+
+### PairedPointCloudDataset
+
+```python
+energyflow.archs.PairedPointCloudDataset(args, kwargs)
+```
+
+
+
+
+----
+
+### PairedWeightedPointCloudDataset
+
+```python
+energyflow.archs.PairedWeightedPointCloudDataset(args, kwargs)
+```
+
+
+
+
+----
+
+### PairedFeatureCombiner
+
+```python
+energyflow.archs.PairedFeatureCombiner(pairers)
+```
+
+
+
+
+----
+
+### ConcatenatePairer
+
+```python
+energyflow.archs.ConcatenatePairer(args, kwargs)
+```
+
+
+
+
+----
+
+### ParticleDistancePairer
+
+```python
+energyflow.archs.ParticleDistancePairer(args, kwargs)
+```
+
+
+
+
+----
+

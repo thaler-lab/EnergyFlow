@@ -286,14 +286,17 @@ requested than are available). If a float, this is the fraction of the
 number of available files to load, rounded up to the nearest whole
 number. Note that since ints and floats are treated different, a value
 of <code>1</code> loads one file whereas <code>1.0</code> loads the entire dataset. A value
-of <code>-1</code> also loads the entire dataset. </li>
+of <code>-1</code> also loads the entire dataset.</li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
 <li>The directory where to store/look for the files. Note that 
 <code>'datasets'</code> is automatically appended to the end of this path, as well
 as the collection name. For example, the default is to download/look
-for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>.</li>
+for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>. If
+<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
+environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
+is used instead.</li>
 </ul>
 </li>
 <li><strong>collection</strong> : <em>str</em><ul>
@@ -440,6 +443,7 @@ bin of the pT spectrum that corrects for the remaining difference
 between data and simulation.</li>
 </ul>
 </li>
+<li><strong>dtype</strong> : <em>str</em></li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
@@ -608,7 +612,7 @@ existing datasets.</li>
 <li>The number of events or jets to keep after subselections are
 applied. A value of <code>-1</code> keeps the entire dataset. The weights
 are properly rescaled to preserve the total cross section of the
-selection.</li>
+selection. Ignored when initializing from existing datasets.</li>
 </ul>
 </li>
 <li><strong>shuffle</strong> : <em>bool</em><ul>
@@ -671,7 +675,7 @@ fixed after the selection.</li>
 </li>
 </ul>
 <h4 id="save">save</h4>
-<pre><code class="language-python">save(filepath, npf=-1, compression=None, verbose=1, n_jobs=1)
+<pre><code class="language-python">save(filepath, npf=-1, compression=None, verbose=None, n_jobs=1)
 </code></pre>
 <p>Saves a <code>MODDataset</code> in the MOD HDF5 format.</p>
 <p><strong>Arguments</strong></p>
@@ -800,7 +804,8 @@ corresponding paper:</p>
 doi.org/10.5281/zenodo.3548091"><img alt="DOI" src="/img/zenodo.3548091.svg" /></a> - Pythia/Herwig + Delphes samples</p>
 <ul>
 <li>A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
-OmniFold: A Method to Simultaneously Unfold All Observables, <a href="https://arxiv.org/abs/1911.09107">arXiv:1911.09107</a>.</li>
+OmniFold: A Method to Simultaneously Unfold All Observables,
+<a href="https://arxiv.org/abs/1911.09107">arXiv:1911.09107</a>.</li>
 </ul>
 <hr />
 <h4 id="load_1">load</h4>
@@ -830,8 +835,12 @@ available events.</li>
 arrays.</li>
 </ul>
 </li>
-<li><strong>cache_dir</strong>: <em>str</em><ul>
-<li>Path to the directory where the dataset files should be stored.</li>
+<li><strong>cache_dir</strong> : <em>str</em><ul>
+<li>The directory where to store/look for the files. Note that 
+<code>'datasets'</code> is automatically appended to the end of this path. If
+<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
+environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
+is used instead.</li>
 </ul>
 </li>
 <li><strong>source</strong>: {<code>'dropbox'</code>, <code>'zenodo'</code>}<ul>
@@ -950,7 +959,10 @@ not be combined.</li>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
 <li>The directory where to store/look for the files. Note that 
-<code>'datasets'</code> is automatically appended to the end of this path.</li>
+<code>'datasets'</code> is automatically appended to the end of this path. If
+<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
+environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
+is used instead.</li>
 </ul>
 </li>
 <li><strong>dtype</strong> : <em>str</em> or <em>numpy.dtype</em><ul>
@@ -988,7 +1000,7 @@ that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy ar
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h4 id="load_3">load</h4>
-<pre><code class="language-python">energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
+<pre><code class="language-python">energyflow.qg_nsubs.load(num_data=-1, cache_dir=None)
 </code></pre>
 <p>Loads the dataset. The first time this is called, it will automatically
 download the dataset. Future calls will attempt to use the cached dataset 
@@ -1000,7 +1012,11 @@ prior to redownloading.</p>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the file.</li>
+<li>The directory where to store/look for the files. Note that 
+<code>'datasets'</code> is automatically appended to the end of this path. If
+<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
+environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
+is used instead.</li>
 </ul>
 </li>
 </ul>
@@ -1031,6 +1047,8 @@ prior to redownloading.</p>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
     
   </div>
 

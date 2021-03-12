@@ -20,7 +20,7 @@ errors will be issued but this module will not be usable).
 # |_|/_/    \_\_____/   |_|\____/|______|  |_|  |______|\____/   |_|  |_____|______|_____/
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
 

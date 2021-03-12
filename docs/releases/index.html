@@ -165,8 +165,32 @@
 <ul>
 <li>EFN/PFN architectures setup to have multiple Phi components that embed their inputs in separate latent spaces which are then concatenated together.</li>
 <li>Activation function layers have more descriptive names.</li>
+<li>PointCloudDataset and subclasses defined to aid with providing data to EFN and PFN models.</li>
+<li><code>archs</code> submodule now imported by default; tensorflow/sklearn imports delayed until needed.</li>
+<li>Renamed the <code>event_utils</code> submodule to <code>random_utils</code> since it deals with the generation of random collections of momenta.</li>
+<li>Environment variable added for energyflow cache_dir.</li>
+<li>Renamed <code>path</code> keyword argument to <code>cache_dir</code> in the <code>get_examples</code> function.</li>
+<li><code>arch_utils</code> created and imported at the top level.</li>
+<li><code>data_utils</code> moved to the top level.</li>
+<li>Generated new default EFPs (the order has changed on Python 3.8 and higher, due either to a change in igraph or to dictionaries being ordered by default); removed availability of <code>npz</code> encoding of default EFP file.</li>
+<li>Removed <code>check_input</code> from Measure keyword arguments.</li>
+<li>EnergyFlow architecture objects are now callable, by forward <code>__call__</code> to the underlying model.</li>
+<li>Renamed <code>summary</code> argument of neural network models to <code>print_summary</code>.</li>
+<li>
+<p>Added functions in <code>fastjet_utils</code> to convert to/from PseudoJet's and events in Cartesian coordinates.</p>
+</li>
+<li>
+<p>Modified remap_pids to operate on individual events</p>
+</li>
+<li>Added float option to MODDataset.</li>
+<li>Added split/chain to PointCloudDataset.</li>
 </ul>
 <h2 id="13x">1.3.x</h2>
+<p><strong>1.3.2</strong></p>
+<ul>
+<li>Fixed typo in <code>MODDataset</code> code that caused <code>abs_gen_jet_y</code> and <code>abs_get_jet_eta</code> to be invalid selectors.</li>
+</ul>
+<p><strong>1.3.1</strong></p>
 <ul>
 <li>Added <code>mass</code> option to <code>ptyphims_from_p4s</code> to mirror <code>ptyphims_from_pjs</code>.</li>
 </ul>
@@ -368,6 +392,8 @@ the <a href="https://pot.readthedocs.io">Python Optimal Transport</a> library an
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
     
   </div>
 

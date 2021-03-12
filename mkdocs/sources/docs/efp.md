@@ -21,8 +21,7 @@ are discussed in the [Measures](../measures) section.
 A class for representing and computing a single EFP.
 
 ```python
-energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None,
-                      check_input=True, np_optimize=True)
+energyflow.EFP(edges, measure='hadr', beta=1, kappa=1, normed=None, coords=None, np_optimize=True)
 ```
 
 Since a standalone EFP defines and holds a `Measure` instance, all
@@ -48,9 +47,6 @@ Since a standalone EFP defines and holds a `Measure` instance, all
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 - **np_optimize** : {`True`, `False`, `'greedy'`, `'optimal'`}
     - The `optimize` keyword of `numpy.einsum_path`.
 
@@ -290,7 +286,7 @@ events. Note that all keyword arguments are stored as properties of the
 
 ```python
 energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
-                         coords=None, check_input=True, verbose=0)
+                         coords=None, verbose=0)
 ```
 
 `EFPSet` can be initialized in one of three ways (in order of
@@ -338,9 +334,6 @@ keywords are accepted.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 - **verbose** : _int_
     - Controls printed output when initializing `EFPSet` from a file or
     `Generator`.

@@ -1,5 +1,5 @@
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division
 
@@ -101,6 +101,7 @@ def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, mode
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2)]
     Y_val = np.random.rand(n//10, 2)
+
     efn = ef.archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], print_summary=False, filepath=model_path, 
                        save_while_training=save_while_training, save_weights_only=save_weights_only,
                        modelcheck_opts=modelcheck_opts)
@@ -185,6 +186,7 @@ def test_EFN_global_features(nglobal):
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2), np.random.rand(n//10, nglobal)]
     Y_val = np.random.rand(n//10, 2)
+
     efn = ef.archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, print_summary=False)
     hist = efn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=(X_val, Y_val))
     efn.global_feature_tensor
@@ -199,7 +201,7 @@ def test_PFN_global_features(nglobal):
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m, 3), np.random.rand(n//10, nglobal)]
     Y_val = np.random.rand(n//10, 2)
+
     pfn = ef.archs.PFN(input_dim=3, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, print_summary=False)
     hist = pfn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=(X_val, Y_val))
     pfn.global_feature_tensor
-

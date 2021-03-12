@@ -42,6 +42,7 @@ __all__ = [
 ]
 
 def convert_dtype(X, dtype):
+    """"""
 
     # if dtype is None, do nothing
     if dtype is None:
@@ -58,6 +59,7 @@ def convert_dtype(X, dtype):
         return X.astype(dtype, copy=False)
 
 def pad_events(X, pad_val=0., max_len=None):
+    """"""
 
     if max_len is None:
         max_len = max([len(x) for x in X])
@@ -75,6 +77,7 @@ def pad_events(X, pad_val=0., max_len=None):
     return output
 
 class PointCloudDataset(object):
+    """"""
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
                                   shuffle=True, seed=None, infinite=False, pad_val=0.,
@@ -664,8 +667,10 @@ class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointClou
         return (weights[:,None,:] * weights[:,:,None]).reshape(len(weights), -1)
 
 class FeaturePairerBase(six.with_metaclass(ABCMeta, object)):
+    """"""
 
     def __init__(self):
+        """"""
         self.features_will_be_combined = False
 
     def __call__(self):
@@ -697,8 +702,11 @@ class FeaturePairerBase(six.with_metaclass(ABCMeta, object)):
         pass
 
 class PairedFeatureCombiner(FeaturePairerBase):
+    """"""
 
     def __init__(self, pairers):
+        """"""
+
         super().__init__()
         self.pairers = [pairer() for pairer in pairers]
         for pairer in self.pairers:
@@ -766,8 +774,11 @@ class PairedFeatureCombiner(FeaturePairerBase):
         return self.pair_array_func([pairer.get_pair_array_func() for pairer in self.pairers])
 
 class ConcatenatePairer(FeaturePairerBase):
+    """"""
 
     def __init__(self, *args, **kwargs):
+        """"""
+
         self.cols = kwargs.pop('cols', None)
         super().__init__(*args, **kwargs)
 
@@ -830,8 +841,11 @@ class ConcatenatePairer(FeaturePairerBase):
         return lambda X: self.pair_array_func(X, self.cols)
 
 class DistancePairerBase(object):
+    """"""
 
     def __init__(self, *args, **kwargs):
+        """"""
+
         self.coord_cols = kwargs.pop('coord_cols', slice(0, 2))
         super().__init__(*args, **kwargs)
 
@@ -842,6 +856,7 @@ class DistancePairerBase(object):
         return lambda X: self.pair_array_func(X, self.coord_cols)
 
 class ParticleDistancePairer(DistancePairerBase, FeaturePairerBase):
+    """"""
 
     @staticmethod
     def pair_func(X, coord_cols=slice(0, 2)):

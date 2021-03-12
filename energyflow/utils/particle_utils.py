@@ -47,7 +47,7 @@ this terminology.
 # |_| /_/    \_\_|  \_\ |_|  |_____\_____|______|______||______|\____/   |_|  |_____|______|_____/
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
 
@@ -809,18 +809,22 @@ def _ensure_particle_properties():
     CHARGED_PIDS = frozenset(pdgid for pdgid,charge in PARTICLE_CHARGES.items() if charge != 0.)
 
 def particle_properties():
+    """"""
     _ensure_particle_properties()
     return PARTICLE_PROPERTIES
 
 def particle_masses():
+    """"""
     _ensure_particle_properties()
     return PARTICLE_MASSES
 
 def particle_charges():
+    """"""
     _ensure_particle_properties()
     return PARTICLE_CHARGES
 
 def charged_pids():
+    """"""
     _ensure_particle_properties()
     return CHARGED_PIDS
 

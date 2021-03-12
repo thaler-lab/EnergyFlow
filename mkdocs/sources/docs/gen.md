@@ -54,7 +54,7 @@ requires that `igraph` be installed.
 ### save
 
 ```python
-save(filename, protocol='npz', compression=True)
+save(filename, protocol='json', compression=True)
 ```
 
 Save the current generator to file.
@@ -63,7 +63,7 @@ Save the current generator to file.
 
 - **filename** : _str_
     - The path to save the file.
-- **protocol** : {`'npz'`, `'json'`}
+- **protocol** : {`'json'`}
     - The file format to be used.
 - **compression** : _bool_
     - Whether to compress the resulting file or not.R

@@ -97,12 +97,15 @@ validated to ensure dataset fidelity.
     number of available files to load, rounded up to the nearest whole
     number. Note that since ints and floats are treated different, a value
     of `1` loads one file whereas `1.0` loads the entire dataset. A value
-    of `-1` also loads the entire dataset. 
+    of `-1` also loads the entire dataset.
 - **cache_dir** : _str_
     - The directory where to store/look for the files. Note that 
     `'datasets'` is automatically appended to the end of this path, as well
     as the collection name. For example, the default is to download/look
-    for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`.
+    for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`. If
+    `None`, the default path of `~/.energyflow` is used, unless the
+    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+    is used instead.
 - **collection** : _str_
     - Name of the collection of datasets to consider. Currently the only
     collection is `'CMS2011AJets'`, though more may be added in the future.
@@ -217,6 +220,7 @@ may change in future versions of this function.
     - Whether or not to apply a residual correction derived from the first
     bin of the pT spectrum that corrects for the remaining difference
     between data and simulation.
+- **dtype** : _str_
 
 **Returns**
 
@@ -372,7 +376,7 @@ objects.
     - The number of events or jets to keep after subselections are
     applied. A value of `-1` keeps the entire dataset. The weights
     are properly rescaled to preserve the total cross section of the
-    selection.
+    selection. Ignored when initializing from existing datasets.
 - **shuffle** : _bool_
     - When subselecting a fraction of the dataset (i.e. `num!=-1`),
     if `False` the first `num` events passing cuts will be kept, if
@@ -429,7 +433,7 @@ mask.
 #### save
 
 ```python
-save(filepath, npf=-1, compression=None, verbose=1, n_jobs=1)
+save(filepath, npf=-1, compression=None, verbose=None, n_jobs=1)
 ```
 
 Saves a `MODDataset` in the MOD HDF5 format.
@@ -585,7 +589,8 @@ corresponding paper:
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
 - A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
-OmniFold: A Method to Simultaneously Unfold All Observables, [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
+OmniFold: A Method to Simultaneously Unfold All Observables,
+[arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 
 ----
 
@@ -614,8 +619,12 @@ performed.
 - **pad**: _bool_
     - Whether to pad the particles with zeros in order to form contiguous
     arrays.
-- **cache_dir**: _str_
-    - Path to the directory where the dataset files should be stored.
+- **cache_dir** : _str_
+    - The directory where to store/look for the files. Note that 
+    `'datasets'` is automatically appended to the end of this path. If
+    `None`, the default path of `~/.energyflow` is used, unless the
+    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+    is used instead.
 - **source**: {`'dropbox'`, `'zenodo'`}
     - Which location to obtain the files from.
 - **which**: {`'gen'`, `'sim'`, `'all'`}
@@ -725,7 +734,10 @@ later use. Basic checksums are performed.
     not be combined.
 - **cache_dir** : _str_
     - The directory where to store/look for the files. Note that 
-    `'datasets'` is automatically appended to the end of this path.
+    `'datasets'` is automatically appended to the end of this path. If
+    `None`, the default path of `~/.energyflow` is used, unless the
+    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+    is used instead.
 - **dtype** : _str_ or _numpy.dtype_
     - The dtype of the resulting NumPy arrays. For ML applications it may be
     preferred to use 32-bit floats.
@@ -760,7 +772,7 @@ labels (quark=`1` and gluon=`0`).
 #### load
 
 ```python
-energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
+energyflow.qg_nsubs.load(num_data=-1, cache_dir=None)
 ```
 
 Loads the dataset. The first time this is called, it will automatically
@@ -772,7 +784,11 @@ prior to redownloading.
 - **num_data** : _int_
     - The number of events to return. A value of `-1` means read in all events.
 - **cache_dir** : _str_
-    - The directory where to store/look for the file.
+    - The directory where to store/look for the files. Note that 
+    `'datasets'` is automatically appended to the end of this path. If
+    `None`, the default path of `~/.energyflow` is used, unless the
+    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+    is used instead.
 
 **Returns**
 

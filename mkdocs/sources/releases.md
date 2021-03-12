@@ -4,8 +4,30 @@
 
 - EFN/PFN architectures setup to have multiple Phi components that embed their inputs in separate latent spaces which are then concatenated together.
 - Activation function layers have more descriptive names.
+- PointCloudDataset and subclasses defined to aid with providing data to EFN and PFN models.
+- `archs` submodule now imported by default; tensorflow/sklearn imports delayed until needed.
+- Renamed the `event_utils` submodule to `random_utils` since it deals with the generation of random collections of momenta.
+- Environment variable added for energyflow cache_dir.
+- Renamed `path` keyword argument to `cache_dir` in the `get_examples` function.
+- `arch_utils` created and imported at the top level.
+- `data_utils` moved to the top level.
+- Generated new default EFPs (the order has changed on Python 3.8 and higher, due either to a change in igraph or to dictionaries being ordered by default); removed availability of `npz` encoding of default EFP file.
+- Removed `check_input` from Measure keyword arguments.
+- EnergyFlow architecture objects are now callable, by forward `__call__` to the underlying model.
+- Renamed `summary` argument of neural network models to `print_summary`.
+- Added functions in `fastjet_utils` to convert to/from PseudoJet's and events in Cartesian coordinates.
+
+- Modified remap_pids to operate on individual events
+- Added float option to MODDataset.
+- Added split/chain to PointCloudDataset.
 
 ## 1.3.x
+
+**1.3.2**
+
+- Fixed typo in `MODDataset` code that caused `abs_gen_jet_y` and `abs_get_jet_eta` to be invalid selectors.
+
+**1.3.1**
 
 - Added `mass` option to `ptyphims_from_p4s` to mirror `ptyphims_from_pjs`.
 

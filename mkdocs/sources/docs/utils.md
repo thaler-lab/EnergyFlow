@@ -587,6 +587,50 @@ to a particle of non-zero charge.
 
 ----
 
+### particle_properties
+
+```python
+energyflow.particle_properties()
+```
+
+
+
+
+----
+
+### particle_masses
+
+```python
+energyflow.particle_masses()
+```
+
+
+
+
+----
+
+### particle_charges
+
+```python
+energyflow.particle_charges()
+```
+
+
+
+
+----
+
+### charged_pids
+
+```python
+energyflow.charged_pids()
+```
+
+
+
+
+----
+
 ### phi_fix
 
 ```python
@@ -639,105 +683,6 @@ convention.
 
 ----
 
-## Random Events
-
-Functions to generate random sets of four-vectors. Includes an implementation
-of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
-sampling uniform M-body massless phase space. Also includes other functions for
-various random, non-center of momentum, and non-uniform sampling.
-
-----
-
-### gen_random_events
-
-```python
-energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0.0)
-```
-
-Generate random events with a given number of particles in a given
-spacetime dimension. The spatial components of the momenta are
-distributed uniformly in $[-1,+1]$. These events are not guaranteed to 
-uniformly sample phase space.
-
-**Arguments**
-
-- **nevents** : _int_
-    - Number of events to generate.
-- **nparticles** : _int_
-    - Number of particles in each event.
-- **dim** : _int_
-    - Number of spacetime dimensions.
-- **mass** : _float_ or `'random'`
-    - Mass of the particles to generate. Can be set to `'random'` to obtain
-    a different random mass for each particle.
-
-**Returns**
-
-- _numpy.ndarray_
-    - An `(nevents,nparticles,dim)` array of events. The particles 
-    are specified as `[E,p1,p2,...]`. If `nevents` is 1 then that axis is
-    dropped.
-
-
-----
-
-### gen_random_events_mcom
-
-```python
-energyflow.gen_random_events_mcom(nevents, nparticles, dim=4)
-```
-
-Generate random events with a given number of massless particles in a
-given spacetime dimension. The total momentum are made to sum
-to zero. These events are not guaranteed to uniformly sample phase space.
-
-**Arguments**
-
-- **nevents** : _int_
-    - Number of events to generate.
-- **nparticles** : _int_
-    - Number of particles in each event.
-- **dim** : _int_
-    - Number of spacetime dimensions.
-
-**Returns**
-
-- _numpy.ndarray_
-    - An `(nevents,nparticles,dim)` array of events. The particles 
-    are specified as `[E,p1,p2,...]`.
-
-
-----
-
-### gen_massless_phase_space
-
-```python
-energyflow.gen_massless_phase_space(nevents, nparticles, energy=1.0)
-```
-
-Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
-algorithm for uniformly sampling massless M-body phase space for any center
-of mass energy.
-
-**Arguments**
-
-- **nevents** : _int_
-    - Number of events to generate.
-- **nparticles** : _int_
-    - Number of particles in each event.
-- **energy** : _float_
-    - Total center of mass energy of each event.
-
-**Returns**
-
-- _numpy.ndarray_
-    - An `(nevents,nparticles,4)` array of events. The particles 
-    are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
-    dropped.
-
-
-----
-
 ## Data Tools
 
 Functions for dealing with datasets. These are not importable from
@@ -749,7 +694,7 @@ from `energyflow.utils`.
 ### get_examples
 
 ```python
-energyflow.utils.get_examples(path='~/.energyflow', which='all', overwrite=False)
+energyflow.utils.get_examples(cache_dir='~/.energyflow', which='all', overwrite=False)
 ```
 
 Pulls examples from GitHub. To ensure availability of all examples
@@ -757,9 +702,12 @@ update EnergyFlow to the latest version.
 
 **Arguments**
 
-- **path** : _str_
-    - The destination for the downloaded files. Note that `examples`
-    is automatically appended to the end of this path.
+- **cache_dir** : _str_
+    - The directory where to store/look for the files. Note that 
+    `'examples'` is automatically appended to the end of this path. If
+    `None`, the default path of `~/.energyflow` is used, unless the
+    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
+    is used instead.
 - **which** : {_list_, `'all'`}
     - List of examples to download, or the string `'all'` in which 
     case all the available examples are downloaded.
@@ -1004,6 +952,28 @@ Converts particles in hadronic coordinates to FastJet PseudoJets.
 
 ----
 
+### pjs_from_p4s
+
+```python
+energyflow.pjs_from_p4s(p4s)
+```
+
+Converts particles in Cartesian coordinates to FastJet PseudoJets.
+
+**Arguments**
+
+- **p4s** : _2d numpy.ndarray_
+    - An array of particles in Cartesian coordinates, `[E, px, py, pz]`.
+
+**Returns**
+
+- _list_ of _fastjet.PseudoJet_
+    - A list of PseudoJets corresponding to the particles in the given
+    array.
+
+
+----
+
 ### ptyphims_from_pjs
 
 ```python
@@ -1027,6 +997,28 @@ Extracts hadronic four-vectors from FastJet PseudoJets.
 - _numpy.ndarray_
     - An array of four-vectors corresponding to the given PseudoJets as
     `[pT, y, phi, m]`, where the mass is optional.
+
+
+----
+
+### p4s_from_pjs
+
+```python
+energyflow.p4s_from_pjs(pjs)
+```
+
+Extracts Cartesian four-vectors from FastJet PseudoJets.
+
+**Arguments**
+
+- **pjs** : _list_ of _fastjet.PseudoJet_
+    - An iterable of PseudoJets.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An array of four-vectors corresponding to the given PseudoJets as
+    `[E, px, py, pz]`.
 
 
 ----
@@ -1103,6 +1095,105 @@ JHEP05(2014)146).
     the same associated structure as the original jet, but it is
     suitable for obtaining kinematic quantities, e.g. [$z_g$](/docs/
     obs/#zg_from_pj).
+
+
+----
+
+## Random Events
+
+Functions to generate random sets of four-vectors. Includes an implementation
+of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
+sampling uniform M-body massless phase space. Also includes other functions for
+various random, non-center of momentum, and non-uniform sampling.
+
+----
+
+### gen_random_events
+
+```python
+energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0.0)
+```
+
+Generate random events with a given number of particles in a given
+spacetime dimension. The spatial components of the momenta are
+distributed uniformly in $[-1,+1]$. These events are not guaranteed to 
+uniformly sample phase space.
+
+**Arguments**
+
+- **nevents** : _int_
+    - Number of events to generate.
+- **nparticles** : _int_
+    - Number of particles in each event.
+- **dim** : _int_
+    - Number of spacetime dimensions.
+- **mass** : _float_ or `'random'`
+    - Mass of the particles to generate. Can be set to `'random'` to obtain
+    a different random mass for each particle.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An `(nevents,nparticles,dim)` array of events. The particles 
+    are specified as `[E,p1,p2,...]`. If `nevents` is 1 then that axis is
+    dropped.
+
+
+----
+
+### gen_random_events_mcom
+
+```python
+energyflow.gen_random_events_mcom(nevents, nparticles, dim=4)
+```
+
+Generate random events with a given number of massless particles in a
+given spacetime dimension. The total momentum are made to sum
+to zero. These events are not guaranteed to uniformly sample phase space.
+
+**Arguments**
+
+- **nevents** : _int_
+    - Number of events to generate.
+- **nparticles** : _int_
+    - Number of particles in each event.
+- **dim** : _int_
+    - Number of spacetime dimensions.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An `(nevents,nparticles,dim)` array of events. The particles 
+    are specified as `[E,p1,p2,...]`.
+
+
+----
+
+### gen_massless_phase_space
+
+```python
+energyflow.gen_massless_phase_space(nevents, nparticles, energy=1.0)
+```
+
+Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
+algorithm for uniformly sampling massless M-body phase space for any center
+of mass energy.
+
+**Arguments**
+
+- **nevents** : _int_
+    - Number of events to generate.
+- **nparticles** : _int_
+    - Number of particles in each event.
+- **energy** : _float_
+    - Total center of mass energy of each event.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An `(nevents,nparticles,4)` array of events. The particles 
+    are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
+    dropped.
 
 
 ----

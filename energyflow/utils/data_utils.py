@@ -13,7 +13,7 @@ from `energyflow.utils`.
 # |_____/_/    \_\_/_/    \_\|______|\____/   |_|  |_____|______|_____/
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
 
@@ -27,7 +27,6 @@ from six.moves.urllib.error import HTTPError, URLError
 from energyflow.utils.random_utils import random
 
 __all__ = [
-    'ALL_EXAMPLES',
     'get_examples', 
     'data_split', 
     'to_categorical',

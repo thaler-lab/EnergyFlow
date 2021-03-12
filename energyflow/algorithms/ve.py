@@ -1,4 +1,8 @@
 """Implementation of Variable Elimination (VE) Algorithm."""
+
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
+
 from __future__ import absolute_import, division
 
 import itertools

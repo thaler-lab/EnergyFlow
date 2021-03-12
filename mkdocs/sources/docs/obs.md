@@ -132,8 +132,7 @@ For additional information, see the [original paper](https://arxiv.org/
 abs/1409.6298).
 
 ```python
-energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
-              coords=None, check_input=True)
+energyflow.D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True, coords=None)
 ```
 
 Since a `D2` defines and holds a `Measure` instance, all `Measure`
@@ -161,9 +160,6 @@ keywords are accepted.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 
 ### compute
 
@@ -243,8 +239,7 @@ For additional information, see the [original paper](https://arxiv.org/
 abs/1305.0007).
 
 ```python
-energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
-              coords=None, check_input=True)
+energyflow.C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True, coords=None)
 ```
 
 Since a `C2` defines and holds a `Measure` instance, all `Measure`
@@ -272,9 +267,6 @@ keywords are accepted.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 
 ### compute
 
@@ -354,8 +346,7 @@ For additional information, see the [original paper](https://arxiv.org/
 abs/1305.0007).
 
 ```python
-energyflow.C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
-              coords=None, check_input=True)
+energyflow.C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True, coords=None)
 ```
 
 Since a `D2` defines and holds a `Measure` instance, all `Measure`
@@ -380,9 +371,6 @@ keywords are accepted.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 
 ### compute
 

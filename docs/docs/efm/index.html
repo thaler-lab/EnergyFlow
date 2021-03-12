@@ -229,8 +229,7 @@ indexed by their signatures, then the value of the EFP is given as
 <hr />
 <h3 id="efm">EFM</h3>
 <p>A class representing and computing a single EFM.</p>
-<pre><code class="language-python">energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
-                            coords=None, check_input=True)
+<pre><code class="language-python">energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, coords=None)
 </code></pre>
 <p>Since EFMs are fully symmetric tensors, they can be specified by
 just two integers: the number of raised and number of lowered indices
@@ -273,11 +272,6 @@ use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex"
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
 <li>Controls which coordinates are assumed for the input. See 
 <a href="../measures">Measures</a> for additional info.</li>
-</ul>
-</li>
-<li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume the
-first input type.</li>
 </ul>
 </li>
 </ul>
@@ -357,7 +351,7 @@ use as many processes as there are CPUs on the machine.</li>
 <h3 id="efmset">EFMSet</h3>
 <p>A class for holding and efficiently constructing a collection of EFMs.</p>
 <pre><code class="language-python">energyflow.EFMSet(efm_specs=None, vmax=None, measure='hadrefm', beta=2, kappa=1,
-                  normed=None, coords=None, check_input=True)
+                  normed=None, coords=None)
 </code></pre>
 <p>An <code>EFMSet</code> can be initialized two ways (in order of precedence):</p>
 <ol>
@@ -405,11 +399,6 @@ use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex"
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
 <li>Controls which coordinates are assumed for the input. See 
 <a href="../measures">Measures</a> for additional info.</li>
-</ul>
-</li>
-<li><strong>check_input</strong> : <em>bool</em><ul>
-<li>Whether to check the type of the input each time or assume the
-first input type.</li>
 </ul>
 </li>
 </ul>
@@ -500,6 +489,8 @@ where the order is the same as <code>sorted_efms</code>.</p>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
+    
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
     
   </div>
 

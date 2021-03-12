@@ -7,7 +7,7 @@ import energyflow.archs as archs
 
 template_dir = 'sources/templates'
 example_dir = '../examples'
-example_files = ef.utils.ALL_EXAMPLES
+example_files = ef.utils.data_utils.ALL_EXAMPLES
 
 template_dict = {
     'current_version': ef.__version__,
@@ -281,21 +281,27 @@ def write_class(f, name, obj, attrs, modpath, **kwargs):
 
 def write_function(f, name, func, funclevel=None, header=True, inclass=False, modpath='energyflow.', postdoc='',):
 
-    if name.startswith('_'):
-        return False
-    if header:
-        if name.endswith('4doc'):
-            name = name[:-4]
-        f.write('#'*funclevel + ' ' + name + '\n')
+    try:
+
+        if name.startswith('_'):
+            return False
+        if header:
+            if name.endswith('4doc'):
+                name = name[:-4]
+            f.write('#'*funclevel + ' ' + name + '\n')
+            f.write('\n')
+        f.write(get_function_signature(name, func, 1 if inclass else 0, modpath))
         f.write('\n')
-    f.write(get_function_signature(name, func, 1 if inclass else 0, modpath))
-    f.write('\n')
-    f.write(inspect.getdoc(func))
-    f.write('\n\n')
-    if len(postdoc):
-        f.write(postdoc)
+        f.write(inspect.getdoc(func))
         f.write('\n\n')
-    return True
+        if len(postdoc):
+            f.write(postdoc)
+            f.write('\n\n')
+        return True
+
+    except:
+        print(name)
+        raise
 
 def write_property(f, name, func, proplevel, modpath=''):
 

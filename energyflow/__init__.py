@@ -13,7 +13,7 @@ $$$$$$$$\ $$ |  $$ |\$$$$$$$\ $$ |      \$$$$$$$ |\$$$$$$$ |$$ |      $$ |\$$$$$
                                          \______/  \______/
 
 EnergyFlow - Python package for high-energy particle physics.
-Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ __all__ = (datasets.__all__ +
            utils.__all__)
 
 __author__ = 'Patrick T. Komiske III <pkomiske@mit.edu>'
-__version__ = '1.3.0'
+__version__ = '2.0.0a0'
 
 # python < 3.5 warning
 import sys, warnings

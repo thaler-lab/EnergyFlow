@@ -1,3 +1,6 @@
+# EnergyFlow - Python package for high-energy particle physics.
+# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
+
 import re
 
 from setuptools import setup

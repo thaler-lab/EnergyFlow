@@ -3,15 +3,13 @@ language: python
 os: linux
 dist: bionic
 
-install: |
-  pip install -U cython scipy
-  pip install -U pot pytest scikit-learn wasserstein
-  pip install tensorflow
-  pip install .
+install:
+  - pip install cython
+  - pip install .[tests]
 
-script: |
-  pytest -v energyflow
-  python run_all_examples.py
+script:
+  - python setup.py test -v
+  - python run_all_examples.py
 
 stages:
   - test
@@ -25,6 +23,5 @@ jobs:
     - python: 3.8
 
 branches:
-  only:
-    - master
-    - efn2
+  except:
+    - images

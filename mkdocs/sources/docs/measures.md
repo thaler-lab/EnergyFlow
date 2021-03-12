@@ -22,7 +22,7 @@ collinear-safe observables.
 Prior to version `1.1.0`, the interaction of the `kappa` and `normed` options
 resulted in potentially unexpected behavior. As of version `1.1.0`, the flag
 `kappa_normed_behavior` has been added to give the user explicit control over
-the behavior when `normed=True` and `kappa≠1`. See the description of this
+the behavior when `normed=True` and `kappa!=1`. See the description of this
 option below for more detailed information.
 
 The usage of EFMs throughout the EnergyFlow package is also controlled through
@@ -85,7 +85,7 @@ Class for handling measure options, described above.
 
 ```python
 energyflow.Measure(measure, beta=1, kappa=1, normed=True, coords=None,
-                            check_input=True, kappa_normed_behavior='new')
+                            kappa_normed_behavior='new')
 ```
 
 Processes inputs according to the measure choice and other options.
@@ -108,11 +108,8 @@ Processes inputs according to the measure choice and other options.
     massless particles are assumed if it is not present. If `None`,
     coords with be `'ptyphim'` if using a hadronic measure and
     `'epxpypz'` if using the e+e- measure.
-- **check_input** : bool
-    - Whether to check the type of input each time or assume the first
-    input type.
 - **kappa_normed_behavior** : {`'new'`, `'orig'`}
-    - Determines how `'kappa'`≠1 interacts with normalization of the
+    - Determines how `'kappa'`!=1 interacts with normalization of the
     energies. A value of `'new'` will ensure that `z` is truly the
     energy fraction of a particle, so that $z_i=E_i^\kappa/\left(
     \sum_{i=1}^ME_i\right)^\kappa$. A value of `'orig'` will keep the

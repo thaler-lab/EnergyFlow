@@ -58,8 +58,7 @@ by the number of lowered indices).
 A class representing and computing a single EFM.
 
 ```python
-energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
-                            coords=None, check_input=True)
+energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, coords=None)
 ```
 
 Since EFMs are fully symmetric tensors, they can be specified by
@@ -93,9 +92,6 @@ require $\beta=2$.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 
 #### compute
 
@@ -189,7 +185,7 @@ A class for holding and efficiently constructing a collection of EFMs.
 
 ```python
 energyflow.EFMSet(efm_specs=None, vmax=None, measure='hadrefm', beta=2, kappa=1,
-                  normed=None, coords=None, check_input=True)
+                  normed=None, coords=None)
 ```
 
 An `EFMSet` can be initialized two ways (in order of precedence):
@@ -227,9 +223,6 @@ EFMs require $\beta=2$.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
     - Controls which coordinates are assumed for the input. See 
     [Measures](../measures) for additional info.
-- **check_input** : _bool_
-    - Whether to check the type of the input each time or assume the
-    first input type.
 
 #### compute
 
