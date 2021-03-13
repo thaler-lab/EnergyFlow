@@ -87,13 +87,15 @@ docs = {
 
     'utils': [
         {
-            'module': ef.utils.particle_utils,
-            'functions': ef.utils.particle_utils.__all__
+            'module': ef.utils,
         },
         {
             'module': ef.utils.data_utils,
-            'modpath': 'energyflow.utils.',
             'functions': ef.utils.data_utils.__all__
+        },
+        {
+            'module': ef.utils.fastjet_utils,
+            'functions': ef.utils.fastjet_utils.__all__
         },
         {
             'module': ef.utils.image_utils,
@@ -101,12 +103,12 @@ docs = {
             'functions': ef.utils.image_utils.__all__
         },
         {
-            'module': ef.utils.fastjet_utils,
-            'functions': ef.utils.fastjet_utils.__all__
+            'module': ef.utils.particle_utils,
+            'functions': ef.utils.particle_utils.__all__
         },
         {
             'module': ef.utils.random_utils,
-            'functions': ef.utils.random_utils.__all__[:-1]
+            'functions': ef.utils.random_utils.__all__[:-1] + ['random4doc']
         },
     ],
 

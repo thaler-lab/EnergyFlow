@@ -21,6 +21,8 @@
 - Added float option to MODDataset.
 - Added split/chain to PointCloudDataset.
 
+- Improved `data_split` function to optionally return empty arrays if `train`, `val`, or `test` is zero.
+
 ## 1.3.x
 
 **1.3.2**

@@ -1,6 +1,543 @@
 # Utilities
 
-## Particle Tools
+Utility functions for the EnergyFlow package. The utilities are grouped into the
+following submodules:
+
+- [`data_utils`](#data-utils): Utilities for processing datasets as arrays of
+events.
+aspects.
+- [`fastjet_utils`](#fastjet-utils): Utilities for interfacing with the Python
+wrapper of the [FastJet](http://fastjet.fr/) package.
+- [`image_utils`](#image-utils): Utilities for creating and standardizing images
+from collections of particles.
+- [`particle_utils`](#particle-utils): Utilities for manipulating particle
+properties, including converting between different kinematic representations,
+adding/centering collections of four-vectors, and accessing particle properties
+including masses and charges by PDG ID.
+- [`random_utils`](#random-utils): Utilities for generating random collections
+of (massless) four-vectors.
+
+----
+
+## Data Utils
+
+Functions for handling with datasets, including facilitating [train/val/test 
+splits](#data_split), [converting](#convert_dtype) the numpy dtype of a
+(possibly ragged) array, [padding events](#pad_events) with different numbers
+of particles, and [mapping](#remap_pids) PDG ID values to small floating point
+values.
+
+----
+
+### convert_dtype
+
+```python
+energyflow.convert_dtype(X, dtype)
+```
+
+Converts the numpy dtype of the given array to the provided value. This
+function can handle a ragged array, that is, an object array where the
+elements are numpy arrays of a possibly different type, in which case the
+function will be recursively applied.
+
+**Arguments**
+
+**Returns**
+
+- _numpy.ndarray_
+
+
+----
+
+### data_split
+
+```python
+energyflow.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True, include_empty=False)
+```
+
+A function to split a dataset into train, validation, and test datasets.
+
+**Arguments**
+
+- ***args** : arbitrary _numpy.ndarray_ datasets
+    - An arbitrary number of datasets, each required to have the same number
+    of elements, as numpy arrays.
+- **train** : {_int_, _float_}
+    - If a float, the fraction of elements to include in the training set.
+    If an integer, the number of elements to include in the training set.
+    The value `-1` is special and means include the remaining part of the
+    dataset in the training dataset after the test and (optionally) val
+    parts have been removed.
+- **val** : {_int_, _float_}
+    - If a float, the fraction of elements to include in the validation set.
+    If an integer, the number of elements to include in the validation set.
+    The value `0` is special and means do not form a validation set.
+- **test** : {_int_, _float_}
+    - If a float, the fraction of elements to include in the test set. If an
+    integer, the number of elements to include in the test set. The value `0`
+    is special and means do not form a validation set.
+- **shuffle** : _bool_
+    - A flag to control whether the dataset is shuffled prior to being split
+    into parts.
+- **include_empty** : _bool_
+    - Whether or not to return empty arrays for datasets that would have
+    zero elements in them. This can be useful for setting e.g. `val` or
+    `test` to 0 without having to change the unpacking of the result.
+
+**Returns**
+
+- _list_
+    - A list of the split datasets in train, val, test order. If datasets
+    `X`, `Y`, and `Z` were given as `args` (and assuming a non-zero `val`
+    and `test`), then [`X_train`, `X_val`, `X_test`, `Y_train`, `Y_val`,
+    `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned. If, for
+    instance, `val` is zero and `include_empty` is `False` then [`X_train`,
+    `X_test`, `Y_train`, `Y_test`, `Z_train`, `Z_test`] will be returned.
+
+
+----
+
+### determine_cache_dir
+
+```python
+energyflow.determine_cache_dir(cache_dir=None, cache_subdir='datasets')
+```
+
+Determines the path to the specified directory used for caching files. If
+`cache_dir` is `None`, the default is to use `'~/.energyflow'` unless the
+environment variable `ENERGYFLOW_CACHE_DIR` is set, in which case it is
+used.
+
+**Arguments**
+
+- **cache_dir** : _str_ or `None`
+    - The path to the top-level cache directory. Defaults to the environment
+    variable `ENERGYFLOW_CACHE_DIR`, or `'~/.energyflow'` if that is unset.
+- **cache_subdir** : _str_ or `None`
+    - Further path component to join to `cache_dir`. Ignored if `None`.
+
+**Returns**
+
+- _str_
+    - The path to the cache directory specified by the supplied arguments.
+
+
+----
+
+### get_examples
+
+```python
+energyflow.get_examples(cache_dir=None, which='all', overwrite=False)
+```
+
+Pulls examples from GitHub. To ensure availability of all examples
+update EnergyFlow to the latest version.
+
+**Arguments**
+
+- **cache_dir** : _str_ or `None`
+    - The directory where to store/look for the files. If `None`, the
+    [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+    used to get the default path. Note that in either case, `'datasets'` is
+    appended to the end of the path.
+- **which** : {_list_, `'all'`}
+    - List of examples to download, or the string `'all'` in which 
+    case all the available examples are downloaded.
+- **overwrite** : _bool_
+    - Whether to overwrite existing files or not.
+
+
+----
+
+### pad_events
+
+```python
+energyflow.pad_events(X, pad_val=0.0, max_len=None)
+```
+
+
+
+
+----
+
+### to_categorical
+
+```python
+energyflow.to_categorical(labels, num_classes=None)
+```
+
+One-hot encodes class labels.
+
+**Arguments**
+
+- **labels** : _1-d numpy.ndarray_
+    - Labels in the range `[0,num_classes)`.
+- **num_classes** : {_int_, `None`}
+    - The total number of classes. If `None`, taken to be the 
+    maximum label plus one.
+
+**Returns**
+
+- _2-d numpy.ndarray_
+    - The one-hot encoded labels.
+
+
+----
+
+### remap_pids
+
+```python
+energyflow.remap_pids(events, pid_i=3, error_on_unknown=True)
+```
+
+Remaps PDG id numbers to small floats for use in a neural network.
+`events` are modified in place and nothing is returned.
+
+**Arguments**
+
+- **events** : _numpy.ndarray_
+    - The events as an array of arrays of particles.
+- **pid_i** : _int_
+    - The column index corresponding to pid information in an event.
+- **error_on_unknown** : _bool_
+    - Controls whether a `KeyError` is raised if an unknown PDG ID is
+    encountered. If `False`, unknown PDG IDs will map to zero.
+
+
+----
+
+## FastJet Utils
+
+The [FastJet package](http://fastjet.fr/) provides, among other things, fast
+jet clustering utilities. It is written in C++ and includes a Python interface
+that is easily installed at compile time by passing the `--enable-pyext` flag
+to `configure`. If you use this module for published research, please [cite
+FastJet appropriately](http://fastjet.fr/about.html).
+
+The core of EnergyFlow does not rely on FastJet, and hence it is not required
+to be installed, but the following utilities are available assuming that
+`import fastjet` succeeds in your Python environment (if not, no warnings or
+errors will be issued but this module will not be usable).
+
+----
+
+### pjs_from_ptyphims
+
+```python
+energyflow.pjs_from_ptyphims(ptyphims)
+```
+
+Converts particles in hadronic coordinates to FastJet PseudoJets.
+
+**Arguments**
+
+- **ptyphims** : _2d numpy.ndarray_
+    - An array of particles in hadronic coordinates. The mass is
+    optional and will set to zero if not present.
+
+**Returns**
+
+- _list_ of _fastjet.PseudoJet_
+    - A list of PseudoJets corresponding to the input particles.
+
+
+----
+
+### pjs_from_p4s
+
+```python
+energyflow.pjs_from_p4s(p4s)
+```
+
+Converts particles in Cartesian coordinates to FastJet PseudoJets.
+
+**Arguments**
+
+- **p4s** : _2d numpy.ndarray_
+    - An array of particles in Cartesian coordinates, `[E, px, py, pz]`.
+
+**Returns**
+
+- _list_ of _fastjet.PseudoJet_
+    - A list of PseudoJets corresponding to the input particles.
+
+
+----
+
+### ptyphims_from_pjs
+
+```python
+energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
+```
+
+Extracts hadronic four-vectors from FastJet PseudoJets.
+
+**Arguments**
+
+- **pjs** : _list_ of _fastjet.PseudoJet_
+    - An iterable of PseudoJets.
+- **phi_ref** : _float_ or `None`
+    - The reference phi value to use for phi fixing. If `None`, then no
+    phi fixing is performed.
+- **mass** : _bool_
+    - Whether or not to include the mass in the extracted four-vectors.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An array of four-vectors corresponding to the given PseudoJets as
+    `[pT, y, phi, m]`, where the mass is optional.
+
+
+----
+
+### p4s_from_pjs
+
+```python
+energyflow.p4s_from_pjs(pjs)
+```
+
+Extracts Cartesian four-vectors from FastJet PseudoJets.
+
+**Arguments**
+
+- **pjs** : _list_ of _fastjet.PseudoJet_
+    - An iterable of PseudoJets.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An array of four-vectors corresponding to the given PseudoJets as
+    `[E, px, py, pz]`.
+
+
+----
+
+### jet_def
+
+```python
+energyflow.jet_def(algorithm=1, R=1000.0, recomb=0)
+```
+
+Creates a fastjet JetDefinition from the specified arguments.
+
+**Arguments**
+
+- **algorithm** : _str_ or _int_
+    - A string such as `'kt'`, `'akt'`, `'antikt'`, `'ca'`, 
+    `'cambridge'`, or `'cambridge_aachen'`; or an integer corresponding
+    to a fastjet.JetAlgorithm value.
+- **R** : _float_
+    - The jet radius. The default value corresponds to
+    `max_allowable_R` as defined by the FastJet python package.
+- **recomb** : _int_
+    - An integer corresponding to a fastjet RecombinationScheme.
+
+**Returns**
+
+- _fastjet.JetDefinition_
+    - A JetDefinition instance corresponding to the given arguments.
+
+
+----
+
+### cluster
+
+```python
+energyflow.cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0.0, kwargs)
+```
+
+Clusters an iterable of PseudoJets. Uses a jet definition that can
+either be provided directly or specified using the same keywords as the
+`jet_def` function. The jets returned can either be includive, the 
+default, or exclusive according to either a maximum number of subjets
+or a particular `dcut`.
+
+**Arguments**
+
+- **pjs** : _list_ of _fastjet.PseudoJet_
+    - A list of Pseudojets representing particles or other kinematic
+    objects that are to be clustered into jets.
+- **jetdef** : _fastjet.JetDefinition_ or `None`
+    - The `JetDefinition` used for the clustering. If `None`, the
+    keyword arguments are passed on to `jet_def` to create a
+    `JetDefinition`.
+- **N** : _int_ or `None`
+    - If not `None`, then the `exclusive_jets_up_to` method of the
+    `ClusterSequence` class is used to get up to `N` exclusive jets.
+- **dcut** : _float_ or `None`
+    - If not `None`, then the `exclusive_jets` method of the
+    `ClusterSequence` class is used to get exclusive jets with the
+    provided `dcut` parameter.
+- **ptmin** : _float_
+    - If both `N` and `dcut` are `None`, then inclusive jets are
+    returned using this value as the minimum transverse momentum value.
+- ***kwargs** : keyword arguments
+    - If `jetdef` is `None`, then these keyword arguments are passed on
+    to the `jet_def` function.
+
+**Returns**
+
+- _list_ of _fastjet.PseudoJet_
+    - A list of PseudoJets corresponding to the clustered jets.
+
+
+----
+
+### softdrop
+
+```python
+energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
+```
+
+Implements the SoftDrop grooming algorithm on a jet that has been
+found via clustering. Specifically, given a jet, it is recursively
+declustered and the softer branch removed until the SoftDrop condition
+is satisfied:
+
+$$
+\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} > z_{\rm cut}
+\left(\frac{\Delta R_{12}}{R}\right)^\beta
+$$
+
+where $1$ and $2$ refer to the two PseudoJets declustered at this stage.
+See the [SoftDrop paper](https://arxiv.org/abs/1402.2657) for a
+complete description of SoftDrop. If you use this function for your
+research, please cite [1402.2657](https://doi.org/10.1007/
+JHEP05(2014)146).
+
+**Arguments**
+
+- **jet** : _fastjet.PseudoJet_
+    - A FastJet PseudoJet that has been obtained from a suitable
+    clustering (typically Cambridge/Aachen).
+- **zcut** : _float_
+    - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
+    and `1`.
+- **beta** : _int_ or _float_
+    - The $\beta$ parameter of SoftDrop.
+- **R** : _float_
+    - The jet radius to use for the grooming. Only relevant if `beta!=0`.
+
+**Returns**
+
+- _fastjet.PseudoJet_
+    - The groomed jet. Note that it will not necessarily have all of
+    the same associated structure as the original jet, but it is
+    suitable for obtaining kinematic quantities, e.g. [$z_g$](/docs/
+    obs/#zg_from_pj).
+
+
+----
+
+## Image Utils
+
+Functions for dealing with image representations of events. These are 
+not importable from the top level `energyflow` module, but must 
+instead be imported from `energyflow.utils`.
+
+----
+
+### pixelate
+
+```python
+energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
+```
+
+A function for creating a jet image from an array of particles.
+
+**Arguments**
+
+- **jet** : _numpy.ndarray_
+    - An array of particles where each particle is of the form 
+    `[pt,y,phi,pid]` where the particle id column is only 
+    used if `nb_chan=2` and `charged_counts_only=True`.
+- **npix** : _int_
+    - The number of pixels on one edge of the jet image, which is
+    taken to be a square.
+- **img_width** : _float_
+    - The size of one edge of the jet image in the rapidity-azimuth
+    plane.
+- **nb_chan** : {`1`, `2`}
+    - The number of channels in the jet image. If `1`, then only a
+    $p_T$ channel is constructed (grayscale). If `2`, then both a 
+    $p_T$ channel and a count channel are formed (color).
+- **norm** : _bool_
+    - Whether to normalize the $p_T$ pixels to sum to `1`.
+- **charged_counts_only** : _bool_
+    - If making a count channel, whether to only include charged 
+    particles. Requires that `pid` information be given.
+
+**Returns**
+
+- _3-d numpy.ndarray_
+    - The jet image as a `(npix, npix, nb_chan)` array. Note that the order
+    of the channels changed in version 1.0.3.
+
+
+----
+
+### standardize
+
+```python
+energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
+```
+
+Normalizes each argument by the standard deviation of the pixels in 
+args[0]. The expected use case would be `standardize(X_train, X_val, 
+X_test)`.
+
+**Arguments**
+
+- ***args** : arbitrary _numpy.ndarray_ datasets
+    - An arbitrary number of datasets, each required to have
+    the same shape in all but the first axis.
+- **channels** : _int_
+    - A list of which channels (assumed to be the last axis)
+    to standardize. `None` is interpretted to mean every channel.
+- **copy** : _bool_
+    - Whether or not to copy the input arrays before modifying them.
+- **reg** : _float_
+    - Small parameter used to avoid dividing by zero. It's important
+    that this be kept consistent for images used with a given model.
+
+**Returns**
+
+- _list_ 
+    - A list of the now-standardized arguments.
+
+
+----
+
+### zero_center
+
+```python
+energyflow.utils.zero_center(args, kwargs)
+```
+
+Subtracts the mean of arg[0] from the arguments. The expected 
+use case would be `standardize(X_train, X_val, X_test)`.
+
+**Arguments**
+
+- ***args** : arbitrary _numpy.ndarray_ datasets
+    - An arbitrary number of datasets, each required to have
+    the same shape in all but the first axis.
+- **channels** : _int_
+    - A list of which channels (assumed to be the last axis)
+    to zero center. `None` is interpretted to mean every channel.
+- **copy** : _bool_
+    - Whether or not to copy the input arrays before modifying them.
+
+**Returns**
+
+- _list_ 
+    - A list of the zero-centered arguments.
+
+
+----
+
+## Particle Utils
 
 Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, `[e,px,py,pz]` (energy, momentum in `x` direction,
@@ -252,6 +789,56 @@ spacetime dimensions.
 
 ----
 
+### p4s_from_ptyphims
+
+```python
+energyflow.p4s_from_ptyphims(ptyphims)
+```
+
+Calculate Cartesian four-vectors from transverse momenta, rapidities,
+azimuthal angles, and (optionally) masses for each input.
+
+**Arguments**
+
+- **ptyphims** : _numpy.ndarray_ or _list_
+    - A single particle, event, or array of events in hadronic coordinates.
+    The mass is optional and if left out will be taken to be zero.
+
+**Returns**
+
+- _numpy.ndarray_
+    - An array of Cartesian four-vectors.
+
+
+----
+
+### p4s_from_ptyphipids
+
+```python
+energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
+```
+
+Calculate Cartesian four-vectors from transverse momenta, rapidities,
+azimuthal angles, and particle IDs for each input. The particle IDs are
+used to lookup the mass of the particle. Transverse momenta should have
+units of GeV when using this function.
+
+**Arguments**
+
+- **ptyphipids** : _numpy.ndarray_ or _list_
+    - A single particle, event, or array of events in hadronic coordinates
+    where the mass is replaced by the PDG ID of the particle.
+- **error_on_unknown** : _bool_
+    - See the corresponding argument of [`pids2ms`](#pids2ms).
+
+**Returns**
+
+- _numpy.ndarray_
+    - An array of Cartesian four-vectors with the same shape as the input.
+
+
+----
+
 ### etas_from_pts_ys_ms
 
 ```python
@@ -304,52 +891,30 @@ All input arrays should have the same shape.
 
 ----
 
-### p4s_from_ptyphims
+### phi_fix
 
 ```python
-energyflow.p4s_from_ptyphims(ptyphims)
+energyflow.phi_fix(phis, phi_ref, copy=True)
 ```
 
-Calculate Cartesian four-vectors from transverse momenta, rapidities,
-azimuthal angles, and (optionally) masses for each input.
+A function to ensure that all phis are within $\pi$ of `phi_ref`. It is
+assumed that all starting phi values are $\pm 2\pi$ of `phi_ref`.
 
 **Arguments**
 
-- **ptyphims** : _numpy.ndarray_ or _list_
-    - A single particle, event, or array of events in hadronic coordinates.
-    The mass is optional and if left out will be taken to be zero.
+- **phis** : _numpy.ndarray_ or _list_
+    - Array of phi values.
+- **phi_ref** : {_float_ or _numpy.ndarray_}
+    - A reference value used so that all phis will be within $\pm\pi$ of
+    this value. Should have a shape of `phis.shape[:-1]`.
+- **copy** : _bool_
+    - Determines if `phis` are copied or not. If `False` then `phis` is
+    modified in place.
 
 **Returns**
 
 - _numpy.ndarray_
-    - An array of Cartesian four-vectors.
-
-
-----
-
-### p4s_from_ptyphipids
-
-```python
-energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
-```
-
-Calculate Cartesian four-vectors from transverse momenta, rapidities,
-azimuthal angles, and particle IDs for each input. The particle IDs are
-used to lookup the mass of the particle. Transverse momenta should have
-units of GeV when using this function.
-
-**Arguments**
-
-- **ptyphipids** : _numpy.ndarray_ or _list_
-    - A single particle, event, or array of events in hadronic coordinates
-    where the mass is replaced by the PDG ID of the particle.
-- **error_on_unknown** : _bool_
-    - See the corresponding argument of [`pids2ms`](#pids2ms).
-
-**Returns**
-
-- _numpy.ndarray_
-    - An array of Cartesian four-vectors with the same shape as the input.
+    - An array of the fixed phi values.
 
 
 ----
@@ -593,7 +1158,10 @@ to a particle of non-zero charge.
 energyflow.particle_properties()
 ```
 
-
+Accesses the global dictionary of particle properties. The keys are
+non-negative PDGIDs and the values are tuples of properties. Currently,
+each tuple has two values, the first is the charge in fundamental units
+and the second is the mass in GeV.
 
 
 ----
@@ -604,7 +1172,8 @@ energyflow.particle_properties()
 energyflow.particle_masses()
 ```
 
-
+Accesses the global dictionary of particle masses. The keys are
+non-negative PDGIDs and the values are the particle masses in GeV.
 
 
 ----
@@ -615,7 +1184,9 @@ energyflow.particle_masses()
 energyflow.particle_charges()
 ```
 
-
+Accesses the global dictionary of particle masses. The keys are
+non-negative PDGIDs and the values are the particle charged in fundamental
+units.
 
 
 ----
@@ -626,35 +1197,7 @@ energyflow.particle_charges()
 energyflow.charged_pids()
 ```
 
-
-
-
-----
-
-### phi_fix
-
-```python
-energyflow.phi_fix(phis, phi_ref, copy=True)
-```
-
-A function to ensure that all phis are within $\pi$ of `phi_ref`. It is
-assumed that all starting phi values are $\pm 2\pi$ of `phi_ref`.
-
-**Arguments**
-
-- **phis** : _numpy.ndarray_ or _list_
-    - Array of phi values.
-- **phi_ref** : {_float_ or _numpy.ndarray_}
-    - A reference value used so that all phis will be within $\pm\pi$ of
-    this value. Should have a shape of `phis.shape[:-1]`.
-- **copy** : _bool_
-    - Determines if `phis` are copied or not. If `False` then `phis` is
-    modified in place.
-
-**Returns**
-
-- _numpy.ndarray_
-    - An array of the fixed phi values.
+Accesses the global set of PDGID values that have a non-zero charge.
 
 
 ----
@@ -683,423 +1226,7 @@ convention.
 
 ----
 
-## Data Tools
-
-Functions for dealing with datasets. These are not importable from
-the top level `energyflow` module, but must instead be imported 
-from `energyflow.utils`.
-
-----
-
-### get_examples
-
-```python
-energyflow.utils.get_examples(cache_dir='~/.energyflow', which='all', overwrite=False)
-```
-
-Pulls examples from GitHub. To ensure availability of all examples
-update EnergyFlow to the latest version.
-
-**Arguments**
-
-- **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
-    `'examples'` is automatically appended to the end of this path. If
-    `None`, the default path of `~/.energyflow` is used, unless the
-    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-    is used instead.
-- **which** : {_list_, `'all'`}
-    - List of examples to download, or the string `'all'` in which 
-    case all the available examples are downloaded.
-- **overwrite** : _bool_
-    - Whether to overwrite existing files or not.
-
-
-----
-
-### data_split
-
-```python
-energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
-```
-
-A function to split a dataset into train, test, and optionally 
-validation datasets.
-
-**Arguments**
-
-- ***args** : arbitrary _numpy.ndarray_ datasets
-    - An arbitrary number of datasets, each required to have
-    the same number of elements, as numpy arrays.
-- **train** : {_int_, _float_}
-    - If a float, the fraction of elements to include in the training
-    set. If an integer, the number of elements to include in the
-    training set. The value `-1` is special and means include the
-    remaining part of the dataset in the training dataset after
-    the test and (optionally) val parts have been removed
-- **val** : {_int_, _float_}
-    - If a float, the fraction of elements to include in the validation
-    set. If an integer, the number of elements to include in the
-    validation set. The value `0` is special and means do not form
-    a validation set.
-- **test** : {_int_, _float_}
-    - If a float, the fraction of elements to include in the test
-    set. If an integer, the number of elements to include in the
-    test set.
-- **shuffle** : _bool_
-    - A flag to control whether the dataset is shuffled prior to
-    being split into parts.
-
-**Returns**
-
-- _list_
-    - A list of the split datasets in train, [val], test order. If 
-    datasets `X`, `Y`, and `Z` were given as `args` (and assuming a
-    non-zero `val`), then [`X_train`, `X_val`, `X_test`, `Y_train`, 
-    `Y_val`, `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned.
-
-
-----
-
-### to_categorical
-
-```python
-energyflow.utils.to_categorical(labels, num_classes=None)
-```
-
-One-hot encodes class labels.
-
-**Arguments**
-
-- **labels** : _1-d numpy.ndarray_
-    - Labels in the range `[0,num_classes)`.
-- **num_classes** : {_int_, `None`}
-    - The total number of classes. If `None`, taken to be the 
-    maximum label plus one.
-
-**Returns**
-
-- _2-d numpy.ndarray_
-    - The one-hot encoded labels.
-
-
-----
-
-### remap_pids
-
-```python
-energyflow.utils.remap_pids(events, pid_i=3, error_on_unknown=True)
-```
-
-Remaps PDG id numbers to small floats for use in a neural network.
-`events` are modified in place and nothing is returned.
-
-**Arguments**
-
-- **events** : _numpy.ndarray_
-    - The events as an array of arrays of particles.
-- **pid_i** : _int_
-    - The column index corresponding to pid information in an event.
-- **error_on_unknown** : _bool_
-    - Controls whether a `KeyError` is raised if an unknown PDG ID is
-    encountered. If `False`, unknown PDG IDs will map to zero.
-
-
-----
-
-## Image Tools
-
-Functions for dealing with image representations of events. These are 
-not importable from the top level `energyflow` module, but must 
-instead be imported from `energyflow.utils`.
-
-----
-
-### pixelate
-
-```python
-energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
-```
-
-A function for creating a jet image from an array of particles.
-
-**Arguments**
-
-- **jet** : _numpy.ndarray_
-    - An array of particles where each particle is of the form 
-    `[pt,y,phi,pid]` where the particle id column is only 
-    used if `nb_chan=2` and `charged_counts_only=True`.
-- **npix** : _int_
-    - The number of pixels on one edge of the jet image, which is
-    taken to be a square.
-- **img_width** : _float_
-    - The size of one edge of the jet image in the rapidity-azimuth
-    plane.
-- **nb_chan** : {`1`, `2`}
-    - The number of channels in the jet image. If `1`, then only a
-    $p_T$ channel is constructed (grayscale). If `2`, then both a 
-    $p_T$ channel and a count channel are formed (color).
-- **norm** : _bool_
-    - Whether to normalize the $p_T$ pixels to sum to `1`.
-- **charged_counts_only** : _bool_
-    - If making a count channel, whether to only include charged 
-    particles. Requires that `pid` information be given.
-
-**Returns**
-
-- _3-d numpy.ndarray_
-    - The jet image as a `(npix, npix, nb_chan)` array. Note that the order
-    of the channels changed in version 1.0.3.
-
-
-----
-
-### standardize
-
-```python
-energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
-```
-
-Normalizes each argument by the standard deviation of the pixels in 
-args[0]. The expected use case would be `standardize(X_train, X_val, 
-X_test)`.
-
-**Arguments**
-
-- ***args** : arbitrary _numpy.ndarray_ datasets
-    - An arbitrary number of datasets, each required to have
-    the same shape in all but the first axis.
-- **channels** : _int_
-    - A list of which channels (assumed to be the last axis)
-    to standardize. `None` is interpretted to mean every channel.
-- **copy** : _bool_
-    - Whether or not to copy the input arrays before modifying them.
-- **reg** : _float_
-    - Small parameter used to avoid dividing by zero. It's important
-    that this be kept consistent for images used with a given model.
-
-**Returns**
-
-- _list_ 
-    - A list of the now-standardized arguments.
-
-
-----
-
-### zero_center
-
-```python
-energyflow.utils.zero_center(args, kwargs)
-```
-
-Subtracts the mean of arg[0] from the arguments. The expected 
-use case would be `standardize(X_train, X_val, X_test)`.
-
-**Arguments**
-
-- ***args** : arbitrary _numpy.ndarray_ datasets
-    - An arbitrary number of datasets, each required to have
-    the same shape in all but the first axis.
-- **channels** : _int_
-    - A list of which channels (assumed to be the last axis)
-    to zero center. `None` is interpretted to mean every channel.
-- **copy** : _bool_
-    - Whether or not to copy the input arrays before modifying them.
-
-**Returns**
-
-- _list_ 
-    - A list of the zero-centered arguments.
-
-
-----
-
-## FastJet Tools
-
-The [FastJet package](http://fastjet.fr/) provides, among other things, fast
-jet clustering utilities. It is written in C++ and includes a Python interface
-that is easily installed at compile time by passing the `--enable-pyext` flag
-to `configure`. If you use this module for published research, please [cite
-FastJet appropriately](http://fastjet.fr/about.html).
-
-The core of EnergyFlow does not rely on FastJet, and hence it is not required
-to be installed, but the following utilities are available assuming that
-`import fastjet` succeeds in your Python environment (if not, no warnings or
-errors will be issued but this module will not be usable).
-
-----
-
-### pjs_from_ptyphims
-
-```python
-energyflow.pjs_from_ptyphims(ptyphims)
-```
-
-Converts particles in hadronic coordinates to FastJet PseudoJets.
-
-**Arguments**
-
-- **ptyphims** : _2d numpy.ndarray_
-    - An array of particles in hadronic coordinates. The mass is
-    optional and will be taken to be zero if not present.
-
-**Returns**
-
-- _list_ of _fastjet.PseudoJet_
-    - A list of PseudoJets corresponding to the particles in the given
-    array.
-
-
-----
-
-### pjs_from_p4s
-
-```python
-energyflow.pjs_from_p4s(p4s)
-```
-
-Converts particles in Cartesian coordinates to FastJet PseudoJets.
-
-**Arguments**
-
-- **p4s** : _2d numpy.ndarray_
-    - An array of particles in Cartesian coordinates, `[E, px, py, pz]`.
-
-**Returns**
-
-- _list_ of _fastjet.PseudoJet_
-    - A list of PseudoJets corresponding to the particles in the given
-    array.
-
-
-----
-
-### ptyphims_from_pjs
-
-```python
-energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
-```
-
-Extracts hadronic four-vectors from FastJet PseudoJets.
-
-**Arguments**
-
-- **pjs** : _list_ of _fastjet.PseudoJet_
-    - An iterable of PseudoJets.
-- **phi_ref** : _float_ or `None`
-    - The reference phi value to use for phi fixing. If `None`, then no
-    phi fixing is performed.
-- **mass** : _bool_
-    - Whether or not to include the mass in the extracted four-vectors.
-
-**Returns**
-
-- _numpy.ndarray_
-    - An array of four-vectors corresponding to the given PseudoJets as
-    `[pT, y, phi, m]`, where the mass is optional.
-
-
-----
-
-### p4s_from_pjs
-
-```python
-energyflow.p4s_from_pjs(pjs)
-```
-
-Extracts Cartesian four-vectors from FastJet PseudoJets.
-
-**Arguments**
-
-- **pjs** : _list_ of _fastjet.PseudoJet_
-    - An iterable of PseudoJets.
-
-**Returns**
-
-- _numpy.ndarray_
-    - An array of four-vectors corresponding to the given PseudoJets as
-    `[E, px, py, pz]`.
-
-
-----
-
-### cluster
-
-```python
-energyflow.cluster(pjs, algorithm='ca', R=1000.0)
-```
-
-Clusters a list of PseudoJets according to a specified jet
-algorithm and jet radius.
-
-**Arguments**
-
-- **pjs** : _list_ of _fastjet.PseudoJet_
-    - A list of Pseudojets representing particles or other kinematic
-    objects that are to be clustered into jets.
-- **algorithm** : {'kt', 'antikt', 'ca', 'cambridge', 'cambridge_aachen'}
-    - The jet algorithm to use during the clustering. Note that the
-    last three options all refer to the same strategy and are provided
-    because they are all used by the FastJet Python package.
-- **R** : _float_
-    - The jet radius. The default value corresponds to
-    `max_allowable_R` as defined by the FastJet python package.
-
-**Returns**
-
-- _list_ of _fastjet.PseudoJet_
-    - A list of PseudoJets corresponding to the clustered jets.
-
-
-----
-
-### softdrop
-
-```python
-energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
-```
-
-Implements the SoftDrop grooming algorithm on a jet that has been
-found via clustering. Specifically, given a jet, it is recursively
-declustered and the softer branch removed until the SoftDrop condition
-is satisfied:
-
-$$
-\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} > z_{\rm cut}
-\left(\frac{\Delta R_{12}}{R}\right)^\beta
-$$
-
-where $1$ and $2$ refer to the two PseudoJets declustered at this stage.
-See the [SoftDrop paper](https://arxiv.org/abs/1402.2657) for a
-complete description of SoftDrop. If you use this function for your
-research, please cite [1402.2657](https://doi.org/10.1007/
-JHEP05(2014)146).
-
-**Arguments**
-
-- **jet** : _fastjet.PseudoJet_
-    - A FastJet PseudoJet that has been obtained from a suitable
-    clustering (typically Cambridge/Aachen).
-- **zcut** : _float_
-    - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
-    and `1`.
-- **beta** : _int_ or _float_
-    - The $\beta$ parameter of SoftDrop.
-- **R** : _float_
-    - The jet radius to use for the grooming. Only relevant if `beta!=0`.
-
-**Returns**
-
-- _fastjet.PseudoJet_
-    - The groomed jet. Note that it will not necessarily have all of
-    the same associated structure as the original jet, but it is
-    suitable for obtaining kinematic quantities, e.g. [$z_g$](/docs/
-    obs/#zg_from_pj).
-
-
-----
-
-## Random Events
+## Random Utils
 
 Functions to generate random sets of four-vectors. Includes an implementation
 of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0) algorithm for
@@ -1194,6 +1321,18 @@ of mass energy.
     - An `(nevents,nparticles,4)` array of events. The particles 
     are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
     dropped.
+
+
+----
+
+### random
+
+```python
+energyflow.random
+```
+
+In NumPy versions >= 1.16, this object is obtained from
+`numpy.random.default_rng()`. Otherwise, it's equivalent to `numpy.random`.
 
 
 ----

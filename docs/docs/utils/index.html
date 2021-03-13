@@ -101,7 +101,53 @@
                     </li>
                     <li class="toctree-l1 current"><a class="reference internal current" href="./">Utils</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#particle-tools">Particle Tools</a>
+    <li class="toctree-l2"><a class="reference internal" href="#data-utils">Data Utils</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#convert_dtype">convert_dtype</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#data_split">data_split</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#determine_cache_dir">determine_cache_dir</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#get_examples">get_examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pad_events">pad_events</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#to_categorical">to_categorical</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#remap_pids">remap_pids</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fastjet-utils">FastJet Utils</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pjs_from_ptyphims">pjs_from_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pjs_from_p4s">pjs_from_p4s</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ptyphims_from_pjs">ptyphims_from_pjs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_pjs">p4s_from_pjs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jet_def">jet_def</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cluster">cluster</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#softdrop">softdrop</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#image-utils">Image Utils</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#pixelate">pixelate</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#standardize">standardize</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#zero_center">zero_center</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#particle-utils">Particle Utils</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#ptyphims_from_p4s">ptyphims_from_p4s</a>
     </li>
@@ -121,13 +167,15 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#ms_from_ps">ms_from_ps</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_ptyphims">p4s_from_ptyphims</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_ptyphipids">p4s_from_ptyphipids</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#etas_from_pts_ys_ms">etas_from_pts_ys_ms</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#ys_from_pts_etas_ms">ys_from_pts_etas_ms</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_ptyphims">p4s_from_ptyphims</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_ptyphipids">p4s_from_ptyphipids</a>
+    <li class="toctree-l3"><a class="reference internal" href="#phi_fix">phi_fix</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#sum_ptyphims">sum_ptyphims</a>
     </li>
@@ -153,57 +201,19 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#charged_pids">charged_pids</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#phi_fix">phi_fix</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#flat_metric">flat_metric</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#data-tools">Data Tools</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#get_examples">get_examples</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#data_split">data_split</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#to_categorical">to_categorical</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#remap_pids">remap_pids</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#image-tools">Image Tools</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#pixelate">pixelate</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#standardize">standardize</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#zero_center">zero_center</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#fastjet-tools">FastJet Tools</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#pjs_from_ptyphims">pjs_from_ptyphims</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pjs_from_p4s">pjs_from_p4s</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#ptyphims_from_pjs">ptyphims_from_pjs</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#p4s_from_pjs">p4s_from_pjs</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#cluster">cluster</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#softdrop">softdrop</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#random-events">Random Events</a>
+    <li class="toctree-l2"><a class="reference internal" href="#random-utils">Random Utils</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#gen_random_events">gen_random_events</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#gen_random_events_mcom">gen_random_events_mcom</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#gen_massless_phase_space">gen_massless_phase_space</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#random">random</a>
     </li>
         </ul>
     </li>
@@ -247,7 +257,555 @@
             <div class="section">
               
                 <h1 id="utilities">Utilities</h1>
-<h2 id="particle-tools">Particle Tools</h2>
+<p>Utility functions for the EnergyFlow package. The utilities are grouped into the
+following submodules:</p>
+<ul>
+<li><a href="#data-utils"><code>data_utils</code></a>: Utilities for processing datasets as arrays of
+events.
+aspects.</li>
+<li><a href="#fastjet-utils"><code>fastjet_utils</code></a>: Utilities for interfacing with the Python
+wrapper of the <a href="http://fastjet.fr/">FastJet</a> package.</li>
+<li><a href="#image-utils"><code>image_utils</code></a>: Utilities for creating and standardizing images
+from collections of particles.</li>
+<li><a href="#particle-utils"><code>particle_utils</code></a>: Utilities for manipulating particle
+properties, including converting between different kinematic representations,
+adding/centering collections of four-vectors, and accessing particle properties
+including masses and charges by PDG ID.</li>
+<li><a href="#random-utils"><code>random_utils</code></a>: Utilities for generating random collections
+of (massless) four-vectors.</li>
+</ul>
+<hr />
+<h2 id="data-utils">Data Utils</h2>
+<p>Functions for handling with datasets, including facilitating <a href="#data_split">train/val/test 
+splits</a>, <a href="#convert_dtype">converting</a> the numpy dtype of a
+(possibly ragged) array, <a href="#pad_events">padding events</a> with different numbers
+of particles, and <a href="#remap_pids">mapping</a> PDG ID values to small floating point
+values.</p>
+<hr />
+<h3 id="convert_dtype">convert_dtype</h3>
+<pre><code class="language-python">energyflow.convert_dtype(X, dtype)
+</code></pre>
+<p>Converts the numpy dtype of the given array to the provided value. This
+function can handle a ragged array, that is, an object array where the
+elements are numpy arrays of a possibly different type, in which case the
+function will be recursively applied.</p>
+<p><strong>Arguments</strong></p>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em></li>
+</ul>
+<hr />
+<h3 id="data_split">data_split</h3>
+<pre><code class="language-python">energyflow.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True, include_empty=False)
+</code></pre>
+<p>A function to split a dataset into train, validation, and test datasets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of datasets, each required to have the same number
+of elements, as numpy arrays.</li>
+</ul>
+</li>
+<li><strong>train</strong> : {<em>int</em>, <em>float</em>}<ul>
+<li>If a float, the fraction of elements to include in the training set.
+If an integer, the number of elements to include in the training set.
+The value <code>-1</code> is special and means include the remaining part of the
+dataset in the training dataset after the test and (optionally) val
+parts have been removed.</li>
+</ul>
+</li>
+<li><strong>val</strong> : {<em>int</em>, <em>float</em>}<ul>
+<li>If a float, the fraction of elements to include in the validation set.
+If an integer, the number of elements to include in the validation set.
+The value <code>0</code> is special and means do not form a validation set.</li>
+</ul>
+</li>
+<li><strong>test</strong> : {<em>int</em>, <em>float</em>}<ul>
+<li>If a float, the fraction of elements to include in the test set. If an
+integer, the number of elements to include in the test set. The value <code>0</code>
+is special and means do not form a validation set.</li>
+</ul>
+</li>
+<li><strong>shuffle</strong> : <em>bool</em><ul>
+<li>A flag to control whether the dataset is shuffled prior to being split
+into parts.</li>
+</ul>
+</li>
+<li><strong>include_empty</strong> : <em>bool</em><ul>
+<li>Whether or not to return empty arrays for datasets that would have
+zero elements in them. This can be useful for setting e.g. <code>val</code> or
+<code>test</code> to 0 without having to change the unpacking of the result.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em><ul>
+<li>A list of the split datasets in train, val, test order. If datasets
+<code>X</code>, <code>Y</code>, and <code>Z</code> were given as <code>args</code> (and assuming a non-zero <code>val</code>
+and <code>test</code>), then [<code>X_train</code>, <code>X_val</code>, <code>X_test</code>, <code>Y_train</code>, <code>Y_val</code>,
+<code>Y_test</code>, <code>Z_train</code>, <code>Z_val</code>, <code>Z_test</code>] will be returned. If, for
+instance, <code>val</code> is zero and <code>include_empty</code> is <code>False</code> then [<code>X_train</code>,
+<code>X_test</code>, <code>Y_train</code>, <code>Y_test</code>, <code>Z_train</code>, <code>Z_test</code>] will be returned.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="determine_cache_dir">determine_cache_dir</h3>
+<pre><code class="language-python">energyflow.determine_cache_dir(cache_dir=None, cache_subdir='datasets')
+</code></pre>
+<p>Determines the path to the specified directory used for caching files. If
+<code>cache_dir</code> is <code>None</code>, the default is to use <code>'~/.energyflow'</code> unless the
+environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set, in which case it is
+used.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>cache_dir</strong> : <em>str</em> or <code>None</code><ul>
+<li>The path to the top-level cache directory. Defaults to the environment
+variable <code>ENERGYFLOW_CACHE_DIR</code>, or <code>'~/.energyflow'</code> if that is unset.</li>
+</ul>
+</li>
+<li><strong>cache_subdir</strong> : <em>str</em> or <code>None</code><ul>
+<li>Further path component to join to <code>cache_dir</code>. Ignored if <code>None</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>str</em><ul>
+<li>The path to the cache directory specified by the supplied arguments.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="get_examples">get_examples</h3>
+<pre><code class="language-python">energyflow.get_examples(cache_dir=None, which='all', overwrite=False)
+</code></pre>
+<p>Pulls examples from GitHub. To ensure availability of all examples
+update EnergyFlow to the latest version.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>cache_dir</strong> : <em>str</em> or <code>None</code><ul>
+<li>The directory where to store/look for the files. If <code>None</code>, the
+<a href="../utils/#determine_cache_dir"><code>determine_cache_dir</code></a> function will be
+used to get the default path. Note that in either case, <code>'datasets'</code> is
+appended to the end of the path.</li>
+</ul>
+</li>
+<li><strong>which</strong> : {<em>list</em>, <code>'all'</code>}<ul>
+<li>List of examples to download, or the string <code>'all'</code> in which 
+case all the available examples are downloaded.</li>
+</ul>
+</li>
+<li><strong>overwrite</strong> : <em>bool</em><ul>
+<li>Whether to overwrite existing files or not.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="pad_events">pad_events</h3>
+<pre><code class="language-python">energyflow.pad_events(X, pad_val=0.0, max_len=None)
+</code></pre>
+<hr />
+<h3 id="to_categorical">to_categorical</h3>
+<pre><code class="language-python">energyflow.to_categorical(labels, num_classes=None)
+</code></pre>
+<p>One-hot encodes class labels.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>labels</strong> : <em>1-d numpy.ndarray</em><ul>
+<li>Labels in the range <code>[0,num_classes)</code>.</li>
+</ul>
+</li>
+<li><strong>num_classes</strong> : {<em>int</em>, <code>None</code>}<ul>
+<li>The total number of classes. If <code>None</code>, taken to be the 
+maximum label plus one.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>2-d numpy.ndarray</em><ul>
+<li>The one-hot encoded labels.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="remap_pids">remap_pids</h3>
+<pre><code class="language-python">energyflow.remap_pids(events, pid_i=3, error_on_unknown=True)
+</code></pre>
+<p>Remaps PDG id numbers to small floats for use in a neural network.
+<code>events</code> are modified in place and nothing is returned.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>events</strong> : <em>numpy.ndarray</em><ul>
+<li>The events as an array of arrays of particles.</li>
+</ul>
+</li>
+<li><strong>pid_i</strong> : <em>int</em><ul>
+<li>The column index corresponding to pid information in an event.</li>
+</ul>
+</li>
+<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
+<li>Controls whether a <code>KeyError</code> is raised if an unknown PDG ID is
+encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="fastjet-utils">FastJet Utils</h2>
+<p>The <a href="http://fastjet.fr/">FastJet package</a> provides, among other things, fast
+jet clustering utilities. It is written in C++ and includes a Python interface
+that is easily installed at compile time by passing the <code>--enable-pyext</code> flag
+to <code>configure</code>. If you use this module for published research, please <a href="http://fastjet.fr/about.html">cite
+FastJet appropriately</a>.</p>
+<p>The core of EnergyFlow does not rely on FastJet, and hence it is not required
+to be installed, but the following utilities are available assuming that
+<code>import fastjet</code> succeeds in your Python environment (if not, no warnings or
+errors will be issued but this module will not be usable).</p>
+<hr />
+<h3 id="pjs_from_ptyphims">pjs_from_ptyphims</h3>
+<pre><code class="language-python">energyflow.pjs_from_ptyphims(ptyphims)
+</code></pre>
+<p>Converts particles in hadronic coordinates to FastJet PseudoJets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>2d numpy.ndarray</em><ul>
+<li>An array of particles in hadronic coordinates. The mass is
+optional and will set to zero if not present.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of PseudoJets corresponding to the input particles.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="pjs_from_p4s">pjs_from_p4s</h3>
+<pre><code class="language-python">energyflow.pjs_from_p4s(p4s)
+</code></pre>
+<p>Converts particles in Cartesian coordinates to FastJet PseudoJets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>p4s</strong> : <em>2d numpy.ndarray</em><ul>
+<li>An array of particles in Cartesian coordinates, <code>[E, px, py, pz]</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of PseudoJets corresponding to the input particles.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="ptyphims_from_pjs">ptyphims_from_pjs</h3>
+<pre><code class="language-python">energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
+</code></pre>
+<p>Extracts hadronic four-vectors from FastJet PseudoJets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>An iterable of PseudoJets.</li>
+</ul>
+</li>
+<li><strong>phi_ref</strong> : <em>float</em> or <code>None</code><ul>
+<li>The reference phi value to use for phi fixing. If <code>None</code>, then no
+phi fixing is performed.</li>
+</ul>
+</li>
+<li><strong>mass</strong> : <em>bool</em><ul>
+<li>Whether or not to include the mass in the extracted four-vectors.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of four-vectors corresponding to the given PseudoJets as
+<code>[pT, y, phi, m]</code>, where the mass is optional.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="p4s_from_pjs">p4s_from_pjs</h3>
+<pre><code class="language-python">energyflow.p4s_from_pjs(pjs)
+</code></pre>
+<p>Extracts Cartesian four-vectors from FastJet PseudoJets.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>An iterable of PseudoJets.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of four-vectors corresponding to the given PseudoJets as
+<code>[E, px, py, pz]</code>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="jet_def">jet_def</h3>
+<pre><code class="language-python">energyflow.jet_def(algorithm=1, R=1000.0, recomb=0)
+</code></pre>
+<p>Creates a fastjet JetDefinition from the specified arguments.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>algorithm</strong> : <em>str</em> or <em>int</em><ul>
+<li>A string such as <code>'kt'</code>, <code>'akt'</code>, <code>'antikt'</code>, <code>'ca'</code>, 
+<code>'cambridge'</code>, or <code>'cambridge_aachen'</code>; or an integer corresponding
+to a fastjet.JetAlgorithm value.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The jet radius. The default value corresponds to
+<code>max_allowable_R</code> as defined by the FastJet python package.</li>
+</ul>
+</li>
+<li><strong>recomb</strong> : <em>int</em><ul>
+<li>An integer corresponding to a fastjet RecombinationScheme.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>fastjet.JetDefinition</em><ul>
+<li>A JetDefinition instance corresponding to the given arguments.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="cluster">cluster</h3>
+<pre><code class="language-python">energyflow.cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0.0, kwargs)
+</code></pre>
+<p>Clusters an iterable of PseudoJets. Uses a jet definition that can
+either be provided directly or specified using the same keywords as the
+<code>jet_def</code> function. The jets returned can either be includive, the 
+default, or exclusive according to either a maximum number of subjets
+or a particular <code>dcut</code>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of Pseudojets representing particles or other kinematic
+objects that are to be clustered into jets.</li>
+</ul>
+</li>
+<li><strong>jetdef</strong> : <em>fastjet.JetDefinition</em> or <code>None</code><ul>
+<li>The <code>JetDefinition</code> used for the clustering. If <code>None</code>, the
+keyword arguments are passed on to <code>jet_def</code> to create a
+<code>JetDefinition</code>.</li>
+</ul>
+</li>
+<li><strong>N</strong> : <em>int</em> or <code>None</code><ul>
+<li>If not <code>None</code>, then the <code>exclusive_jets_up_to</code> method of the
+<code>ClusterSequence</code> class is used to get up to <code>N</code> exclusive jets.</li>
+</ul>
+</li>
+<li><strong>dcut</strong> : <em>float</em> or <code>None</code><ul>
+<li>If not <code>None</code>, then the <code>exclusive_jets</code> method of the
+<code>ClusterSequence</code> class is used to get exclusive jets with the
+provided <code>dcut</code> parameter.</li>
+</ul>
+</li>
+<li><strong>ptmin</strong> : <em>float</em><ul>
+<li>If both <code>N</code> and <code>dcut</code> are <code>None</code>, then inclusive jets are
+returned using this value as the minimum transverse momentum value.</li>
+</ul>
+</li>
+<li><strong>*kwargs</strong> : keyword arguments<ul>
+<li>If <code>jetdef</code> is <code>None</code>, then these keyword arguments are passed on
+to the <code>jet_def</code> function.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
+<li>A list of PseudoJets corresponding to the clustered jets.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="softdrop">softdrop</h3>
+<pre><code class="language-python">energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
+</code></pre>
+<p>Implements the SoftDrop grooming algorithm on a jet that has been
+found via clustering. Specifically, given a jet, it is recursively
+declustered and the softer branch removed until the SoftDrop condition
+is satisfied:</p>
+<div>
+<div class="MathJax_Preview">
+\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} &gt; z_{\rm cut}
+\left(\frac{\Delta R_{12}}{R}\right)^\beta
+</div>
+<script type="math/tex; mode=display">
+\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} > z_{\rm cut}
+\left(\frac{\Delta R_{12}}{R}\right)^\beta
+</script>
+</div>
+<p>where <span><span class="MathJax_Preview">1</span><script type="math/tex">1</script></span> and <span><span class="MathJax_Preview">2</span><script type="math/tex">2</script></span> refer to the two PseudoJets declustered at this stage.
+See the <a href="https://arxiv.org/abs/1402.2657">SoftDrop paper</a> for a
+complete description of SoftDrop. If you use this function for your
+research, please cite <a href="https://doi.org/10.1007/
+JHEP05(2014)146">1402.2657</a>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>jet</strong> : <em>fastjet.PseudoJet</em><ul>
+<li>A FastJet PseudoJet that has been obtained from a suitable
+clustering (typically Cambridge/Aachen).</li>
+</ul>
+</li>
+<li><strong>zcut</strong> : <em>float</em><ul>
+<li>The <span><span class="MathJax_Preview">z_{\rm cut}</span><script type="math/tex">z_{\rm cut}</script></span> parameter of SoftDrop. Should be between <code>0</code>
+and <code>1</code>.</li>
+</ul>
+</li>
+<li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
+<li>The <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> parameter of SoftDrop.</li>
+</ul>
+</li>
+<li><strong>R</strong> : <em>float</em><ul>
+<li>The jet radius to use for the grooming. Only relevant if <code>beta!=0</code>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>fastjet.PseudoJet</em><ul>
+<li>The groomed jet. Note that it will not necessarily have all of
+the same associated structure as the original jet, but it is
+suitable for obtaining kinematic quantities, e.g. <a href="/docs/
+obs/#zg_from_pj"><span><span class="MathJax_Preview">z_g</span><script type="math/tex">z_g</script></span></a>.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="image-utils">Image Utils</h2>
+<p>Functions for dealing with image representations of events. These are 
+not importable from the top level <code>energyflow</code> module, but must 
+instead be imported from <code>energyflow.utils</code>.</p>
+<hr />
+<h3 id="pixelate">pixelate</h3>
+<pre><code class="language-python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
+</code></pre>
+<p>A function for creating a jet image from an array of particles.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>jet</strong> : <em>numpy.ndarray</em><ul>
+<li>An array of particles where each particle is of the form 
+<code>[pt,y,phi,pid]</code> where the particle id column is only 
+used if <code>nb_chan=2</code> and <code>charged_counts_only=True</code>.</li>
+</ul>
+</li>
+<li><strong>npix</strong> : <em>int</em><ul>
+<li>The number of pixels on one edge of the jet image, which is
+taken to be a square.</li>
+</ul>
+</li>
+<li><strong>img_width</strong> : <em>float</em><ul>
+<li>The size of one edge of the jet image in the rapidity-azimuth
+plane.</li>
+</ul>
+</li>
+<li><strong>nb_chan</strong> : {<code>1</code>, <code>2</code>}<ul>
+<li>The number of channels in the jet image. If <code>1</code>, then only a
+<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel is constructed (grayscale). If <code>2</code>, then both a 
+<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel and a count channel are formed (color).</li>
+</ul>
+</li>
+<li><strong>norm</strong> : <em>bool</em><ul>
+<li>Whether to normalize the <span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> pixels to sum to <code>1</code>.</li>
+</ul>
+</li>
+<li><strong>charged_counts_only</strong> : <em>bool</em><ul>
+<li>If making a count channel, whether to only include charged 
+particles. Requires that <code>pid</code> information be given.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>3-d numpy.ndarray</em><ul>
+<li>The jet image as a <code>(npix, npix, nb_chan)</code> array. Note that the order
+of the channels changed in version 1.0.3.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="standardize">standardize</h3>
+<pre><code class="language-python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
+</code></pre>
+<p>Normalizes each argument by the standard deviation of the pixels in 
+args[0]. The expected use case would be <code>standardize(X_train, X_val, 
+X_test)</code>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of datasets, each required to have
+the same shape in all but the first axis.</li>
+</ul>
+</li>
+<li><strong>channels</strong> : <em>int</em><ul>
+<li>A list of which channels (assumed to be the last axis)
+to standardize. <code>None</code> is interpretted to mean every channel.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input arrays before modifying them.</li>
+</ul>
+</li>
+<li><strong>reg</strong> : <em>float</em><ul>
+<li>Small parameter used to avoid dividing by zero. It's important
+that this be kept consistent for images used with a given model.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> <ul>
+<li>A list of the now-standardized arguments.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="zero_center">zero_center</h3>
+<pre><code class="language-python">energyflow.utils.zero_center(args, kwargs)
+</code></pre>
+<p>Subtracts the mean of arg[0] from the arguments. The expected 
+use case would be <code>standardize(X_train, X_val, X_test)</code>.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
+<li>An arbitrary number of datasets, each required to have
+the same shape in all but the first axis.</li>
+</ul>
+</li>
+<li><strong>channels</strong> : <em>int</em><ul>
+<li>A list of which channels (assumed to be the last axis)
+to zero center. <code>None</code> is interpretted to mean every channel.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Whether or not to copy the input arrays before modifying them.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>list</em> <ul>
+<li>A list of the zero-centered arguments.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="particle-utils">Particle Utils</h2>
 <p>Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, <code>[e,px,py,pz]</code> (energy, momentum in <code>x</code> direction,
 momentum in <code>y</code> direction, momentum in <code>z</code> direction), or hadronic coordinates, 
@@ -491,6 +1049,54 @@ coordinates in <span><span class="MathJax_Preview">d\ge2</span><script type="mat
 </li>
 </ul>
 <hr />
+<h3 id="p4s_from_ptyphims">p4s_from_ptyphims</h3>
+<pre><code class="language-python">energyflow.p4s_from_ptyphims(ptyphims)
+</code></pre>
+<p>Calculate Cartesian four-vectors from transverse momenta, rapidities,
+azimuthal angles, and (optionally) masses for each input.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>A single particle, event, or array of events in hadronic coordinates.
+The mass is optional and if left out will be taken to be zero.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of Cartesian four-vectors.</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h3 id="p4s_from_ptyphipids">p4s_from_ptyphipids</h3>
+<pre><code class="language-python">energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
+</code></pre>
+<p>Calculate Cartesian four-vectors from transverse momenta, rapidities,
+azimuthal angles, and particle IDs for each input. The particle IDs are
+used to lookup the mass of the particle. Transverse momenta should have
+units of GeV when using this function.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><strong>ptyphipids</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>A single particle, event, or array of events in hadronic coordinates
+where the mass is replaced by the PDG ID of the particle.</li>
+</ul>
+</li>
+<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
+<li>See the corresponding argument of <a href="#pids2ms"><code>pids2ms</code></a>.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li><em>numpy.ndarray</em><ul>
+<li>An array of Cartesian four-vectors with the same shape as the input.</li>
+</ul>
+</li>
+</ul>
+<hr />
 <h3 id="etas_from_pts_ys_ms">etas_from_pts_ys_ms</h3>
 <pre><code class="language-python">energyflow.etas_from_pts_ys_ms(pts, ys, ms)
 </code></pre>
@@ -547,50 +1153,32 @@ All input arrays should have the same shape.</p>
 </li>
 </ul>
 <hr />
-<h3 id="p4s_from_ptyphims">p4s_from_ptyphims</h3>
-<pre><code class="language-python">energyflow.p4s_from_ptyphims(ptyphims)
+<h3 id="phi_fix">phi_fix</h3>
+<pre><code class="language-python">energyflow.phi_fix(phis, phi_ref, copy=True)
 </code></pre>
-<p>Calculate Cartesian four-vectors from transverse momenta, rapidities,
-azimuthal angles, and (optionally) masses for each input.</p>
+<p>A function to ensure that all phis are within <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> of <code>phi_ref</code>. It is
+assumed that all starting phi values are <span><span class="MathJax_Preview">\pm 2\pi</span><script type="math/tex">\pm 2\pi</script></span> of <code>phi_ref</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
-<li><strong>ptyphims</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>A single particle, event, or array of events in hadronic coordinates.
-The mass is optional and if left out will be taken to be zero.</li>
+<li><strong>phis</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
+<li>Array of phi values.</li>
+</ul>
+</li>
+<li><strong>phi_ref</strong> : {<em>float</em> or <em>numpy.ndarray</em>}<ul>
+<li>A reference value used so that all phis will be within <span><span class="MathJax_Preview">\pm\pi</span><script type="math/tex">\pm\pi</script></span> of
+this value. Should have a shape of <code>phis.shape[:-1]</code>.</li>
+</ul>
+</li>
+<li><strong>copy</strong> : <em>bool</em><ul>
+<li>Determines if <code>phis</code> are copied or not. If <code>False</code> then <code>phis</code> is
+modified in place.</li>
 </ul>
 </li>
 </ul>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An array of Cartesian four-vectors.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="p4s_from_ptyphipids">p4s_from_ptyphipids</h3>
-<pre><code class="language-python">energyflow.p4s_from_ptyphipids(ptyphipids, error_on_unknown=False)
-</code></pre>
-<p>Calculate Cartesian four-vectors from transverse momenta, rapidities,
-azimuthal angles, and particle IDs for each input. The particle IDs are
-used to lookup the mass of the particle. Transverse momenta should have
-units of GeV when using this function.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>ptyphipids</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>A single particle, event, or array of events in hadronic coordinates
-where the mass is replaced by the PDG ID of the particle.</li>
-</ul>
-</li>
-<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
-<li>See the corresponding argument of <a href="#pids2ms"><code>pids2ms</code></a>.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>An array of Cartesian four-vectors with the same shape as the input.</li>
+<li>An array of the fixed phi values.</li>
 </ul>
 </li>
 </ul>
@@ -843,48 +1431,28 @@ charged, for instance to avoid counting quarks as charged particles.</li>
 <h3 id="particle_properties">particle_properties</h3>
 <pre><code class="language-python">energyflow.particle_properties()
 </code></pre>
+<p>Accesses the global dictionary of particle properties. The keys are
+non-negative PDGIDs and the values are tuples of properties. Currently,
+each tuple has two values, the first is the charge in fundamental units
+and the second is the mass in GeV.</p>
 <hr />
 <h3 id="particle_masses">particle_masses</h3>
 <pre><code class="language-python">energyflow.particle_masses()
 </code></pre>
+<p>Accesses the global dictionary of particle masses. The keys are
+non-negative PDGIDs and the values are the particle masses in GeV.</p>
 <hr />
 <h3 id="particle_charges">particle_charges</h3>
 <pre><code class="language-python">energyflow.particle_charges()
 </code></pre>
+<p>Accesses the global dictionary of particle masses. The keys are
+non-negative PDGIDs and the values are the particle charged in fundamental
+units.</p>
 <hr />
 <h3 id="charged_pids">charged_pids</h3>
 <pre><code class="language-python">energyflow.charged_pids()
 </code></pre>
-<hr />
-<h3 id="phi_fix">phi_fix</h3>
-<pre><code class="language-python">energyflow.phi_fix(phis, phi_ref, copy=True)
-</code></pre>
-<p>A function to ensure that all phis are within <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> of <code>phi_ref</code>. It is
-assumed that all starting phi values are <span><span class="MathJax_Preview">\pm 2\pi</span><script type="math/tex">\pm 2\pi</script></span> of <code>phi_ref</code>.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>phis</strong> : <em>numpy.ndarray</em> or <em>list</em><ul>
-<li>Array of phi values.</li>
-</ul>
-</li>
-<li><strong>phi_ref</strong> : {<em>float</em> or <em>numpy.ndarray</em>}<ul>
-<li>A reference value used so that all phis will be within <span><span class="MathJax_Preview">\pm\pi</span><script type="math/tex">\pm\pi</script></span> of
-this value. Should have a shape of <code>phis.shape[:-1]</code>.</li>
-</ul>
-</li>
-<li><strong>copy</strong> : <em>bool</em><ul>
-<li>Determines if <code>phis</code> are copied or not. If <code>False</code> then <code>phis</code> is
-modified in place.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>An array of the fixed phi values.</li>
-</ul>
-</li>
-</ul>
+<p>Accesses the global set of PDGID values that have a non-zero charge.</p>
 <hr />
 <h3 id="flat_metric">flat_metric</h3>
 <pre><code class="language-python">energyflow.flat_metric(dim)
@@ -908,439 +1476,7 @@ universe).</li>
 </li>
 </ul>
 <hr />
-<h2 id="data-tools">Data Tools</h2>
-<p>Functions for dealing with datasets. These are not importable from
-the top level <code>energyflow</code> module, but must instead be imported 
-from <code>energyflow.utils</code>.</p>
-<hr />
-<h3 id="get_examples">get_examples</h3>
-<pre><code class="language-python">energyflow.utils.get_examples(cache_dir='~/.energyflow', which='all', overwrite=False)
-</code></pre>
-<p>Pulls examples from GitHub. To ensure availability of all examples
-update EnergyFlow to the latest version.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
-<code>'examples'</code> is automatically appended to the end of this path. If
-<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
-environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
-is used instead.</li>
-</ul>
-</li>
-<li><strong>which</strong> : {<em>list</em>, <code>'all'</code>}<ul>
-<li>List of examples to download, or the string <code>'all'</code> in which 
-case all the available examples are downloaded.</li>
-</ul>
-</li>
-<li><strong>overwrite</strong> : <em>bool</em><ul>
-<li>Whether to overwrite existing files or not.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="data_split">data_split</h3>
-<pre><code class="language-python">energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
-</code></pre>
-<p>A function to split a dataset into train, test, and optionally 
-validation datasets.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
-<li>An arbitrary number of datasets, each required to have
-the same number of elements, as numpy arrays.</li>
-</ul>
-</li>
-<li><strong>train</strong> : {<em>int</em>, <em>float</em>}<ul>
-<li>If a float, the fraction of elements to include in the training
-set. If an integer, the number of elements to include in the
-training set. The value <code>-1</code> is special and means include the
-remaining part of the dataset in the training dataset after
-the test and (optionally) val parts have been removed</li>
-</ul>
-</li>
-<li><strong>val</strong> : {<em>int</em>, <em>float</em>}<ul>
-<li>If a float, the fraction of elements to include in the validation
-set. If an integer, the number of elements to include in the
-validation set. The value <code>0</code> is special and means do not form
-a validation set.</li>
-</ul>
-</li>
-<li><strong>test</strong> : {<em>int</em>, <em>float</em>}<ul>
-<li>If a float, the fraction of elements to include in the test
-set. If an integer, the number of elements to include in the
-test set.</li>
-</ul>
-</li>
-<li><strong>shuffle</strong> : <em>bool</em><ul>
-<li>A flag to control whether the dataset is shuffled prior to
-being split into parts.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>list</em><ul>
-<li>A list of the split datasets in train, [val], test order. If 
-datasets <code>X</code>, <code>Y</code>, and <code>Z</code> were given as <code>args</code> (and assuming a
-non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <code>X_test</code>, <code>Y_train</code>, 
-<code>Y_val</code>, <code>Y_test</code>, <code>Z_train</code>, <code>Z_val</code>, <code>Z_test</code>] will be returned.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="to_categorical">to_categorical</h3>
-<pre><code class="language-python">energyflow.utils.to_categorical(labels, num_classes=None)
-</code></pre>
-<p>One-hot encodes class labels.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>labels</strong> : <em>1-d numpy.ndarray</em><ul>
-<li>Labels in the range <code>[0,num_classes)</code>.</li>
-</ul>
-</li>
-<li><strong>num_classes</strong> : {<em>int</em>, <code>None</code>}<ul>
-<li>The total number of classes. If <code>None</code>, taken to be the 
-maximum label plus one.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>2-d numpy.ndarray</em><ul>
-<li>The one-hot encoded labels.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="remap_pids">remap_pids</h3>
-<pre><code class="language-python">energyflow.utils.remap_pids(events, pid_i=3, error_on_unknown=True)
-</code></pre>
-<p>Remaps PDG id numbers to small floats for use in a neural network.
-<code>events</code> are modified in place and nothing is returned.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>events</strong> : <em>numpy.ndarray</em><ul>
-<li>The events as an array of arrays of particles.</li>
-</ul>
-</li>
-<li><strong>pid_i</strong> : <em>int</em><ul>
-<li>The column index corresponding to pid information in an event.</li>
-</ul>
-</li>
-<li><strong>error_on_unknown</strong> : <em>bool</em><ul>
-<li>Controls whether a <code>KeyError</code> is raised if an unknown PDG ID is
-encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h2 id="image-tools">Image Tools</h2>
-<p>Functions for dealing with image representations of events. These are 
-not importable from the top level <code>energyflow</code> module, but must 
-instead be imported from <code>energyflow.utils</code>.</p>
-<hr />
-<h3 id="pixelate">pixelate</h3>
-<pre><code class="language-python">energyflow.utils.pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_only=False)
-</code></pre>
-<p>A function for creating a jet image from an array of particles.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>jet</strong> : <em>numpy.ndarray</em><ul>
-<li>An array of particles where each particle is of the form 
-<code>[pt,y,phi,pid]</code> where the particle id column is only 
-used if <code>nb_chan=2</code> and <code>charged_counts_only=True</code>.</li>
-</ul>
-</li>
-<li><strong>npix</strong> : <em>int</em><ul>
-<li>The number of pixels on one edge of the jet image, which is
-taken to be a square.</li>
-</ul>
-</li>
-<li><strong>img_width</strong> : <em>float</em><ul>
-<li>The size of one edge of the jet image in the rapidity-azimuth
-plane.</li>
-</ul>
-</li>
-<li><strong>nb_chan</strong> : {<code>1</code>, <code>2</code>}<ul>
-<li>The number of channels in the jet image. If <code>1</code>, then only a
-<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel is constructed (grayscale). If <code>2</code>, then both a 
-<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel and a count channel are formed (color).</li>
-</ul>
-</li>
-<li><strong>norm</strong> : <em>bool</em><ul>
-<li>Whether to normalize the <span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> pixels to sum to <code>1</code>.</li>
-</ul>
-</li>
-<li><strong>charged_counts_only</strong> : <em>bool</em><ul>
-<li>If making a count channel, whether to only include charged 
-particles. Requires that <code>pid</code> information be given.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>3-d numpy.ndarray</em><ul>
-<li>The jet image as a <code>(npix, npix, nb_chan)</code> array. Note that the order
-of the channels changed in version 1.0.3.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="standardize">standardize</h3>
-<pre><code class="language-python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
-</code></pre>
-<p>Normalizes each argument by the standard deviation of the pixels in 
-args[0]. The expected use case would be <code>standardize(X_train, X_val, 
-X_test)</code>.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
-<li>An arbitrary number of datasets, each required to have
-the same shape in all but the first axis.</li>
-</ul>
-</li>
-<li><strong>channels</strong> : <em>int</em><ul>
-<li>A list of which channels (assumed to be the last axis)
-to standardize. <code>None</code> is interpretted to mean every channel.</li>
-</ul>
-</li>
-<li><strong>copy</strong> : <em>bool</em><ul>
-<li>Whether or not to copy the input arrays before modifying them.</li>
-</ul>
-</li>
-<li><strong>reg</strong> : <em>float</em><ul>
-<li>Small parameter used to avoid dividing by zero. It's important
-that this be kept consistent for images used with a given model.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>list</em> <ul>
-<li>A list of the now-standardized arguments.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="zero_center">zero_center</h3>
-<pre><code class="language-python">energyflow.utils.zero_center(args, kwargs)
-</code></pre>
-<p>Subtracts the mean of arg[0] from the arguments. The expected 
-use case would be <code>standardize(X_train, X_val, X_test)</code>.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>*args</strong> : arbitrary <em>numpy.ndarray</em> datasets<ul>
-<li>An arbitrary number of datasets, each required to have
-the same shape in all but the first axis.</li>
-</ul>
-</li>
-<li><strong>channels</strong> : <em>int</em><ul>
-<li>A list of which channels (assumed to be the last axis)
-to zero center. <code>None</code> is interpretted to mean every channel.</li>
-</ul>
-</li>
-<li><strong>copy</strong> : <em>bool</em><ul>
-<li>Whether or not to copy the input arrays before modifying them.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>list</em> <ul>
-<li>A list of the zero-centered arguments.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h2 id="fastjet-tools">FastJet Tools</h2>
-<p>The <a href="http://fastjet.fr/">FastJet package</a> provides, among other things, fast
-jet clustering utilities. It is written in C++ and includes a Python interface
-that is easily installed at compile time by passing the <code>--enable-pyext</code> flag
-to <code>configure</code>. If you use this module for published research, please <a href="http://fastjet.fr/about.html">cite
-FastJet appropriately</a>.</p>
-<p>The core of EnergyFlow does not rely on FastJet, and hence it is not required
-to be installed, but the following utilities are available assuming that
-<code>import fastjet</code> succeeds in your Python environment (if not, no warnings or
-errors will be issued but this module will not be usable).</p>
-<hr />
-<h3 id="pjs_from_ptyphims">pjs_from_ptyphims</h3>
-<pre><code class="language-python">energyflow.pjs_from_ptyphims(ptyphims)
-</code></pre>
-<p>Converts particles in hadronic coordinates to FastJet PseudoJets.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>ptyphims</strong> : <em>2d numpy.ndarray</em><ul>
-<li>An array of particles in hadronic coordinates. The mass is
-optional and will be taken to be zero if not present.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
-<li>A list of PseudoJets corresponding to the particles in the given
-array.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="pjs_from_p4s">pjs_from_p4s</h3>
-<pre><code class="language-python">energyflow.pjs_from_p4s(p4s)
-</code></pre>
-<p>Converts particles in Cartesian coordinates to FastJet PseudoJets.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>p4s</strong> : <em>2d numpy.ndarray</em><ul>
-<li>An array of particles in Cartesian coordinates, <code>[E, px, py, pz]</code>.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
-<li>A list of PseudoJets corresponding to the particles in the given
-array.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="ptyphims_from_pjs">ptyphims_from_pjs</h3>
-<pre><code class="language-python">energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
-</code></pre>
-<p>Extracts hadronic four-vectors from FastJet PseudoJets.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
-<li>An iterable of PseudoJets.</li>
-</ul>
-</li>
-<li><strong>phi_ref</strong> : <em>float</em> or <code>None</code><ul>
-<li>The reference phi value to use for phi fixing. If <code>None</code>, then no
-phi fixing is performed.</li>
-</ul>
-</li>
-<li><strong>mass</strong> : <em>bool</em><ul>
-<li>Whether or not to include the mass in the extracted four-vectors.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>An array of four-vectors corresponding to the given PseudoJets as
-<code>[pT, y, phi, m]</code>, where the mass is optional.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="p4s_from_pjs">p4s_from_pjs</h3>
-<pre><code class="language-python">energyflow.p4s_from_pjs(pjs)
-</code></pre>
-<p>Extracts Cartesian four-vectors from FastJet PseudoJets.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
-<li>An iterable of PseudoJets.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>numpy.ndarray</em><ul>
-<li>An array of four-vectors corresponding to the given PseudoJets as
-<code>[E, px, py, pz]</code>.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="cluster">cluster</h3>
-<pre><code class="language-python">energyflow.cluster(pjs, algorithm='ca', R=1000.0)
-</code></pre>
-<p>Clusters a list of PseudoJets according to a specified jet
-algorithm and jet radius.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>pjs</strong> : <em>list</em> of <em>fastjet.PseudoJet</em><ul>
-<li>A list of Pseudojets representing particles or other kinematic
-objects that are to be clustered into jets.</li>
-</ul>
-</li>
-<li><strong>algorithm</strong> : {'kt', 'antikt', 'ca', 'cambridge', 'cambridge_aachen'}<ul>
-<li>The jet algorithm to use during the clustering. Note that the
-last three options all refer to the same strategy and are provided
-because they are all used by the FastJet Python package.</li>
-</ul>
-</li>
-<li><strong>R</strong> : <em>float</em><ul>
-<li>The jet radius. The default value corresponds to
-<code>max_allowable_R</code> as defined by the FastJet python package.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>list</em> of <em>fastjet.PseudoJet</em><ul>
-<li>A list of PseudoJets corresponding to the clustered jets.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="softdrop">softdrop</h3>
-<pre><code class="language-python">energyflow.softdrop(jet, zcut=0.1, beta=0, R=1.0)
-</code></pre>
-<p>Implements the SoftDrop grooming algorithm on a jet that has been
-found via clustering. Specifically, given a jet, it is recursively
-declustered and the softer branch removed until the SoftDrop condition
-is satisfied:</p>
-<div>
-<div class="MathJax_Preview">
-\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} &gt; z_{\rm cut}
-\left(\frac{\Delta R_{12}}{R}\right)^\beta
-</div>
-<script type="math/tex; mode=display">
-\frac{\min(p_{T,1},p_{T,2})}{p_{T,1}+p_{T,2}} > z_{\rm cut}
-\left(\frac{\Delta R_{12}}{R}\right)^\beta
-</script>
-</div>
-<p>where <span><span class="MathJax_Preview">1</span><script type="math/tex">1</script></span> and <span><span class="MathJax_Preview">2</span><script type="math/tex">2</script></span> refer to the two PseudoJets declustered at this stage.
-See the <a href="https://arxiv.org/abs/1402.2657">SoftDrop paper</a> for a
-complete description of SoftDrop. If you use this function for your
-research, please cite <a href="https://doi.org/10.1007/
-JHEP05(2014)146">1402.2657</a>.</p>
-<p><strong>Arguments</strong></p>
-<ul>
-<li><strong>jet</strong> : <em>fastjet.PseudoJet</em><ul>
-<li>A FastJet PseudoJet that has been obtained from a suitable
-clustering (typically Cambridge/Aachen).</li>
-</ul>
-</li>
-<li><strong>zcut</strong> : <em>float</em><ul>
-<li>The <span><span class="MathJax_Preview">z_{\rm cut}</span><script type="math/tex">z_{\rm cut}</script></span> parameter of SoftDrop. Should be between <code>0</code>
-and <code>1</code>.</li>
-</ul>
-</li>
-<li><strong>beta</strong> : <em>int</em> or <em>float</em><ul>
-<li>The <span><span class="MathJax_Preview">\beta</span><script type="math/tex">\beta</script></span> parameter of SoftDrop.</li>
-</ul>
-</li>
-<li><strong>R</strong> : <em>float</em><ul>
-<li>The jet radius to use for the grooming. Only relevant if <code>beta!=0</code>.</li>
-</ul>
-</li>
-</ul>
-<p><strong>Returns</strong></p>
-<ul>
-<li><em>fastjet.PseudoJet</em><ul>
-<li>The groomed jet. Note that it will not necessarily have all of
-the same associated structure as the original jet, but it is
-suitable for obtaining kinematic quantities, e.g. <a href="/docs/
-obs/#zg_from_pj"><span><span class="MathJax_Preview">z_g</span><script type="math/tex">z_g</script></span></a>.</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h2 id="random-events">Random Events</h2>
+<h2 id="random-utils">Random Utils</h2>
 <p>Functions to generate random sets of four-vectors. Includes an implementation
 of the <a href="https://doi.org/10.1016/0010-4655(86)90119-0">RAMBO</a> algorithm for
 sampling uniform M-body massless phase space. Also includes other functions for
@@ -1444,6 +1580,12 @@ dropped.</li>
 </li>
 </ul>
 <hr />
+<h3 id="random">random</h3>
+<pre><code class="language-python">energyflow.random
+</code></pre>
+<p>In NumPy versions &gt;= 1.16, this object is obtained from
+<code>numpy.random.default_rng()</code>. Otherwise, it's equivalent to <code>numpy.random</code>.</p>
+<hr />
               
             </div>
           </div>
@@ -1462,7 +1604,7 @@ dropped.</li>
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors.</p>
     
   </div>
 

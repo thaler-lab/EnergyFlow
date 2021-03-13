@@ -28,7 +28,7 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
-from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath
+from energyflow.utils.data_utils import _get_filepath
 
 __all__ = ['load']
 
@@ -41,12 +41,11 @@ def load(num_data=-1, cache_dir=None):
 
     - **num_data** : _int_
         - The number of events to return. A value of `-1` means read in all events.
-    - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
-        `'datasets'` is automatically appended to the end of this path. If
-        `None`, the default path of `~/.energyflow` is used, unless the
-        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-        is used instead.
+    - **cache_dir** : _str_ or `None`
+        - The directory where to store/look for the files. If `None`, the
+        [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+        used to get the default path. Note that in either case, `'datasets'` is
+        appended to the end of the path.
 
     **Returns**
 
@@ -57,7 +56,7 @@ def load(num_data=-1, cache_dir=None):
     fpath = _get_filepath('QG_nsubs.npz', 
                       url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
                       file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
-                      cache_dir=_determine_cache_dir(cache_dir))
+                      cache_dir=cache_dir)
 
     with np.load(fpath) as f:
         X, y = f['X'], f['y']

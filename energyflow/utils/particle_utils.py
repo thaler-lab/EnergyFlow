@@ -1,6 +1,4 @@
-r"""# Utilities
-
-## Particle Tools
+r"""## Particle Utils
 
 Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, `[e,px,py,pz]` (energy, momentum in `x` direction,
@@ -69,13 +67,16 @@ __all__ = [
     'ms_from_p4s',
     'ms_from_ps',
 
+    # p4s_from functions
+    'p4s_from_ptyphims',
+    'p4s_from_ptyphipids',
+
     # eta/y conversions
     'etas_from_pts_ys_ms',
     'ys_from_pts_etas_ms',
 
-    # p4s_from functions
-    'p4s_from_ptyphims',
-    'p4s_from_ptyphipids',
+    # phi fixing functions
+    'phi_fix',
 
     # combination functions
     'sum_ptyphims',
@@ -98,7 +99,6 @@ __all__ = [
     'charged_pids',
 
     # other functions
-    'phi_fix',
     'flat_metric',
 ]
 
@@ -809,22 +809,35 @@ def _ensure_particle_properties():
     CHARGED_PIDS = frozenset(pdgid for pdgid,charge in PARTICLE_CHARGES.items() if charge != 0.)
 
 def particle_properties():
-    """"""
+    """Accesses the global dictionary of particle properties. The keys are
+    non-negative PDGIDs and the values are tuples of properties. Currently,
+    each tuple has two values, the first is the charge in fundamental units
+    and the second is the mass in GeV.
+    """
+
     _ensure_particle_properties()
     return PARTICLE_PROPERTIES
 
 def particle_masses():
-    """"""
+    """Accesses the global dictionary of particle masses. The keys are
+    non-negative PDGIDs and the values are the particle masses in GeV.
+    """
+
     _ensure_particle_properties()
     return PARTICLE_MASSES
 
 def particle_charges():
-    """"""
+    """Accesses the global dictionary of particle masses. The keys are
+    non-negative PDGIDs and the values are the particle charged in fundamental
+    units.
+    """
+
     _ensure_particle_properties()
     return PARTICLE_CHARGES
 
 def charged_pids():
-    """"""
+    """Accesses the global set of PDGID values that have a non-zero charge."""
+
     _ensure_particle_properties()
     return CHARGED_PIDS
 

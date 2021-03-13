@@ -98,14 +98,13 @@ validated to ensure dataset fidelity.
     number. Note that since ints and floats are treated different, a value
     of `1` loads one file whereas `1.0` loads the entire dataset. A value
     of `-1` also loads the entire dataset.
-- **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
-    `'datasets'` is automatically appended to the end of this path, as well
-    as the collection name. For example, the default is to download/look
-    for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`. If
-    `None`, the default path of `~/.energyflow` is used, unless the
-    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-    is used instead.
+- **cache_dir** : _str_ or `None`
+    - The directory where to store/look for the files. If `None`, the
+    [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+    used to get the default path. Note that in either case, `'datasets'` is
+    appended to the end of the path, as well as the collection name. For
+    example, the default is to download/look for files in the directory
+    `'~/.energyflow/datasets/CMS2011AJets'`.
 - **collection** : _str_
     - Name of the collection of datasets to consider. Currently the only
     collection is `'CMS2011AJets'`, though more may be added in the future.
@@ -619,12 +618,11 @@ performed.
 - **pad**: _bool_
     - Whether to pad the particles with zeros in order to form contiguous
     arrays.
-- **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
-    `'datasets'` is automatically appended to the end of this path. If
-    `None`, the default path of `~/.energyflow` is used, unless the
-    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-    is used instead.
+- **cache_dir** : _str_ or `None`
+    - The directory where to store/look for the files. If `None`, the
+    [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+    used to get the default path. Note that in either case, `'datasets'` is
+    appended to the end of the path.
 - **source**: {`'dropbox'`, `'zenodo'`}
     - Which location to obtain the files from.
 - **which**: {`'gen'`, `'sim'`, `'all'`}
@@ -732,12 +730,11 @@ later use. Basic checksums are performed.
     this flag does not mask out these jets but rather accesses an entirely
     different dataset. The datasets with and without b and c quarks should
     not be combined.
-- **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
-    `'datasets'` is automatically appended to the end of this path. If
-    `None`, the default path of `~/.energyflow` is used, unless the
-    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-    is used instead.
+- **cache_dir** : _str_ or `None`
+    - The directory where to store/look for the files. If `None`, the
+    [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+    used to get the default path. Note that in either case, `'datasets'` is
+    appended to the end of the path.
 - **dtype** : _str_ or _numpy.dtype_
     - The dtype of the resulting NumPy arrays. For ML applications it may be
     preferred to use 32-bit floats.
@@ -783,12 +780,11 @@ prior to redownloading.
 
 - **num_data** : _int_
     - The number of events to return. A value of `-1` means read in all events.
-- **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
-    `'datasets'` is automatically appended to the end of this path. If
-    `None`, the default path of `~/.energyflow` is used, unless the
-    environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-    is used instead.
+- **cache_dir** : _str_ or `None`
+    - The directory where to store/look for the files. If `None`, the
+    [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+    used to get the default path. Note that in either case, `'datasets'` is
+    appended to the end of the path.
 
 **Returns**
 

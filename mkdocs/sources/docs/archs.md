@@ -697,32 +697,10 @@ See [`ArchBase`](#archbase) for how to pass in hyperparameters.
 
 ----
 
-## Utilities 
+## Architecture Utils
 
-Utilities for EnergyFlow architectures, split out from the utils submodule
-because these import tensorflow, which the main package avoids doing.
-
-----
-
-### convert_dtype
-
-```python
-energyflow.archs.convert_dtype(X, dtype)
-```
-
-
-
-
-----
-
-### pad_events
-
-```python
-energyflow.archs.pad_events(X, pad_val=0.0, max_len=None)
-```
-
-
-
+Utilities for EnergyFlow architectures. These are available in both the
+`energyflow.archs` and `energyflow.utils` submodules.
 
 ----
 

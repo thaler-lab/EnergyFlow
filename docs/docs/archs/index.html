@@ -155,12 +155,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#linearclassifier">LinearClassifier</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#utilities">Utilities</a>
+    <li class="toctree-l2"><a class="reference internal" href="#architecture-utils">Architecture Utils</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#convert_dtype">convert_dtype</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pad_events">pad_events</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#pointclouddataset">PointCloudDataset</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#weightedpointclouddataset">WeightedPointCloudDataset</a>
@@ -931,17 +927,9 @@ convergence parameter.</li>
 </li>
 </ul>
 <hr />
-<h2 id="utilities">Utilities</h2>
-<p>Utilities for EnergyFlow architectures, split out from the utils submodule
-because these import tensorflow, which the main package avoids doing.</p>
-<hr />
-<h3 id="convert_dtype">convert_dtype</h3>
-<pre><code class="language-python">energyflow.archs.convert_dtype(X, dtype)
-</code></pre>
-<hr />
-<h3 id="pad_events">pad_events</h3>
-<pre><code class="language-python">energyflow.archs.pad_events(X, pad_val=0.0, max_len=None)
-</code></pre>
+<h2 id="architecture-utils">Architecture Utils</h2>
+<p>Utilities for EnergyFlow architectures. These are available in both the
+<code>energyflow.archs</code> and <code>energyflow.utils</code> submodules.</p>
 <hr />
 <h3 id="pointclouddataset">PointCloudDataset</h3>
 <pre><code class="language-python">energyflow.archs.PointCloudDataset(data_args, batch_size=100, dtype='float32', shuffle=True, seed=None, infinite=False, pad_val=0.0, _wrap=False)
@@ -991,7 +979,7 @@ because these import tensorflow, which the main package avoids doing.</p>
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors.</p>
     
   </div>
 

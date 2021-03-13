@@ -1,7 +1,7 @@
-"""## Utilities 
+"""## Architecture Utils
 
-Utilities for EnergyFlow architectures, split out from the utils submodule
-because these import tensorflow, which the main package avoids doing.
+Utilities for EnergyFlow architectures. These are available in both the
+`energyflow.archs` and `energyflow.utils` submodules.
 """
 
 #           _____   _____ _    _         _    _ _______ _____ _       _____
@@ -21,13 +21,10 @@ import warnings
 import numpy as np
 import six
 
+from energyflow.utils.data_utils import convert_dtype, pad_events
 from energyflow.utils.random_utils import random
 
 __all__ = [
-
-    # helper functions
-    'convert_dtype',
-    'pad_events',
 
     # classes representing point cloud datasets
     'PointCloudDataset',
@@ -40,41 +37,6 @@ __all__ = [
     'ConcatenatePairer',
     'ParticleDistancePairer'
 ]
-
-def convert_dtype(X, dtype):
-    """"""
-
-    # if dtype is None, do nothing
-    if dtype is None:
-        return X
-
-    # check for proper argument type
-    if not isinstance(X, np.ndarray):
-        raise TypeError('argument must be a numpy ndarray')
-
-    # object arrays are special
-    if X.dtype == 'O':
-        return np.asarray([convert_dtype(x, dtype) for x in X], dtype='O')
-    else:
-        return X.astype(dtype, copy=False)
-
-def pad_events(X, pad_val=0., max_len=None):
-    """"""
-
-    if max_len is None:
-        max_len = max([len(x) for x in X])
-
-    output_shape = (len(X), max_len, X[0].shape[1])
-    if pad_val == 0.:
-        output = np.zeros(output_shape, dtype=X[0].dtype)
-    else:
-        output = np.full(output_shape, pad_val, dtype=X[0].dtype)
-
-    # set events in padded array
-    for i, x in enumerate(X):
-        output[i,:len(x)] = x
-
-    return output
 
 class PointCloudDataset(object):
     """"""
@@ -538,8 +500,8 @@ class WeightedPointCloudDataset(PointCloudDataset):
         super().__init__(*args, **kwargs)
         self._assume_padded = True
 
-    def _init(self, state=None):
-        super()._init(state)
+    def _init(self, state=None, **kwargs):
+        super()._init(state, **kwargs)
 
         # duplicate batch dtypes
         self._batch_dtypes = [bdtype for bdtype in self._batch_dtypes for i in range(2)]
@@ -595,8 +557,8 @@ class PairedPointCloudDataset(PointCloudDataset):
         kwargs.update({'pairing': self.pairing})
         return kwargs
 
-    def _init(self, state=None):
-        super()._init(state)
+    def _init(self, state=None, **kwargs):
+        super()._init(state, **kwargs)
 
         self._paired_args_need_padding = len(self.data_args)*[False]
         for i in range(len(self.data_args)):
@@ -623,9 +585,14 @@ class PairedPointCloudDataset(PointCloudDataset):
 
 class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointCloudDataset):
 
-    # update shape for features only, not weights
     def _update_shape(self, i):
+
+        # features are located at 2*i+1, update them via update_shape
         super()._update_shape(2*i + 1)
+
+        # if explicit number of particles is known, need to square it
+        if self._batch_shapes[2*i][1] is not None:
+            self._batch_shapes[2*i] = (self._batch_shapes[2*i][0], self._batch_shapes[2*i][1]**2)
 
     def batch_callback(self, args):
 
@@ -677,10 +644,14 @@ class FeaturePairerBase(six.with_metaclass(ABCMeta, object)):
         return self
 
     def __repr__(self):
-        return self.__class__.__name__
+        return self.__class__.__name__ + '\n'
 
     def _update_shape(self, batch_shapes, i):
-        batch_shapes[i] = batch_shapes[i][:2] + (self.get_new_nfeatures(batch_shapes, i),)
+        new_nf = self.get_new_nfeatures(batch_shapes, i)
+        if batch_shapes[i][1] is not None:
+            batch_shapes[i] = (batch_shapes[i][0], batch_shapes[i][1]**2, new_nf)
+        else:
+            batch_shapes[i] = batch_shapes[i][:2] + (new_nf,)
 
     @abstractmethod
     def get_new_nfeatures(self, batch_shapes, i):

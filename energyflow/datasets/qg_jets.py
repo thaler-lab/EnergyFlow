@@ -66,7 +66,7 @@ import warnings
 
 import numpy as np
 
-from energyflow.utils.data_utils import (_determine_cache_dir, _get_filepath, _pad_events_axis1)
+from energyflow.utils.data_utils import _get_filepath, _pad_events_axis1
 from energyflow.utils.generic_utils import EF_DATA_DIR, DROPBOX_URL_PATTERN, ZENODO_URL_PATTERN
 
 __all__ = ['load']
@@ -103,12 +103,11 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia', source='zenodo',
         this flag does not mask out these jets but rather accesses an entirely
         different dataset. The datasets with and without b and c quarks should
         not be combined.
-    - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
-        `'datasets'` is automatically appended to the end of this path. If
-        `None`, the default path of `~/.energyflow` is used, unless the
-        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-        is used instead.
+    - **cache_dir** : _str_ or `None`
+        - The directory where to store/look for the files. If `None`, the
+        [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+        used to get the default path. Note that in either case, `'datasets'` is
+        appended to the end of the path.
     - **dtype** : _str_ or _numpy.dtype_
         - The dtype of the resulting NumPy arrays. For ML applications it may be
         preferred to use 32-bit floats.
@@ -130,9 +129,6 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia', source='zenodo',
     # check for valid options
     if generator not in GENERATORS:
         raise ValueError("'generator' must be in " + str(GENERATORS))
-
-    # determine cache_dir
-    cache_dir = _determine_cache_dir(cache_dir)
 
     # get number of files we need
     num_files = int(np.ceil(num_data/NUM_PER_FILE)) if num_data > -1 else MAX_NUM_FILES

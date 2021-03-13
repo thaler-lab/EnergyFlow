@@ -1,4 +1,4 @@
-"""## FastJet Tools
+"""## FastJet Utils
 
 The [FastJet package](http://fastjet.fr/) provides, among other things, fast
 jet clustering utilities. It is written in C++ and includes a Python interface
@@ -47,6 +47,7 @@ if fastjet:
         'pjs_from_p4s',
         'ptyphims_from_pjs',
         'p4s_from_pjs',
+        'jet_def',
         'cluster',
         'softdrop',
     ]
@@ -58,13 +59,12 @@ if fastjet:
 
         - **ptyphims** : _2d numpy.ndarray_
             - An array of particles in hadronic coordinates. The mass is
-            optional and will be taken to be zero if not present.
+            optional and will set to zero if not present.
 
         **Returns**
 
         - _list_ of _fastjet.PseudoJet_
-            - A list of PseudoJets corresponding to the particles in the given
-            array.
+            - A list of PseudoJets corresponding to the input particles.
         """
 
         if ptyphims.shape[1] >= 4:
@@ -83,8 +83,7 @@ if fastjet:
         **Returns**
 
         - _list_ of _fastjet.PseudoJet_
-            - A list of PseudoJets corresponding to the particles in the given
-            array.
+            - A list of PseudoJets corresponding to the input particles.
         """
 
         return [fastjet.PseudoJet(p4[1], p4[2], p4[3], p4[0]) for p4 in p4s]
@@ -136,41 +135,91 @@ if fastjet:
 
         return np.asarray([[pj.E(), pj.px(), pj.py(), pj.pz()] for pj in pjs])
 
-    def jet_def(algorithm=fastjet.cambridge_algorithm, R=fastjet.JetDefinition.max_allowable_R, recomb=fastjet.E_scheme):
-        """"""
+    JET_ALGORITHMS = {
+        'kt': fastjet.kt_algorithm,
+        'eekt': fastjet.ee_kt_algorithm,
+        'akt': fastjet.antikt_algorithm,
+        'antikt': fastjet.antikt_algorithm,
+        'ca': fastjet.cambridge_algorithm,
+        'cambridge': fastjet.cambridge_algorithm,
+        'cambridge_aachen': fastjet.cambridge_algorithm
+    }
+
+    RECOMBINATION_SCHEMES = {
+        'escheme': fastjet.E_scheme,
+        'etscheme': fastjet.Et_scheme,
+        'et2scheme': fastjet.Et2_scheme,
+        'ptscheme': fastjet.pt_scheme,
+        'pt2scheme': fastjet.pt2_scheme,
+        'wtaptscheme': fastjet.WTA_pt_scheme
+    }
+
+    def jet_def(algorithm=fastjet.cambridge_algorithm,
+                R=fastjet.JetDefinition.max_allowable_R,
+                recomb=fastjet.E_scheme):
+        """Creates a fastjet JetDefinition from the specified arguments.
+
+        **Arguments**
+
+        - **algorithm** : _str_ or _int_
+            - A string such as `'kt'`, `'akt'`, `'antikt'`, `'ca'`, 
+            `'cambridge'`, or `'cambridge_aachen'`; or an integer corresponding
+            to a fastjet.JetAlgorithm value.
+        - **R** : _float_
+            - The jet radius. The default value corresponds to
+            `max_allowable_R` as defined by the FastJet python package.
+        - **recomb** : _int_
+            - An integer corresponding to a fastjet RecombinationScheme.
+
+        **Returns**
+
+        - _fastjet.JetDefinition_
+            - A JetDefinition instance corresponding to the given arguments.
+        """
 
         if isinstance(algorithm, six.string_types):
-            algorithm_l = algorithm.lower()
-            if algorithm_l  == 'kt':
-                algorithm = fastjet.kt_algorithm
-            elif algorithm_l == 'antikt' or algorithm_l == 'akt':
-                algorithm = fastjet.antikt_algorithm
-            elif algorithm_l in {'ca', 'cambridge', 'cambridge_aachen'}:
-                algorithm = fastjet.cambridge_algorithm
-            else:
+            try:
+                algorithm = JET_ALGORITHMS[algorithm.lower()]
+            except KeyError:
                 raise ValueError("algorithm '{}' not understood".format(algorithm))
+
+        if isinstance(recomb, six.string_types):
+            try:
+                recomb = RECOMBINATION_SCHEMES[recomb.lower()]
+            except KeyError:
+                raise ValueError("recombination scheme '{}' not understood".format(recomb))
 
         return fastjet.JetDefinition(algorithm, float(R), recomb)
 
-    def cluster(pjs, N=None, ptmin=0., dcut=None, **kwargs):
-        """Clusters a list of PseudoJets according to a specified jet
-        algorithm and jet radius.
+    def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., **kwargs):
+        """Clusters an iterable of PseudoJets. Uses a jet definition that can
+        either be provided directly or specified using the same keywords as the
+        `jet_def` function. The jets returned can either be includive, the 
+        default, or exclusive according to either a maximum number of subjets
+        or a particular `dcut`.
 
         **Arguments**
 
         - **pjs** : _list_ of _fastjet.PseudoJet_
             - A list of Pseudojets representing particles or other kinematic
             objects that are to be clustered into jets.
-        - **algorithm** : {'kt', 'antikt', 'ca', 'cambridge', 'cambridge_aachen'}
-            - The jet algorithm to use during the clustering. Note that the
-            last three options all refer to the same strategy and are provided
-            because they are all used by the FastJet Python package.
-        - **R** : _float_
-            - The jet radius. The default value corresponds to
-            `max_allowable_R` as defined by the FastJet python package.
+        - **jetdef** : _fastjet.JetDefinition_ or `None`
+            - The `JetDefinition` used for the clustering. If `None`, the
+            keyword arguments are passed on to `jet_def` to create a
+            `JetDefinition`.
         - **N** : _int_ or `None`
-            - If `None`, then the inclusive jets will be returned. If `N` is a
-            _float_, then it is treated as 
+            - If not `None`, then the `exclusive_jets_up_to` method of the
+            `ClusterSequence` class is used to get up to `N` exclusive jets.
+        - **dcut** : _float_ or `None`
+            - If not `None`, then the `exclusive_jets` method of the
+            `ClusterSequence` class is used to get exclusive jets with the
+            provided `dcut` parameter.
+        - **ptmin** : _float_
+            - If both `N` and `dcut` are `None`, then inclusive jets are
+            returned using this value as the minimum transverse momentum value.
+        - ***kwargs** : keyword arguments
+            - If `jetdef` is `None`, then these keyword arguments are passed on
+            to the `jet_def` function.
 
         **Returns**
 
@@ -178,19 +227,22 @@ if fastjet:
             - A list of PseudoJets corresponding to the clustered jets.
         """
 
-        cs = fastjet.ClusterSequence(pjs, jet_def(**kwargs))
+        if jetdef is None:
+            jetdef = jet_def(**kwargs)
+
+        cs = fastjet.ClusterSequence(pjs, jetdef)
         cs.thisown = False
 
-        # not specify N means we want inclusive jets
-        if N is None:
-            return cs.inclusive_jets(ptmin)
-
-        # we want exlusive_jets_up_to N
-        if dcut is None:
+        # specified N means we want exclusive_jets_up_tp
+        if N is not None:
             return cs.exclusive_jets_up_to(N)
 
-        # we want exclusive jets on dcut
-        return cs.exclusive_jets(dcut)
+        # specified dcut means we want exclusive jets
+        if dcut is not None:
+            cs.exclusive_jets(float(dcut))
+
+        # inclusive jets by default
+        return cs.inclusive_jets(ptmin)
 
     def softdrop(jet, zcut=0.1, beta=0, R=1.0):
         r"""Implements the SoftDrop grooming algorithm on a jet that has been

@@ -289,14 +289,13 @@ of <code>1</code> loads one file whereas <code>1.0</code> loads the entire datas
 of <code>-1</code> also loads the entire dataset.</li>
 </ul>
 </li>
-<li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
-<code>'datasets'</code> is automatically appended to the end of this path, as well
-as the collection name. For example, the default is to download/look
-for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>. If
-<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
-environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
-is used instead.</li>
+<li><strong>cache_dir</strong> : <em>str</em> or <code>None</code><ul>
+<li>The directory where to store/look for the files. If <code>None</code>, the
+<a href="../utils/#determine_cache_dir"><code>determine_cache_dir</code></a> function will be
+used to get the default path. Note that in either case, <code>'datasets'</code> is
+appended to the end of the path, as well as the collection name. For
+example, the default is to download/look for files in the directory
+<code>'~/.energyflow/datasets/CMS2011AJets'</code>.</li>
 </ul>
 </li>
 <li><strong>collection</strong> : <em>str</em><ul>
@@ -835,12 +834,11 @@ available events.</li>
 arrays.</li>
 </ul>
 </li>
-<li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
-<code>'datasets'</code> is automatically appended to the end of this path. If
-<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
-environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
-is used instead.</li>
+<li><strong>cache_dir</strong> : <em>str</em> or <code>None</code><ul>
+<li>The directory where to store/look for the files. If <code>None</code>, the
+<a href="../utils/#determine_cache_dir"><code>determine_cache_dir</code></a> function will be
+used to get the default path. Note that in either case, <code>'datasets'</code> is
+appended to the end of the path.</li>
 </ul>
 </li>
 <li><strong>source</strong>: {<code>'dropbox'</code>, <code>'zenodo'</code>}<ul>
@@ -957,12 +955,11 @@ different dataset. The datasets with and without b and c quarks should
 not be combined.</li>
 </ul>
 </li>
-<li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
-<code>'datasets'</code> is automatically appended to the end of this path. If
-<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
-environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
-is used instead.</li>
+<li><strong>cache_dir</strong> : <em>str</em> or <code>None</code><ul>
+<li>The directory where to store/look for the files. If <code>None</code>, the
+<a href="../utils/#determine_cache_dir"><code>determine_cache_dir</code></a> function will be
+used to get the default path. Note that in either case, <code>'datasets'</code> is
+appended to the end of the path.</li>
 </ul>
 </li>
 <li><strong>dtype</strong> : <em>str</em> or <em>numpy.dtype</em><ul>
@@ -1011,12 +1008,11 @@ prior to redownloading.</p>
 <li>The number of events to return. A value of <code>-1</code> means read in all events.</li>
 </ul>
 </li>
-<li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
-<code>'datasets'</code> is automatically appended to the end of this path. If
-<code>None</code>, the default path of <code>~/.energyflow</code> is used, unless the
-environment variable <code>ENERGYFLOW_CACHE_DIR</code> is set in which case that
-is used instead.</li>
+<li><strong>cache_dir</strong> : <em>str</em> or <code>None</code><ul>
+<li>The directory where to store/look for the files. If <code>None</code>, the
+<a href="../utils/#determine_cache_dir"><code>determine_cache_dir</code></a> function will be
+used to get the default path. Note that in either case, <code>'datasets'</code> is
+appended to the end of the path.</li>
 </ul>
 </li>
 </ul>
@@ -1048,7 +1044,7 @@ is used instead.</li>
   <div role="contentinfo">
     <!-- Copyright etc -->
     
-      <p>Copyright (C) 2017-2021 EnergyFlow Authors</p>
+      <p>Copyright (C) 2017-2021 EnergyFlow Authors.</p>
     
   </div>
 

@@ -1,4 +1,4 @@
-"""## Image Tools
+"""## Image Utils
 
 Functions for dealing with image representations of events. These are 
 not importable from the top level `energyflow` module, but must 

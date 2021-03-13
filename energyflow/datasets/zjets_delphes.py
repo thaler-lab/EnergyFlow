@@ -80,7 +80,7 @@ import warnings
 
 import numpy as np
 
-from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath, _pad_events_axis1
+from energyflow.utils.data_utils import _get_filepath, _pad_events_axis1
 from energyflow.utils.generic_utils import EF_DATA_DIR, DROPBOX_URL_PATTERN, ZENODO_URL_PATTERN
 
 __all__ = ['load']
@@ -134,12 +134,11 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
     - **pad**: _bool_
         - Whether to pad the particles with zeros in order to form contiguous
         arrays.
-    - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
-        `'datasets'` is automatically appended to the end of this path. If
-        `None`, the default path of `~/.energyflow` is used, unless the
-        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-        is used instead.
+    - **cache_dir** : _str_ or `None`
+        - The directory where to store/look for the files. If `None`, the
+        [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+        used to get the default path. Note that in either case, `'datasets'` is
+        appended to the end of the path.
     - **source**: {`'dropbox'`, `'zenodo'`}
         - Which location to obtain the files from.
     - **which**: {`'gen'`, `'sim'`, `'all'`}
@@ -168,9 +167,6 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
         global ZJD_INFO
         with open(os.path.join(EF_DATA_DIR, 'zjets_delphes.json'), 'r') as f:
             ZJD_INFO = json.load(f)
-
-    # determine cache_dir
-    cache_dir = _determine_cache_dir(cache_dir)
 
     # check that options are valid
     dataset_low = dataset.lower()

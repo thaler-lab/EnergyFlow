@@ -95,8 +95,7 @@ import h5py
 import numpy as np
 import six
 
-from energyflow.utils.arch_utils import convert_dtype
-from energyflow.utils.data_utils import _determine_cache_dir, _get_filepath
+from energyflow.utils.data_utils import convert_dtype, _get_filepath
 from energyflow.utils.generic_utils import *
 from energyflow.utils.particle_utils import ischrgd
 
@@ -163,14 +162,13 @@ def load(*args, **kwargs):
         number. Note that since ints and floats are treated different, a value
         of `1` loads one file whereas `1.0` loads the entire dataset. A value
         of `-1` also loads the entire dataset.
-    - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
-        `'datasets'` is automatically appended to the end of this path, as well
-        as the collection name. For example, the default is to download/look
-        for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`. If
-        `None`, the default path of `~/.energyflow` is used, unless the
-        environment variable `ENERGYFLOW_CACHE_DIR` is set in which case that
-        is used instead.
+    - **cache_dir** : _str_ or `None`
+        - The directory where to store/look for the files. If `None`, the
+        [`determine_cache_dir`](../utils/#determine_cache_dir) function will be
+        used to get the default path. Note that in either case, `'datasets'` is
+        appended to the end of the path, as well as the collection name. For
+        example, the default is to download/look for files in the directory
+        `'~/.energyflow/datasets/CMS2011AJets'`.
     - **collection** : _str_
         - Name of the collection of datasets to consider. Currently the only
         collection is `'CMS2011AJets'`, though more may be added in the future.
@@ -226,7 +224,7 @@ def load(*args, **kwargs):
 
     # store arguments
     amount = kwargs['amount']
-    cache_dir = _determine_cache_dir(kwargs['cache_dir'])
+    cache_dir = kwargs['cache_dir']
     validate_files = kwargs['validate_files']
     verbose = kwargs['verbose']
     moddset_kwargs = {kw: kwargs[kw] for kw in ['store_gens', 'store_pfcs', 'float_dtype']}
