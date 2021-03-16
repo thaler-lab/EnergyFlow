@@ -53,7 +53,7 @@ see the [FAQs](/faqs/#how-do-i-cite-the-energyflow-package).
 # | |  | | |  __              | | |__     | | | (___
 # | |  | | | |_ |         _   | |  __|    | |  \___ \
 # | |__| | |__| | ______ | |__| | |____   | |  ____) |
-#  \___\_\\_____||______||\____/|______|  |_| |_____/
+#  \___\_\\_____||______| \____/|______|  |_| |_____/
 
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev

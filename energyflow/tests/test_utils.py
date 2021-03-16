@@ -14,6 +14,9 @@ def epsilon_diff(X, Y, epsilon=10**-14):
 
 def epsilon_percent(X, Y, epsilon=10**-14):
     return np.all(2*np.abs(X - Y)/(np.abs(X) + np.abs(Y)) < epsilon)
+
+def epsilon_either(X, Y, eps_diff=1e-14, eps_percent=1e-14):
+    return epsilon_diff(X, Y, eps_diff) or epsilon_percent(X, Y, eps_percent)
 	
 # test event utils
 

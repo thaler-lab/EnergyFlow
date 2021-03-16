@@ -6,12 +6,12 @@ sampling uniform M-body massless phase space. Also includes other functions for
 various random, non-center of momentum, and non-uniform sampling.
 """
 
-#  ________      ________ _   _ _______        _    _ _______ _____ _       _____
-# |  ____\ \    / /  ____| \ | |__   __|      | |  | |__   __|_   _| |     / ____|
-# | |__   \ \  / /| |__  |  \| |  | |         | |  | |  | |    | | | |    | (___
-# |  __|   \ \/ / |  __| | . ` |  | |         | |  | |  | |    | | | |     \___ \
-# | |____   \  /  | |____| |\  |  | |   ______| |__| |  | |   _| |_| |____ ____) |
-# |______|   \/   |______|_| \_|  |_|  |______|\____/   |_|  |_____|______|_____/
+#  _____            _   _ _____   ____  __  __          _    _ _______ _____ _       _____
+# |  __ \     /\   | \ | |  __ \ / __ \|  \/  |        | |  | |__   __|_   _| |     / ____|
+# | |__) |   /  \  |  \| | |  | | |  | | \  / |        | |  | |  | |    | | | |    | (___
+# |  _  /   / /\ \ | . ` | |  | | |  | | |\/| |        | |  | |  | |    | | | |     \___ \
+# | | \ \  / ____ \| |\  | |__| | |__| | |  | | ______ | |__| |  | |   _| |_| |____ ____) |
+# |_|  \_\/_/    \_\_| \_|_____/ \____/|_|  |_||______| \____/   |_|  |_____|______|_____/
 
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
@@ -19,6 +19,7 @@ various random, non-center of momentum, and non-uniform sampling.
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
+import six
 
 __all__ = [
     'gen_random_events',
@@ -32,6 +33,9 @@ if hasattr(np.random, 'default_rng'):
     random = np.random.default_rng()
 else:
     random = np.random
+
+    # patch API differenes
+    random.integers = random.randint
 
 # random
 def random4doc():
@@ -51,8 +55,11 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
 
     - **nevents** : _int_
         - Number of events to generate.
-    - **nparticles** : _int_
-        - Number of particles in each event.
+    - **nparticles** : _int_ or _tuple_/_list_
+        - If an integet, the exact number of particles in each event. If a
+        tuple/list of length 2, then this is treated as the interval
+        `[low, high)` and the particle multiplicities will be uniformly sampled
+        from this interval.
     - **dim** : _int_
         - Number of spacetime dimensions.
     - **mass** : _float_ or `'random'`
@@ -62,25 +69,51 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
     **Returns**
 
     - _numpy.ndarray_
-        - An `(nevents,nparticles,dim)` array of events. The particles 
-        are specified as `[E,p1,p2,...]`. If `nevents` is 1 then that axis is
+        - An `(nevents,nparticles,dim)` array of events. The particles are
+        specified as `[E,p1,p2,...]`. If `nevents` is 1, then that axis is
         dropped.
     """
 
-    spatial_ps = 2*random.random((nevents, nparticles, dim-1)) - 1
+    dm1 = dim - 1
+    if isinstance(nparticles, (tuple, list, np.ndarray)):
+        if len(nparticles) != 2:
+            raise ValueError('nparticles should be an integer or length 2 iterable')
 
-    if isinstance(mass, str) and mass == 'random':
-        mass = random.random((nevents, nparticles))
+        # get random event multiplicities
+        mults = random.integers(*nparticles, size=nevents)
 
-    energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
-    events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1)
+        # get possible random masses
+        if isinstance(mass, six.string_types):
+            if mass == 'random':
+                masses = [random.random(nparts) for nparts in mults]
+            else:
+                raise ValueError('unknown mass value')
+        else:
+            masses = np.full(nevents, mass)
+        
+        spatial_ps = [2*random.random((nparts, dm1)) - 1 for nparts in mults]
+        events =  np.asarray([np.hstack((np.sqrt(ms**2 + np.sum(ps**2, axis=1))[:,None], ps)) 
+                              for ms,ps in zip(masses, spatial_ps)],
+                             dtype='O' if nparticles[0] != nparticles[1] else None)
+    else:
+
+        # get possible random masses
+        if isinstance(mass, six.string_types):
+            if mass == 'random':
+                mass = random.random((nevents, nparticles))
+            else:
+                raise ValueError('unknown mass value')
+
+        spatial_ps = 2*random.random((nevents, nparticles, dm1)) - 1
+        energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
+        events = np.concatenate((energies[:,:,None], spatial_ps), axis=-1)
 
     return events if nevents > 1 else events[0]
 
 def gen_random_events_mcom(nevents, nparticles, dim=4):
     r"""Generate random events with a given number of massless particles in a
-    given spacetime dimension. The total momentum are made to sum
-    to zero. These events are not guaranteed to uniformly sample phase space.
+    given spacetime dimension. The total momentum are made to sum to zero. These
+    events are not guaranteed to uniformly sample phase space.
 
     **Arguments**
 
@@ -94,8 +127,8 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
     **Returns**
 
     - _numpy.ndarray_
-        - An `(nevents,nparticles,dim)` array of events. The particles 
-        are specified as `[E,p1,p2,...]`.
+        - An `(nevents,nparticles,dim)` array of events. The particles are
+        specified as `[E,p1,p2,...]`.
     """
 
     events_1_sp = 2*random.random((nevents, int(np.ceil(nparticles/2)-1), dim-1)) - 1
@@ -118,9 +151,9 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
     return events
 
 def gen_massless_phase_space(nevents, nparticles, energy=1.):
-    r"""Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
-    algorithm for uniformly sampling massless M-body phase space for any center
-    of mass energy.
+    r"""Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)
+    90119-0) algorithm for uniformly sampling massless M-body phase space for
+    any center of mass energy.
     
     **Arguments**
 
@@ -134,8 +167,8 @@ def gen_massless_phase_space(nevents, nparticles, energy=1.):
     **Returns**
 
     - _numpy.ndarray_
-        - An `(nevents,nparticles,4)` array of events. The particles 
-        are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
+        - An `(nevents,nparticles,4)` array of events. The particles are
+        specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
         dropped.
     """
     

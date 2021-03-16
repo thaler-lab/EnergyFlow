@@ -22,10 +22,10 @@ from abc import abstractmethod
 
 import numpy as np
 from numpy.core.multiarray import c_einsum
+import pyfjcore
 
 from energyflow.base import SingleEnergyCorrelatorBase
 from energyflow.utils.fastjet_utils import *
-from energyflow.utils.fastjet_utils import _import_fastjet
 from energyflow.utils.generic_utils import transfer
 from energyflow.utils.particle_utils import *
 
@@ -301,81 +301,77 @@ def image_activity(ptyphis, f=0.95, R=1.0, npix=33, center=None, axis=None):
 # Observables relying on FastJet
 ###############################################################################
 
-fastjet = _import_fastjet()
+__all__ += ['zg', 'zg_from_pj']
 
-if fastjet:
+def zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca'):
+    r"""Groomed momentum fraction of a jet, as calculated on an array of
+    particles in hadronic coordinates. First, the particles are converted
+    to FastJet PseudoJets and clustered according to the specified
+    algorithm. Second, the jet is groomed according to the specified
+    SoftDrop parameters and the momentum fraction of the surviving pair of
+    Pseudojets is computed. See the [SoftDrop paper](https://arxiv.org/abs/
+    1402.2657) for a complete description of SoftDrop.
 
-    __all__ += ['zg', 'zg_from_pj']
+    **Arguments**
 
-    def zg(ptyphims, zcut=0.1, beta=0, R=1.0, algorithm='ca'):
-        r"""Groomed momentum fraction of a jet, as calculated on an array of
-        particles in hadronic coordinates. First, the particles are converted
-        to FastJet PseudoJets and clustered according to the specified
-        algorithm. Second, the jet is groomed according to the specified
-        SoftDrop parameters and the momentum fraction of the surviving pair of
-        Pseudojets is computed. See the [SoftDrop paper](https://arxiv.org/abs/
-        1402.2657) for a complete description of SoftDrop.
+    - **ptyphims** : _numpy.ndarray_
+        - An array of particles in hadronic coordinates that will be
+        clustered into a single jet and groomed.
+    - **zcut** : _float_
+        - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
+        and `1`.
+    - **beta** : _int_ or _float_
+        - The $\beta$ parameter of SoftDrop.
+    - **R** : _float_
+        - The jet radius to use for the grooming. Only relevant if `beta!=0`.
+    - **algorithm** : {'kt', 'ca', 'antikt'}
+        - The jet algorithm to use when clustering the particles. Same as
+        the argument of the same name of [`cluster`](/docs/utils/#cluster).
 
-        **Arguments**
+    **Returns**
 
-        - **ptyphims** : _numpy.ndarray_
-            - An array of particles in hadronic coordinates that will be
-            clustered into a single jet and groomed.
-        - **zcut** : _float_
-            - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
-            and `1`.
-        - **beta** : _int_ or _float_
-            - The $\beta$ parameter of SoftDrop.
-        - **R** : _float_
-            - The jet radius to use for the grooming. Only relevant if `beta!=0`.
-        - **algorithm** : {'kt', 'ca', 'antikt'}
-            - The jet algorithm to use when clustering the particles. Same as
-            the argument of the same name of [`cluster`](/docs/utils/#cluster).
+    - _float_
+        - The groomed momentum fraction of the given jet."""
+    
+    return zg_from_pj(cluster(pjs_from_ptyphims(ptyphims), algorithm=algorithm)[0], 
+                      zcut=zcut, beta=beta, R=R)
 
-        **Returns**
+def zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0):
+    r"""Groomed momentum fraction $z_g$, as calculated on an ungroomed (but
+    already clustered) FastJet PseudoJet object. First, the jet is groomed
+    according to the specified SoftDrop parameters and then the momentum
+    fraction of the surviving pair of Pseudojets is computed. See the
+    [SoftDrop paper](https://arxiv.org/abs/1402.2657) for a complete
+    description of SoftDrop. This version of $z_g$ is provided in addition
+    to the above function so that a jet does not need to be reclustered if
+    multiple grooming parameters are to be used.
 
-        - _float_
-            - The groomed momentum fraction of the given jet."""
-        
-        return zg_from_pj(cluster(pjs_from_ptyphims(ptyphims), algorithm=algorithm)[0], 
-                          zcut=zcut, beta=beta, R=R)
+    **Arguments**
 
-    def zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0):
-        r"""Groomed momentum fraction $z_g$, as calculated on an ungroomed (but
-        already clustered) FastJet PseudoJet object. First, the jet is groomed
-        according to the specified SoftDrop parameters and then the momentum
-        fraction of the surviving pair of Pseudojets is computed. See the
-        [SoftDrop paper](https://arxiv.org/abs/1402.2657) for a complete
-        description of SoftDrop. This version of $z_g$ is provided in addition
-        to the above function so that a jet does not need to be reclustered if
-        multiple grooming parameters are to be used.
+    - **pseudojet** : _fastjet.PseudoJet_
+        - A FastJet PseudoJet that has been obtained from a suitable
+        clustering (typically Cambridge/Aachen for SoftDrop).
+    - **zcut** : _float_
+        - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
+        and `1`.
+    - **beta** : _int_ or _float_
+        - The $\beta$ parameter of SoftDrop.
+    - **R** : _float_
+        - The jet radius to use for the grooming. Only relevant if `beta!=0`.
 
-        **Arguments**
+    **Returns**
 
-        - **pseudojet** : _fastjet.PseudoJet_
-            - A FastJet PseudoJet that has been obtained from a suitable
-            clustering (typically Cambridge/Aachen for SoftDrop).
-        - **zcut** : _float_
-            - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
-            and `1`.
-        - **beta** : _int_ or _float_
-            - The $\beta$ parameter of SoftDrop.
-        - **R** : _float_
-            - The jet radius to use for the grooming. Only relevant if `beta!=0`.
+    - _float_
+        - The groomed momentum fraction of the given jet.
+    """
 
-        **Returns**
+    sd_jet = softdrop(pseudojet, zcut=zcut, beta=beta, R=R)
 
-        - _float_
-            - The groomed momentum fraction of the given jet.
-        """
+    parent1, parent2 = pyfjcore.PseudoJet(), pyfjcore.PseudoJet()
+    if not sd_jet.has_parents(parent1, parent2):
+        return 0.
+    
+    pt1, pt2 = parent1.pt(), parent2.pt()
+    ptsum = pt1 + pt2
 
-        sd_jet = softdrop(pseudojet, zcut=zcut, beta=beta, R=R)
-
-        parent1, parent2 = fastjet.PseudoJet(), fastjet.PseudoJet()
-        if not sd_jet.has_parents(parent1, parent2):
-            return 0.
-        
-        pt1, pt2 = parent1.pt(), parent2.pt()
-        ptsum = pt1 + pt2
-
-        return 0. if ptsum == 0. else min(pt1, pt2)/ptsum
+    return 0. if ptsum == 0. else min(pt1, pt2)/ptsum

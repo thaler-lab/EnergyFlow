@@ -316,7 +316,7 @@ Extracts Cartesian four-vectors from FastJet PseudoJets.
 ### jet_def
 
 ```python
-energyflow.jet_def(algorithm=1, R=1000.0, recomb=0)
+energyflow.jet_def(algorithm='ca', R=fastjet.JetDefinition.max_allowable_R, recomb='E_scheme')
 ```
 
 Creates a fastjet JetDefinition from the specified arguments.
@@ -330,8 +330,9 @@ Creates a fastjet JetDefinition from the specified arguments.
 - **R** : _float_
     - The jet radius. The default value corresponds to
     `max_allowable_R` as defined by the FastJet python package.
-- **recomb** : _int_
-    - An integer corresponding to a fastjet RecombinationScheme.
+- **recomb** : _str_ or _int_
+    - An integer corresponding to a fastjet RecombinationScheme, or a
+    string specifying a name which is looked up in the fastjet module.
 
 **Returns**
 
@@ -344,7 +345,7 @@ Creates a fastjet JetDefinition from the specified arguments.
 ### cluster
 
 ```python
-energyflow.cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0.0, kwargs)
+energyflow.cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., **kwargs)
 ```
 
 Clusters an iterable of PseudoJets. Uses a jet definition that can
@@ -1261,8 +1262,8 @@ uniformly sample phase space.
 **Returns**
 
 - _numpy.ndarray_
-    - An `(nevents,nparticles,dim)` array of events. The particles 
-    are specified as `[E,p1,p2,...]`. If `nevents` is 1 then that axis is
+    - An `(nevents,nparticles,dim)` array of events. The particles are
+    specified as `[E,p1,p2,...]`. If `nevents` is 1, then that axis is
     dropped.
 
 
@@ -1275,8 +1276,8 @@ energyflow.gen_random_events_mcom(nevents, nparticles, dim=4)
 ```
 
 Generate random events with a given number of massless particles in a
-given spacetime dimension. The total momentum are made to sum
-to zero. These events are not guaranteed to uniformly sample phase space.
+given spacetime dimension. The total momentum are made to sum to zero. These
+events are not guaranteed to uniformly sample phase space.
 
 **Arguments**
 
@@ -1290,8 +1291,8 @@ to zero. These events are not guaranteed to uniformly sample phase space.
 **Returns**
 
 - _numpy.ndarray_
-    - An `(nevents,nparticles,dim)` array of events. The particles 
-    are specified as `[E,p1,p2,...]`.
+    - An `(nevents,nparticles,dim)` array of events. The particles are
+    specified as `[E,p1,p2,...]`.
 
 
 ----
@@ -1302,9 +1303,9 @@ to zero. These events are not guaranteed to uniformly sample phase space.
 energyflow.gen_massless_phase_space(nevents, nparticles, energy=1.0)
 ```
 
-Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
-algorithm for uniformly sampling massless M-body phase space for any center
-of mass energy.
+Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)
+90119-0) algorithm for uniformly sampling massless M-body phase space for
+any center of mass energy.
 
 **Arguments**
 
@@ -1318,8 +1319,8 @@ of mass energy.
 **Returns**
 
 - _numpy.ndarray_
-    - An `(nevents,nparticles,4)` array of events. The particles 
-    are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
+    - An `(nevents,nparticles,4)` array of events. The particles are
+    specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
     dropped.
 
 

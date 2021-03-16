@@ -15,10 +15,11 @@ from . import archbase
 from . import cnn
 from . import dnn
 from . import efn
-from energyflow.utils import arch_utils as utils
 from .cnn import *
 from .dnn import *
 from .efn import *
+
+from energyflow.utils import arch_utils as utils
 from energyflow.utils.arch_utils import *
 
 __all__ = cnn.__all__ + dnn.__all__ + efn.__all__ + utils.__all__
