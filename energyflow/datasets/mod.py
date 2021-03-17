@@ -474,8 +474,6 @@ def _get_dataset_info(cname, float_dtype=None):
         # convert to numpy arrays
         for key in ['kfactor_x', 'kfactor_y', 'npv_hist_ratios']:
             info[key] = convert_dtype(np.asarray(info[key]), float_dtype)
-        #if float_dtype is not None:
-        #    info['residual_factor'] = getattr(np, float_dtype)(info['residual_factor'])
 
         collection['info'] = info
 
