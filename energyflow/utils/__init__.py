@@ -42,6 +42,7 @@ from . import random_utils
 from .arch_utils import *
 from .data_utils import *
 from .fastjet_utils import *
+from .generic_utils import *
 from .image_utils import *
 from .particle_utils import *
 from .random_utils import *

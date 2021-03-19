@@ -376,7 +376,7 @@ class NNBase(ArchBase):
             callbacks.append(EarlyStopping(**self.earlystop_opts))
 
         # update any callbacks that were passed with the two we build in explicitly
-        kwargs.setdefault('callbacks', []).extend(callbacks)
+        kwargs['callbacks'] = kwargs.pop('callbacks', []) + callbacks
 
         # do the fitting
         hist = self.model.fit(*args, **kwargs)

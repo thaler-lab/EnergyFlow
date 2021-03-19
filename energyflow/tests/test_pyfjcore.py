@@ -23,28 +23,26 @@ def test_pjs_array_conversion(nparticles, mass):
     for event in events:
         ptyphims = ef.ptyphims_from_p4s(event)
 
-        for f in [lambda x: x, tuple]:
+        # make pjs
+        pjs_epxpypz = ef.pjs_from_p4s(event)
+        pjs_ptyphim = ef.pjs_from_ptyphims(ptyphims)
 
-            # make pjs
-            pjs_epxpypz = f(ef.pjs_from_p4s(event))
-            pjs_ptyphim = f(ef.pjs_from_ptyphims(ptyphims))
+        # check cartesian to cartesian
+        assert np.all(event == ef.p4s_from_pjs(pjs_epxpypz))
 
-            # check cartesian to cartesian
-            assert np.all(event == ef.p4s_from_pjs(pjs_epxpypz))
+        # check ptyphim to ptyphim
+        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_ptyphim)
+        assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-13)
+        assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
 
-            # check ptyphim to ptyphim
-            ptyphims_pjs = ef.ptyphims_from_pjs(pjs_ptyphim)
-            assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-13)
-            assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
+        # check cartesian to ptyphim
+        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_epxpypz)
+        assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-12, 1e-12)
+        assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
 
-            # check cartesian to ptyphim
-            ptyphims_pjs = ef.ptyphims_from_pjs(pjs_epxpypz)
-            assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-12, 1e-12)
-            assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
-
-            # check ptyphims to cartesian
-            p4s_pjs = ef.p4s_from_pjs(pjs_ptyphim)
-            assert epsilon_either(event, p4s_pjs, 1e-12, 1e-10)
+        # check ptyphims to cartesian
+        p4s_pjs = ef.p4s_from_pjs(pjs_ptyphim)
+        assert epsilon_either(event, p4s_pjs, 1e-12, 1e-10)
 
 @pytest.mark.pyfjcore
 @pytest.mark.parametrize('jet_R', [0.1, 0.2, 0.4, 0.8, 1, 4.25])
@@ -94,3 +92,13 @@ def test_selectors(ptmin, ptmax, etamin, etamax):
     for pj in pjs_sel:
         assert (pj.pt() >= ptmin and pj.pt() < ptmax) or (pj.eta() >= etamin and pj.eta() < etamax)
 
+@pytest.mark.pyfjcore
+@pytest.mark.pyfjcore_user_features
+@pytest.mark.parametrize('nextra', [0, 1, 2, 10])
+@pytest.mark.parametrize('nparticles', [20, 50, (25, 100)])
+def test_extra_array_fetures(nparticles, nextra):
+
+    events = ef.gen_random_events(100, nparticles, 4 + nextra)
+    for event in events:
+        for i,pj in enumerate(ef.pjs_from_p4s(event)):
+            pj.python_info()

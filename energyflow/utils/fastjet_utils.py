@@ -8,9 +8,7 @@ in EnergyFlow for published research, you are relying on the FastJet library so
 please [cite FastJet appropriately](http://fastjet.fr/about.html).
 
 See the [PyFJCore README](https://github.com/pkomiske/PyFJCore/blob/main/
-README.md) for more documentation on its functions and classes, including
-[`PseudoJetContainer`](https://github.com/pkomiske/PyFJCore/blob/main/
-README.md/#PseudoJetContainer).
+README.md) for more documentation on its functions and classes.
 """
 
 #  ______       _____ _______   _ ______ _______         _    _ _______ _____ _       _____
@@ -56,9 +54,8 @@ def pjs_from_ptyphims(ptyphims):
 
     **Returns**
 
-    - _pyfjcore.PseudoJetContainer_
-        - A Python wrapper of `std::vector<PseudoJet>` that avoids unnecessary
-        copying but can be easily coerced into native Python containers.
+    - _tuple_ of _PseudoJet_
+        - A Python tuple of `PseudoJet`s corresponding to the input particles.
     """
 
     return pyfjcore.ptyphim_array_to_pseudojets(ptyphims)
@@ -77,9 +74,8 @@ def pjs_from_p4s(p4s):
 
     **Returns**
 
-    - _pyfjcore.PseudoJetContainer_
-        - A Python wrapper of `std::vector<PseudoJet>` that avoids unnecessary
-        copying but can be easily coerced into native Python containers.
+    - _tuple_ of _PseudoJet_
+        - A Python tuple of `PseudoJet`s corresponding to the input particles.
     """
 
     return pyfjcore.epxpypz_array_to_pseudojets(p4s)
@@ -91,9 +87,8 @@ def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
 
     **Arguments**
 
-    - **pjs** : `PseudoJetContainer` or iterable of _PseudoJet_
-        - A `PseudoJetContainer` that is returned by some PyFJCore methods, or
-        an iterable of PseudoJets (list, tuple, array, etc).
+    - **pjs** : iterable of _PseudoJet_
+        - An iterable of PseudoJets (list, tuple, array, etc).
     - **phi_ref** : _float_ or `None`
         - The reference phi value to use for phi fixing. If `None`, then no
         phi fixing is performed.
@@ -121,9 +116,8 @@ def p4s_from_pjs(pjs):
 
     **Arguments**
 
-    - **pjs** : `PseudoJetContainer` or iterable of _PseudoJet_
-        - A `PseudoJetContainer` that is returned by some PyFJCore methods, or
-        an iterable of PseudoJets (list, tuple, array, etc).
+    - **pjs** : iterable of _PseudoJet_
+        - An iterable of PseudoJets (list, tuple, array, etc).
 
     **Returns**
 
@@ -171,14 +165,14 @@ def jet_def(algorithm=pyfjcore.cambridge_algorithm,
         pyfjcore.JetAlgorithm value.
     - **R** : _float_
         - The jet radius. The default value corresponds to `max_allowable_R` as
-        defined by the FastJet python package.
+        defined by the FastJet package.
     - **recomb** : _str_ or _int_
         - An integer corresponding to a RecombinationScheme, or a string
         specifying a name which is looked up in the PyFJCore module.
 
     **Returns**
 
-    - _fastjet.JetDefinition_
+    - _JetDefinition_
         - A JetDefinition instance corresponding to the given arguments.
     """
 
@@ -208,10 +202,10 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
 
     **Arguments**
 
-    - **pjs** : _list_ of _fastjet.PseudoJet_
+    - **pjs** : iterable of _PseudoJet_
         - A list of Pseudojets representing particles or other kinematic
         objects that are to be clustered into jets.
-    - **jetdef** : _fastjet.JetDefinition_ or `None`
+    - **jetdef** : _JetDefinition_ or `None`
         - The `JetDefinition` used for the clustering. If `None`, the
         keyword arguments are passed on to `jet_def` to create a
         `JetDefinition`.
@@ -231,8 +225,8 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
 
     **Returns**
 
-    - _list_ of _fastjet.PseudoJet_
-        - A list of PseudoJets corresponding to the clustered jets.
+    - _tuple_ of _PseudoJet_
+        - A tuple of PseudoJets corresponding to the clustered jets.
     """
 
     if jetdef is None:
