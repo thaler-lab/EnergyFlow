@@ -156,6 +156,8 @@ class PointCloudDataset(object):
         s = '{}\n'.format(self.__class__.__name__)
         s += '  length: {}\n'.format(len(self))
         s += '  batch_size: {}\n'.format(self.batch_size)
+        s += '  shuffle: {}\n'.format(self.shuffle)
+        s += '  infinite: {}\n'.format(self.infinite)
         s += '  batch_dtypes: {}\n'.format(repr(self.batch_dtypes))
         s += '  batch_shapes: {}\n'.format(repr(self.batch_shapes))
         s += '  data_args:\n'
@@ -197,7 +199,7 @@ class PointCloudDataset(object):
                 new_data_args.append(split_func(data_arg))
 
         # create new object from clone of current one
-        return self._clone_with_new_data_args(new_data_args)
+        return self.clone_with_new_data_args(new_data_args)
 
     # note that the settings of the primary dataset will be used for the new one
     def chain(self, other, chain_method='concat'):
@@ -235,9 +237,9 @@ class PointCloudDataset(object):
             else:
                 new_data_args.append(chain_method(data_arg, other_data_arg))
 
-        return self._clone_with_new_data_args(new_data_args)
+        return self.clone_with_new_data_args(new_data_args)
 
-    def _clone_with_new_data_args(self, new_data_args):
+    def clone_with_new_data_args(self, new_data_args):
 
         # create new object from clone of current one
         new_dset = self.__class__(new_data_args, **self._clone_kwargs)

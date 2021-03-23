@@ -64,7 +64,7 @@ def test_clustering(algorithm, jet_R):
             epsilon_percent(j[i], j3[i])
 
         for jj in [j, j2, j3]:
-            inds = jj.constituents().user_indices()
+            inds = pyfjcore.user_indices(jj.constituents())
             assert np.all(inds >= 0) and np.all(inds < len(event))
 
 @pytest.mark.pyfjcore
