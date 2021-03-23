@@ -156,7 +156,10 @@ class PointCloudDataset(object):
         s = '{}\n'.format(self.__class__.__name__)
         s += '  length: {}\n'.format(len(self))
         s += '  batch_size: {}\n'.format(self.batch_size)
-        s += '  shuffle: {}\n'.format(self.shuffle)
+        if callable(self.shuffle):
+            s += '  shuffle: custom\n'
+        else:
+            s += '  shuffle: {}\n'.format(bool(self.shuffle))
         s += '  infinite: {}\n'.format(self.infinite)
         s += '  batch_dtypes: {}\n'.format(repr(self.batch_dtypes))
         s += '  batch_shapes: {}\n'.format(repr(self.batch_shapes))
@@ -453,8 +456,15 @@ class PointCloudDataset(object):
 
                 # get a new permutation each epoch
                 if self.shuffle:
-                    perm = self._rng.permutation(len(self))
-                    arr_func = lambda arg, start, end: arg[perm[start:end]]
+
+                    # allow for custom shuffling
+                    # function should take in a random generator and a number of samples per epoch
+                    # function should return a function with signature like the default arr_func
+                    if callable(self.shuffle):
+                        arr_func = self.shuffle(self._rng, len(self))
+                    else:
+                        perm = self._rng.permutation(len(self))
+                        arr_func = lambda arg, start, end: arg[perm[start:end]]
 
                 # special case 1 (for speed)
                 if len(data_args) == 1:
