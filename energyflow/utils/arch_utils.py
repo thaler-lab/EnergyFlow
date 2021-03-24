@@ -146,7 +146,7 @@ class PointCloudDataset(object):
             self.data_args.append(data_arg)
 
     def __len__(self):
-        return self._len
+        return getattr(self, '_len', 0)
 
     def __repr__(self):
 
@@ -160,7 +160,6 @@ class PointCloudDataset(object):
             s += '  shuffle: custom function provided\n'
         else:
             s += '  shuffle: {}\n'.format(bool(self.shuffle))
-        s += '  infinite: {}\n'.format(self.infinite)
         s += '  seed: {}\n'.format(self.seed)
         s += '  batch_dtypes: {}\n'.format(repr(self.batch_dtypes))
         s += '  batch_shapes: {}\n'.format(repr(self.batch_shapes))
