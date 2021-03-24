@@ -202,7 +202,7 @@ class PointCloudDataset(object):
                 new_data_args.append(split_func(data_arg))
 
         # create new object from clone of current one
-        return self._join(new_data_args, state=self.state, **self._join_kwargs)
+        return self.join(new_data_args, state=self.state, **self._join_kwargs)
 
     # note that the settings of the primary dataset will be used for the new one
     def chain(self, other, chain_method='concat'):
@@ -240,7 +240,7 @@ class PointCloudDataset(object):
             else:
                 new_data_args.append(chain_method(data_arg, other_data_arg))
 
-        return self._join(new_data_args, state=self.state, **self._join_kwargs)
+        return self.join(new_data_args, state=self.state, **self._join_kwargs)
 
     @classmethod
     def join(cls, args, state=None, transfer_state=True, **kwargs):
