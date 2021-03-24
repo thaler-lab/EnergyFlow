@@ -54,7 +54,7 @@ ALL_EXAMPLES = [
     'animation_example.py'
 ]
 
-def convert_dtype(X, dtype):
+def convert_dtype(X, dtype=None):
     """Converts the numpy dtype of the given array to the provided value. This
     function can handle a ragged array, that is, an object array where the
     elements are numpy arrays of a possibly different type, in which case the
@@ -264,7 +264,7 @@ def pad_events(X, pad_val=0., max_len=None):
 
     return output
 
-def to_categorical(labels, num_classes=None):
+def to_categorical(labels, num_classes=None, dtype=None):
     """One-hot encodes class labels.
 
     **Arguments**
@@ -292,7 +292,7 @@ def to_categorical(labels, num_classes=None):
     # index into array and set appropriate values to 1
     categorical[np.arange(n), y] = 1
 
-    return categorical
+    return convert_dtype(categorical, dtype)
 
 # PDGid to small float dictionary
 PID2FLOAT_MAP = {0: 0.,

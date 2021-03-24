@@ -42,7 +42,7 @@ class PointCloudDataset(object):
     """"""
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
-                                  shuffle=True, seed=None, infinite=False, pad_val=0.,
+                                  shuffle=True, seed=None, pad_val=0.,
                                   _wrap=False):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
         designed to be used as input to EFN and PFN models. The function uses a
@@ -119,7 +119,7 @@ class PointCloudDataset(object):
         self.dtype = dtype
         self.shuffle = shuffle
         self.seed = seed
-        self.infinite = infinite
+        self.infinite = False
         self.pad_val = pad_val
         self._wrap = _wrap
 
@@ -151,16 +151,17 @@ class PointCloudDataset(object):
     def __repr__(self):
 
         # ensure we're initialized
-        self._init(convert_dtypes=False)
+        self._init()
 
         s = '{}\n'.format(self.__class__.__name__)
         s += '  length: {}\n'.format(len(self))
         s += '  batch_size: {}\n'.format(self.batch_size)
         if callable(self.shuffle):
-            s += '  shuffle: custom\n'
+            s += '  shuffle: custom function provided\n'
         else:
             s += '  shuffle: {}\n'.format(bool(self.shuffle))
         s += '  infinite: {}\n'.format(self.infinite)
+        s += '  seed: {}\n'.format(self.seed)
         s += '  batch_dtypes: {}\n'.format(repr(self.batch_dtypes))
         s += '  batch_shapes: {}\n'.format(repr(self.batch_shapes))
         s += '  data_args:\n'
@@ -202,7 +203,7 @@ class PointCloudDataset(object):
                 new_data_args.append(split_func(data_arg))
 
         # create new object from clone of current one
-        return self.clone_with_new_data_args(new_data_args)
+        return self._join(new_data_args, state=self.state, **self._join_kwargs)
 
     # note that the settings of the primary dataset will be used for the new one
     def chain(self, other, chain_method='concat'):
@@ -215,8 +216,8 @@ class PointCloudDataset(object):
         elif not callable(chain_method):
             raise ValueError("`chain_method` should be 'concat' or a callable")
 
-        self._init(convert_dtypes=False)
-        other._init(convert_dtypes=False)
+        self._init()
+        other._init()
 
         # chain data_args
         new_data_args = []
@@ -240,13 +241,23 @@ class PointCloudDataset(object):
             else:
                 new_data_args.append(chain_method(data_arg, other_data_arg))
 
-        return self.clone_with_new_data_args(new_data_args)
+        return self._join(new_data_args, state=self.state, **self._join_kwargs)
 
-    def clone_with_new_data_args(self, new_data_args):
+    @classmethod
+    def join(cls, args, state=None, transfer_state=True, **kwargs):
 
-        # create new object from clone of current one
-        new_dset = self.__class__(new_data_args, **self._clone_kwargs)
-        new_dset._state = self._state
+        new_dset = cls(args, **kwargs)
+        if state is None and transfer_state:
+            
+            # finds first available state to use
+            for arg in args:
+                if isinstance(arg, PointCloudDataset):
+                    state = arg.state
+                    break
+
+        # this uses explicitly provided state first, then a transferred one if it exists, finally None
+        new_dset.state = state
+
         return new_dset
 
     # this method is needed so that None matches anything
@@ -275,7 +286,7 @@ class PointCloudDataset(object):
             return ((bs1[1:] == bs2[1:]) and ((bs1[0] == bs2[0]) or (bs1[0] is None) or (bs2[0] is None)))
 
     @property
-    def _clone_kwargs(self):
+    def _join_kwargs(self):
         return {'_wrap': self._wrap}
 
     @property
@@ -284,7 +295,8 @@ class PointCloudDataset(object):
 
     @_state.setter
     def _state(self, state):
-        self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite, self.pad_val = state
+        if state is not None:
+            self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite, self.pad_val = state
 
     @property
     def batch_dtypes(self):
@@ -306,13 +318,16 @@ class PointCloudDataset(object):
     def steps_per_epoch(self):
         return math.ceil(len(self)/self.batch_size)
 
+    @property
+    def rng(self):
+        return getattr(self, '_rng', None)
+
     def _check_compatibility(self, other):
         assert isinstance(other, PointCloudDataset), 'other is not instance of PointCloudDataset'
         if self.__class__ != PointCloudDataset:
             raise TypeError('{} should not contain other instances of PointCloudDataset'.format(self.__class__))
         if len(self) != len(other):
-            m = 'arguments have different length, {} vs. {}'
-            raise IndexError(m.format(len(self), len(other)))
+            raise IndexError('arguments have different length, {} vs. {}'.format(len(self), len(other)))
         if self.dtype != other.dtype:
             raise ValueError('inconsistent dtypes')
         if self.batch_size != other.batch_size:
@@ -320,30 +335,27 @@ class PointCloudDataset(object):
         if self.shuffle != other.shuffle:
             raise ValueError('inconsistent shuffling')
         if self.seed != other.seed:
-            warnings.warn('seeds do not match')
+            raise ValueError('seeds do not match')
         if self.infinite != other.infinite:
             raise ValueError('inconsistent setting for infinite')
 
     # function to enable lazy init
-    def _init(self, state=None, convert_dtypes=True):
+    def _init(self, state=None, final_init=False):
         import tensorflow as tf
 
         # ensure consistent state (randomness in particular)
-        if state is not None:
-            self.toplevel = False
-            self._state = state
-        else:
-            self.toplevel = True
+        self._state = state
         
         # determine if we need to get a new rng
-        if self.shuffle and self.seed is None:
-            self.seed = random._bit_generator._seed_seq.spawn(1)[0]
-        self._rng = np.random.default_rng(self.seed) if self.shuffle else random
+        if final_init:
+            if self.shuffle and self.seed is None:
+                self.seed = random.bit_generator._seed_seq.spawn(1)[0]
+            self._rng = np.random.default_rng(self.seed) if self.shuffle else random
 
         # initialize subcomponents of this dataset
         for arg in self.data_args:
             if isinstance(arg, PointCloudDataset):
-                arg._init(self._state)
+                arg._init(state=self._state, final_init=final_init)
 
         # process data_args
         self._batch_dtypes, self._batch_shapes, self._zero_pad = [], [], []
@@ -386,12 +398,12 @@ class PointCloudDataset(object):
 
                 self._batch_dtypes.append(self.dtype)
                 self.data_args[i] = (convert_dtype(data_arg, getattr(np, self.dtype)) 
-                                     if convert_dtypes else data_arg)
+                                     if final_init else data_arg)
 
     def as_tf_dataset(self, prefetch=None):
 
         # ensure we're initialized
-        self._init()
+        self._init(final_init=True)
 
         # get tensorflow dataset from generator
         import tensorflow as tf
@@ -459,12 +471,9 @@ class PointCloudDataset(object):
 
                     # allow for custom shuffling
                     # function should take in a random generator and a number of samples per epoch
-                    # function should return a function with signature like the default arr_func
-                    if callable(self.shuffle):
-                        arr_func = self.shuffle(self._rng, len(self))
-                    else:
-                        perm = self._rng.permutation(len(self))
-                        arr_func = lambda arg, start, end: arg[perm[start:end]]
+                    # function should return a permutation to use
+                    perm = self.shuffle(self.rng, len(self)) if callable(self.shuffle) else self.rng.permutation(len(self))
+                    arr_func = lambda arg, start, end: arg[perm[start:end]]
 
                 # special case 1 (for speed)
                 if len(data_args) == 1:
@@ -512,8 +521,8 @@ class WeightedPointCloudDataset(PointCloudDataset):
         super().__init__(*args, **kwargs)
         self._assume_padded = True
 
-    def _init(self, state=None, **kwargs):
-        super()._init(state, **kwargs)
+    def _init(self, **kwargs):
+        super()._init(**kwargs)
 
         # duplicate batch dtypes
         self._batch_dtypes = [bdtype for bdtype in self._batch_dtypes for i in range(2)]
@@ -564,13 +573,13 @@ class PairedPointCloudDataset(PointCloudDataset):
         return s + '  ' + repr(self.pairer)[:-1].replace('\n', '\n  ') + '\n'
 
     @property
-    def _clone_kwargs(self):
-        kwargs = super()._clone_kwargs
+    def _join_kwargs(self):
+        kwargs = super()._join_kwargs
         kwargs.update({'pairing': self.pairing})
         return kwargs
 
-    def _init(self, state=None, **kwargs):
-        super()._init(state, **kwargs)
+    def _init(self, **kwargs):
+        super()._init(**kwargs)
 
         self._paired_args_need_padding = len(self.data_args)*[False]
         for i in range(len(self.data_args)):
