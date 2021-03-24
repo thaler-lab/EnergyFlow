@@ -597,14 +597,14 @@ class SymmetricPointCloudNN(NNBase):
             args[0]._init()
             if len(args[0].batch_dtypes) != 1:
                 args[0].wrap()
-                wrapped = True
+                wrapped = args[0]
             args = (args[0].as_tf_dataset(),) + args[1:]
 
         # get predictions
         preds = super().predict(*args, **kwargs)
 
         if wrapped:
-            args[0].unwrap()
+            wrapped.unwrap()
 
         return preds
 
