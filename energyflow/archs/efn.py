@@ -590,15 +590,23 @@ class SymmetricPointCloudNN(NNBase):
     def predict(self, *args, **kwargs):
 
         # handle predicting on a PointCloudDataset
+        wrapped = False
         if len(args) and isinstance(args[0], PointCloudDataset):
             args[0].infinite = False
             args[0].shuffle = False
             args[0]._init()
             if len(args[0].batch_dtypes) != 1:
                 args[0].wrap()
+                wrapped = True
             args = (args[0].as_tf_dataset(),) + args[1:]
 
-        return super().predict(*args, **kwargs)
+        # get predictions
+        preds = super().predict(*args, **kwargs)
+
+        if wrapped:
+            args[0].unwrap()
+
+        return preds
 
     @abstractproperty
     def inputs(self):

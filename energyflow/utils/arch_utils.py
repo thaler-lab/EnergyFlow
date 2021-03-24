@@ -179,6 +179,10 @@ class PointCloudDataset(object):
         self._wrap = True
         return self
 
+    def unwrap(self):
+        self._wrap = False
+        return self
+
     def split(self, split_arg):
 
         # check split arg
