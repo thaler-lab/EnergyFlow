@@ -593,7 +593,7 @@ class SymmetricPointCloudNN(NNBase):
         if len(args) and isinstance(args[0], PointCloudDataset):
             args[0].infinite = False
             args[0].shuffle = False
-            args[0]._init(convert_dtypes=False)
+            args[0]._init()
             if len(args[0].batch_dtypes) != 1:
                 args[0].wrap()
             args = (args[0].as_tf_dataset(),) + args[1:]

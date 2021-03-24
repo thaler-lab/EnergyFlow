@@ -157,7 +157,7 @@ class PointCloudDataset(object):
         s += '  length: {}\n'.format(len(self))
         s += '  batch_size: {}\n'.format(self.batch_size)
         if callable(self.shuffle):
-            s += '  shuffle: custom function provided\n'
+            s += '  shuffle: custom\n'
         else:
             s += '  shuffle: {}\n'.format(bool(self.shuffle))
         s += '  seed: {}\n'.format(self.seed)
