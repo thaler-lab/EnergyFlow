@@ -251,11 +251,11 @@ class PointCloudDataset(object):
             # finds first available state to use
             for arg in args:
                 if isinstance(arg, PointCloudDataset):
-                    state = arg.state
+                    state = arg._state
                     break
 
         # this uses explicitly provided state first, then a transferred one if it exists, finally None
-        new_dset.state = state
+        new_dset._state = state
 
         return new_dset
 
