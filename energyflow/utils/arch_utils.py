@@ -461,6 +461,9 @@ class PointCloudDataset(object):
         self.batch_inds = [(i*self.batch_size, min((i+1)*self.batch_size, len(self)))
                            for i in range(self.steps_per_epoch)]
 
+        # use shuffle at time of calling get_batch_generator
+        shuffle = self.shuffle
+
         # get generators anew, in case infinite=False and we have subgenerators
         data_args = [arg.get_batch_generator()() if g else arg
                      for arg,g in zip(self.data_args, gens)]
@@ -472,12 +475,12 @@ class PointCloudDataset(object):
             while True:
 
                 # get a new permutation each epoch
-                if self.shuffle:
+                if shuffle:
 
                     # allow for custom shuffling
                     # function should take in a random generator and a number of samples per epoch
                     # function should return a permutation to use
-                    perm = self.shuffle(self.rng, len(self)) if callable(self.shuffle) else self.rng.permutation(len(self))
+                    perm = shuffle(self.rng, len(self)) if callable(shuffle) else self.rng.permutation(len(self))
                     arr_func = lambda arg, start, end: arg[perm[start:end]]
 
                 # special case 1 (for speed)

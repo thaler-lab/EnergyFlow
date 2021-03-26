@@ -562,38 +562,40 @@ class SymmetricPointCloudNN(NNBase):
 
         # handle being passed a PointCloudDataset to fit on
         if len(args) and isinstance(args[0], PointCloudDataset):
-            #args[0].infinite = True
             kwargs.setdefault('steps_per_epoch', args[0].steps_per_epoch)
             args = (args[0].as_tf_dataset(prefetch=prefetch),) + args[1:]
 
         # handle validation_data as PointCloudDataset
         if 'validation_data' in kwargs and isinstance(kwargs['validation_data'], PointCloudDataset):
             kwargs.setdefault('validation_steps', kwargs['validation_data'].steps_per_epoch)
-            #kwargs['validation_data'].infinite = False
+            prior_shuffle = kwargs['validation_data'].shuffle
             kwargs['validation_data'].shuffle = False
             kwargs['validation_data'] = kwargs['validation_data'].as_tf_dataset(prefetch=prefetch)
+            kwargs['validation_data'].shuffle = prior_shuffle
 
         return super().fit(*args, **kwargs)
 
     def predict(self, *args, **kwargs):
 
         # handle predicting on a PointCloudDataset
-        wrapped = False
+        dset = False
         if len(args) and isinstance(args[0], PointCloudDataset):
-            #args[0].infinite = False
             kwargs.setdefault('steps', args[0].steps_per_epoch)
-            args[0].shuffle = False
-            args[0]._init()
-            if len(args[0].batch_dtypes) != 1:
-                args[0].wrap()
-                wrapped = args[0]
-            args = (args[0].as_tf_dataset(),) + args[1:]
+            dset = args[0]
+            prior_shuffle = dset.shuffle
+            dset.shuffle = False
+            dset._init()
+            if len(dset.batch_dtypes) != 1:
+                dset.wrap()
+
+            args = (dset.as_tf_dataset(),) + args[1:]
+            dset.shuffle = prior_shuffle
 
         # get predictions
         preds = super().predict(*args, **kwargs)
 
-        if wrapped:
-            wrapped.unwrap()
+        if dset:
+            dset.unwrap()
 
         return preds
 
