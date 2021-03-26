@@ -43,7 +43,7 @@ class PointCloudDataset(object):
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
                                   shuffle=True, seed=None, pad_val=0.,
-                                  _wrap=False):
+                                  _wrap=False, _enumerate=False):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
         designed to be used as input to EFN and PFN models. The function uses a
         generator to spool events from the arrays as needed and pad them on the fly.
@@ -119,9 +119,9 @@ class PointCloudDataset(object):
         self.dtype = dtype
         self.shuffle = shuffle
         self.seed = seed
-        #self.infinite = False
         self.pad_val = pad_val
         self._wrap = _wrap
+        self._enumerate = _enumerate
 
         # check for proper data_args
         if not isinstance(data_args, (list, tuple)):
@@ -144,6 +144,9 @@ class PointCloudDataset(object):
                 raise IndexError(m.format(len(self), len(data_arg)))
 
             self.data_args.append(data_arg)
+
+        if self._enumerate:
+            self.enumerate()
 
     def __len__(self):
         return getattr(self, '_len', 0)
@@ -181,6 +184,11 @@ class PointCloudDataset(object):
 
     def unwrap(self):
         self._wrap = False
+        return self
+
+    def enumerate(self):
+        self._enumerate = True
+        self.data_args.append(np.arange(len(self)))
         return self
 
     def split(self, split_arg):
