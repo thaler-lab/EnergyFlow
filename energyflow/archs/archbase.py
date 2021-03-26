@@ -360,20 +360,18 @@ class NNBase(ArchBase):
                 self.model.summary()
 
     def fit(self, *args, **kwargs):
-
-        # callbacks used here
-        from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+        from tensorflow import keras
 
         # list of callback functions
         callbacks = []
 
         # do model checkpointing, used mainly to save model during training instead of at end
         if self.filepath and self.save_while_training:
-            callbacks.append(ModelCheckpoint(self.filepath, **self.modelcheck_opts))
+            callbacks.append(keras.callbacks.ModelCheckpoint(self.filepath, **self.modelcheck_opts))
 
         # do early stopping, which now also handle loading best weights at the end
         if self.patience is not None:
-            callbacks.append(EarlyStopping(**self.earlystop_opts))
+            callbacks.append(keras.callbacks.EarlyStopping(**self.earlystop_opts))
 
         # update any callbacks that were passed with the two we build in explicitly
         kwargs['callbacks'] = kwargs.pop('callbacks', []) + callbacks
@@ -412,16 +410,18 @@ class NNBase(ArchBase):
 def _act_dict():
     global ACT_DICT
     if 'ACT_DICT' not in globals():
-        from tensorflow.keras.layers import LeakyReLU, PReLU, ThresholdedReLU
-        ACT_DICT = {'LeakyReLU': LeakyReLU, 'PReLU': PReLU, 'ThresholdedReLU': ThresholdedReLU}
+        from tensorflow import keras
+        ACT_DICT = {'LeakyReLU': keras.layers.LeakyReLU,
+                    'PReLU': keras.layers.PReLU,
+                    'ThresholdedReLU': keras.layers.ThresholdedReLU
+                   }
     return ACT_DICT
 
 def _get_act_layer(act, name=None):
-
-    from tensorflow.keras.layers import Activation, Layer
+    from tensorflow import keras
 
     # handle case of act as a layer
-    if isinstance(act, Layer):
+    if isinstance(act, keras.layers.Layer):
         return act
 
     # determine name
@@ -429,4 +429,4 @@ def _get_act_layer(act, name=None):
         return _act_dict()[act](name=name)
 
     # default case of passing act into Activation layer
-    return Activation(act, name=name)
+    return keras.layers.Activation(act, name=name)

@@ -25,8 +25,7 @@ def construct_dense(input_tensor, sizes,
                     names=None, act_names=None):
     """"""
 
-    from tensorflow.keras.layers import Dense, Dropout
-    from tensorflow.keras.regularizers import L2
+    from tensorflow import keras
     
     # repeat options if singletons
     acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
@@ -41,9 +40,9 @@ def construct_dense(input_tensor, sizes,
     for s, act, k_init, dropout, l2_reg, name, act_name in z:
 
         # get layers and append them to list
-        kwargs = ({'kernel_regularizer': L2(l2_reg), 'bias_regularizer': L2(l2_reg)} 
+        kwargs = ({'kernel_regularizer': keras.regularizers.L2(l2_reg), 'bias_regularizer': keras.regularizers.L2(l2_reg)} 
                   if l2_reg > 0. else {})
-        dense_layer = Dense(s, kernel_initializer=k_init, name=name, **kwargs)
+        dense_layer = keras.layers.Dense(s, kernel_initializer=k_init, name=name, **kwargs)
         act_layer = _get_act_layer(act, name=act_name)
         layers.extend([dense_layer, act_layer])
 
@@ -54,7 +53,7 @@ def construct_dense(input_tensor, sizes,
         # apply dropout if specified
         if dropout > 0.:
             dr_name = None if name is None else '{}_dropout'.format(name)
-            layers.append(Dropout(dropout, name=dr_name))
+            layers.append(keras.layers.Dropout(dropout, name=dr_name))
             tensors.append(layers[-1](tensors[-1]))
 
     return layers, tensors[1:]
@@ -131,11 +130,10 @@ class DNN(NNBase):
 
     def _construct_model(self):
 
-        from tensorflow.keras.layers import Dense, Input
-        from tensorflow.keras.models import Model
+        from tensorflow import keras
 
         # get an input tensor
-        self._input = Input(shape=(self.input_dim,), name=self._proc_name('input'))
+        self._input = keras.layers.Input(shape=(self.input_dim,), name=self._proc_name('input'))
 
         # get potential names of layers
         names = [self._proc_name('dense_'+str(i)) for i in range(len(self.dense_sizes))]
@@ -149,7 +147,7 @@ class DNN(NNBase):
         self._tensors = [self._input] + tensors
 
         # get output layers
-        out_layer = Dense(self.output_dim, name=self._proc_name('output'))
+        out_layer = keras.layers.Dense(self.output_dim, name=self._proc_name('output'))
         act_layer = _get_act_layer(self.output_act, name=self._proc_act_name(self.output_act))
         self._layers.extend([out_layer, act_layer])
 
@@ -159,7 +157,7 @@ class DNN(NNBase):
         self._output = self._tensors[-1]
 
         # construct a new model
-        self._model = Model(inputs=self._input, outputs=self._output, name=self.model_name)
+        self._model = keras.models.Model(inputs=self._input, outputs=self._output, name=self.model_name)
 
         # compile model
         self._compile_model()

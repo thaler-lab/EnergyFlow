@@ -139,11 +139,10 @@ class CNN(NNBase):
 
     def _construct_model(self):
 
-        from tensorflow.keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialDropout2D
-        from tensorflow.keras.models import Sequential
+        from tensorflow import keras
 
         # fresh model
-        self._model = Sequential(name=self.model_name)
+        self._model = keras.models.Sequential(name=self.model_name)
 
         # iterate over conv specifications
         conv_z = zip(self.filter_sizes, self.num_filters, self.pool_sizes, self.conv_acts,
@@ -155,19 +154,19 @@ class CNN(NNBase):
 
             # add conv2d layer to model using provided hyperparameters
             kwargs = {} if i > 0 else {'input_shape': self.input_shape}
-            self.model.add(Conv2D(num_filter, filter_size, kernel_initializer=k_init,
-                                                           padding=pad, data_format=self.data_format,
-                                                           name=self._proc_name('conv2d_'+str(i)), **kwargs))
+            self.model.add(keras.layers.Conv2D(num_filter, filter_size, kernel_initializer=k_init,
+                                                                           padding=pad, data_format=self.data_format,
+                                                                           name=self._proc_name('conv2d_'+str(i)), **kwargs))
             self._add_act(act)
 
             # add pooling layer if we have a non-zero pool size
             if pool_size > 0:
-                self.model.add(MaxPooling2D(pool_size=pool_size, data_format=self.data_format, 
-                                            name=self._proc_name('max_pool_'+str(i))))
+                self.model.add(keras.layers.MaxPooling2D(pool_size=pool_size, data_format=self.data_format, 
+                                                            name=self._proc_name('max_pool_'+str(i))))
 
             # add dropout layer if we have a non-zero dropout rate
             if dropout > 0.:
-                d_layer = SpatialDropout2D if i < self.num_spatial2d_dropout else Dropout
+                d_layer = keras.layers.SpatialDropout2D if i < self.num_spatial2d_dropout else keras.layers.Dropout
                 self.model.add(d_layer(dropout, name=self._proc_name('dropout_'+str(i))))
                 num_dropout += 1
 
@@ -175,22 +174,22 @@ class CNN(NNBase):
             raise ValueError('need to specify at least one conv layer')
 
         # flatten model for dense layers
-        self.model.add(Flatten(name=self._proc_name('flatten')))
+        self.model.add(keras.layers.Flatten(name=self._proc_name('flatten')))
 
         # iterate over dense specifications
         dense_z = zip(self.dense_sizes, self.dense_acts, self.dense_dropouts, self.dense_k_inits)
         for i,(num_dense, act, dropout, k_init) in enumerate(dense_z):
 
             # add dense layer
-            self.model.add(Dense(num_dense, kernel_initializer=k_init, name=self._proc_name('dense_'+str(i))))
+            self.model.add(keras.layers.Dense(num_dense, kernel_initializer=k_init, name=self._proc_name('dense_'+str(i))))
             self._add_act(act)
 
             # add dropout layer if dropout is nonzero
             if dropout > 0.:
-                self.model.add(Dropout(dropout, name=self._proc_name('dropout_'+str(i+num_dropout))))
+                self.model.add(keras.layers.Dropout(dropout, name=self._proc_name('dropout_'+str(i+num_dropout))))
 
         # output layer
-        self.model.add(Dense(self.output_dim, name=self._proc_name('output')))
+        self.model.add(keras.layers.Dense(self.output_dim, name=self._proc_name('output')))
         self._add_act(self.output_act)
 
         # compile model

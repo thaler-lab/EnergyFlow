@@ -49,20 +49,6 @@ def _dot_axis():
     return 0 if _keras_version_tuple() <= (2, 2, 4) else 1
 
 ################################################################################
-# Import Functions, to enable lazy import of tensorflow
-################################################################################
-
-def _ensure_keras_imported():
-    global Dense, Dot, Dropout, Lambda, TimeDistributed
-    from tensorflow.keras.layers import Dense, Dot, Dropout, Lambda, TimeDistributed
-
-    global L2
-    from tensorflow.keras.regularizers import L2
-
-    global K
-    import tensorflow.keras.backend as K
-
-################################################################################
 # Input Functions
 ################################################################################
 
@@ -85,9 +71,9 @@ def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
     - _list_ of _tensorflow.keras.Input_ tensors.
     """
 
-    from tensorflow.keras.layers import Input
+    from tensorflow import keras
 
-    zs_names, ps_names = kwargs.pop('zs_names'), kwargs.pop('ps_names')
+    zs_names, ps_names = kwargs.pop('zs_names', None), kwargs.pop('ps_names', None)
     kwargs_check('construct_point_cloud_weighted_inputs', kwargs)
 
     # handle names
@@ -102,8 +88,8 @@ def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
 
     inputs = []
     for i,input_dim in enumerate(input_dims):
-        inputs.append(Input(batch_shape=(None, None), name=zs_names[i]))
-        inputs.append(Input(batch_shape=(None, None, input_dim), name=ps_names[i]))
+        inputs.append(keras.layers.Input(batch_shape=(None, None), name=zs_names[i]))
+        inputs.append(keras.layers.Input(batch_shape=(None, None, input_dim), name=ps_names[i]))
 
     return inputs
 
@@ -125,9 +111,9 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
     - _list_ of _tensorflow.keras.Input_ tensors.
     """
 
-    from tensorflow.keras.layers import Input
+    from tensorflow import keras
 
-    names = kwargs.pop('names')
+    names = kwargs.pop('names', None)
     kwargs_check('construct_point_cloud_inputs', kwargs)
 
     if names is None:
@@ -136,7 +122,7 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
         raise ValueError('names must be the same length as the number of input dims')
 
     # construct input tensors
-    return [Input(batch_shape=(None, None, input_dim), name=name)
+    return [keras.layers.Input(batch_shape=(None, None, input_dim), name=name)
             for input_dim,name in zip(input_dims, names)]
 
 
@@ -147,9 +133,10 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
 def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
     """"""
 
-    _ensure_keras_imported()
+    from tensorflow import keras
+    K = keras.backend
 
-    mask_layer = Lambda(lambda X: X * K.cast(K.not_equal(X, mask_val), K.dtype(X)), name=name)
+    mask_layer = keras.layers.Lambda(lambda X: X * K.cast(K.not_equal(X, mask_val), K.dtype(X)), name=name)
 
     # return layer and tensors
     return [mask_layer], [mask_layer(input_tensor) for input_tensor in input_tensors]
@@ -157,17 +144,18 @@ def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
 def construct_point_cloud_mask(input_tensors, mask_val=0., name=None, coeffs=None):
     """"""
 
-    _ensure_keras_imported()
+    from tensorflow import keras
+    K = keras.backend
 
     if coeffs is None:
-        mask_layer = Lambda(lambda X: K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name)
+        mask_layer = keras.layers.Lambda(lambda X: K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name)
         return [mask_layer], [mask_layer(input_tensor) for input_tensor in input_tensors]
 
     else:
         mask_layers, mask_tensors = [], []
         for i, (tensor, coeff) in enumerate(zip(input_tensors, coeffs)):
             name_i = None if name is None else '{}_{}'.format(name, i)
-            mask_layer = Lambda(lambda X: coeff*K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name_i)
+            mask_layer = keras.layers.Lambda(lambda X: coeff*K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name_i)
             mask_layers.append(mask_layer)
             mask_tensors.append(mask_layer(tensor))
 
@@ -182,7 +170,7 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
                                                      l2_regs=0., names=None, act_names=None):
     """"""
 
-    _ensure_keras_imported()
+    from tensorflow import keras
 
     # repeat options if singletons
     acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
@@ -199,11 +187,11 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
         # define a dense layer that will be applied through time distributed
         kwargs = {} 
         if l2_reg > 0.:
-            kwargs.update({'kernel_regularizer': L2(l2_reg), 'bias_regularizer': L2(l2_reg)})
-        d_layer = Dense(s, kernel_initializer=k_init, **kwargs)
+            kwargs.update({'kernel_regularizer': keras.regularizers.L2(l2_reg), 'bias_regularizer': keras.regularizers.L2(l2_reg)})
+        d_layer = keras.layers.Dense(s, kernel_initializer=k_init, **kwargs)
 
         # get layers and append them to list
-        tdist_layer = TimeDistributed(d_layer, name=name)
+        tdist_layer = keras.layers.TimeDistributed(d_layer, name=name)
         act_layer = _get_act_layer(act, name=act_name)
         layers.extend([tdist_layer, act_layer])
 
@@ -216,16 +204,16 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
 def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
     """"""
 
-    _ensure_keras_imported()
+    from tensorflow import keras
 
     # lists of layers and tensors
-    layers = [Dot(_dot_axis(), name=name)]
+    layers = [keras.layers.Dot(_dot_axis(), name=name)]
     tensors = [layers[-1]([weight_tensor, input_tensor])]
 
     # apply dropout if specified
     if dropout > 0.:
         dr_name = None if name is None else '{}_dropout'.format(name)
-        layers.append(Dropout(dropout, name=dr_name))
+        layers.append(keras.layers.Dropout(dropout, name=dr_name))
         tensors.append(layers[-1](tensors[-1]))
 
     return layers, tensors
@@ -335,8 +323,10 @@ class SymmetricPointCloudNN(NNBase):
             features are to be provided at the end of the list of inputs.
         """
 
+        from tensorflow import keras
+
         # process generic NN hps
-        super(SymmetricPointCloudNN, self)._process_hps()
+        super()._process_hps()
 
         # input dimensions
         self.input_dims = self._proc_arg('input_dim')
@@ -429,9 +419,7 @@ class SymmetricPointCloudNN(NNBase):
         return arg
 
     def _construct_model(self):
-
-        from tensorflow.keras.models import Model
-        from tensorflow.keras.layers import Dense
+        from tensorflow import keras
 
         # initialize dictionaries for holding indices of subnetworks
         self._layer_inds, self._tensor_inds = {}, {}
@@ -444,7 +432,7 @@ class SymmetricPointCloudNN(NNBase):
         self._construct_F()
 
         # get output layers
-        out_layer = Dense(self.output_dim, name=self._proc_name('output'))
+        out_layer = keras.layers.Dense(self.output_dim, name=self._proc_name('output'))
         act_layer = _get_act_layer(self.output_act, name=self._proc_act_name(self.output_act))
         self._layers.extend([out_layer, act_layer])
 
@@ -453,7 +441,7 @@ class SymmetricPointCloudNN(NNBase):
         self._tensors.append(act_layer(self.tensors[-1]))
 
         # construct a new model
-        self._model = Model(inputs=self.inputs, outputs=self.output, name=self.model_name)
+        self._model = keras.models.Model(inputs=self.inputs, outputs=self.output, name=self.model_name)
 
         # compile model
         self._compile_model()
@@ -463,13 +451,12 @@ class SymmetricPointCloudNN(NNBase):
         pass
 
     def _construct_global_inputs(self):
-
-        from tensorflow.keras.layers import Input
+        from tensorflow import keras
 
         # get new input tensor and insert it at position 1 in tensors list
         if self.num_global_features:
-            self.inputs.append(Input(batch_shape=(None, self.num_global_features), 
-                                     name=self._proc_name('num_global_features')))
+            self.inputs.append(keras.layers.Input(batch_shape=(None, self.num_global_features), 
+                                                     name=self._proc_name('num_global_features')))
             self.tensor_inds['global_features'] = len(self.tensors)
             self.tensors.append(self.global_feature_tensor)
 
@@ -535,11 +522,11 @@ class SymmetricPointCloudNN(NNBase):
             tensors_to_concat.append(self.global_feature_tensor)
 
         if len(tensors_to_concat) > 1:
-            from tensorflow.keras.layers import Concatenate
+            from tensorflow import keras
 
             self.layer_inds['concat'] = len(self.layers)
             self.tensor_inds['F_input'] = self._tensor_inds['concat'] = len(self.tensors)
-            self.layers.append(Concatenate(axis=-1, name=self._proc_name('concat')))
+            self.layers.append(keras.layers.Concatenate(axis=-1, name=self._proc_name('concat')))
             self.tensors.append(self.layers[-1](tensors_to_concat))
         else:
             self.tensor_inds['F_input'] = len(self.tensors) - 1
@@ -581,6 +568,7 @@ class SymmetricPointCloudNN(NNBase):
 
         # handle validation_data as PointCloudDataset
         if 'validation_data' in kwargs and isinstance(kwargs['validation_data'], PointCloudDataset):
+            kwargs.setdefault('validation_steps', kwargs['validation_data'].steps_per_epoch)
             kwargs['validation_data'].infinite = False
             kwargs['validation_data'].shuffle = False
             kwargs['validation_data'] = kwargs['validation_data'].as_tf_dataset(prefetch=prefetch)
@@ -780,8 +768,6 @@ class EFN(SymmetricPointCloudNN):
             the value of the different filters at each point.
         """
 
-        import tensorflow.keras.backend as K
-
         # determine patch of xy space to evaluate filters on
         if isinstance(patch, (float, int)):
             if patch > 0:
@@ -817,7 +803,7 @@ class EFN(SymmetricPointCloudNN):
             in_t, out_t = self._ps_input_tensors[i], self.Phi[i][-1]
 
             # construct function
-            kf = K.function([in_t] if old_keras else in_t, [out_t] if old_keras else out_t)
+            kf = keras.backend.function([in_t] if old_keras else in_t, [out_t] if old_keras else out_t)
 
             # evaluate function
             Z = kf([XY] if old_keras else XY)[0].reshape(nx, ny, nfilt).transpose((2, 0, 1))
