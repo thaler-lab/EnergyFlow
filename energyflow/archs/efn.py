@@ -568,34 +568,29 @@ class SymmetricPointCloudNN(NNBase):
         # handle validation_data as PointCloudDataset
         if 'validation_data' in kwargs and isinstance(kwargs['validation_data'], PointCloudDataset):
             kwargs.setdefault('validation_steps', kwargs['validation_data'].steps_per_epoch)
-            prior_shuffle = kwargs['validation_data'].shuffle
-            kwargs['validation_data'].shuffle = False
-            kwargs['validation_data'] = kwargs['validation_data'].as_tf_dataset(prefetch=prefetch)
-            kwargs['validation_data'].shuffle = prior_shuffle
+            kwargs['validation_data'] = kwargs['validation_data'].as_tf_dataset(prefetch=prefetch, shuffle_override=False)
 
         return super().fit(*args, **kwargs)
 
-    def predict(self, *args, **kwargs):
+    def predict(self, *args, prefetch=None, **kwargs):
 
         # handle predicting on a PointCloudDataset
-        dset = False
+        wrapped = False
         if len(args) and isinstance(args[0], PointCloudDataset):
             kwargs.setdefault('steps', args[0].steps_per_epoch)
-            dset = args[0]
-            prior_shuffle = dset.shuffle
-            dset.shuffle = False
-            dset._init()
-            if len(dset.batch_dtypes) != 1:
-                dset.wrap()
+            args[0]._init()
+            if len(args[0].batch_dtypes) != 1:
+                args[0].wrap()
+                wrapped = args[0]
 
-            args = (dset.as_tf_dataset(),) + args[1:]
-            dset.shuffle = prior_shuffle
+            args = (dset.as_tf_dataset(prefetch=prefetch, shuffle_override=False),) + args[1:]
 
         # get predictions
         preds = super().predict(*args, **kwargs)
 
-        if dset:
-            dset.unwrap()
+        # undo wrapping, if we did it
+        if wrapped:
+            wrapped.unwrap()
 
         return preds
 

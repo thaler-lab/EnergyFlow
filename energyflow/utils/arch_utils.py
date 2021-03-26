@@ -413,7 +413,11 @@ class PointCloudDataset(object):
                 self.data_args[i] = (convert_dtype(data_arg, getattr(np, self.dtype)) 
                                      if final_init else data_arg)
 
-    def as_tf_dataset(self, prefetch=None):
+    def as_tf_dataset(self, prefetch=None, shuffle_override=None):
+
+        prev_shuffle = self.shuffle
+        if shuffle_override is not None:
+            self.shuffle = shuffle_override
 
         # ensure we're initialized
         self._init(final_init=True)
@@ -429,6 +433,9 @@ class PointCloudDataset(object):
             prefetch = 4
         if prefetch:
             tfds = tfds.prefetch(prefetch)
+
+        # restore shuffle
+        self.shuffle = prev_shuffle
 
         return tfds
 
@@ -471,12 +478,12 @@ class PointCloudDataset(object):
 
         # use shuffle at time of calling get_batch_generator
         shuffle = self.shuffle
-
-        # get generators anew, in case infinite=False and we have subgenerators
-        data_args = [arg.get_batch_generator()() if g else arg
-                     for arg,g in zip(self.data_args, gens)]
-
         def batch_generator():
+
+            # get generators anew, in case infinite=False and we have subgenerators
+            # prefetch casues generators to run over, but validation resets generator between epochs
+            data_args = [arg.get_batch_generator()() if g else arg
+                         for arg,g in zip(self.data_args, gens)]
             
             # loop over epochs
             arr_func = lambda arg, start, end: arg[start:end]
