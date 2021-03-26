@@ -562,14 +562,14 @@ class SymmetricPointCloudNN(NNBase):
 
         # handle being passed a PointCloudDataset to fit on
         if len(args) and isinstance(args[0], PointCloudDataset):
-            args[0].infinite = True
+            #args[0].infinite = True
             kwargs.setdefault('steps_per_epoch', args[0].steps_per_epoch)
             args = (args[0].as_tf_dataset(prefetch=prefetch),) + args[1:]
 
         # handle validation_data as PointCloudDataset
         if 'validation_data' in kwargs and isinstance(kwargs['validation_data'], PointCloudDataset):
             kwargs.setdefault('validation_steps', kwargs['validation_data'].steps_per_epoch)
-            kwargs['validation_data'].infinite = False
+            #kwargs['validation_data'].infinite = False
             kwargs['validation_data'].shuffle = False
             kwargs['validation_data'] = kwargs['validation_data'].as_tf_dataset(prefetch=prefetch)
 
@@ -580,7 +580,8 @@ class SymmetricPointCloudNN(NNBase):
         # handle predicting on a PointCloudDataset
         wrapped = False
         if len(args) and isinstance(args[0], PointCloudDataset):
-            args[0].infinite = False
+            #args[0].infinite = False
+            kwargs.setdefault('steps', args[0].steps_per_epoch)
             args[0].shuffle = False
             args[0]._init()
             if len(args[0].batch_dtypes) != 1:

@@ -119,7 +119,7 @@ class PointCloudDataset(object):
         self.dtype = dtype
         self.shuffle = shuffle
         self.seed = seed
-        self.infinite = False
+        #self.infinite = False
         self.pad_val = pad_val
         self._wrap = _wrap
 
@@ -294,12 +294,14 @@ class PointCloudDataset(object):
 
     @property
     def _state(self):
-        return (self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite, self.pad_val)
+        return (self.batch_size, self.shuffle, self.seed, self.dtype, #self.infinite, 
+                self.pad_val)
 
     @_state.setter
     def _state(self, state):
         if state is not None:
-            self.batch_size, self.shuffle, self.seed, self.dtype, self.infinite, self.pad_val = state
+            (self.batch_size, self.shuffle, self.seed, self.dtype, #self.infinite, 
+             self.pad_val) = state
 
     @property
     def batch_dtypes(self):
@@ -339,8 +341,8 @@ class PointCloudDataset(object):
             raise ValueError('inconsistent shuffling')
         if self.seed != other.seed:
             raise ValueError('seeds do not match')
-        if self.infinite != other.infinite:
-            raise ValueError('inconsistent setting for infinite')
+        #if self.infinite != other.infinite:
+        #    raise ValueError('inconsistent setting for infinite')
 
     # function to enable lazy init
     def _init(self, state=None, final_init=False):
@@ -459,11 +461,11 @@ class PointCloudDataset(object):
         self.batch_inds = [(i*self.batch_size, min((i+1)*self.batch_size, len(self)))
                            for i in range(self.steps_per_epoch)]
 
-        def batch_generator():
+        # get generators anew, in case infinite=False and we have subgenerators
+        data_args = [arg.get_batch_generator()() if g else arg
+                     for arg,g in zip(self.data_args, gens)]
 
-            # get generators anew, in case infinite=False and we have subgenerators
-            data_args = [arg.get_batch_generator()() if g else arg
-                         for arg,g in zip(self.data_args, gens)]
+        def batch_generator():
             
             # loop over epochs
             arr_func = lambda arg, start, end: arg[start:end]
@@ -513,8 +515,8 @@ class PointCloudDataset(object):
                                                      for arg, g in zip(data_args, gens)])
 
                 # consider ending iteration
-                if not self.infinite:
-                    break
+                #if not self.infinite:
+                #    break
 
         return batch_generator
 
