@@ -583,7 +583,7 @@ class SymmetricPointCloudNN(NNBase):
                 args[0].wrap()
                 wrapped = args[0]
 
-            args = (dset.as_tf_dataset(prefetch=prefetch, shuffle_override=False),) + args[1:]
+            args = (args[0].as_tf_dataset(prefetch=prefetch, shuffle_override=False),) + args[1:]
 
         # get predictions
         preds = super().predict(*args, **kwargs)
