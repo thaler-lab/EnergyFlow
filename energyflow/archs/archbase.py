@@ -292,8 +292,6 @@ class NNBase(ArchBase):
             - Whether a summary should be printed or not.
         """
 
-        from tensorflow import keras
-
         # compilation
         self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
                              'optimizer': self._proc_arg('optimizer', default='adam'),
@@ -304,6 +302,7 @@ class NNBase(ArchBase):
         if isinstance(self.compile_opts['optimizer'], (tuple, list)):
             self.compile_opts['optimizer'] = self.compile_opts['optimizer'][0](*self.compile_opts['optimizer'][1:])
         else:
+            from tensorflow import keras
             self.compile_opts['optimizer'] = keras.optimizers.get(self.compile_opts['optimizer'])
 
         # add these attributes for historical reasons
@@ -363,7 +362,7 @@ class NNBase(ArchBase):
         # add lr metric
         if self.lr_metric:
             def lr_metric(y_true, y_pred):
-                return self.optimizer.lr
+                return self.optimizer._decayed_lr('float64')
             self.metrics.append(lr_metric)
 
         # compile model if specified
