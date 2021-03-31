@@ -292,6 +292,8 @@ class NNBase(ArchBase):
             - Whether a summary should be printed or not.
         """
 
+        from tensorflow import keras
+
         # compilation
         self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
                              'optimizer': self._proc_arg('optimizer', default='adam'),
@@ -301,6 +303,8 @@ class NNBase(ArchBase):
         # process optimizer
         if isinstance(compile_opts['optimizer'], (tuple, list)):
             compile_opts['optimizer'] = compile_opts['optimizer'][0](*compile_opts['optimizer'][1:])
+        else:
+            compile_opts['optimizer'] = keras.optimizers.get(compile_opts['optimizer'])
 
         # add these attributes for historical reasons
         self.loss = self.compile_opts['loss']
@@ -327,6 +331,7 @@ class NNBase(ArchBase):
         self.patience = self.earlystop_opts['patience']
 
         # flags
+        self.lr_metric = self._proc_arg('lr_metric', default=True)
         self.name_layers = self._proc_arg('name_layers', default=True)
         self.compile_model = self._proc_arg('compile_model', default=True)
         self.print_summary = self._proc_arg('print_summary', default=True, old='summary')
@@ -354,6 +359,12 @@ class NNBase(ArchBase):
             return name
 
     def _compile_model(self):
+
+        # add lr metric
+        if self.lr_metric:
+            def lr_metric(y_true, y_pred):
+                return self.optimizer.lr
+            self.metrics.append(lr_metric)
 
         # compile model if specified
         if self.compile_model: 
