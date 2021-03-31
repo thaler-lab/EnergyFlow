@@ -30,6 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import absolute_import
 
+# import the pyfjcore package as fastjet for now
+import pyfjcore as fastjet
+
 # import top-level submodules
 from . import algorithms
 from . import archs

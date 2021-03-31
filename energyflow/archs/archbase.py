@@ -298,6 +298,10 @@ class NNBase(ArchBase):
                              'metrics': self._proc_arg('metrics', default=['acc'])}
         self.compile_opts.update(self._proc_arg('compile_opts', default={}))
 
+        # process optimizer
+        if isinstance(compile_opts['optimizer'], (tuple, list)):
+            compile_opts['optimizer'] = compile_opts['optimizer'][0](*compile_opts['optimizer'][1:])
+
         # add these attributes for historical reasons
         self.loss = self.compile_opts['loss']
         self.optimizer = self.compile_opts['optimizer']

@@ -134,7 +134,7 @@ def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
     """"""
 
     from tensorflow import keras
-    K = keras.backend
+    from tensorflow.keras import backend as K
 
     mask_layer = keras.layers.Lambda(lambda X: X * K.cast(K.not_equal(X, mask_val), K.dtype(X)), name=name)
 
@@ -145,7 +145,7 @@ def construct_point_cloud_mask(input_tensors, mask_val=0., name=None, coeffs=Non
     """"""
 
     from tensorflow import keras
-    K = keras.backend
+    from tensorflow.keras import backend as K
 
     if coeffs is None:
         mask_layer = keras.layers.Lambda(lambda X: K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name)

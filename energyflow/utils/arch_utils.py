@@ -383,7 +383,6 @@ class PointCloudDataset(object):
 
             # tf dataset not handled yet
             elif isinstance(data_arg, tf.data.Dataset):
-                print(data_arg.element_spec)
                 raise TypeError('tensorflow dataset not supported here yet')
 
             # ensure numpy array

@@ -24,9 +24,9 @@ README.md) for more documentation on its functions and classes.
 from __future__ import absolute_import, division, print_function
 
 import numpy as np
-import pyfjcore
 import six
 
+from energyflow import fastjet as fj
 from energyflow.utils.particle_utils import phi_fix
 
 __all__ = [
@@ -34,7 +34,7 @@ __all__ = [
     'pjs_from_p4s',
     'ptyphims_from_pjs',
     'p4s_from_pjs',
-    'jet_def',
+    'jetdef',
     'cluster',
     'softdrop',
 ]
@@ -58,7 +58,7 @@ def pjs_from_ptyphims(ptyphims):
         - A Python tuple of `PseudoJet`s corresponding to the input particles.
     """
 
-    return pyfjcore.ptyphim_array_to_pseudojets(ptyphims)
+    return fj.ptyphim_array_to_pseudojets(ptyphims)
 
 def pjs_from_p4s(p4s):
     """Converts particles in Cartesian coordinates to FastJet PseudoJets. See
@@ -78,7 +78,7 @@ def pjs_from_p4s(p4s):
         - A Python tuple of `PseudoJet`s corresponding to the input particles.
     """
 
-    return pyfjcore.epxpypz_array_to_pseudojets(p4s)
+    return fj.epxpypz_array_to_pseudojets(p4s)
 
 def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
     """Extracts hadronic four-vectors from FastJet PseudoJets. See the
@@ -102,7 +102,7 @@ def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
         `(pT, y, phi, [mass])`, where the mass is optional.
     """
 
-    event = pyfjcore.pseudojets_to_ptyphim_array(pjs, mass=mass)
+    event = fj.pseudojets_to_ptyphim_array(pjs, mass=mass)
 
     if phi_ref is not None:
         phi_fix(event[:,2], phi_ref, copy=False)
@@ -126,35 +126,36 @@ def p4s_from_pjs(pjs):
         `(E, px, py, pz)`.
     """
 
-    return pyfjcore.pseudojets_to_epxpypz_array(pjs)
+    return fj.pseudojets_to_epxpypz_array(pjs)
 
 JET_ALGORITHMS = {
-    'kt': pyfjcore.kt_algorithm,
-    'cambridge': pyfjcore.cambridge_algorithm,
-    'antikt': pyfjcore.antikt_algorithm,
-    'genkt': pyfjcore.genkt_algorithm,
-    'ee_kt': pyfjcore.ee_kt_algorithm,
-    'ee_genkt': pyfjcore.ee_genkt_algorithm,
+    'kt': fj.kt_algorithm,
+    'cambridge': fj.cambridge_algorithm,
+    'antikt': fj.antikt_algorithm,
+    'genkt': fj.genkt_algorithm,
+    'ee_kt': fj.ee_kt_algorithm,
+    'ee_genkt': fj.ee_genkt_algorithm,
 
     # shorthands for the above
-    'ca': pyfjcore.cambridge_algorithm,
-    'cambridge_aachen': pyfjcore.cambridge_algorithm,
-    'akt': pyfjcore.antikt_algorithm,
+    'ca': fj.cambridge_algorithm,
+    'cambridge_aachen': fj.cambridge_algorithm,
+    'akt': fj.antikt_algorithm,
 }
 
 RECOMBINATION_SCHEMES = {
-    'E_scheme': pyfjcore.E_scheme,
-    'Et_scheme': pyfjcore.Et_scheme,
-    'Et2_scheme': pyfjcore.Et2_scheme,
-    'pt_scheme': pyfjcore.pt_scheme,
-    'pt2_scheme': pyfjcore.pt2_scheme,
-    'WTA_pt_scheme': pyfjcore.WTA_pt_scheme,
+    'E_scheme': fj.E_scheme,
+    'Et_scheme': fj.Et_scheme,
+    'Et2_scheme': fj.Et2_scheme,
+    'pt_scheme': fj.pt_scheme,
+    'pt2_scheme': fj.pt2_scheme,
+    'WTA_pt_scheme': fj.WTA_pt_scheme,
 }
 
-# jet_def(algorithm='ca', R=pyfjcore.JetDefinition.max_allowable_R, recomb='E_scheme')
-def jet_def(algorithm=pyfjcore.cambridge_algorithm,
-            R=pyfjcore.JetDefinition.max_allowable_R,
-            recomb=pyfjcore.E_scheme):
+# jetdef(algorithm='ca', R=fj.JetDefinition.max_allowable_R, recomb='E_scheme')
+def jetdef(algorithm=fj.cambridge_algorithm,
+            R=fj.JetDefinition.max_allowable_R,
+            extra=None,
+            recomb=fj.E_scheme):
     """Creates a JetDefinition from the specified arguments.
 
     **Arguments**
@@ -162,10 +163,13 @@ def jet_def(algorithm=pyfjcore.cambridge_algorithm,
     - **algorithm** : _str_ or _int_
         - A string such as `'kt'`, `'akt'`, `'antikt'`, `'ca'`, 
         `'cambridge'`, or `'cambridge_aachen'`; or an integer corresponding to a
-        pyfjcore.JetAlgorithm value.
+        fj.JetAlgorithm value.
     - **R** : _float_
         - The jet radius. The default value corresponds to `max_allowable_R` as
         defined by the FastJet package.
+    - **extra** : _float_ or `None`
+        - Some jet algorithms, like generalized $k_T$, take an extra parameter.
+        If not `None`, `extra` can be used to provide that parameter.
     - **recomb** : _str_ or _int_
         - An integer corresponding to a RecombinationScheme, or a string
         specifying a name which is looked up in the PyFJCore module.
@@ -190,7 +194,10 @@ def jet_def(algorithm=pyfjcore.cambridge_algorithm,
         except KeyError:
             raise ValueError("recombination scheme '{}' not understood".format(recomb))
 
-    return pyfjcore.JetDefinition(algorithm, float(R), recomb)
+    if extra is None:
+        return fj.JetDefinition(algorithm, float(R), recomb)
+    else:
+        return fj.JetDefinition(algorithm, float(R), float(extra), recomb)
 
 # cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kwargs)
 def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kwargs):
@@ -232,12 +239,9 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
     if jetdef is None:
         jetdef = jet_def(**kwargs)
 
-    cs = pyfjcore.ClusterSequence(pjs, jetdef)
+    cs = fj.ClusterSequence(pjs, jetdef)
     if return_cs:
         return cs
-
-    # don't want the underlying CS object to be deleted when this function ends
-    cs.thisown = False
 
     # specified N means we want exclusive_jets_up_tp
     if N is not None:
@@ -251,8 +255,10 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
     else:
         jets = cs.inclusive_jets(ptmin)
 
-    # ensure the CS memory will be freed
-    cs.delete_self_when_unused()
+    # handle lifetime of cs object
+    if len(pjs):
+        cs.thisown = False
+        cs.delete_self_when_unused()
 
     return jets
 
@@ -294,7 +300,7 @@ def softdrop(jet, zcut=0.1, beta=0, R=1.0):
         obtaining kinematic quantities, e.g. [$z_g$](/docs/obs/#zg_from_pj).
     """
 
-    parent1, parent2 = pyfjcore.PseudoJet(), pyfjcore.PseudoJet()
+    parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
     if not jet.has_parents(parent1, parent2):
         return jet
     
