@@ -292,18 +292,18 @@ class NNBase(ArchBase):
             - Whether a summary should be printed or not.
         """
 
+        from tensorflow import keras
+
         # compilation
         self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
                              'optimizer': self._proc_arg('optimizer', default='adam'),
-                             'metrics': self._proc_arg('metrics', default=['acc'])}
+                             'metrics': self._proc_arg('metrics', default=['accuracy'])}
         self.compile_opts.update(self._proc_arg('compile_opts', default={}))
 
-        # process optimizer
-        if isinstance(self.compile_opts['optimizer'], (tuple, list)):
-            self.compile_opts['optimizer'] = self.compile_opts['optimizer'][0](*self.compile_opts['optimizer'][1:])
-        else:
-            from tensorflow import keras
-            self.compile_opts['optimizer'] = keras.optimizers.get(self.compile_opts['optimizer'])
+        # process strings into keras objects
+        if isinstance(self.compile_opts['loss'], six.string_types):
+            self.compile_opts['loss'] = keras.losses.get(self.compile_opts['loss'])
+        self.compile_opts['optimizer'] = keras.optimizers.get(self.compile_opts['optimizer'])
 
         # add these attributes for historical reasons
         self.loss = self.compile_opts['loss']
