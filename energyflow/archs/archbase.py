@@ -56,9 +56,9 @@ from energyflow.utils.generic_utils import iter_or_rep
 
 __all__ = ['ArchBase', 'NNBase']
 
-###############################################################################
+################################################################################
 # ArchBase
-###############################################################################
+################################################################################
 
 class ArchBase(six.with_metaclass(ABCMeta, object)):
 
@@ -207,9 +207,9 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
         pass
 
 
-###############################################################################
+################################################################################
 # NNBase
-###############################################################################
+################################################################################
 
 class NNBase(ArchBase):
 
@@ -330,10 +330,10 @@ class NNBase(ArchBase):
         self.patience = self.earlystop_opts['patience']
 
         # flags
-        self.lr_metric = self._proc_arg('lr_metric', default=True)
         self.name_layers = self._proc_arg('name_layers', default=True)
         self.compile_model = self._proc_arg('compile_model', default=True)
         self.print_summary = self._proc_arg('print_summary', default=True, old='summary')
+        self.print_lr = self._proc_arg('print_lr', default=False)
 
         # model name
         self.model_name = self._proc_arg('model_name', default=None)
@@ -359,12 +359,6 @@ class NNBase(ArchBase):
 
     def _compile_model(self):
 
-        # add lr metric
-        if self.lr_metric:
-            def lr_metric(y_true, y_pred):
-                return self.optimizer._decayed_lr('float64')
-            self.metrics.append(lr_metric)
-
         # compile model if specified
         if self.compile_model: 
             self.model.compile(**self.compile_opts)
@@ -386,6 +380,15 @@ class NNBase(ArchBase):
         # do early stopping, which now also handle loading best weights at the end
         if self.patience is not None:
             callbacks.append(keras.callbacks.EarlyStopping(**self.earlystop_opts))
+
+        # print learning rate callback
+        if self.print_lr:
+            class PrintLearningRateCallback(keras.callbacks.Callback):
+                def on_epoch_end(self, epoch, logs=None):
+                    print('\nLearning rate after epoch {}: {:.6g}'.format(1 + epoch,
+                          self.model.optimizer._decayed_lr('float32')))
+
+            callbacks.append(PrintLearningRateCallback())
 
         # update any callbacks that were passed with the two we build in explicitly
         kwargs['callbacks'] = kwargs.pop('callbacks', []) + callbacks
@@ -416,10 +419,9 @@ class NNBase(ArchBase):
             name = self.__class__.__name__
             raise AttributeError("'{}' object has no underlying model".format(name))
 
-
-###############################################################################
+################################################################################
 # Activation Functions
-###############################################################################
+################################################################################
 
 def _act_dict():
     global ACT_DICT
