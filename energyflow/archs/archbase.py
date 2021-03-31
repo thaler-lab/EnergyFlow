@@ -301,10 +301,10 @@ class NNBase(ArchBase):
         self.compile_opts.update(self._proc_arg('compile_opts', default={}))
 
         # process optimizer
-        if isinstance(compile_opts['optimizer'], (tuple, list)):
-            compile_opts['optimizer'] = compile_opts['optimizer'][0](*compile_opts['optimizer'][1:])
+        if isinstance(self.compile_opts['optimizer'], (tuple, list)):
+            self.compile_opts['optimizer'] = self.compile_opts['optimizer'][0](*self.compile_opts['optimizer'][1:])
         else:
-            compile_opts['optimizer'] = keras.optimizers.get(compile_opts['optimizer'])
+            self.compile_opts['optimizer'] = keras.optimizers.get(self.compile_opts['optimizer'])
 
         # add these attributes for historical reasons
         self.loss = self.compile_opts['loss']
