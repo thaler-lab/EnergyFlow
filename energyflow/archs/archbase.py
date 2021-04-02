@@ -368,25 +368,25 @@ class NNBase(ArchBase):
                 self.model.summary()
 
     def fit(self, *args, **kwargs):
-        import tensorflow as tf
+        from tensorflow import keras
 
         # list of callback functions
         callbacks = []
 
         # do model checkpointing, used mainly to save model during training instead of at end
         if self.filepath and self.save_while_training:
-            callbacks.append(tf.keras.callbacks.ModelCheckpoint(self.filepath, **self.modelcheck_opts))
+            callbacks.append(keras.callbacks.ModelCheckpoint(self.filepath, **self.modelcheck_opts))
 
         # do early stopping, which now also handle loading best weights at the end
         if self.patience is not None:
-            callbacks.append(tf.keras.callbacks.EarlyStopping(**self.earlystop_opts))
+            callbacks.append(keras.callbacks.EarlyStopping(**self.earlystop_opts))
 
         # print learning rate callback
         if self.print_lr:
-            class PrintLearningRateCallback(tf.keras.callbacks.Callback):
+            class PrintLearningRateCallback(keras.callbacks.Callback):
                 def on_epoch_end(self, epoch, logs=None):
                     print('Learning rate after epoch {}: {:.6g}'.format(1 + epoch,
-                          self.model.optimizer._decayed_lr(tf.float32)))
+                          keras.backend.get_value(self.model.optimizer._decayed_lr('float32'))))
 
             callbacks.append(PrintLearningRateCallback())
 
