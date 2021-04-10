@@ -552,7 +552,9 @@ class SymmetricPointCloudNN(NNBase):
         self.layer_inds['F'] = tuple(layer_inds)
         self.tensor_inds['F'] = tuple(tensor_inds)
 
-    def fit(self, *args, prefetch=None, **kwargs):
+
+    def fit(self, *args, **kwargs):
+        kwargs.setdefault('prefetch', None)
 
         # handle being passed a PointCloudDataset to fit on
         if len(args) and isinstance(args[0], PointCloudDataset):
@@ -566,7 +568,9 @@ class SymmetricPointCloudNN(NNBase):
 
         return super().fit(*args, **kwargs)
 
-    def predict(self, *args, prefetch=None, **kwargs):
+    def predict(self, *args, **kwargs):
+
+        kwargs.setdefault('prefetch', None)
 
         # handle predicting on a PointCloudDataset
         wrapped = False
