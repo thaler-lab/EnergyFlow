@@ -8,7 +8,7 @@ install:
   - pip install .[tests]
 
 script:
-  - python setup.py test -v
+  - pytest -v energyflow
   - python run_all_examples.py
 
 stages:

@@ -56,6 +56,7 @@ def load(num_data=-1, cache_dir=None):
     fpath = _get_filepath('QG_nsubs.npz', 
                       url='https://www.dropbox.com/s/y1l6avj5yj7jn9t/QG_nsubs.npz?dl=1',
                       file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
+                      cache_subdir='datasets',
                       cache_dir=cache_dir)
 
     with np.load(fpath) as f:

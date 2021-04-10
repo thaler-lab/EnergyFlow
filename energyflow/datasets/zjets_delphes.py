@@ -126,8 +126,7 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
 
     - **datasets**: {`'Herwig'`, `'Pythia21'`, `'Pythia25'`, `'Pythia26'`}
         - The dataset (specified by which generator/tune was used to produce
-        it) to load. Note that this argument is not sensitive to
-        capitalization.
+        it) to load. Note that this argument is not sensitive to capitalization.
     - **num_data**: _int_
         - The number of events to read in. A value of `-1` means to load all
         available events.
@@ -234,8 +233,10 @@ def load(dataset, num_data=100000, pad=False, cache_dir=None, source='zenodo',
     s = slice(0, num_data if num_data > -1 else None)
     for key,val in vals.items():
 
-        if 'particles' not in key or not pad:
+        if 'particles' not in key:
             vals[key] = np.concatenate(val, axis=0)[s]
+        elif not pad:
+            vals[key] = np.concatenate([np.asarray(v, dtype='O') for v in val])[s]
         else:
             max_len_axis1 = max([X.shape[1] for X in val])
             vals[key] = np.vstack([_pad_events_axis1(x, max_len_axis1) for x in val])[s]

@@ -71,9 +71,11 @@ class LinearClassifier(ArchBase):
         if self.linclass_type == 'lda':
             from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
             self._model = LinearDiscriminantAnalysis(solver=self.solver, tol=self.tol)
+
         elif self.linclass_type == 'lr':
             from sklearn.linear_model import LogisticRegression
             self._model = LogisticRegression(**self.LR_hps)
+
         else:
             raise ValueError('linclass_type can only be lda or lr')
 

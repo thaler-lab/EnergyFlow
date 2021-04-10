@@ -226,10 +226,7 @@ if wasserstein:
 
         # get flows if requested
         if return_flow:
-            flows = _EMD.flows()
-
-        if return_flow:
-            return emd, flows
+            return emd, _EMD.flows()
         else:
             return emd
 
@@ -239,7 +236,8 @@ if wasserstein:
     #                                         throw_on_error=True, n_iter_max=100000,
     #                                         epsilon_large_factor=10000.0,
     #                                         epsilon_small_factor=1.0)
-    def emds_wasserstein(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
+    def emds_wasserstein(events0, events1=None, pairwise_emd=None,
+                                                R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
                                                 external_emd_handler=None,
                                                 n_jobs=-1, print_every=0, verbose=0,
                                                 throw_on_error=True, n_iter_max=100000,
@@ -268,7 +266,10 @@ if wasserstein:
             `None`. If the latter, the pairwise distances between events in
             `events0` will be computed and the returned matrix will be
             symmetric.
-       - **R** : _float_
+        - **pairwise_emd** : _wasserstein.PairwiseEMD_ or `None`
+            - If not `None`, the computation uses this pairwise EMD object.
+            Otherwise, one is instantiated using the provided parameters.
+        - **R** : _float_
             - The R parameter in the EMD definition that controls the relative 
             importance of the two terms. Must be greater than or equal to half 
             of the maximum ground distance in the space in order for the EMD 
@@ -338,11 +339,15 @@ if wasserstein:
             n_jobs = multiprocessing.cpu_count() or 1
 
         # create object
-        pairwise_emd = wasserstein.PairwiseEMD(R, beta, norm, n_jobs, print_every, bool(verbose),
-                                               throw_on_error=throw_on_error,
-                                               n_iter_max=n_iter_max,
-                                               epsilon_large_factor=epsilon_large_factor,
-                                               epsilon_small_factor=epsilon_small_factor)
+        if pairwise_emd is None:
+            pairwise_emd = wasserstein.PairwiseEMD(R, beta, norm, n_jobs, print_every, bool(verbose),
+                                                   throw_on_error=throw_on_error,
+                                                   n_iter_max=n_iter_max,
+                                                   epsilon_large_factor=epsilon_large_factor,
+                                                   epsilon_small_factor=epsilon_small_factor)
+        elif not isinstance(pairwise_emd, wasserstein.PairwiseEMD):
+            raise TypeError('`pairwise_emd` should be a `wasserstein.PairwiseEMD` object')
+
         if verbose > 0:
             print(pairwise_emd)
 

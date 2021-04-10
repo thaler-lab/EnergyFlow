@@ -15,7 +15,7 @@ import warnings
 
 import numpy as np
 
-from energyflow.archs.archbase import NNBase, _get_act_layer
+from energyflow.archs.archbase import NNBase, _get_act_layer, _import_keras
 from energyflow.archs.dnn import construct_dense
 from energyflow.utils.arch_utils import PointCloudDataset
 from energyflow.utils.generic_utils import iter_or_rep, kwargs_check
@@ -71,7 +71,7 @@ def construct_point_cloud_weighted_inputs(*input_dims, **kwargs):
     - _list_ of _tensorflow.keras.Input_ tensors.
     """
 
-    from tensorflow import keras
+    _import_keras(globals())
 
     zs_names, ps_names = kwargs.pop('zs_names', None), kwargs.pop('ps_names', None)
     kwargs_check('construct_point_cloud_weighted_inputs', kwargs)
@@ -111,7 +111,7 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
     - _list_ of _tensorflow.keras.Input_ tensors.
     """
 
-    from tensorflow import keras
+    _import_keras(globals())
 
     names = kwargs.pop('names', None)
     kwargs_check('construct_point_cloud_inputs', kwargs)
@@ -133,8 +133,7 @@ def construct_point_cloud_inputs(*input_dims, **kwargs):
 def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
     """"""
 
-    from tensorflow import keras
-    from tensorflow.keras import backend as K
+    _import_keras(globals())
 
     mask_layer = keras.layers.Lambda(lambda X: X * K.cast(K.not_equal(X, mask_val), K.dtype(X)), name=name)
 
@@ -144,8 +143,7 @@ def construct_weighted_point_cloud_mask(input_tensors, mask_val=0., name=None):
 def construct_point_cloud_mask(input_tensors, mask_val=0., name=None, coeffs=None):
     """"""
 
-    from tensorflow import keras
-    from tensorflow.keras import backend as K
+    _import_keras(globals())
 
     if coeffs is None:
         mask_layer = keras.layers.Lambda(lambda X: K.cast(K.any(K.not_equal(X, mask_val), axis=-1), K.dtype(X)), name=name)
@@ -170,7 +168,7 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
                                                      l2_regs=0., names=None, act_names=None):
     """"""
 
-    from tensorflow import keras
+    _import_keras(globals())
 
     # repeat options if singletons
     acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
@@ -204,7 +202,7 @@ def construct_distributed_dense(input_tensor, sizes, acts='relu', k_inits='he_un
 def construct_latent(input_tensor, weight_tensor, dropout=0., name=None):
     """"""
 
-    from tensorflow import keras
+    _import_keras(globals())
 
     # lists of layers and tensors
     layers = [keras.layers.Dot(_dot_axis(), name=name)]
@@ -323,7 +321,7 @@ class SymmetricPointCloudNN(NNBase):
             features are to be provided at the end of the list of inputs.
         """
 
-        from tensorflow import keras
+        _import_keras(globals())
 
         # process generic NN hps
         super()._process_hps()
@@ -419,7 +417,6 @@ class SymmetricPointCloudNN(NNBase):
         return arg
 
     def _construct_model(self):
-        from tensorflow import keras
 
         # initialize dictionaries for holding indices of subnetworks
         self._layer_inds, self._tensor_inds = {}, {}
@@ -451,7 +448,6 @@ class SymmetricPointCloudNN(NNBase):
         pass
 
     def _construct_global_inputs(self):
-        from tensorflow import keras
 
         # get new input tensor and insert it at position 1 in tensors list
         if self.num_global_features:
@@ -522,8 +518,6 @@ class SymmetricPointCloudNN(NNBase):
             tensors_to_concat.append(self.global_feature_tensor)
 
         if len(tensors_to_concat) > 1:
-            from tensorflow import keras
-
             self.layer_inds['concat'] = len(self.layers)
             self.tensor_inds['F_input'] = self._tensor_inds['concat'] = len(self.tensors)
             self.layers.append(keras.layers.Concatenate(axis=-1, name=self._proc_name('concat')))

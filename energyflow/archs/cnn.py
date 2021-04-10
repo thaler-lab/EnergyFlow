@@ -10,7 +10,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from energyflow.archs.archbase import NNBase
+from energyflow.archs.archbase import NNBase, _get_act_layer, _import_keras
 from energyflow.utils.generic_utils import iter_or_rep
 
 __all__ = ['CNN']
@@ -139,7 +139,7 @@ class CNN(NNBase):
 
     def _construct_model(self):
 
-        from tensorflow import keras
+        _import_keras(globals())
 
         # fresh model
         self._model = keras.models.Sequential(name=self.model_name)
@@ -157,7 +157,7 @@ class CNN(NNBase):
             self.model.add(keras.layers.Conv2D(num_filter, filter_size, kernel_initializer=k_init,
                                                                            padding=pad, data_format=self.data_format,
                                                                            name=self._proc_name('conv2d_'+str(i)), **kwargs))
-            self._add_act(act)
+            self.model.add(_get_act_layer(act, name=self._proc_act_name(act)))
 
             # add pooling layer if we have a non-zero pool size
             if pool_size > 0:
@@ -190,7 +190,7 @@ class CNN(NNBase):
 
         # output layer
         self.model.add(keras.layers.Dense(self.output_dim, name=self._proc_name('output')))
-        self._add_act(self.output_act)
+        self.model.add(_get_act_layer(self.output_act, name=self._proc_act_name(self.output_act)))
 
         # compile model
         self._compile_model()

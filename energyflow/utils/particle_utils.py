@@ -598,7 +598,7 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
         return ptyphims_from_p4s(sum_p4, phi_ref=phi)
 
     elif scheme == 'ptscheme':
-        return sum_ptyphims(ptyphipids, scheme=scheme)
+        return sum_ptyphims(ptyphipids, scheme='ptscheme')
 
     else:
         raise ValueError('Unknown recombination scheme {}'.format(scheme))

@@ -158,7 +158,7 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia', source='zenodo',
     Xs, ys = [], []
     for filename, url, h in zip(filenames, urls, hashes):
         try:
-            fpath = _get_filepath(filename, url, cache_dir, file_hash=h)
+            fpath = _get_filepath(filename, url, cache_dir, cache_subdir='datasets', file_hash=h)
 
         except Exception as e:
             print(str(e))

@@ -10,7 +10,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from energyflow.archs.archbase import NNBase, _get_act_layer
+from energyflow.archs.archbase import NNBase, _get_act_layer, _import_keras
 from energyflow.utils.generic_utils import iter_or_rep
 
 __all__ = ['DNN']
@@ -25,7 +25,7 @@ def construct_dense(input_tensor, sizes,
                     names=None, act_names=None):
     """"""
 
-    from tensorflow import keras
+    _import_keras(globals())
     
     # repeat options if singletons
     acts, k_inits = iter_or_rep(acts), iter_or_rep(k_inits)
@@ -130,7 +130,7 @@ class DNN(NNBase):
 
     def _construct_model(self):
 
-        from tensorflow import keras
+        _import_keras(globals())
 
         # get an input tensor
         self._input = keras.layers.Input(shape=(self.input_dim,), name=self._proc_name('input'))

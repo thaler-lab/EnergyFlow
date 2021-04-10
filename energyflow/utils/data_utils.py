@@ -165,7 +165,7 @@ def data_split(*args, **kwargs):
     # return list of new datasets
     return [arg[mask] for arg in args for mask in masks]
 
-def determine_cache_dir(cache_dir=None, cache_subdir='datasets'):
+def determine_cache_dir(cache_dir=None, cache_subdir=None):
     """Determines the path to the specified directory used for caching files. If
     `cache_dir` is `None`, the default is to use `'~/.energyflow'` unless the
     environment variable `ENERGYFLOW_CACHE_DIR` is set, in which case it is
@@ -195,7 +195,7 @@ def determine_cache_dir(cache_dir=None, cache_subdir='datasets'):
 
     return os.path.expanduser(cache_dir)
 
-def get_examples(cache_dir=None, which='all', overwrite=False):
+def get_examples(cache_dir=None, which='all', overwrite=False, branch='master'):
     """Pulls examples from GitHub. To ensure availability of all examples
     update EnergyFlow to the latest version.
 
@@ -211,6 +211,8 @@ def get_examples(cache_dir=None, which='all', overwrite=False):
         case all the available examples are downloaded.
     - **overwrite** : _bool_
         - Whether to overwrite existing files or not.
+    - **branch** : _str_
+        - The EnergyFlow branch from which to get the examples.
     """
 
     # all current examples 
@@ -224,19 +226,19 @@ def get_examples(cache_dir=None, which='all', overwrite=False):
             which = [which]
         examples = all_examples.intersection(which)
 
-    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
-    cache_dir = determine_cache_dir(cache_dir)
+    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/{}/examples/'.format(branch)
+    datadir = determine_cache_dir(cache_dir, cache_subdir='examples')
 
     # get each example
     files = []
     for example in examples:
 
         # remove file if necessary
-        file_path = os.path.join(cache_dir, 'examples', example)
-        if overwrite and os.path.exists(file_path):
-            os.remove(file_path)
+        fpath = os.path.join(datadir, example)
+        if overwrite and os.path.exists(fpath):
+            os.remove(fpath)
 
-        files.append(_get_filepath(example, base_url+example, cache_dir, cache_subdir='examples'))
+        files.append(_get_filepath(example, base_url + example, cache_dir=datadir))
 
     # print summary
     print()
@@ -453,11 +455,27 @@ def _validate_file(fpath, file_hash, algorithm='auto', chunk_size=131071):
     return str(_hash_file(fpath, hasher, chunk_size)) == str(file_hash)
 
 # PTK: modified this function given our `determine_cache_dir` function above
-def _get_filepath(filename, url, cache_dir=None, cache_subdir='datasets', file_hash=None):
+def _get_filepath(filename, url, cache_dir=None, cache_subdir=None, file_hash=None):
     """Pulls file from the internet."""
 
     # get cache_dir
     datadir = determine_cache_dir(cache_dir, cache_subdir)
+
+    # check to see if file exists
+    fpath = os.path.join(datadir, filename)
+    if os.path.exists(fpath):
+
+        # check that file is readable
+        if not os.access(fpath, os.R_OK):
+            raise PermissionError('file exists at {} but is not readable'.format(datadir))
+
+        # validate file if requested
+        if file_hash is not None and not _validate_file(fpath, file_hash):
+            print('Local file hash does not match so we will redownload...')
+
+        # file can be used as is
+        else:
+            return fpath
 
     # ensure that directory exists and is writable
     try:
@@ -469,40 +487,30 @@ def _get_filepath(filename, url, cache_dir=None, cache_subdir='datasets', file_h
 
     # need to change to backup location
     except PermissionError:
+        sys.stderr.write('{} not writeable, falling back to /tmp/.energyflow'.format(datadir))
         datadir = os.path.join('/tmp', '.energyflow',
                                cache_subdir if cache_subdir is not None else '')
         if not os.path.exists(datadir):
             os.makedirs(datadir)
 
-    # get filepath
-    fpath = os.path.join(datadir, filename)
+        # get new filepath
+        fpath = os.path.join(datadir, filename)
 
-    # determine if file needs to be downloaded
-    download = False
-    if os.path.exists(fpath):
-        if file_hash is not None and not _validate_file(fpath, file_hash):
-            print('Local file hash does not match so we will redownload...')
-            download = True
-    else:
-        download = True
-
-    if download:
-        print('Downloading {} from {} to {}'.format(filename, url, datadir))
-
-        error_msg = 'URL fetch failure on {}: {} -- {}'
+    print('Downloading {} from {} to {}'.format(filename, url, datadir))
+    error_msg = 'URL fetch failure on {}: {} -- {}'
+    try:
         try:
-            try:
-                urlretrieve(url, fpath)
-            except URLError as e:
-                raise Exception(error_msg.format(url, e.errno, e.reason))
-            except HTTPError as e:
-                raise Exception(error_msg.format(url, e.code, e.msg))
-        except (Exception, KeyboardInterrupt):
-            if os.path.exists(fpath):
-                os.remove(fpath)
-            raise
+            urlretrieve(url, fpath)
+        except URLError as e:
+            raise Exception(error_msg.format(url, e.errno, e.reason))
+        except HTTPError as e:
+            raise Exception(error_msg.format(url, e.code, e.msg))
+    except (Exception, KeyboardInterrupt):
+        if os.path.exists(fpath):
+            os.remove(fpath)
+        raise
 
-        if file_hash is not None:
-            assert _validate_file(fpath, file_hash), 'Hash of downloaded file incorrect.'
+    if file_hash is not None:
+        assert _validate_file(fpath, file_hash), 'Hash of downloaded file incorrect.'
 
     return fpath

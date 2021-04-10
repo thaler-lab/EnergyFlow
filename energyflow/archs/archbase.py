@@ -57,6 +57,17 @@ from energyflow.utils.generic_utils import iter_or_rep
 __all__ = ['ArchBase', 'NNBase']
 
 ################################################################################
+# Lazy import of Keras
+################################################################################
+
+def _import_keras(global_vars):
+    from tensorflow import keras
+    from tensorflow.keras import backend as K
+
+    global_vars['keras'] = keras
+    global_vars['K'] = K
+
+################################################################################
 # ArchBase
 ################################################################################
 
@@ -292,7 +303,7 @@ class NNBase(ArchBase):
             - Whether a summary should be printed or not.
         """
 
-        from tensorflow import keras
+        _import_keras(globals())
 
         # compilation
         self.compile_opts = {'loss': self._proc_arg('loss', default='categorical_crossentropy'),
@@ -343,9 +354,6 @@ class NNBase(ArchBase):
         # activation function counts
         self._act_counts = {}
 
-    def _add_act(self, act, name=None):
-        self.model.add(_get_act_layer(act, name=self._proc_act_name(act)))
-
     def _proc_name(self, name):
         return name if self.name_layers else None
 
@@ -368,7 +376,7 @@ class NNBase(ArchBase):
                 self.model.summary()
 
     def fit(self, *args, **kwargs):
-        from tensorflow import keras
+        _import_keras(globals())
 
         # list of callback functions
         callbacks = []
@@ -426,7 +434,7 @@ class NNBase(ArchBase):
 def _act_dict():
     global ACT_DICT
     if 'ACT_DICT' not in globals():
-        from tensorflow import keras
+        _import_keras(globals())
         ACT_DICT = {'LeakyReLU': keras.layers.LeakyReLU,
                     'PReLU': keras.layers.PReLU,
                     'ThresholdedReLU': keras.layers.ThresholdedReLU
@@ -434,7 +442,7 @@ def _act_dict():
     return ACT_DICT
 
 def _get_act_layer(act, name=None):
-    from tensorflow import keras
+    _import_keras(globals())
 
     # handle case of act as a layer
     if isinstance(act, keras.layers.Layer):
