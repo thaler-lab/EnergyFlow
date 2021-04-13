@@ -551,7 +551,7 @@ def sum_ptyphims(ptyphims, scheme='escheme'):
     ptyphims = np.asarray(ptyphims, dtype=float)
 
     if ptyphims.ndim <= 1 or ptyphims.size == 0:
-        return ptyphims
+        return np.squeeze(ptyphims)
 
     if scheme == 'escheme':
         phi = ptyphims[np.argmax(ptyphims[:,0]),2]
@@ -590,7 +590,7 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     ptyphipids = np.asarray(ptyphipids, dtype=float)
 
     if ptyphipids.ndim <= 1 or ptyphipids.size == 0:
-        return ptyphipids
+        return np.squeeze(ptyphipids)
 
     if scheme == 'escheme':
         phi = ptyphipids[np.argmax(ptyphipids[:,0]),2]
