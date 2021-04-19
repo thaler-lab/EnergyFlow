@@ -554,11 +554,12 @@ class SymmetricPointCloudNN(NNBase):
 
 
     def fit(self, *args, **kwargs):
+        prefetch = kwargs.pop('prefetch', None)
 
         # handle being passed a PointCloudDataset to fit on
         if len(args) and isinstance(args[0], PointCloudDataset):
             kwargs.setdefault('steps_per_epoch', args[0].steps_per_epoch)
-            args = (args[0].as_tf_dataset(prefetch=kwargs.pop('prefetch', None)),) + args[1:]
+            args = (args[0].as_tf_dataset(prefetch=prefetch),) + args[1:]
 
         # handle validation_data as PointCloudDataset
         if 'validation_data' in kwargs and isinstance(kwargs['validation_data'], PointCloudDataset):
