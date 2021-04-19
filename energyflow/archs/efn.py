@@ -554,7 +554,7 @@ class SymmetricPointCloudNN(NNBase):
 
 
     def fit(self, *args, **kwargs):
-        kwargs.setdefault('prefetch', None)
+        prefetch = kwargs.setdefault('prefetch', None)
 
         # handle being passed a PointCloudDataset to fit on
         if len(args) and isinstance(args[0], PointCloudDataset):
@@ -569,8 +569,7 @@ class SymmetricPointCloudNN(NNBase):
         return super().fit(*args, **kwargs)
 
     def predict(self, *args, **kwargs):
-
-        kwargs.setdefault('prefetch', None)
+        prefetch = kwargs.setdefault('prefetch', None)
 
         # handle predicting on a PointCloudDataset
         wrapped = False

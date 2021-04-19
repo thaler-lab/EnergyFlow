@@ -1406,7 +1406,7 @@ class MODDataset(object):
         default when the `MODDataset` object is deleted.
         """
 
-        if hasattr(self, '_hf'):
+        if hasattr(self, '_hf') and sys.meta_path is not None:
             self._hf.close()
 
     ############
