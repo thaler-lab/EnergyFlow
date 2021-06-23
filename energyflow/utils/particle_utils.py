@@ -563,7 +563,7 @@ def sum_ptyphims(ptyphims, scheme='escheme'):
         return np.asarray([np.sum(ptyphims[:,0]), y, phi])
 
     else:
-        raise ValueError('Unknown recombination scheme {}'.format(scheme))
+        raise ValueError("Unknown recombination scheme '{}'".format(scheme))
 
 def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
     r"""Add a collection of four-vectors that are expressed as

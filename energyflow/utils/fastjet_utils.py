@@ -34,7 +34,7 @@ __all__ = [
     'pjs_from_p4s',
     'ptyphims_from_pjs',
     'p4s_from_pjs',
-    'jetdef',
+    'jetdefinition',
     'cluster',
     'softdrop',
 ]
@@ -151,11 +151,11 @@ RECOMBINATION_SCHEMES = {
     'WTA_pt_scheme': fj.WTA_pt_scheme,
 }
 
-# jetdef(algorithm='ca', R=fj.JetDefinition.max_allowable_R, recomb='E_scheme')
-def jetdef(algorithm=fj.cambridge_algorithm,
-            R=fj.JetDefinition.max_allowable_R,
-            extra=None,
-            recomb=fj.E_scheme):
+# jetdefinition(algorithm='ca', R=fj.JetDefinition.max_allowable_R, recomb='E_scheme')
+def jetdefinition(algorithm=fj.cambridge_algorithm,
+                  R=fj.JetDefinition.max_allowable_R,
+                  extra=None,
+                  recomb=fj.E_scheme):
     """Creates a JetDefinition from the specified arguments.
 
     **Arguments**
@@ -237,7 +237,7 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
     """
 
     if jetdef is None:
-        jetdef = jet_def(**kwargs)
+        jetdef = jetdefinition(**kwargs)
 
     cs = fj.ClusterSequence(pjs, jetdef)
     if return_cs:

@@ -18,6 +18,7 @@
 - Added float option to MODDataset.
 - Added split/chain to PointCloudDataset.
 - `pyfjcore` used to provide access to FastJet.
+- Increased memory efficiency in `qg_jets.load`.
 
 - Improved `data_split` function to optionally return empty arrays if `train`, `val`, or `test` is zero.
 

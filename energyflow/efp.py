@@ -39,7 +39,7 @@ from energyflow.algorithms import VariableElimination, einsum_path, einsum
 from energyflow.base import EFPBase
 from energyflow.efm import EFMSet, efp2efms
 from energyflow.measure import PF_MARKER
-from energyflow.utils.generic_utils import (concat_specs, create_pool, explicit_comp,
+from energyflow.utils.generic_utils import (concat_specs, explicit_comp,
                                             kwargs_check, load_efp_file)
 from energyflow.utils.graph_utils import *
 

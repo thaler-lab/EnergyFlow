@@ -106,17 +106,14 @@ def emds4doc():
 # EMD implementations using Wasserstein
 if wasserstein:
 
-    # global wasserstein EMD object to carry out computations
-    _EMD = wasserstein.EMD()
-
     # emd_wasserstein(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
-    #                           return_flow=False, do_timing=False,
+    #                           return_flow=False, periodic_phi=False,
     #                           n_iter_max=100000,
-    #                           epsilon_large_factor=10000.0, epsilon_small_factor=1.0)
+    #                           epsilon_large_factor=1000.0, epsilon_small_factor=1.0)
     def emd_wasserstein(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
-                                  return_flow=False, do_timing=False,
+                                  return_flow=False, periodic_phi=False,
                                   n_iter_max=100000,
-                                  epsilon_large_factor=10000.0, epsilon_small_factor=1.0,
+                                  epsilon_large_factor=1000.0, epsilon_small_factor=1.0,
                                   **kwargs):
         r"""Compute the EMD between two events using the Wasserstein library.
 
@@ -188,17 +185,25 @@ if wasserstein:
         """
 
         # warn about old kwargs
-        old_kwargs = {'measure', 'coords', 'periodic_phi', 'phi_col', 'empty_policy'}
+        old_kwargs = {'measure', 'coords', 'phi_col', 'empty_policy'}
         kwargs_check('emd_wasserstein', kwargs, old_kwargs)
         for k in kwargs:
             warnings.warn("Keyword argument '{}' has no effect on `emd_wasserstein`.".format(k)
                           + " Use `emd_pot` if you need previous functionality.")
 
-        # set options
-        _EMD.set_R(R)
-        _EMD.set_beta(beta)
-        _EMD.set_norm(norm)
-        _EMD.set_network_simplex_params(n_iter_max, epsilon_large_factor, epsilon_small_factor)
+        global emd_obj
+
+        # get EMD object
+        if periodic_phi:
+            emd_obj = wasserstein.EMDYPhi(R, beta, norm,
+                                          n_iter_max=n_iter_max,
+                                          epsilon_large_factor=epsilon_large_factor,
+                                          epsilon_small_factor=epsilon_small_factor)
+        else:
+            emd_obj = wasserstein.EMD(R, beta, norm,
+                                      n_iter_max=n_iter_max,
+                                      epsilon_large_factor=epsilon_large_factor,
+                                      epsilon_small_factor=epsilon_small_factor)
 
         # run using euclidean distances
         if dists is None:
@@ -210,7 +215,7 @@ if wasserstein:
                 ev0, ev1 = ev0[np.sum(ev0**2, axis=1) <= R2], ev1[np.sum(ev1**2, axis=1) <= R2]
 
             # evaluate EMD
-            emd = _EMD(ev0[:,0], ev0[:,1:], ev1[:,0], ev1[:,1:])
+            emd = emd_obj(ev0[:,0], ev0[:,1:], ev1[:,0], ev1[:,1:])
 
         # run using custom distances
         else:
@@ -222,11 +227,11 @@ if wasserstein:
                 ev1 = ev1[:,0]
 
             # evaluate EMD
-            emd = _EMD(ev0, ev1, dists)
+            emd = emd_obj(ev0, ev1, dists)
 
         # get flows if requested
         if return_flow:
-            return emd, _EMD.flows()
+            return emd, emd_obj.flows()
         else:
             return emd
 
@@ -234,14 +239,14 @@ if wasserstein:
     #                                         external_emd_handler=None,
     #                                         n_jobs=-1, print_every=0, verbose=0,
     #                                         throw_on_error=True, n_iter_max=100000,
-    #                                         epsilon_large_factor=10000.0,
+    #                                         epsilon_large_factor=1000.0,
     #                                         epsilon_small_factor=1.0)
     def emds_wasserstein(events0, events1=None, pairwise_emd=None,
                                                 R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
                                                 external_emd_handler=None,
                                                 n_jobs=-1, print_every=0, verbose=0,
                                                 throw_on_error=True, n_iter_max=100000,
-                                                epsilon_large_factor=10000.0, epsilon_small_factor=1.0,
+                                                epsilon_large_factor=1000.0, epsilon_small_factor=1.0,
                                                 **kwargs):
         r"""Compute the EMDs between collections of events. This can be used to
         compute EMDs between all pairs of events in a set or between events in
@@ -340,7 +345,8 @@ if wasserstein:
 
         # create object
         if pairwise_emd is None:
-            pairwise_emd = wasserstein.PairwiseEMD(R, beta, norm, n_jobs, print_every, bool(verbose),
+            pairwise_emd = wasserstein.PairwiseEMD(R, beta, norm,
+                                                   n_jobs, print_every, bool(verbose),
                                                    throw_on_error=throw_on_error,
                                                    n_iter_max=n_iter_max,
                                                    epsilon_large_factor=epsilon_large_factor,

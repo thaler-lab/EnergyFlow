@@ -168,15 +168,19 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia', source='zenodo',
 
         # load file and append arrays
         with np.load(fpath) as f:
-            Xs.append(np.asarray(f['X'], dtype=dtype))
-            ys.append(np.asarray(f['y'], dtype=dtype))
+            fX, fy = np.asarray(f['X'], dtype=dtype), np.asarray(f['y'], dtype=dtype)
+            if pad:
+                Xs.append(fX)
+                ys.append(fy)
+            else:
+                Xs.extend([x[x[:,0] > 0,:ncol] for x in fX])
 
     # get X array
     if pad:
         max_len_axis1 = max([X.shape[1] for X in Xs])
         X = np.vstack([_pad_events_axis1(x[...,:ncol], max_len_axis1) for x in Xs])
     else:
-        X = np.asarray([x[x[:,0]>0,:ncol] for X in Xs for x in X], dtype='O')
+        X = np.asarray(Xs, dtype='O')
 
     # get y array
     y = np.concatenate(ys)
