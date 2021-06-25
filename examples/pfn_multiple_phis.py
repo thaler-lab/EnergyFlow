@@ -81,7 +81,7 @@ X_test = [X_test, ef.archs.PairedPointCloudDataset(X_test)] + ([g_test] if use_g
 # construct point cloud datasets
 d_train = ef.archs.PointCloudDataset([X_train, Y_train], batch_size=batch_size)
 d_val = ef.archs.PointCloudDataset([X_val, Y_val])
-d_test = ef.archs.PointCloudDataset([X_test, Y_test])
+d_test = ef.archs.PointCloudDataset(X_test)
 
 print('training', d_train)
 print('validation', d_val)

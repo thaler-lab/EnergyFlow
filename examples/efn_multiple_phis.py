@@ -77,9 +77,11 @@ if use_global_features:
     X_train += [g_train]
     X_val += [g_val]
     X_test += [g_test]
+
 d_train = ef.archs.PointCloudDataset([X_train, Y_train], batch_size=batch_size)
 d_val = ef.archs.PointCloudDataset([X_val, Y_val])
-d_test = ef.archs.PointCloudDataset([X_test, Y_test])
+d_test = ef.archs.PointCloudDataset(X_test)
+
 print('training dataset', d_train)
 print('validation dataset', d_val)
 print('testing dataset', d_test)

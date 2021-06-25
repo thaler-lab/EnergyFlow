@@ -393,7 +393,8 @@ class SymmetricPointCloudNN(NNBase):
             self._proc_Phi_arg = self._proc_multiple_Phi_arg
 
         else:
-            self.Phi_sizes = [self.Phi_sizes]
+            if len(self.Phi_sizes) and not isinstance(self.Phi_sizes[0], (tuple, list)):
+                self.Phi_sizes = [self.Phi_sizes]
             self._proc_Phi_arg = self._proc_single_Phi_arg
 
     def _proc_single_Phi_arg(self, name, **kwargs):
@@ -409,7 +410,7 @@ class SymmetricPointCloudNN(NNBase):
             raise ValueError('multiple Phi components being used - {}'.format(name)
                              + ' length should match number of Phi components')
 
-        # process arguments parts, oen for each Phi component
+        # process arguments parts, one for each Phi component
         arg = list(arg)
         for i,a in enumerate(arg):
             arg[i] = iter_or_rep(a)

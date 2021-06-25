@@ -82,7 +82,8 @@ def convert_dtype(X, dtype=None):
     else:
         return X.astype(dtype, copy=False)
 
-# data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True, include_empty=False)
+# data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True,
+#                   include_empty=False, return_perm=False)
 def data_split(*args, **kwargs):
     """A function to split a dataset into train, validation, and test datasets.
 
@@ -112,6 +113,10 @@ def data_split(*args, **kwargs):
         - Whether or not to return empty arrays for datasets that would have
         zero elements in them. This can be useful for setting e.g. `val` or
         `test` to 0 without having to change the unpacking of the result.
+    - **return_perm** : _bool_
+        - Whether or not to return the permutation used for shuffling the
+        events. If `True`, it will be included as the final array in the
+        returned list.
 
     **Returns**
 
@@ -121,12 +126,15 @@ def data_split(*args, **kwargs):
         and `test`), then [`X_train`, `X_val`, `X_test`, `Y_train`, `Y_val`,
         `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned. If, for
         instance, `val` is zero and `include_empty` is `False` then [`X_train`,
-        `X_test`, `Y_train`, `Y_test`, `Z_train`, `Z_test`] will be returned.
+        `X_test`, `Y_train`, `Y_test`, `Z_train`, `Z_test`] will be returned. If
+        `return_perm` is `True`, the final array will be the permutation used
+        for shuffling.
     """
 
     # handle valid kwargs
     train, val, test = kwargs.pop('train', -1), kwargs.pop('val', 0.0), kwargs.pop('test', 0.1)
     shuffle, include_empty = kwargs.pop('shuffle', True), kwargs.pop('include_empty', False)
+    return_perm = kwargs.pop('return_perm', False)
     kwargs_check('data_split', kwargs)
 
     # validity checks
@@ -163,7 +171,7 @@ def data_split(*args, **kwargs):
     dset_func(num_test,  slice(num_train+num_val, num_train+num_val+num_test))
 
     # return list of new datasets
-    return [arg[mask] for arg in args for mask in masks]
+    return [arg[mask] for arg in args for mask in masks] + ([perm] if return_perm else [])
 
 def determine_cache_dir(cache_dir=None, cache_subdir=None):
     """Determines the path to the specified directory used for caching files. If

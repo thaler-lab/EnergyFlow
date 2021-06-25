@@ -36,3 +36,4 @@ fastjet-3.3.4
 *.so
 *.a
 **/.svn
+EFN2/

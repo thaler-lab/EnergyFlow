@@ -168,10 +168,10 @@ def load(num_data=100000, pad=True, ncol=4, generator='pythia', source='zenodo',
 
         # load file and append arrays
         with np.load(fpath) as f:
-            fX, fy = np.asarray(f['X'], dtype=dtype), np.asarray(f['y'], dtype=dtype)
+            fX = np.asarray(f['X'], dtype=dtype)
+            ys.append(np.asarray(f['y'], dtype=dtype))
             if pad:
                 Xs.append(fX)
-                ys.append(fy)
             else:
                 Xs.extend([x[x[:,0] > 0,:ncol] for x in fX])
 

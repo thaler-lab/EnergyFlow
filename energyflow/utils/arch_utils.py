@@ -41,7 +41,7 @@ __all__ = [
 class PointCloudDataset(object):
     """"""
 
-    def __init__(self, *data_args, batch_size=100, dtype='float32',
+    def __init__(self, data_args, batch_size=100, dtype='float32',
                                    shuffle=True, seed=None, pad_val=0.,
                                    _wrap=False, _enumerate=False):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
@@ -114,25 +114,34 @@ class PointCloudDataset(object):
         ```
         """
 
-        # store inputs
+        # public options
         self.batch_size = batch_size
         self.dtype = dtype
         self.shuffle = shuffle
         self.seed = seed
         self.pad_val = pad_val
+
+        # private options
         self._wrap = _wrap
         self._enumerate = _enumerate
 
         # check for proper data_args
+        if not isinstance(data_args, (list, tuple)):
+            data_args = [data_args]
         data_args = list(data_args)
 
         # wrap lists and tuples in a PointCloudDataset
         self.data_args = []
         for i,data_arg in enumerate(data_args):
 
-            # wrap in a PointCloudDataset
+            # consider sublists
             if isinstance(data_arg, (list, tuple)):
-                data_arg = self.__class__(data_arg)
+
+                # unpack single argument lists
+                if len(data_arg) == 1:
+                    data_arg = data_arg[0]
+                else:
+                    data_arg = self.__class__(data_arg)
 
             # set/check length of overall dataset
             if i == 0:
@@ -144,11 +153,13 @@ class PointCloudDataset(object):
             self.data_args.append(data_arg)
 
         if self._enumerate:
-            self.enumerate()
+            self.enumerate(check_for_repeat=False)
 
+    # allows len() to be used with this class
     def __len__(self):
         return getattr(self, '_len', 0)
 
+    # makes class nicely printable
     def __repr__(self):
 
         # ensure we're initialized
@@ -176,17 +187,24 @@ class PointCloudDataset(object):
 
         return s
 
+    # turns on wrapping
     def wrap(self):
         self._wrap = True
         return self
 
+    # turns off wrapping
     def unwrap(self):
         self._wrap = False
         return self
 
-    def enumerate(self):
+    # appends index array as final data arg
+    def enumerate(self, check_for_repeat=True):
+        if check_for_repeat and self._enumerate:
+            raise RuntimeError('`enumerate` already called, cannot be called twice')
+
         self._enumerate = True
         self.data_args.append(np.arange(len(self)))
+
         return self
 
     def split(self, split_arg):
@@ -239,7 +257,7 @@ class PointCloudDataset(object):
             if isinstance(data_arg, PointCloudDataset):
 
                 # check some basic compatibility
-                batch_shapes_match = self._match_batch_shapes(data_arg.batch_shapes, other_data_arg.batch_shapes)
+                batch_shapes_match = self._check_batch_compatibility(data_arg.batch_shapes, other_data_arg.batch_shapes)
                 assert data_arg.batch_dtypes == other_data_arg.batch_dtypes, 'batch_dtypes must match'
                 assert batch_shapes_match, 'batch_shapes must match'
 
@@ -269,9 +287,23 @@ class PointCloudDataset(object):
 
         return new_dset
 
-    # this method is needed so that None matches anything
+    @property
+    def _state(self):
+        return (self.batch_size, self.shuffle, self.seed, self.dtype, self.pad_val)
+
+    @_state.setter
+    def _state(self, state):
+        if state is not None:
+            (self.batch_size, self.shuffle, self.seed, self.dtype, self.pad_val) = state
+
+    # we don't want _enumerate here since that could cause double enumeration
+    @property
+    def _join_kwargs(self):
+        return {'_wrap': self._wrap}
+
+    # checks if batch shapes are compatible (None matches anything)
     @staticmethod
-    def _match_batch_shapes(batch_shapes, other_batch_shapes):
+    def _check_batch_compatibility(batch_shapes, other_batch_shapes):
 
         # they don't match if they're different lengths
         if len(batch_shapes) != len(other_batch_shapes):
@@ -289,25 +321,10 @@ class PointCloudDataset(object):
 
             # detect if these contain any nested structures
             if any([not isinstance(b, (None, int)) for bs in [bs1, bs2] for b in bs]):
-                return PointCloudDataset._match_batch_shapes(bs1, bs2)
+                return PointCloudDataset._check_batch_compatibility(bs1, bs2)
 
             # we have tuples of int/None here
             return ((bs1[1:] == bs2[1:]) and ((bs1[0] == bs2[0]) or (bs1[0] is None) or (bs2[0] is None)))
-
-    @property
-    def _join_kwargs(self):
-        return {'_wrap': self._wrap}
-
-    @property
-    def _state(self):
-        return (self.batch_size, self.shuffle, self.seed, self.dtype, #self.infinite, 
-                self.pad_val)
-
-    @_state.setter
-    def _state(self, state):
-        if state is not None:
-            (self.batch_size, self.shuffle, self.seed, self.dtype, #self.infinite, 
-             self.pad_val) = state
 
     @property
     def batch_dtypes(self):
@@ -333,7 +350,7 @@ class PointCloudDataset(object):
     def rng(self):
         return getattr(self, '_rng', None)
 
-    def _check_compatibility(self, other):
+    def _check_option_compatibility(self, other):
         assert isinstance(other, PointCloudDataset), 'other is not instance of PointCloudDataset'
         if self.__class__ != PointCloudDataset:
             raise TypeError('{} should not contain other instances of PointCloudDataset'.format(self.__class__))
@@ -347,8 +364,6 @@ class PointCloudDataset(object):
             raise ValueError('inconsistent shuffling')
         if self.seed != other.seed:
             raise ValueError('seeds do not match')
-        #if self.infinite != other.infinite:
-        #    raise ValueError('inconsistent setting for infinite')
 
     # function to enable lazy init
     def _init(self, state=None, final_init=False):
@@ -375,7 +390,7 @@ class PointCloudDataset(object):
 
             # handle PointCloudDataset
             if isinstance(data_arg, PointCloudDataset):
-                self._check_compatibility(data_arg)
+                self._check_option_compatibility(data_arg)
                 self._batch_dtypes.append(data_arg.batch_dtypes)
                 self._batch_shapes.append(data_arg.batch_shapes)
 
@@ -410,6 +425,7 @@ class PointCloudDataset(object):
                 self.data_args[i] = (convert_dtype(data_arg, getattr(np, self.dtype)) 
                                      if final_init else data_arg)
 
+    # method to convert PointCloudDataset to a Tensorflow dataset
     def as_tf_dataset(self, prefetch=None, shuffle_override=None):
 
         prev_shuffle = self.shuffle
@@ -435,20 +451,6 @@ class PointCloudDataset(object):
         self.shuffle = prev_shuffle
 
         return tfds
-
-    def batch_callback(self, args):
-        return args
-
-    def _construct_batch(self, args):
-        for z in self._zero_pad:
-            args[z] = pad_events(args[z], self.pad_val)
-
-        # apply callback to batch
-        batch = self.batch_callback(args)
-
-        # unpack single element lists
-        ret = batch[0] if len(batch) == 1 else tuple(batch)
-        return (ret,) if self._wrap else ret
 
     def get_batch_generator(self):
         """Returns a function that when called returns a generator that yields
@@ -529,12 +531,25 @@ class PointCloudDataset(object):
                         yield self._construct_batch([next(arg) if g else arr_func(arg, start, end)
                                                      for arg, g in zip(data_args, gens)])
 
-                # consider ending iteration
-                #if not self.infinite:
-                #    break
-
         return batch_generator
 
+    # function called by generator to construct a given batch
+    def _construct_batch(self, args):
+        for z in self._zero_pad:
+            args[z] = pad_events(args[z], self.pad_val)
+
+        # apply callback to batch
+        batch = self.batch_callback(args)
+
+        # unpack single element lists
+        ret = batch[0] if len(batch) == 1 else tuple(batch)
+        return (ret,) if self._wrap else ret
+
+    # overriding this method provides a way to modify the batch once it's formed
+    def batch_callback(self, args):
+        return args
+
+# splits all data args into weights (assumed to be first column) and features
 class WeightedPointCloudDataset(PointCloudDataset):
 
     def __init__(self, *args, **kwargs):
@@ -571,19 +586,31 @@ class PairedPointCloudDataset(PointCloudDataset):
 
         super().__init__(*args, **kwargs)
 
-        if isinstance(self.pairing, (tuple, list)):
-            self.pairer = PairedFeatureCombiner(self.pairing)
-        elif isinstance(self.pairing, six.string_types):
-            if self.pairing == 'concat':
-                self.pairer = ConcatenatePairer()
-            elif self.pairing == 'distance':
-                self.pairer = ParticleDistancePairer()
+        if not isinstance(self.pairing, (tuple, list)):
+            self.pairing = [self.pairing]
+
+        pairers = []
+        for pairing in self.pairing:
+            if isinstance(pairing, six.string_types):
+                if pairing == 'concat':
+                    pairer = ConcatenatePairer
+                elif pairing == 'distance':
+                    pairer = ParticleDistancePairer
+                else:
+                    raise ValueError("pairing '{}' not recognized".format(pairing))
+            elif isinstance(pairing, FeaturePairerBase) or issubclass(pairing, FeaturePairerBase):
+                pairer = pairing()
             else:
-                raise ValueError("pairing '{}' not recognized".format(self.pairing))
-        elif isinstance(self.pairing, FeaturePairerBase) or issubclass(self.pairing, FeaturePairerBase):
-            self.pairer = self.pairing()
+                raise ValueError("pairing '{}' not recognized".format(pairing))
+
+            pairers.append(pairer)
+
+        if len(pairers) == 0:
+            raise ValueError('at least one pairing expected')
+        elif len(pairers) == 1:
+            self.pairer = pairers[0]()
         else:
-            raise ValueError("pairing '{}' not recognized".format(self.pairing))
+            self.pairer = PairedFeatureCombiner(pairers)
 
         self.pair_and_pad_func = self.pairer.get_pair_and_pad_func()
         self.pair_array_func = self.pairer.get_pair_array_func()
@@ -591,6 +618,16 @@ class PairedPointCloudDataset(PointCloudDataset):
     def __repr__(self):
         s = super().__repr__()
         return s + '  ' + repr(self.pairer)[:-1].replace('\n', '\n  ') + '\n'
+
+    @property
+    def nfeatures(self):
+        self._init()
+        if isinstance(self.batch_shapes[-1], int):
+            return self.batch_shapes[-1]
+        elif isinstance(self.batch_shapes[-1][-1],int):
+            return self.batch_shapes[-1][-1]
+        else:
+            raise ValueError('unable to parse number of features from batch_shapes')
 
     @property
     def _join_kwargs(self):
@@ -732,7 +769,7 @@ class PairedFeatureCombiner(FeaturePairerBase):
     def __repr__(self):
         s = 'PairedFeatureCombiner:\n'
         for pairer in self.pairers:
-            s += '  - {}\n'.format(repr(pairer))
+            s += '  - {}'.format(repr(pairer))
         return s
 
     def get_new_nfeatures(self, batch_shapes, i):

@@ -26,7 +26,7 @@ import energyflow as ef
 # data controls, can go up to 2000000 for full dataset
 train, val, test = 75000, 10000, 15000
 # train, val, test = 1000000, 200000, 200000
-use_pids = True
+use_pids = False
 use_global_features = False
 
 # network architecture parameters
@@ -71,7 +71,8 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-pfn = ef.archs.PFN(input_dim=ncol, Phi_sizes=Phi_sizes, F_sizes=F_sizes)
+pfn = ef.archs.PFN(input_dim=ncol, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
+                   num_global_features=(global_features.shape[1] if use_global_features else None))
 
 # get datasets
 if use_global_features:
