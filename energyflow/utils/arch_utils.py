@@ -14,14 +14,19 @@ Utilities for EnergyFlow architectures. These are available in both the
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod
+import itertools
 import math
+import multiprocessing
 import types
 import warnings
 
 import numpy as np
 import six
 
+from energyflow import fastjet as fj
 from energyflow.utils.data_utils import convert_dtype, pad_events
+from energyflow.utils.fastjet_utils import (_JET_DEFINITION_KWARGS, jet_definition,
+                                            pjs_from_ptyphims, ptyphims_from_pjs)
 from energyflow.utils.random_utils import random
 
 __all__ = [
@@ -35,15 +40,19 @@ __all__ = [
     # classes to help with pairing features
     'PairedFeatureCombiner',
     'ConcatenatePairer',
-    'ParticleDistancePairer'
+    'ParticleDistancePairer',
+
+    # data transformer
+    'ClusterTransformer',
 ]
 
 class PointCloudDataset(object):
     """"""
 
     def __init__(self, data_args, batch_size=100, dtype='float32',
-                                   shuffle=True, seed=None, pad_val=0.,
-                                   _wrap=False, _enumerate=False):
+                                  shuffle=True, seed=None, pad_val=0.,
+                                  transformer=None,
+                                  _wrap=False, _enumerate=False):
         """Creates a TensorFlow dataset from NumPy arrays of events of particles,
         designed to be used as input to EFN and PFN models. The function uses a
         generator to spool events from the arrays as needed and pad them on the fly.
@@ -120,6 +129,7 @@ class PointCloudDataset(object):
         self.shuffle = shuffle
         self.seed = seed
         self.pad_val = pad_val
+        self.transformer = transformer
 
         # private options
         self._wrap = _wrap
@@ -184,6 +194,12 @@ class PointCloudDataset(object):
             else:
                 s += '    - {}'.format(arg.__class__.__name__)
             s += '\n'
+
+        s += '  transformer - '
+        if self.transformer:
+            s += repr(self.transformer)[:-1].replace('\n', '\n  ') + '\n'
+        else:
+            s += str(None)
 
         return s
 
@@ -299,7 +315,7 @@ class PointCloudDataset(object):
     # we don't want _enumerate here since that could cause double enumeration
     @property
     def _join_kwargs(self):
-        return {'_wrap': self._wrap}
+        return {'_wrap': self._wrap, 'transformer': self.transformer}
 
     # checks if batch shapes are compatible (None matches anything)
     @staticmethod
@@ -345,6 +361,10 @@ class PointCloudDataset(object):
     @property
     def steps_per_epoch(self):
         return math.ceil(len(self)/self.batch_size)
+
+    @property
+    def epochs(self):
+        return getattr(self, '_epochs', None)
 
     @property
     def rng(self):
@@ -475,6 +495,9 @@ class PointCloudDataset(object):
         self.batch_inds = [(i*self.batch_size, min((i+1)*self.batch_size, len(self)))
                            for i in range(self.steps_per_epoch)]
 
+        # track epoch
+        self.epoch = 0
+
         # use shuffle at time of calling get_batch_generator
         shuffle = self.shuffle
         def batch_generator():
@@ -497,9 +520,16 @@ class PointCloudDataset(object):
                     perm = shuffle(self.rng, len(self)) if callable(shuffle) else self.rng.permutation(len(self))
                     arr_func = lambda arg, start, end: arg[perm[start:end]]
 
+                # consider the transformer for this epoch
+                if self.transformer:
+                    epoch_data_args = [self.transformer(data_arg, data_arg_index, self.epoch)
+                                       for data_arg_index,data_arg in enumerate(data_args)]
+                else:
+                    epoch_data_args = data_args
+
                 # special case 1 (for speed)
-                if len(data_args) == 1:
-                    arg0 = data_args[0]
+                if len(epoch_data_args) == 1:
+                    arg0 = epoch_data_args[0]
                     if gens[0]:
                         for _ in self.batch_inds:
                             yield self._construct_batch([next(arg0)])
@@ -508,8 +538,8 @@ class PointCloudDataset(object):
                             yield self._construct_batch([arr_func(arg0, start, end)])
 
                 # special case 2 (for speed)
-                elif len(data_args) == 2:
-                    arg0, arg1 = data_args
+                elif len(epoch_data_args) == 2:
+                    arg0, arg1 = epoch_data_args
                     if gens[0]:
                         if gens[1]:
                             for _ in self.batch_inds:
@@ -529,7 +559,10 @@ class PointCloudDataset(object):
                 else:
                     for start, end in self.batch_inds:
                         yield self._construct_batch([next(arg) if g else arr_func(arg, start, end)
-                                                     for arg, g in zip(data_args, gens)])
+                                                     for arg, g in zip(epoch_data_args, gens)])
+
+                self.epoch += 1
+                del epoch_data_args
 
         return batch_generator
 
@@ -936,3 +969,211 @@ class ParticleDistancePairer(DistancePairerBase, FeaturePairerBase):
 #
 #    def get_new_nfeatures(self, batch_shapes, i):
 #        return 2
+
+class TransformerBase(six.with_metaclass(ABCMeta, object)):
+
+    def __init__(self, individual=True, data_arg_indices=None,
+                       use_pool=False, use_cache=True, processes=None,
+                       chunksize=1000):
+
+        self.data_arg_indices = data_arg_indices
+        if self.data_arg_indices is not None:
+            self.data_arg_indices = frozenset(self.data_arg_indices)
+
+        if use_pool and not individual:
+            raise ValueError('`individual` must be true in order to use pool')
+
+        # determines if transformer applies individually
+        self.individual = individual
+        self.use_pool = use_pool
+        self.chunksize = chunksize
+        self.pool_kwargs = {'processes': processes}
+
+        # setup cache 
+        self.cache = {} if use_cache else None
+
+    def __repr__(self):
+        s = ('  individual - {}\n'
+             '  use_cache - {}\n'
+             '  use_pool - {}\n').format(self.individual, self.cache is not None, self.use_pool)
+
+        if self.use_pool:
+            s += ('    processes - {}\n'
+                  '    chunksize - {}\n').format(self.pool_kwargs['processes'], self.chunksize)
+
+        return s
+
+    def __call__(self, data_arg, data_arg_index, epoch):
+
+        # store these as attributes
+        self._data_arg_index, self._epoch = data_arg_index, epoch
+
+        # determine if data_arg will be processed
+        if self.data_arg_indices is None or data_arg_index in self.data_arg_indices:
+
+            # ensure that cache has an entry for this data arg (so that cache is not empty)
+            if self.cache is not None:
+                self.cache.setdefault(data_arg_index, {})
+
+            # prepare processing (checking cache in process)
+            self.store_transform_key()
+
+            # _transform_key of None means we return data_arg as is
+            if self._transform_key is None:
+                return data_arg
+
+            # do pre transformation
+            pre_dtype = data_arg.dtype
+            data_arg = self.pre_transform(data_arg)
+            if self.cache and self._transform_key in self.cache[data_arg_index]:
+                return self.post_transform(data_arg)
+
+            # using pool implies individual processing
+            if self.use_pool:
+                with multiprocessing.Pool(**self.pool_kwargs) as pool:
+                    data_arg = np.asarray(list(pool.imap(self.transform_pool, data_arg, chunksize=self.chunksize)),
+                                          dtype=pre_dtype)
+
+            elif self.individual:
+                data_arg = np.asarray(list(map(self.transform, data_arg)), dtype=pre_dtype)
+
+            else:
+                data_arg = self.transform(data_arg)
+
+            return self.post_transform(data_arg)
+
+        return data_arg
+
+    # default caching is to store by epoch
+    def store_transform_key(self):
+        self._transform_key = self._epoch
+        self._result_needed_again = True
+
+    # allows for precomputations in derived classes
+    def pre_transform(self, data_arg):
+        return data_arg
+
+    def transform(self, x):
+        return x
+
+    def post_transform(self, data_arg):
+        if self.cache:
+            cache = self.cache[self._data_arg_index]
+
+            # ensure cache is up to date if result needed again
+            if self._result_needed_again:
+                cache[self._transform_key] = data_arg
+
+            # remove cache entry if not needed again
+            elif self._transform_key in cache:
+                del cache[self._transform_key]
+
+        return data_arg
+
+    @staticmethod
+    def transform_pool(x):
+        return x
+
+class ClusterTransformer(TransformerBase):
+
+    def __init__(self, jetdef=None, N=None, dcut=None, end_val=None, pt_scale=None, **kwargs):
+
+        # prepare jet definition (possibly removing some kwargs)
+        self.jetdef = jetdef or jet_definition(**{kwarg: kwargs.pop(kwarg)
+                                                  for kwarg in _JET_DEFINITION_KWARGS if kwarg in kwargs})
+
+        # init base
+        super().__init__(**kwargs)
+
+        self.end_val = end_val
+        self.pt_scale = float(pt_scale)
+
+        # cannot use pool here
+        if self.use_pool:
+            raise ValueError('ClusterTransformer cannot use pool')
+
+        # determine cluster schedule as a function of epoch
+        if N is not None:
+            self._mode = 'N'
+            self.dcut = None
+            self._cluster_specifier = N
+
+        elif dcut is not None:
+            self._mode = 'dcut'
+            self.N = None
+            self._cluster_specifier = dcut
+
+        else:
+            raise ValueError('`N` or `dcut` must be provided')
+
+        self._sequence = isinstance(self._cluster_specifier, (list, tuple))
+
+        # ensure that dcut values are floats
+        if self._mode == 'dcut':
+            self._cluster_specifier = list(map(float, dcut)) if self._sequence else float(dcut)
+
+    def __repr__(self):
+        s = ('ClusterTransformer\n'
+             '  jetdef - {}\n'
+             '  {} - {}\n'
+             '  end_val - {}\n'
+             '  pt_scale - {}\n'
+             + super().__repr__()).format(self.jetdef,
+                                          self._mode, self._cluster_specifier,
+                                          self.end_val,
+                                          self.pt_scale)
+        return s
+
+    # set N and dcut value for current clustering, also set _transform_key
+    def store_transform_key(self):
+
+        self._result_needed_again = True
+        if self._sequence:
+            if self._epoch < len(self._cluster_specifier):
+                self._transform_key = self._cluster_specifier[self._epoch]
+                self._result_needed_again = self._transform_key in self._cluster_specifier[self._epoch+1:]
+
+            # after sequence has run out, we use end_val
+            else:
+                self._transform_key = self.end_val
+
+        # no sequence, just a single value
+        else:
+            self._transform_key = self._cluster_specifier
+
+        # set variable according to cluster specifier
+        setattr(self, self._mode, self._transform_key)
+
+    # turn all particles into pseudojets
+    def pre_transform(self, data_arg):
+
+        # check cache for precomputed answer
+        if self.cache:
+            data_arg_cache = self.cache[self._data_arg_index]
+            if self._transform_key in data_arg_cache:
+                return data_arg_cache[self._transform_key]
+
+            elif 'base_data' in data_arg_cache:
+                return data_arg_cache['base_data']
+
+        # turn all particles into pseudojets and cluster
+        cluster_sequences = [fj.ClusterSequence(pjs_from_ptyphims(x[:,:3]), self.jetdef) for x in data_arg]
+        if self.cache:
+            data_arg_cache['base_data'] = cluster_sequences
+
+        # determine if we want to use single precision
+        self.float32 = len(data_arg) and str(data_arg[0].dtype) == 'float32'
+
+        return cluster_sequences
+
+    def transform(self, cs):
+        if self.N is not None:
+            pjs = cs.exclusive_jets_up_to(self.N)
+        else:
+            pjs = cs.exclusive_jets(self.dcut)
+
+        ptyphis = ptyphims_from_pjs(pjs, mass=False, phi_std=True, float32=self.float32)
+        if self.pt_scale:
+            ptyphis[:,0] /= self.pt_scale
+
+        return ptyphis

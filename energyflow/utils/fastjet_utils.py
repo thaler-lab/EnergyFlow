@@ -34,7 +34,7 @@ __all__ = [
     'pjs_from_p4s',
     'ptyphims_from_pjs',
     'p4s_from_pjs',
-    'jetdefinition',
+    'jet_definition',
     'cluster',
     'softdrop',
 ]
@@ -80,7 +80,7 @@ def pjs_from_p4s(p4s):
 
     return fj.epxpypz_array_to_pseudojets(p4s)
 
-def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
+def ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=False, float32=False):
     """Extracts hadronic four-vectors from FastJet PseudoJets. See the
     [`pseudojets_to_ptyphim_array`](https://github.com/pkomiske/PyFJCore/blob/
     main/README.md/#NumPy-conversion-functions) method of PyFJCore.
@@ -89,9 +89,10 @@ def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
 
     - **pjs** : iterable of _PseudoJet_
         - An iterable of PseudoJets (list, tuple, array, etc).
-    - **phi_ref** : _float_ or `None`
-        - The reference phi value to use for phi fixing. If `None`, then no
-        phi fixing is performed.
+    - **phi_ref** : _float_ or `None` or `False`
+        - The reference phi value to use for phi fixing. If `False`, then no
+        phi fixing is performed. If `None`, then the phi value of the first
+        particle is used.
     - **mass** : _bool_
         - Whether or not to include the mass in the extracted four-vectors.
 
@@ -102,14 +103,20 @@ def ptyphims_from_pjs(pjs, phi_ref=None, mass=True):
         `(pT, y, phi, [mass])`, where the mass is optional.
     """
 
-    event = fj.pseudojets_to_ptyphim_array(pjs, mass=mass)
+    if float32:
+        event = fj.pseudojets_to_ptyphim_array_float32(pjs, mass=mass, phi_std=phi_std)
+    else:
+        event = fj.pseudojets_to_ptyphim_array_float64(pjs, mass=mass, phi_std=phi_std)
 
-    if phi_ref is not None:
-        phi_fix(event[:,2], phi_ref, copy=False)
+    if phi_ref is None:
+        phi_ref = event[0,2] if len(event) else 0.
+        phi_fix(event[:,2], phi_ref, copy=False, dtype=np.float32 if float32 else np.float64)
+    elif phi_ref:
+        phi_fix(event[:,2], phi_ref, copy=False, dtype=np.float32 if float32 else np.float64)
 
     return event
 
-def p4s_from_pjs(pjs):
+def p4s_from_pjs(pjs, float32=False):
     """Extracts Cartesian four-vectors from FastJet PseudoJets. See the
     [`pseudojets_to_epxpypz_array`](https://github.com/pkomiske/PyFJCore/blob/
     main/README.md/#NumPy-conversion-functions) method of PyFJCore.
@@ -126,7 +133,10 @@ def p4s_from_pjs(pjs):
         `(E, px, py, pz)`.
     """
 
-    return fj.pseudojets_to_epxpypz_array(pjs)
+    if float32:
+        return fj.pseudojets_to_epxpypz_array_float32(pjs)
+
+    return fj.pseudojets_to_epxpypz_array_float64(pjs)
 
 JET_ALGORITHMS = {
     'kt': fj.kt_algorithm,
@@ -151,11 +161,13 @@ RECOMBINATION_SCHEMES = {
     'WTA_pt_scheme': fj.WTA_pt_scheme,
 }
 
-# jetdefinition(algorithm='ca', R=fj.JetDefinition.max_allowable_R, recomb='E_scheme')
-def jetdefinition(algorithm=fj.cambridge_algorithm,
-                  R=fj.JetDefinition.max_allowable_R,
-                  extra=None,
-                  recomb=fj.E_scheme):
+_JET_DEFINITION_KWARGS = {'algorithm', 'R', 'extra', 'recomb'}
+
+# jet_definition(algorithm='ca', R=fj.JetDefinition.max_allowable_R, recomb='E_scheme')
+def jet_definition(algorithm=fj.cambridge_algorithm,
+                   R=fj.JetDefinition.max_allowable_R,
+                   extra=None,
+                   recomb=fj.E_scheme):
     """Creates a JetDefinition from the specified arguments.
 
     **Arguments**
@@ -237,7 +249,7 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
     """
 
     if jetdef is None:
-        jetdef = jetdefinition(**kwargs)
+        jetdef = jet_definition(**kwargs)
 
     cs = fj.ClusterSequence(pjs, jetdef)
     if return_cs:

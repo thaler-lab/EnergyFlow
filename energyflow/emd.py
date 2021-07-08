@@ -864,7 +864,7 @@ if ot:
                 print('Using {} worker process{}:'.format(n_jobs, 'es' if n_jobs > 1 else ''))
 
             # create process pool
-            with create_pool(n_jobs) as pool:
+            with create_pool(n_jobs, context='fork') as pool:
                 
                 params = (R, no_norm, beta, euclidean, n_iter_max, 
                           periodic_phi, phi_col_m1, empty_policy)

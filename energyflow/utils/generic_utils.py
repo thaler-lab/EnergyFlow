@@ -68,20 +68,17 @@ def concat_specs(c_specs, d_specs):
 
 # handle Pool not being a context manager in Python < 3.4
 @contextlib.contextmanager
-def create_pool(*args, **kwargs):
-    if sys.version_info < (3, 4):
-        pool = multiprocessing.Pool(*args, **kwargs)
-        yield pool
-        pool.terminate()
+def create_pool(*args, context=None, **kwargs):
+
+    if context is not None and context not in multiprocessing.get_all_start_methods():
+        warnings.warn("'{}' is not available as a multiprocessing start method, ".format(context)
+                      + "EnergyFlow multicore functionality may not work properly")
+        with multiprocessing.Pool(*args, **kwargs) as pool:
+            yield pool
+
     else:
-        if 'fork' not in multiprocessing.get_all_start_methods():
-            warnings.warn("'fork' is not available as a multiprocessing start method, "
-                          + "EnergyFlow multicore functionality may not work properly")
-            with multiprocessing.Pool(*args, **kwargs) as pool:
-                yield pool
-        else:
-            with multiprocessing.get_context('fork').Pool(*args, **kwargs) as pool:
-                yield pool
+        with multiprocessing.get_context(context).Pool(*args, **kwargs) as pool:
+            yield pool
 
 # applies comparison comp of obj on val
 def explicit_comp(obj, comp, val):

@@ -279,7 +279,7 @@ def phis_from_p4s(p4s, phi_ref=None, _pts=None):
     return phis
 
 TWOPI = 2*np.pi
-def phi_fix(phis, phi_ref, copy=True):
+def phi_fix(phis, phi_ref, copy=True, dtype=float):
     r"""A function to ensure that all phis are within $\pi$ of `phi_ref`. It is
     assumed that all starting phi values are $\pm 2\pi$ of `phi_ref`.
 
@@ -300,7 +300,7 @@ def phi_fix(phis, phi_ref, copy=True):
         - An array of the fixed phi values.
     """
 
-    phis, phi_ref = np.asarray(phis, dtype=float), np.asarray(phi_ref, dtype=float)
+    phis, phi_ref = np.asarray(phis, dtype=dtype), np.asarray(phi_ref, dtype=dtype)
     phi_ref = phi_ref[...,np.newaxis] if phi_ref.ndim > 0 else phi_ref
 
     diff = phis - phi_ref

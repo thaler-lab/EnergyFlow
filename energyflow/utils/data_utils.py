@@ -82,7 +82,7 @@ def convert_dtype(X, dtype=None):
     else:
         return X.astype(dtype, copy=False)
 
-# data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True,
+# data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True, perm=None,
 #                   include_empty=False, return_perm=False)
 def data_split(*args, **kwargs):
     """A function to split a dataset into train, validation, and test datasets.
@@ -109,6 +109,8 @@ def data_split(*args, **kwargs):
     - **shuffle** : _bool_
         - A flag to control whether the dataset is shuffled prior to being split
         into parts.
+    - **perm** : _numpy.ndarray_ dataset of integers
+        - If not `None`, the permutation to use for shuffling the dataset(s).
     - **include_empty** : _bool_
         - Whether or not to return empty arrays for datasets that would have
         zero elements in them. This can be useful for setting e.g. `val` or
@@ -134,7 +136,7 @@ def data_split(*args, **kwargs):
     # handle valid kwargs
     train, val, test = kwargs.pop('train', -1), kwargs.pop('val', 0.0), kwargs.pop('test', 0.1)
     shuffle, include_empty = kwargs.pop('shuffle', True), kwargs.pop('include_empty', False)
-    return_perm = kwargs.pop('return_perm', False)
+    perm, return_perm = kwargs.pop('perm', None), kwargs.pop('return_perm', False)
     kwargs_check('data_split', kwargs)
 
     # validity checks
@@ -162,8 +164,16 @@ def data_split(*args, **kwargs):
     if num_train + num_val + num_test > n_samples:
         raise ValueError('too few samples for requested data split')
     
-    # calculate masks 
-    perm = random.permutation(n_samples) if shuffle else np.arange(n_samples)
+    # determine perm
+    if shuffle:
+        if perm is None:
+            perm = random.permutation(n_samples)
+        elif len(perm) != n_samples:
+            raise ValueError('`perm` must be the same length as the datasets')
+    else:
+        perm = np.arange(n_samples)
+
+    # calculate masks
     masks = []
     dset_func = lambda n, s: masks.append(perm[s]) if n > 0 or include_empty else None
     dset_func(num_train, slice(0, num_train))

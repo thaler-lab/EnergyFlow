@@ -1341,7 +1341,7 @@ class MODDataset(object):
                         n_jobs = 4
 
                 start = time.time()
-                with create_pool(processes=min(n_jobs, len(args))) as pool:
+                with create_pool(context='fork', processes=min(n_jobs, len(args))) as pool:
                     for i,_ in enumerate(pool.imap_unordered(_moddset_save, args, chunksize=1)):
                         if verbose >= 1 and ((i+1) % 5 == 0 or i+1 == len(args)):
                             pf = (i+1, (i+1)/len(args)*100, time.time() - start)
