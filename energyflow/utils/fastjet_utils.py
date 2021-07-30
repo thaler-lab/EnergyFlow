@@ -26,7 +26,7 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import six
 
-from energyflow import fastjet as fj
+from energyflow import fastjet
 from energyflow.utils.particle_utils import phi_fix
 
 __all__ = [
@@ -58,7 +58,7 @@ def pjs_from_ptyphims(ptyphims):
         - A Python tuple of `PseudoJet`s corresponding to the input particles.
     """
 
-    return fj.ptyphim_array_to_pseudojets(ptyphims)
+    return fastjet.ptyphim_array_to_pseudojets(ptyphims)
 
 def pjs_from_p4s(p4s):
     """Converts particles in Cartesian coordinates to FastJet PseudoJets. See
@@ -78,9 +78,9 @@ def pjs_from_p4s(p4s):
         - A Python tuple of `PseudoJet`s corresponding to the input particles.
     """
 
-    return fj.epxpypz_array_to_pseudojets(p4s)
+    return fastjet.epxpypz_array_to_pseudojets(p4s)
 
-def ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=False, float32=False):
+def ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=True, float32=False):
     """Extracts hadronic four-vectors from FastJet PseudoJets. See the
     [`pseudojets_to_ptyphim_array`](https://github.com/pkomiske/PyFJCore/blob/
     main/README.md/#NumPy-conversion-functions) method of PyFJCore.
@@ -103,18 +103,11 @@ def ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=False, float32=Fals
         `(pT, y, phi, [mass])`, where the mass is optional.
     """
 
-    if float32:
-        event = fj.pseudojets_to_ptyphim_array_float32(pjs, mass=mass, phi_std=phi_std)
-    else:
-        event = fj.pseudojets_to_ptyphim_array_float64(pjs, mass=mass, phi_std=phi_std)
+    if phi_ref is None and len(pjs):
+        phi_ref = pjs[0].phi_std() if phi_std else pjs[0].phi()
 
-    if phi_ref is None:
-        phi_ref = event[0,2] if len(event) else 0.
-        phi_fix(event[:,2], phi_ref, copy=False, dtype=np.float32 if float32 else np.float64)
-    elif phi_ref:
-        phi_fix(event[:,2], phi_ref, copy=False, dtype=np.float32 if float32 else np.float64)
-
-    return event
+    return fastjet.pseudojets_to_ptyphim_array(pjs, mass=mass, phi_std=phi_std,
+                                                    phi_ref=phi_ref, float32=float32)
 
 def p4s_from_pjs(pjs, float32=False):
     """Extracts Cartesian four-vectors from FastJet PseudoJets. See the
@@ -133,41 +126,38 @@ def p4s_from_pjs(pjs, float32=False):
         `(E, px, py, pz)`.
     """
 
-    if float32:
-        return fj.pseudojets_to_epxpypz_array_float32(pjs)
-
-    return fj.pseudojets_to_epxpypz_array_float64(pjs)
+    return fastjet.pseudojets_to_epxpypz_array(pjs, float32=float32)
 
 JET_ALGORITHMS = {
-    'kt': fj.kt_algorithm,
-    'cambridge': fj.cambridge_algorithm,
-    'antikt': fj.antikt_algorithm,
-    'genkt': fj.genkt_algorithm,
-    'ee_kt': fj.ee_kt_algorithm,
-    'ee_genkt': fj.ee_genkt_algorithm,
+    'kt': fastjet.kt_algorithm,
+    'cambridge': fastjet.cambridge_algorithm,
+    'antikt': fastjet.antikt_algorithm,
+    'genkt': fastjet.genkt_algorithm,
+    'ee_kt': fastjet.ee_kt_algorithm,
+    'ee_genkt': fastjet.ee_genkt_algorithm,
 
     # shorthands for the above
-    'ca': fj.cambridge_algorithm,
-    'cambridge_aachen': fj.cambridge_algorithm,
-    'akt': fj.antikt_algorithm,
+    'ca': fastjet.cambridge_algorithm,
+    'cambridge_aachen': fastjet.cambridge_algorithm,
+    'akt': fastjet.antikt_algorithm,
 }
 
 RECOMBINATION_SCHEMES = {
-    'E_scheme': fj.E_scheme,
-    'Et_scheme': fj.Et_scheme,
-    'Et2_scheme': fj.Et2_scheme,
-    'pt_scheme': fj.pt_scheme,
-    'pt2_scheme': fj.pt2_scheme,
-    'WTA_pt_scheme': fj.WTA_pt_scheme,
+    'E_scheme': fastjet.E_scheme,
+    'Et_scheme': fastjet.Et_scheme,
+    'Et2_scheme': fastjet.Et2_scheme,
+    'pt_scheme': fastjet.pt_scheme,
+    'pt2_scheme': fastjet.pt2_scheme,
+    'WTA_pt_scheme': fastjet.WTA_pt_scheme,
 }
 
 _JET_DEFINITION_KWARGS = {'algorithm', 'R', 'extra', 'recomb'}
 
-# jet_definition(algorithm='ca', R=fj.JetDefinition.max_allowable_R, recomb='E_scheme')
-def jet_definition(algorithm=fj.cambridge_algorithm,
-                   R=fj.JetDefinition.max_allowable_R,
+# jet_definition(algorithm='ca', R=fastjet.JetDefinition.max_allowable_R, recomb='E_scheme')
+def jet_definition(algorithm=fastjet.cambridge_algorithm,
+                   R=fastjet.JetDefinition.max_allowable_R,
                    extra=None,
-                   recomb=fj.E_scheme):
+                   recomb=fastjet.E_scheme):
     """Creates a JetDefinition from the specified arguments.
 
     **Arguments**
@@ -175,7 +165,7 @@ def jet_definition(algorithm=fj.cambridge_algorithm,
     - **algorithm** : _str_ or _int_
         - A string such as `'kt'`, `'akt'`, `'antikt'`, `'ca'`, 
         `'cambridge'`, or `'cambridge_aachen'`; or an integer corresponding to a
-        fj.JetAlgorithm value.
+        fastjet.JetAlgorithm value.
     - **R** : _float_
         - The jet radius. The default value corresponds to `max_allowable_R` as
         defined by the FastJet package.
@@ -207,9 +197,9 @@ def jet_definition(algorithm=fj.cambridge_algorithm,
             raise ValueError("recombination scheme '{}' not understood".format(recomb))
 
     if extra is None:
-        return fj.JetDefinition(algorithm, float(R), recomb)
+        return fastjet.JetDefinition(algorithm, float(R), recomb)
     else:
-        return fj.JetDefinition(algorithm, float(R), float(extra), recomb)
+        return fastjet.JetDefinition(algorithm, float(R), float(extra), recomb)
 
 # cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kwargs)
 def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kwargs):
@@ -251,7 +241,7 @@ def cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kw
     if jetdef is None:
         jetdef = jet_definition(**kwargs)
 
-    cs = fj.ClusterSequence(pjs, jetdef)
+    cs = fastjet.ClusterSequence(pjs, jetdef)
     if return_cs:
         return cs
 
@@ -312,7 +302,7 @@ def softdrop(jet, zcut=0.1, beta=0, R=1.0):
         obtaining kinematic quantities, e.g. [$z_g$](/docs/obs/#zg_from_pj).
     """
 
-    parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
+    parent1, parent2 = fastjet.PseudoJet(), fastjet.PseudoJet()
     if not jet.has_parents(parent1, parent2):
         return jet
     
