@@ -80,7 +80,7 @@ def pjs_from_p4s(p4s):
 
     return fastjet.epxpypz_array_to_pseudojets(p4s)
 
-def ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=True, float32=False):
+def ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=False, float32=False):
     """Extracts hadronic four-vectors from FastJet PseudoJets. See the
     [`pseudojets_to_ptyphim_array`](https://github.com/pkomiske/PyFJCore/blob/
     main/README.md/#NumPy-conversion-functions) method of PyFJCore.

@@ -31,12 +31,12 @@ def test_pjs_array_conversion(nparticles, mass):
         assert np.all(event == ef.p4s_from_pjs(pjs_epxpypz))
 
         # check ptyphim to ptyphim
-        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_ptyphim)
+        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_ptyphim, phi_std=False)
         assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-13)
         assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
 
         # check cartesian to ptyphim
-        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_epxpypz)
+        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_epxpypz, phi_std=False)
         assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-12, 1e-12)
         assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
 
