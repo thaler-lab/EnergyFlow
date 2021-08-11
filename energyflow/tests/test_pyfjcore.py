@@ -56,7 +56,7 @@ def test_clustering(algorithm, jet_R):
     pjs = ef.pjs_from_p4s(event)
     jets = pyfjcore.sorted_by_pt(ef.cluster(pjs, algorithm=algorithm, R=jet_R))
     jets2 = pyfjcore.sorted_by_pt(ef.cluster(tuple(pjs), algorithm=algorithm, R=jet_R))
-    jets3 = pyfjcore.sorted_by_pt(ef.jet_def(algorithm=algorithm, R=jet_R)(pjs))
+    jets3 = pyfjcore.sorted_by_pt(ef.jetdefinition(algorithm=algorithm, R=jet_R)(pjs))
 
     for j,j2,j3 in zip(jets, jets2, jets3):
         for i in range(4):
