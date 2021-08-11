@@ -31,12 +31,12 @@ def test_pjs_array_conversion(nparticles, mass):
         assert np.all(event == ef.p4s_from_pjs(pjs_epxpypz))
 
         # check ptyphim to ptyphim
-        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_ptyphim)
+        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_ptyphim, phi_std=False)
         assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-13)
         assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
 
         # check cartesian to ptyphim
-        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_epxpypz)
+        ptyphims_pjs = ef.ptyphims_from_pjs(pjs_epxpypz, phi_std=False)
         assert epsilon_either(ptyphims[:,:3], ptyphims_pjs[:,:3], 1e-12, 1e-12)
         assert epsilon_either(ptyphims[:,3], ptyphims_pjs[:,3], 1e-6)
 
@@ -56,7 +56,7 @@ def test_clustering(algorithm, jet_R):
     pjs = ef.pjs_from_p4s(event)
     jets = pyfjcore.sorted_by_pt(ef.cluster(pjs, algorithm=algorithm, R=jet_R))
     jets2 = pyfjcore.sorted_by_pt(ef.cluster(tuple(pjs), algorithm=algorithm, R=jet_R))
-    jets3 = pyfjcore.sorted_by_pt(ef.jetdefinition(algorithm=algorithm, R=jet_R)(pjs))
+    jets3 = pyfjcore.sorted_by_pt(ef.jet_definition(algorithm=algorithm, R=jet_R)(pjs))
 
     for j,j2,j3 in zip(jets, jets2, jets3):
         for i in range(4):
