@@ -8,7 +8,6 @@ in LICENSE which is distributed with this software package.
  
 Implementation of optimized einsum.
 """
-from __future__ import division, absolute_import, print_function
 
 import itertools
 

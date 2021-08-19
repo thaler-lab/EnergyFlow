@@ -16,10 +16,7 @@ various random, non-center of momentum, and non-uniform sampling.
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import, division, print_function
-
 import numpy as np
-import six
 
 __all__ = [
     'gen_random_events',
@@ -83,7 +80,7 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
         mults = random.integers(*nparticles, size=nevents)
 
         # get possible random masses
-        if isinstance(mass, six.string_types):
+        if isinstance(mass, str):
             if mass == 'random':
                 masses = [random.random(nparts) for nparts in mults]
             else:
@@ -98,7 +95,7 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
     else:
 
         # get possible random masses
-        if isinstance(mass, six.string_types):
+        if isinstance(mass, str):
             if mass == 'random':
                 mass = random.random((nevents, nparticles))
             else:

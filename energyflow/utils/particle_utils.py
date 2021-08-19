@@ -47,12 +47,9 @@ this terminology.
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import, division, print_function
-
 import warnings
 
 import numpy as np
-import six
 
 __all__ = [
 
@@ -251,7 +248,7 @@ def phis_from_p4s(p4s, phi_ref=None, _pts=None):
 
     # ensure close to reference value
     if phi_ref is not None:
-        if isinstance(phi_ref, six.string_types) and phi_ref == 'hardest':
+        if isinstance(phi_ref, str) and phi_ref == 'hardest':
             ndim = phis.ndim
 
             # here the particle is already phi fixed with respect to itself

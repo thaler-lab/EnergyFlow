@@ -17,14 +17,13 @@ values.
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import, division, print_function
-
 import hashlib
 import os
 import sys
+import urllib.error
+import urllib.request
 
 import numpy as np
-from six.moves.urllib.error import HTTPError, URLError
 
 from energyflow.utils.generic_utils import kwargs_check
 from energyflow.utils.random_utils import random
@@ -385,47 +384,6 @@ def _pad_events_axis1(events, axis1_shape):
     return events
 
 # the following code is based on analogous parts of Keras
-if sys.version_info[0] == 2:
-    from contextlib import closing
-    from six.moves.urllib.request import urlopen
-    def urlretrieve(url, filename, reporthook=None, data=None):
-        """Replacement for `urlretrive` for Python 2.
-        Under Python 2, `urlretrieve` relies on `FancyURLopener` from legacy
-        `urllib` module, known to have issues with proxy management.
-        # Arguments
-            url: url to retrieve.
-            filename: where to store the retrieved data locally.
-            reporthook: a hook function that will be called once
-                on establishment of the network connection and once
-                after each block read thereafter.
-                The hook will be passed three arguments;
-                a count of blocks transferred so far,
-                a block size in bytes, and the total size of the file.
-            data: `data` argument passed to `urlopen`.
-        """
-
-        def chunk_read(response, chunk_size=8192, reporthook=None):
-            content_type = response.info().get('Content-Length')
-            total_size = -1
-            if content_type is not None:
-                total_size = int(content_type.strip())
-            count = 0
-            while True:
-                chunk = response.read(chunk_size)
-                count += 1
-                if reporthook is not None:
-                    reporthook(count, chunk_size, total_size)
-                if chunk:
-                    yield chunk
-                else:
-                    break
-
-        with closing(urlopen(url, data)) as response, open(filename, 'wb') as fd:
-            for chunk in chunk_read(response, reporthook=reporthook):
-                fd.write(chunk)
-else:
-    from six.moves.urllib.request import urlretrieve
-
 def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     """Calculates a file sha256 or md5 hash.
     # Example
@@ -518,12 +476,12 @@ def _get_filepath(filename, url, cache_dir=None, cache_subdir=None, file_hash=No
     error_msg = 'URL fetch failure on {}: {} -- {}'
     try:
         try:
-            urlretrieve(url, fpath)
-        except URLError as e:
-            raise Exception(error_msg.format(url, e.errno, e.reason))
-        except HTTPError as e:
-            raise Exception(error_msg.format(url, e.code, e.msg))
-    except (Exception, KeyboardInterrupt):
+            urllib.request.urlretrieve(url, fpath)
+        except urllib.error.HTTPError as e:
+            raise Exception(error_msg.format(origin, e.code, e.msg))
+        except urllib.error.URLError as e:
+            raise Exception(error_msg.format(origin, e.errno, e.reason))
+    except (Exception, KeyboardInterrupt) as e:
         if os.path.exists(fpath):
             os.remove(fpath)
         raise

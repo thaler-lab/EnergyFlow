@@ -707,7 +707,7 @@ Utilities for EnergyFlow architectures. These are available in both the
 ### PointCloudDataset
 
 ```python
-energyflow.archs.PointCloudDataset(data_args, batch_size=100, dtype='float32', shuffle=True, seed=None, infinite=False, pad_val=0.0, _wrap=False)
+energyflow.archs.PointCloudDataset(data_args, batch_size=100, dtype='float32', shuffle=True, seed=None, pad_val=0.0, transformer=None, _wrap=False, _enumerate=False)
 ```
 
 
@@ -718,7 +718,7 @@ energyflow.archs.PointCloudDataset(data_args, batch_size=100, dtype='float32', s
 ### WeightedPointCloudDataset
 
 ```python
-energyflow.archs.WeightedPointCloudDataset(args, kwargs)
+energyflow.archs.splits all data args into weights (assumed to be first column) and features
 ```
 
 
@@ -777,6 +777,18 @@ energyflow.archs.ParticleDistancePairer(args, kwargs)
 ```
 
 
+
+
+----
+
+### ClusterTransformer
+
+```python
+energyflow.archs.ClusterTransformer(jetdef=None, N=None, dcut=None, end_val=None, pt_scale=None, kwargs)
+```
+
+Helper class that provides a standard way to create an ABC using
+inheritance.
 
 
 ----

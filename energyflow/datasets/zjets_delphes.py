@@ -72,8 +72,6 @@ OmniFold: A Method to Simultaneously Unfold All Observables,
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import, division, print_function
-
 import json
 import os
 import warnings

@@ -11,9 +11,7 @@ Utilities for EnergyFlow architectures. These are available in both the
 #  / ____ \| | \ \| |____| |  | | ______ | |__| |  | |   _| |_| |____ ____) |
 # /_/    \_\_|  \_\\_____|_|  |_||______| \____/   |_|  |_____|______|_____/
 
-from __future__ import absolute_import, division, print_function
-
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import itertools
 import math
 import multiprocessing
@@ -21,9 +19,9 @@ import types
 import warnings
 
 import numpy as np
-import six
 
-from energyflow import fastjet as fj
+import pyfjcore
+
 from energyflow.utils.data_utils import convert_dtype, pad_events
 from energyflow.utils.fastjet_utils import (_JET_DEFINITION_KWARGS, jet_definition,
                                             pjs_from_ptyphims, ptyphims_from_pjs)
@@ -252,7 +250,7 @@ class PointCloudDataset(object):
     def chain(self, other, chain_method='concat'):
 
         # check chaining method
-        if isinstance(chain_method, six.string_types):
+        if isinstance(chain_method, str):
             if chain_method != 'concat':
                 raise ValueError('unrecognized chain_method `{}`'.format(chain_method))
             chain_method = lambda x, y: np.concatenate((x, y))
@@ -624,7 +622,7 @@ class PairedPointCloudDataset(PointCloudDataset):
 
         pairers = []
         for pairing in self.pairing:
-            if isinstance(pairing, six.string_types):
+            if isinstance(pairing, str):
                 if pairing == 'concat':
                     pairer = ConcatenatePairer
                 elif pairing == 'distance':
@@ -744,7 +742,7 @@ class PairedWeightedPointCloudDataset(PairedPointCloudDataset, WeightedPointClou
     def product_2d_weights(weights):
         return (weights[:,None,:] * weights[:,:,None]).reshape(len(weights), -1)
 
-class FeaturePairerBase(six.with_metaclass(ABCMeta, object)):
+class FeaturePairerBase(ABC):
     """"""
 
     def __init__(self):
@@ -970,7 +968,7 @@ class ParticleDistancePairer(DistancePairerBase, FeaturePairerBase):
 #    def get_new_nfeatures(self, batch_shapes, i):
 #        return 2
 
-class TransformerBase(six.with_metaclass(ABCMeta, object)):
+class TransformerBase(ABC):
 
     def __init__(self, individual=True, data_arg_indices=None,
                        use_pool=False, use_cache=True, processes=None,
@@ -1157,7 +1155,7 @@ class ClusterTransformer(TransformerBase):
                 return data_arg_cache['base_data']
 
         # turn all particles into pseudojets and cluster
-        cluster_sequences = [fj.ClusterSequence(pjs_from_ptyphims(x[:,:3]), self.jetdef) for x in data_arg]
+        cluster_sequences = [pyfjcore.ClusterSequence(pjs_from_ptyphims(x[:,:3]), self.jetdef) for x in data_arg]
         if self.cache:
             data_arg_cache['base_data'] = cluster_sequences
 

@@ -90,11 +90,10 @@ implementation.
 
 from __future__ import absolute_import, division, print_function
 
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 import warnings
 
 import numpy as np
-import six
 
 from energyflow.utils.generic_utils import transfer
 from energyflow.utils.particle_utils import *
@@ -128,7 +127,7 @@ def _pf_phat_func(Es, ps):
 # Measure 
 ###############################################################################
 
-class Measure(six.with_metaclass(ABCMeta, object)):
+class Measure(ABC):
     
     """Class for handling measure options, described above."""
 

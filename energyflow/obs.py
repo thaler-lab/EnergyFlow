@@ -23,7 +23,8 @@ from abc import abstractmethod
 import numpy as np
 from numpy.core.multiarray import c_einsum
 
-from energyflow import fastjet as fj
+import pyfjcore
+
 from energyflow.base import SingleEnergyCorrelatorBase
 from energyflow.utils.fastjet_utils import *
 from energyflow.utils.generic_utils import transfer
@@ -367,7 +368,7 @@ def zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0):
 
     sd_jet = softdrop(pseudojet, zcut=zcut, beta=beta, R=R)
 
-    parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
+    parent1, parent2 = pyfjcore.PseudoJet(), pyfjcore.PseudoJet()
     if not sd_jet.has_parents(parent1, parent2):
         return 0.
     

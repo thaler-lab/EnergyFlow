@@ -28,8 +28,6 @@ of (massless) four-vectors.
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import
-
 from . import arch_utils
 from . import data_utils
 from . import fastjet_utils

@@ -1,21 +1,26 @@
 # EnergyFlow
-[![Build Status](https://travis-ci.com/pkomiske/EnergyFlow.svg?branch=master)](https://travis-ci.com/pkomiske/EnergyFlow)
+
+[![Run tests](https://github.com/pkomiske/EnergyFlow/actions/workflows/build-wheels.yml/badge.svg)](https://github.com/pkomiske/EnergyFlow/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pkomiske/EnergyFlow/master)
+[![PyPI version](https://badge.fury.io/py/EnergyFlow.svg)](https://pypi.org/project/EnergyFlow/)
+[![python versions](https://img.shields.io/pypi/pyversions/EnergyFlow)](https://pypi.org/project/EnergyFlow/)
 
 EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) as defined in Ref. [1], implements Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) as defined in Ref. [2], computes Energy Mover's Distances as defined in Ref. [3], and provides access to some particle physics [datasets hosted on Zenodo](https://zenodo.org/search?page=1&size=20&q=komiske&sort=title) including the jet datasets in MOD HDF5 format used in Ref. [4].
 
-#### Installation
+## Installation
 
 To install EnergyFlow with pip, simply execute:
 ```sh
 pip3 install energyflow
 ```
 
-#### Documentation
+EnergyFlow depends on [NumPy](https://numpy.org/), [h5py](https://www.h5py.org/), [Wasserstein](https://pkomiske.github.io/Wasserstein/), and [PyFJCore](https://github.com/pkomiske/PyFJCore). [Tensorflow](https://www.tensorflow.org/) is used to implement the neural network architectures contained in EnergyFlow and [scikit-learn](https://scikit-learn.org/stable/) is used to provide linear models.
+
+## Documentation
 
 The documentation is maintained at [https://energyflow.network](https://energyflow.network).
 
-##### References
+## References
 
 [1] P. T. Komiske, E. M. Metodiev, and J. Thaler, _Energy Flow Polynomials: A complete linear basis for jet substructure_, [JHEP __04__ (2018) 013](https://doi.org/10.1007/JHEP04(2018)013) [[1712.07124](https://arxiv.org/abs/1712.07124)].
 

@@ -12,13 +12,12 @@
 
 from __future__ import absolute_import, division
 
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod, abstractproperty
 import multiprocessing
 import sys
 import warnings
 
 import numpy as np
-import six
 
 from energyflow.measure import Measure
 from energyflow.utils.generic_utils import create_pool, kwargs_check
@@ -27,7 +26,7 @@ from energyflow.utils.generic_utils import create_pool, kwargs_check
 # EFBase
 ###############################################################################
 
-class EFBase(six.with_metaclass(ABCMeta, object)):
+class EFBase(ABC):
 
     """A base class for EnergyFlow objects that holds a `Measure`."""
 
@@ -106,7 +105,7 @@ class EFBase(six.with_metaclass(ABCMeta, object)):
 
         # setup processor pool
         chunksize = min(max(len(events)//self.n_jobs, 1), 10000)
-        with create_pool(self.n_jobs) as pool:
+        with create_pool(self.n_jobs, context='fork') as pool:
             results = np.asarray(list(pool.map(self._batch_compute_func, events, chunksize)))
 
         return results

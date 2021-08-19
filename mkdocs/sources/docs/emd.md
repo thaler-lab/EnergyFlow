@@ -66,9 +66,9 @@ library is not available.
 
 ```python
 energyflow.emd.emd_wasserstein(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
-                                         return_flow=False, do_timing=False,
+                                         return_flow=False, periodic_phi=False,
                                          n_iter_max=100000,
-                                         epsilon_large_factor=10000.0, epsilon_small_factor=1.0)
+                                         epsilon_large_factor=1000.0, epsilon_small_factor=1.0)
 ```
 
 Compute the EMD between two events using the Wasserstein library.
@@ -149,90 +149,92 @@ energyflow.emd.emds_wasserstein(events0, events1=None, R=1.0, beta=1.0, norm=Fal
                                                        external_emd_handler=None,
                                                        n_jobs=-1, print_every=0, verbose=0,
                                                        throw_on_error=True, n_iter_max=100000,
-                                                       epsilon_large_factor=10000.0,
+                                                       epsilon_large_factor=1000.0,
                                                        epsilon_small_factor=1.0)
 ```
 
 Compute the EMDs between collections of events. This can be used to
- compute EMDs between all pairs of events in a set or between events in
- two different sets.
+compute EMDs between all pairs of events in a set or between events in
+two different sets.
 
- **Arguments**
+**Arguments**
 
- - **events0** : _list_
-     - Iterable collection of events. Each event is assumed to be an 
-     `(M,1+gdim)` array of particles, where `M` is the multiplicity and
-     `gdim` is the dimension of the ground space in which to compute
-     euclidean distances between particles (as specified by the `gdim`
-     keyword argument). The zeroth column is the weights of the
-     particles, typically their energies or transverse momenta. For
-     typical hadron collider jet applications, each particle will be of
-     the form `(pT,y,phi)` where  `y` is the rapidity and `phi` is the
-     azimuthal angle. If `dists` are provided, then the columns after the
-     zeroth are ignored; alternatively a one-dimensional array consisting
-     of just the particle weights may be passed in this case.
- - **events1** : _list_ or `None`
-     - Iterable collection of events in the same format as `events0`, or
-     `None`. If the latter, the pairwise distances between events in
-     `events0` will be computed and the returned matrix will be
-     symmetric.
+- **events0** : _list_
+    - Iterable collection of events. Each event is assumed to be an 
+    `(M,1+gdim)` array of particles, where `M` is the multiplicity and
+    `gdim` is the dimension of the ground space in which to compute
+    euclidean distances between particles (as specified by the `gdim`
+    keyword argument). The zeroth column is the weights of the
+    particles, typically their energies or transverse momenta. For
+    typical hadron collider jet applications, each particle will be of
+    the form `(pT,y,phi)` where  `y` is the rapidity and `phi` is the
+    azimuthal angle. If `dists` are provided, then the columns after the
+    zeroth are ignored; alternatively a one-dimensional array consisting
+    of just the particle weights may be passed in this case.
+- **events1** : _list_ or `None`
+    - Iterable collection of events in the same format as `events0`, or
+    `None`. If the latter, the pairwise distances between events in
+    `events0` will be computed and the returned matrix will be
+    symmetric.
+- **pairwise_emd** : _wasserstein.PairwiseEMD_ or `None`
+    - If not `None`, the computation uses this pairwise EMD object.
+    Otherwise, one is instantiated using the provided parameters.
 - **R** : _float_
-     - The R parameter in the EMD definition that controls the relative 
-     importance of the two terms. Must be greater than or equal to half 
-     of the maximum ground distance in the space in order for the EMD 
-     to be a valid metric satisfying the triangle inequality.
- - **norm** : _bool_
-     - Whether or not to normalize the particle weights to sum to one
-     prior to computing the EMD.
- - **beta** : _float_
-     - The angular weighting exponent. The internal pairwsie distance
-     matrix is raised to this power prior to solving the optimal
-     transport problem.
-  - **gdim** : _int_
-     - The dimension of the ground metric space. Useful for restricting
-     which dimensions are considered part of the ground space when using
-     the internal euclidean distances between particles.
- - **mask** : _bool_
-     - If `True`, ignores particles farther than `R` away from the
-     origin.
- - **external_emd_handler** : _wasserstein.ExternalEMDHandler_
-     - An instance of an external EMD handler from the wasserstein
-     module, e.g. `CorrelationDimension`.
- - **n_jobs** : _int_ or `None`
-     - The number of cpu cores to use. A value of `None` or `-1` will use
-     as many threads as there are CPUs on the machine.
- - **print_every** : _int_
-     - The number of computations to do in between printing the
-     progress. Even if the verbosity level is zero, this still plays a
-     role in determining when the worker threads report the results
-     back to the main thread and check for interrupt signals.
- - **verbose** : _int_
-     - Controls the verbosity level. A value greater than `0` will print
-     the progress of the computation at intervals specified by
-     `print_every`.
- - **throw_on_error** : _bool_
-     - Whether or not to raise an exception when an issue is encountered.
-     Can be useful when debugging.
- - **n_iter_max** : _int_
-     - Maximum number of iterations for solving the optimal transport 
-     problem.
- - **epsilon_large_factor** : _float_
-     - Controls some tolerances in the optimal transport solver. This
-     value is multiplied by the floating points epsilon (around 1e-16 for
-     64-bit floats) to determine the actual tolerance.
- - **epsilon_small_factor** : _float_
-     - Analogous to `epsilon_large_factor` but used where the numerical
-     tolerance can be stricter.
+    - The R parameter in the EMD definition that controls the relative 
+    importance of the two terms. Must be greater than or equal to half 
+    of the maximum ground distance in the space in order for the EMD 
+    to be a valid metric satisfying the triangle inequality.
+- **norm** : _bool_
+    - Whether or not to normalize the particle weights to sum to one
+    prior to computing the EMD.
+- **beta** : _float_
+    - The angular weighting exponent. The internal pairwsie distance
+    matrix is raised to this power prior to solving the optimal
+    transport problem.
+ - **gdim** : _int_
+    - The dimension of the ground metric space. Useful for restricting
+    which dimensions are considered part of the ground space when using
+    the internal euclidean distances between particles.
+- **mask** : _bool_
+    - If `True`, ignores particles farther than `R` away from the
+    origin.
+- **external_emd_handler** : _wasserstein.ExternalEMDHandler_
+    - An instance of an external EMD handler from the wasserstein
+    module, e.g. `CorrelationDimension`.
+- **n_jobs** : _int_ or `None`
+    - The number of cpu cores to use. A value of `None` or `-1` will use
+    as many threads as there are CPUs on the machine.
+- **print_every** : _int_
+    - The number of computations to do in between printing the
+    progress. Even if the verbosity level is zero, this still plays a
+    role in determining when the worker threads report the results
+    back to the main thread and check for interrupt signals.
+- **verbose** : _int_
+    - Controls the verbosity level. A value greater than `0` will print
+    the progress of the computation at intervals specified by
+    `print_every`.
+- **throw_on_error** : _bool_
+    - Whether or not to raise an exception when an issue is encountered.
+    Can be useful when debugging.
+- **n_iter_max** : _int_
+    - Maximum number of iterations for solving the optimal transport 
+    problem.
+- **epsilon_large_factor** : _float_
+    - Controls some tolerances in the optimal transport solver. This
+    value is multiplied by the floating points epsilon (around 1e-16 for
+    64-bit floats) to determine the actual tolerance.
+- **epsilon_small_factor** : _float_
+    - Analogous to `epsilon_large_factor` but used where the numerical
+    tolerance can be stricter.
 
- **Returns**
+**Returns**
 
- - _numpy.ndarray_
-     - The EMD values as a two-dimensional array, except if an external
-     EMD handler was provided, in which case no value is returned. If
-     `events1` was `None`, then the shape will be `(len(events0),
-     len(events0))` and the array will be symmetric, otherwise it will
-     have shape `(len(events0), len(events1))`.
- 
+- _numpy.ndarray_
+    - The EMD values as a two-dimensional array, except if an external
+    EMD handler was provided, in which case no value is returned. If
+    `events1` was `None`, then the shape will be `(len(events0),
+    len(events0))` and the array will be symmetric, otherwise it will
+    have shape `(len(events0), len(events1))`.
 
 
 ----

@@ -33,7 +33,6 @@ import re
 import warnings
 
 import numpy as np
-import six
 
 from energyflow.algorithms import VariableElimination, einsum_path, einsum
 from energyflow.base import EFPBase
@@ -426,8 +425,8 @@ class EFPSet(EFPBase):
         efmvs = ['efm_einstrs', 'efm_einpaths', 'efm_specs']
         miscattrs = ['cols', 'gen_efms', 'c_specs', 'disc_specs', 'disc_formulae']
         if not (len(args) == 0
-            or isinstance(args[0], six.string_types)
-            or (len(args[0]) == 2 and isinstance(args[0][0], six.string_types))
+            or isinstance(args[0], str)
+            or (len(args[0]) == 2 and isinstance(args[0][0], str))
             or isinstance(args[0], Generator)):
             gen = False
         elif len(args) >= 1 and isinstance(args[0], Generator):
@@ -644,7 +643,7 @@ class EFPSet(EFPBase):
         for arg in args:
 
             # parse arg
-            if isinstance(arg, six.string_types):
+            if isinstance(arg, str):
                 s = arg
             elif hasattr(arg, '__getitem__'):
                 if len(arg) == 2:

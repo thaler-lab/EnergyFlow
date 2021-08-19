@@ -80,8 +80,6 @@ samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import, division, print_function
-
 import gc
 import json
 import math
@@ -93,7 +91,6 @@ import warnings
 
 import h5py
 import numpy as np
-import six
 
 from energyflow.utils.data_utils import convert_dtype, _get_filepath
 from energyflow.utils.generic_utils import *
@@ -499,7 +496,7 @@ def _separate_particle_arrays(particles, particles_index, mask, copy=True):
 def _process_selections(sel_list):
     sels = []
     for sel in sel_list:
-        if isinstance(sel, six.string_types):
+        if isinstance(sel, str):
             sels.append(sel)
         else:
             sels.append(''.join([str(s) for s in sel]))
@@ -750,7 +747,7 @@ class MODDataset(object):
             self._init_from_datasets(datasets)
 
         # initialize from file
-        elif len(args) and isinstance(args[0], six.string_types):
+        elif len(args) and isinstance(args[0], str):
             self.selection = _process_selections(args[1:])
             self._init_from_filename(args[0], kwargs['path'])
 

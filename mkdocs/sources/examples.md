@@ -8,7 +8,7 @@ To install the examples to the default directory, `~/.energyflow/examples/`, sim
 python3 -c "import energyflow; energyflow.utils.get_examples()"
 ```
 
-See the [`get_examples`](../docs/utils/#get_examples) function for more detailed information. The examples require [`matplotlib`](https://matplotlib.org/) and [`scikit-learn`](https://scikit-learn.org/stable/) to be installed.
+See the [`get_examples`](../docs/utils/#get_examples) function for more detailed information. Some examples require [Tensorflow](https://tensorflow.org), [matplotlib](https://matplotlib.org/), or [scikit-learn](https://scikit-learn.org/stable/) to be installed.
 
 ### efn_example.py
 
@@ -382,7 +382,7 @@ import energyflow as ef
 # data controls, can go up to 2000000 total for full dataset
 train, val, test = 75000, 10000, 15000
 # train, val, test = 1000000, 200000, 200000
-use_global_features = False
+use_global_features = True
 
 # network architecture parameters
 Phi_sizes, F_sizes = (100, 100, 128), (100, 100, 100)
@@ -422,19 +422,19 @@ print('Model summary:')
 
 # build architecture
 efn = ef.archs.EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
-                   num_global_features=(4 if use_global_features else None))
+                   num_global_features=(global_features.shape[1] if use_global_features else None))
 
 # get datasets
 if use_global_features:
     d_train = ef.archs.PointCloudDataset([[ef.archs.WeightedPointCloudDataset(X_train), g_train], Y_train],
                                          batch_size=batch_size)
     d_val = ef.archs.PointCloudDataset([[ef.archs.WeightedPointCloudDataset(X_val), g_val], Y_val])
-    d_test = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_test), g_test]).wrap()
+    d_test = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_test), g_test])#.wrap()
 else:
     d_train = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_train), Y_train],
                                          batch_size=batch_size)
     d_val = ef.archs.PointCloudDataset([ef.archs.WeightedPointCloudDataset(X_val), Y_val])
-    d_test = ef.archs.WeightedPointCloudDataset(X_test).wrap()
+    d_test = ef.archs.WeightedPointCloudDataset(X_test)#.wrap()
 
 print('training', d_train)
 print('validation', d_val)
@@ -594,9 +594,11 @@ if use_global_features:
     X_train += [g_train]
     X_val += [g_val]
     X_test += [g_test]
+
 d_train = ef.archs.PointCloudDataset([X_train, Y_train], batch_size=batch_size)
 d_val = ef.archs.PointCloudDataset([X_val, Y_val])
-d_test = ef.archs.PointCloudDataset([X_test, Y_test])
+d_test = ef.archs.PointCloudDataset(X_test)
+
 print('training dataset', d_train)
 print('validation dataset', d_val)
 print('testing dataset', d_test)
@@ -852,7 +854,7 @@ import energyflow as ef
 # data controls, can go up to 2000000 for full dataset
 train, val, test = 75000, 10000, 15000
 # train, val, test = 1000000, 200000, 200000
-use_pids = True
+use_pids = False
 use_global_features = False
 
 # network architecture parameters
@@ -897,7 +899,8 @@ print('Done train/val/test split')
 print('Model summary:')
 
 # build architecture
-pfn = ef.archs.PFN(input_dim=ncol, Phi_sizes=Phi_sizes, F_sizes=F_sizes)
+pfn = ef.archs.PFN(input_dim=ncol, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
+                   num_global_features=(global_features.shape[1] if use_global_features else None))
 
 # get datasets
 if use_global_features:
@@ -1045,7 +1048,7 @@ X_test = [X_test, ef.archs.PairedPointCloudDataset(X_test)] + ([g_test] if use_g
 # construct point cloud datasets
 d_train = ef.archs.PointCloudDataset([X_train, Y_train], batch_size=batch_size)
 d_val = ef.archs.PointCloudDataset([X_val, Y_val])
-d_test = ef.archs.PointCloudDataset([X_test, Y_test])
+d_test = ef.archs.PointCloudDataset(X_test)
 
 print('training', d_train)
 print('validation', d_val)

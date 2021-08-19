@@ -32,7 +32,7 @@ values.
 ### convert_dtype
 
 ```python
-energyflow.convert_dtype(X, dtype)
+energyflow.convert_dtype(X, dtype=None)
 ```
 
 Converts the numpy dtype of the given array to the provided value. This
@@ -52,7 +52,8 @@ function will be recursively applied.
 ### data_split
 
 ```python
-energyflow.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True, include_empty=False)
+energyflow.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True, perm=None,
+                             include_empty=False, return_perm=False)
 ```
 
 A function to split a dataset into train, validation, and test datasets.
@@ -79,10 +80,16 @@ A function to split a dataset into train, validation, and test datasets.
 - **shuffle** : _bool_
     - A flag to control whether the dataset is shuffled prior to being split
     into parts.
+- **perm** : _numpy.ndarray_ dataset of integers
+    - If not `None`, the permutation to use for shuffling the dataset(s).
 - **include_empty** : _bool_
     - Whether or not to return empty arrays for datasets that would have
     zero elements in them. This can be useful for setting e.g. `val` or
     `test` to 0 without having to change the unpacking of the result.
+- **return_perm** : _bool_
+    - Whether or not to return the permutation used for shuffling the
+    events. If `True`, it will be included as the final array in the
+    returned list.
 
 **Returns**
 
@@ -92,7 +99,9 @@ A function to split a dataset into train, validation, and test datasets.
     and `test`), then [`X_train`, `X_val`, `X_test`, `Y_train`, `Y_val`,
     `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned. If, for
     instance, `val` is zero and `include_empty` is `False` then [`X_train`,
-    `X_test`, `Y_train`, `Y_test`, `Z_train`, `Z_test`] will be returned.
+    `X_test`, `Y_train`, `Y_test`, `Z_train`, `Z_test`] will be returned. If
+    `return_perm` is `True`, the final array will be the permutation used
+    for shuffling.
 
 
 ----
@@ -100,7 +109,7 @@ A function to split a dataset into train, validation, and test datasets.
 ### determine_cache_dir
 
 ```python
-energyflow.determine_cache_dir(cache_dir=None, cache_subdir='datasets')
+energyflow.determine_cache_dir(cache_dir=None, cache_subdir=None)
 ```
 
 Determines the path to the specified directory used for caching files. If
@@ -127,7 +136,7 @@ used.
 ### get_examples
 
 ```python
-energyflow.get_examples(cache_dir=None, which='all', overwrite=False)
+energyflow.get_examples(cache_dir=None, which='all', overwrite=False, branch='master')
 ```
 
 Pulls examples from GitHub. To ensure availability of all examples
@@ -145,6 +154,8 @@ update EnergyFlow to the latest version.
     case all the available examples are downloaded.
 - **overwrite** : _bool_
     - Whether to overwrite existing files or not.
+- **branch** : _str_
+    - The EnergyFlow branch from which to get the examples.
 
 
 ----
@@ -163,7 +174,7 @@ energyflow.pad_events(X, pad_val=0.0, max_len=None)
 ### to_categorical
 
 ```python
-energyflow.to_categorical(labels, num_classes=None)
+energyflow.to_categorical(labels, num_classes=None, dtype=None)
 ```
 
 One-hot encodes class labels.
@@ -209,15 +220,14 @@ Remaps PDG id numbers to small floats for use in a neural network.
 ## FastJet Utils
 
 The [FastJet package](http://fastjet.fr/) provides, among other things, fast
-jet clustering utilities. It is written in C++ and includes a Python interface
-that is easily installed at compile time by passing the `--enable-pyext` flag
-to `configure`. If you use this module for published research, please [cite
-FastJet appropriately](http://fastjet.fr/about.html).
+jet clustering utilities. Since EnergyFlow 2.0, the [PyFJCore](https://github.
+com/pkomiske/PyFJCore) package has been used to provide Python access to
+FastJet's classes and algorithms. Keep in mind that if you use these utilities
+in EnergyFlow for published research, you are relying on the FastJet library so
+please [cite FastJet appropriately](http://fastjet.fr/about.html).
 
-The core of EnergyFlow does not rely on FastJet, and hence it is not required
-to be installed, but the following utilities are available assuming that
-`import fastjet` succeeds in your Python environment (if not, no warnings or
-errors will be issued but this module will not be usable).
+See the [PyFJCore README](https://github.com/pkomiske/PyFJCore/blob/main/
+README.md) for more documentation on its functions and classes.
 
 ----
 
@@ -227,18 +237,22 @@ errors will be issued but this module will not be usable).
 energyflow.pjs_from_ptyphims(ptyphims)
 ```
 
-Converts particles in hadronic coordinates to FastJet PseudoJets.
+Converts an array of particles in hadronic coordinates to FastJet
+PseudoJets. See the [`ptyphim_array_to_pseudojets`](https://github.com/
+pkomiske/PyFJCore/blob/main/README.md/#NumPy-conversion-functions) method
+of PyFJCore.
 
 **Arguments**
 
 - **ptyphims** : _2d numpy.ndarray_
-    - An array of particles in hadronic coordinates. The mass is
-    optional and will set to zero if not present.
+    - An array of particles in hadronic coordinates, `(pt, y, phi, [mass])`;
+    the mass is optional. Any additional features are added as user info for
+    each PseudoJet, accessible using the `.python_info()` method.
 
 **Returns**
 
-- _list_ of _fastjet.PseudoJet_
-    - A list of PseudoJets corresponding to the input particles.
+- _tuple_ of _PseudoJet_
+    - A Python tuple of `PseudoJet`s corresponding to the input particles.
 
 
 ----
@@ -249,17 +263,21 @@ Converts particles in hadronic coordinates to FastJet PseudoJets.
 energyflow.pjs_from_p4s(p4s)
 ```
 
-Converts particles in Cartesian coordinates to FastJet PseudoJets.
+Converts particles in Cartesian coordinates to FastJet PseudoJets. See
+the [`epxpypz_array_to_pseudojets`](https://github.com/pkomiske/PyFJCore/
+blob/main/README.md/#NumPy-conversion-functions) method of PyFJCore.
 
 **Arguments**
 
 - **p4s** : _2d numpy.ndarray_
-    - An array of particles in Cartesian coordinates, `[E, px, py, pz]`.
+    - An array of particles in Cartesian coordinates, `(E, px, py, pz)`. Any
+    additional features are added as user info for each PseudoJet,
+    accessible using the `.python_info()` method.
 
 **Returns**
 
-- _list_ of _fastjet.PseudoJet_
-    - A list of PseudoJets corresponding to the input particles.
+- _tuple_ of _PseudoJet_
+    - A Python tuple of `PseudoJet`s corresponding to the input particles.
 
 
 ----
@@ -267,26 +285,29 @@ Converts particles in Cartesian coordinates to FastJet PseudoJets.
 ### ptyphims_from_pjs
 
 ```python
-energyflow.ptyphims_from_pjs(pjs, phi_ref=None, mass=True)
+energyflow.ptyphims_from_pjs(pjs, phi_ref=False, mass=True, phi_std=False, float32=False)
 ```
 
-Extracts hadronic four-vectors from FastJet PseudoJets.
+Extracts hadronic four-vectors from FastJet PseudoJets. See the
+[`pseudojets_to_ptyphim_array`](https://github.com/pkomiske/PyFJCore/blob/
+main/README.md/#NumPy-conversion-functions) method of PyFJCore.
 
 **Arguments**
 
-- **pjs** : _list_ of _fastjet.PseudoJet_
-    - An iterable of PseudoJets.
-- **phi_ref** : _float_ or `None`
-    - The reference phi value to use for phi fixing. If `None`, then no
-    phi fixing is performed.
+- **pjs** : iterable of _PseudoJet_
+    - An iterable of PseudoJets (list, tuple, array, etc).
+- **phi_ref** : _float_ or `None` or `False`
+    - The reference phi value to use for phi fixing. If `False`, then no
+    phi fixing is performed. If `None`, then the phi value of the first
+    particle is used.
 - **mass** : _bool_
     - Whether or not to include the mass in the extracted four-vectors.
 
 **Returns**
 
 - _numpy.ndarray_
-    - An array of four-vectors corresponding to the given PseudoJets as
-    `[pT, y, phi, m]`, where the mass is optional.
+    - A 2D array of four-vectors corresponding to the given PseudoJets as
+    `(pT, y, phi, [mass])`, where the mass is optional.
 
 
 ----
@@ -294,49 +315,54 @@ Extracts hadronic four-vectors from FastJet PseudoJets.
 ### p4s_from_pjs
 
 ```python
-energyflow.p4s_from_pjs(pjs)
+energyflow.p4s_from_pjs(pjs, float32=False)
 ```
 
-Extracts Cartesian four-vectors from FastJet PseudoJets.
+Extracts Cartesian four-vectors from FastJet PseudoJets. See the
+[`pseudojets_to_epxpypz_array`](https://github.com/pkomiske/PyFJCore/blob/
+main/README.md/#NumPy-conversion-functions) method of PyFJCore.
 
 **Arguments**
 
-- **pjs** : _list_ of _fastjet.PseudoJet_
-    - An iterable of PseudoJets.
+- **pjs** : iterable of _PseudoJet_
+    - An iterable of PseudoJets (list, tuple, array, etc).
 
 **Returns**
 
 - _numpy.ndarray_
-    - An array of four-vectors corresponding to the given PseudoJets as
-    `[E, px, py, pz]`.
+    - A 2D array of four-vectors corresponding to the given PseudoJets as
+    `(E, px, py, pz)`.
 
 
 ----
 
-### jet_def
+### jet_definition
 
 ```python
-energyflow.jet_def(algorithm='ca', R=fastjet.JetDefinition.max_allowable_R, recomb='E_scheme')
+energyflow.jet_definition(algorithm='ca', R=fastjet.JetDefinition.max_allowable_R, recomb='E_scheme')
 ```
 
-Creates a fastjet JetDefinition from the specified arguments.
+Creates a JetDefinition from the specified arguments.
 
 **Arguments**
 
 - **algorithm** : _str_ or _int_
     - A string such as `'kt'`, `'akt'`, `'antikt'`, `'ca'`, 
-    `'cambridge'`, or `'cambridge_aachen'`; or an integer corresponding
-    to a fastjet.JetAlgorithm value.
+    `'cambridge'`, or `'cambridge_aachen'`; or an integer corresponding to a
+    fastjet.JetAlgorithm value.
 - **R** : _float_
-    - The jet radius. The default value corresponds to
-    `max_allowable_R` as defined by the FastJet python package.
+    - The jet radius. The default value corresponds to `max_allowable_R` as
+    defined by the FastJet package.
+- **extra** : _float_ or `None`
+    - Some jet algorithms, like generalized $k_T$, take an extra parameter.
+    If not `None`, `extra` can be used to provide that parameter.
 - **recomb** : _str_ or _int_
-    - An integer corresponding to a fastjet RecombinationScheme, or a
-    string specifying a name which is looked up in the fastjet module.
+    - An integer corresponding to a RecombinationScheme, or a string
+    specifying a name which is looked up in the PyFJCore module.
 
 **Returns**
 
-- _fastjet.JetDefinition_
+- _JetDefinition_
     - A JetDefinition instance corresponding to the given arguments.
 
 
@@ -345,7 +371,7 @@ Creates a fastjet JetDefinition from the specified arguments.
 ### cluster
 
 ```python
-energyflow.cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., **kwargs)
+energyflow.cluster(pjs, jetdef=None, N=None, dcut=None, ptmin=0., return_cs=False, **kwargs)
 ```
 
 Clusters an iterable of PseudoJets. Uses a jet definition that can
@@ -356,10 +382,10 @@ or a particular `dcut`.
 
 **Arguments**
 
-- **pjs** : _list_ of _fastjet.PseudoJet_
+- **pjs** : iterable of _PseudoJet_
     - A list of Pseudojets representing particles or other kinematic
     objects that are to be clustered into jets.
-- **jetdef** : _fastjet.JetDefinition_ or `None`
+- **jetdef** : _JetDefinition_ or `None`
     - The `JetDefinition` used for the clustering. If `None`, the
     keyword arguments are passed on to `jet_def` to create a
     `JetDefinition`.
@@ -379,8 +405,8 @@ or a particular `dcut`.
 
 **Returns**
 
-- _list_ of _fastjet.PseudoJet_
-    - A list of PseudoJets corresponding to the clustered jets.
+- _tuple_ of _PseudoJet_
+    - A tuple of PseudoJets corresponding to the clustered jets.
 
 
 ----
@@ -409,24 +435,23 @@ JHEP05(2014)146).
 
 **Arguments**
 
-- **jet** : _fastjet.PseudoJet_
-    - A FastJet PseudoJet that has been obtained from a suitable
-    clustering (typically Cambridge/Aachen).
+- **jet** : _PseudoJet_
+    - A PseudoJet that has been obtained from a suitable clustering
+    (typically Cambridge/Aachen).
 - **zcut** : _float_
-    - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0`
-    and `1`.
+    - The $z_{\rm cut}$ parameter of SoftDrop. Should be between `0.0` and
+    `1.0`.
 - **beta** : _int_ or _float_
     - The $\beta$ parameter of SoftDrop.
 - **R** : _float_
-    - The jet radius to use for the grooming. Only relevant if `beta!=0`.
+    - The jet radius to use for the grooming. Only relevant if `beta != 0.`.
 
 **Returns**
 
-- _fastjet.PseudoJet_
-    - The groomed jet. Note that it will not necessarily have all of
-    the same associated structure as the original jet, but it is
-    suitable for obtaining kinematic quantities, e.g. [$z_g$](/docs/
-    obs/#zg_from_pj).
+- _PseudoJet_
+    - The groomed jet. Note that it will not necessarily have all of the
+    same associated structure as the original jet, but it is suitable for
+    obtaining kinematic quantities, e.g. [$z_g$](/docs/obs/#zg_from_pj).
 
 
 ----
@@ -895,7 +920,7 @@ All input arrays should have the same shape.
 ### phi_fix
 
 ```python
-energyflow.phi_fix(phis, phi_ref, copy=True)
+energyflow.phi_fix(phis, phi_ref, copy=True, dtype=<class 'float'>)
 ```
 
 A function to ensure that all phis are within $\pi$ of `phi_ref`. It is
@@ -1251,8 +1276,11 @@ uniformly sample phase space.
 
 - **nevents** : _int_
     - Number of events to generate.
-- **nparticles** : _int_
-    - Number of particles in each event.
+- **nparticles** : _int_ or _tuple_/_list_
+    - If an integet, the exact number of particles in each event. If a
+    tuple/list of length 2, then this is treated as the interval
+    `[low, high)` and the particle multiplicities will be uniformly sampled
+    from this interval.
 - **dim** : _int_
     - Number of spacetime dimensions.
 - **mass** : _float_ or `'random'`

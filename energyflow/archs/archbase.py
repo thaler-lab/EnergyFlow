@@ -42,15 +42,11 @@ learning.
 # EnergyFlow - Python package for high-energy particle physics.
 # Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
 
-from __future__ import absolute_import, division, print_function
-
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod, abstractproperty
 import gc
 import os
 import sys
 import warnings
-
-import six
 
 from energyflow.utils.generic_utils import iter_or_rep
 
@@ -71,7 +67,7 @@ def _import_keras(global_vars):
 # ArchBase
 ################################################################################
 
-class ArchBase(six.with_metaclass(ABCMeta, object)):
+class ArchBase(ABC):
 
     """Base class for all architectures contained in EnergyFlow. The mechanism of
     specifying hyperparameters for all architectures is described here. Methods
@@ -312,7 +308,7 @@ class NNBase(ArchBase):
         self.compile_opts.update(self._proc_arg('compile_opts', default={}))
 
         # process strings into keras objects
-        if isinstance(self.compile_opts['loss'], six.string_types):
+        if isinstance(self.compile_opts['loss'], str):
             self.compile_opts['loss'] = keras.losses.get(self.compile_opts['loss'])
         self.compile_opts['optimizer'] = keras.optimizers.get(self.compile_opts['optimizer'])
 
@@ -360,7 +356,7 @@ class NNBase(ArchBase):
     def _proc_act_name(self, act):
 
         # only process activations specified as strings
-        if isinstance(act, six.string_types):
+        if isinstance(act, str):
             name = self._proc_name('{}_{}'.format(act, self._act_counts.setdefault(act, 0)))
             self._act_counts[act] += 1
             return name
@@ -449,7 +445,7 @@ def _get_act_layer(act, name=None):
         return act
 
     # determine name
-    if isinstance(act, six.string_types) and act in _act_dict():
+    if isinstance(act, str) and act in _act_dict():
         return _act_dict()[act](name=name)
 
     # default case of passing act into Activation layer

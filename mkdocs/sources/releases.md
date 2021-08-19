@@ -16,10 +16,11 @@
 - EnergyFlow architecture objects are now callable, by forward `__call__` to the underlying model.
 - Renamed `summary` argument of neural network models to `print_summary`.
 - Added functions in `fastjet_utils` to convert to/from PseudoJet's and events in Cartesian coordinates.
-
 - Modified remap_pids to operate on individual events
 - Added float option to MODDataset.
 - Added split/chain to PointCloudDataset.
+- `pyfjcore` used to provide access to FastJet.
+- Increased memory efficiency in `qg_jets.load`.
 
 - Improved `data_split` function to optionally return empty arrays if `train`, `val`, or `test` is zero.
 

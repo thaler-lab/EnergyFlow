@@ -1,6 +1,7 @@
 """# Multigraph Generation
 
-Implementation of EFP/EFM Generator class.
+Implementation of EFP/EFM Generator class. Requires that the
+[python-igraph](https://igraph.org/python/) library is installed.
 """
 
 #   _____ ______ _   _

@@ -3,6 +3,11 @@
 <img src="https://github.com/pkomiske/EnergyFlow/raw/images/QG_256_plain.jpg" width="47.5%"/>
 <img src="https://github.com/pkomiske/EnergyFlow/raw/images/JetCustom_29522924_24981665_EMD.jpg" width="47.5%"/>
 
+[![Run tests](https://github.com/pkomiske/EnergyFlow/actions/workflows/build-wheels.yml/badge.svg)](https://github.com/pkomiske/EnergyFlow/actions)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/pkomiske/EnergyFlow/master)
+[![PyPI version](https://badge.fury.io/py/EnergyFlow.svg)](https://pypi.org/project/EnergyFlow/)
+[![python versions](https://img.shields.io/pypi/pyversions/EnergyFlow)](https://pypi.org/project/EnergyFlow/)
+
 ## Features
 
 EnergyFlow is a Python package containing a suite of particle physics tools:
@@ -13,7 +18,7 @@ EnergyFlow is a Python package containing a suite of particle physics tools:
 <br><br>
 - [Particle Flow Networks](docs/archs): PFNs are general models designed for learning from collider events as unordered, variable-length sets of particles, based on the [Deep Sets](https://arxiv.org/abs/1703.06114) framework. EnergyFlow contains customizable Keras implementations of PFNs. Available from version `0.10.0` onward.
 <br><br>
-- [Energy Mover's Distance](docs/emd): The EMD is a common metric between probability distributions that has been adapted for use as a metric between collider events. EnergyFlow contains code to facilitate the computation of the EMD between events based on an underlying implementation provided by the [Python Optimal Transport (POT)](https://pot.readthedocs.io) library. Available from version `0.11.0` onward.
+- [Energy Mover's Distance](docs/emd): The EMD is a common metric between probability distributions that has been adapted for use as a metric between collider events. EnergyFlow contains code to facilitate the computation of the EMD between events based on an underlying implementation provided by the [Wasserstein](https://pkomiske.github.io/Wasserstein/) library (as of version 1.3.0). An alternative implementation based on the [Python Optimal Transport (POT)](https://pot.readthedocs.io) library is also available. Available from version `0.11.0` onward.
 <br><br>
 - [Energy Flow Moments](docs/efm): EFMs are moments built out of particle energies and momenta that can be evaluated in linear time in the number of particles. They provide a highly efficient means of implementing $\beta=2$ EFPs and are also very useful for reasoning about linear redundancies that appear between EFPs. Available from version `1.0.0` onward.
 
@@ -28,6 +33,8 @@ The EnergyFlow package also provides easy access to particle phyiscs datasets an
 - [Demos](demos): Jupyter notebook demos that can run in your browser (without any installation) via [Binder](https://mybinder.org).
 <br><br>
 - [Detailed Examples](examples): Examples showcasing EFPs, EFNs, PFNs, EMDs, and more.
+<br><br>
+- [Particle Utilities](utils/#particle-utils): NumPy-based tools for manipulating particle four-momenta in various representations. Includes an interface to [FastJet](http://fastjet.fr) functionality via the [PyFJCore](https://github.com/pkomiske/PyFJCore) package.
 
 
 The current version is `{current_version}`. Changes are summarized in the [Release Notes](releases). Using the most up-to-date version is recommended. As of version `0.7.0`, tests have been written covering the majority of the EFP and EMD code. The architectures code is currently tested by running the examples. The source code can be found on [GitHub](https://github.com/pkomiske/EnergyFlow).

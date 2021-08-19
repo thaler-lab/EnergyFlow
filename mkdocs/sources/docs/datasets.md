@@ -610,8 +610,7 @@ performed.
 
 - **datasets**: {`'Herwig'`, `'Pythia21'`, `'Pythia25'`, `'Pythia26'`}
     - The dataset (specified by which generator/tune was used to produce
-    it) to load. Note that this argument is not sensitive to
-    capitalization.
+    it) to load. Note that this argument is not sensitive to capitalization.
 - **num_data**: _int_
     - The number of events to read in. A value of `-1` means to load all
     available events.
