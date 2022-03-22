@@ -23,7 +23,7 @@ are discussed in the [Measures](../measures) section.
 # |______|_|    |_|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2021 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
 

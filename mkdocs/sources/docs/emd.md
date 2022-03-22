@@ -38,37 +38,10 @@ are used instead of energies.
 ### emd
 
 ```python
-energyflow.emd.emd(*args, **kwargs)
-```
-
-Computes the EMD between two events. The `emd` function is set equal to
-[`emd_wasserstein`](#emd_wasserstein) or [`emd_pot`](#emd_pot), with the
-former preferred unless the Wasserstein library is not available.
-
-
-----
-
-### emds
-
-```python
-energyflow.emd.emds(*args, **kwargs)
-```
-
-Computes the EMDs between collections of events. The `emds` function is
-set equal to [`emds_wasserstein`](#emds_wasserstein) or
-[`emds_pot`](#emds_pot), with the former preferred unless the Wasserstein
-library is not available.
-
-
-----
-
-### emd_wasserstein
-
-```python
-energyflow.emd.emd_wasserstein(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
-                                         return_flow=False, do_timing=False,
-                                         n_iter_max=100000,
-                                         epsilon_large_factor=10000.0, epsilon_small_factor=1.0)
+energyflow.emd.emd(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='float64',
+                              periodic_phi=False, mask=False, return_flow=False,
+                              n_iter_max=100000,
+                              epsilon_large_factor=10000.0, epsilon_small_factor=1.0)
 ```
 
 Compute the EMD between two events using the Wasserstein library.
@@ -109,16 +82,25 @@ Compute the EMD between two events using the Wasserstein library.
     - The dimension of the ground metric space. Useful for restricting
     which dimensions are considered part of the ground space when using
     the internal euclidean distances between particles. Has no effect if
-    `dists` are provided.
+    `dists` are provided or if `None`.
+- **dtype** : {`'float64'`, `'float32'`}
+    - The floating point precision to use in the computation.
+- **periodic_phi** : _bool_
+    - Whether to expect (and therefore properly handle) periodicity
+    in the second coordinate, corresponding to the azimuthal angle
+    $\phi$. Should typically be `True` for event-level applications but
+    can be set to `False` (which is slightly faster) for jet
+    applications where all $\phi$ differences are less than or equal to
+    $\pi$ for properly processed events.
+- **mask** : _bool_
+    - If `True`, masks out particles farther than `R` away from the
+    origin. Has no effect if `dists` are provided.
 - **return_flow** : _bool_
     - Whether or not to return the flow matrix describing the optimal 
     transport found during the computation of the EMD. Note that since
     the second term in Eq. 1 is implemented by including an additional 
     particle in the event with lesser total weight, this will be
     reflected in the flow matrix.
-- **mask** : _bool_
-    - If `True`, masks out particles farther than `R` away from the
-    origin. Has no effect if `dists` are provided.
 - **n_iter_max** : _int_
     - Maximum number of iterations for solving the optimal transport 
     problem.
@@ -142,20 +124,22 @@ Compute the EMD between two events using the Wasserstein library.
 
 ----
 
-### emds_wasserstein
+### emds
 
 ```python
-energyflow.emd.emds_wasserstein(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=2, mask=False,
-                                                       external_emd_handler=None,
-                                                       n_jobs=-1, print_every=0, verbose=0,
-                                                       throw_on_error=True, n_iter_max=100000,
-                                                       epsilon_large_factor=10000.0,
-                                                       epsilon_small_factor=1.0)
+energyflow.emd.emds(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='float64',
+               #.                            pairwise_emd=None,
+                                           periodic_phi=False, mask=False,
+                                           external_emd_handler=None,
+                                           n_jobs=-1, print_every=0, verbose=0,
+                                           throw_on_error=True, n_iter_max=100000,
+                                           epsilon_large_factor=10000.0,
+                                           epsilon_small_factor=1.0)
 ```
 
-Compute the EMDs between collections of events. This can be used to
- compute EMDs between all pairs of events in a set or between events in
- two different sets.
+Compute the EMDs between collections of events using the Wasserstein
+ library. This can be used to compute EMDs between all pairs of events in
+ a set or between events in two different sets.
 
  **Arguments**
 
@@ -191,7 +175,20 @@ Compute the EMDs between collections of events. This can be used to
   - **gdim** : _int_
      - The dimension of the ground metric space. Useful for restricting
      which dimensions are considered part of the ground space when using
-     the internal euclidean distances between particles.
+     the internal euclidean distances between particles. Has no effect if
+     `None`.
+ - **dtype** : {`'float64'`, `'float32'`}
+     - The floating point precision to use in the computation.
+ - **pairwise_emd** : _wasserstein.PairwiseEMD_ or `None`
+     - If not `None`, the computation uses this pairwise EMD object.
+     Otherwise, one is instantiated using the provided parameters.
+ - **periodic_phi** : _bool_
+     - Whether to expect (and therefore properly handle) periodicity
+     in the second coordinate, corresponding to the azimuthal angle
+     $\phi$. Should typically be `True` for event-level applications but
+     can be set to `False` (which is slightly faster) for jet
+     applications where all $\phi$ differences are less than or equal to
+     $\pi$ for properly processed events.
  - **mask** : _bool_
      - If `True`, ignores particles farther than `R` away from the
      origin.

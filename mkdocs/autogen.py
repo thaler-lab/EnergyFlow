@@ -197,7 +197,7 @@ docs = {
     'emd': [
         {
             'module': ef.emd,
-            'functions': ['emd4doc', 'emds4doc'] + ef.emd.__all__[2:],
+            'functions': ef.emd.__all__,
             'modpath': 'energyflow.emd.'
         }
     ],

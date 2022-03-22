@@ -33,7 +33,7 @@ by the EFN as well as the jet mass and constituent multiplicity observables.
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -202,7 +202,7 @@ of the predicted and actual mass distributions.
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -376,7 +376,7 @@ constituent multiplicity observables.
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -528,7 +528,7 @@ to train a CNN without a GPU (which will speed up this example immensely).
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -682,7 +682,7 @@ $N$-subjettiness observables.
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -809,7 +809,7 @@ for the classifiers with different numbers of EFP inputs.
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function
@@ -930,7 +930,7 @@ software components.
 # |______/_/ \_\/_/    \_\_|  |_|_|    |______|______|
 
 # EnergyFlow - Python package for high-energy particle physics.
-# Copyright (C) 2017-2020 Patrick T. Komiske III and Eric Metodiev
+# Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 # standard library imports
 from __future__ import absolute_import, division, print_function

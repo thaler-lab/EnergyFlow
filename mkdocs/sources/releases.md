@@ -2,6 +2,10 @@
 
 ## 1.3.x
 
+**1.3.3**
+
+- Updated EMD functions depending on POT to account for changes in most recent POT release.
+
 **1.3.2**
 
 - Fixed typo in `MODDataset` code that caused `abs_gen_jet_y` and `abs_get_jet_eta` to be invalid selectors.
