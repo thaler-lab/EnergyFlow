@@ -1,8 +1,12 @@
+## 1.4.x
+
+**1.4.0**
+
+- Removed support for Python 3.6 (necessary to accomodate changes in the Wasserstein library).
+- Updated EMD functions depending on POT to account for recent changes in POT internals.
+- Updated required Wasserstein version to support arm64 macs.
+
 ## 1.3.x
-
-**1.3.3**
-
-- Updated EMD functions depending on POT to account for changes in most recent POT release.
 
 **1.3.2**
 
