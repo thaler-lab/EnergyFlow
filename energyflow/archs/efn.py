@@ -15,7 +15,7 @@ from abc import abstractmethod, abstractproperty
 import numpy as np
 
 import tensorflow.keras.backend as K
-from tensorflow.keras import __version__ as __keras_version__
+from keras import __version__ as __keras_version__
 from tensorflow.keras.layers import Concatenate, Dense, Dot, Dropout, Input, Lambda, TimeDistributed
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
@@ -23,6 +23,7 @@ from tensorflow.keras.regularizers import l2
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.archs.dnn import construct_dense
 from energyflow.utils import iter_or_rep
+
 
 __all__ = [
 

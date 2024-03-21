@@ -72,7 +72,7 @@ for x in X:
 
 # handle particle id channel
 if use_pids:
-    remap_pids(X, pid_i=3)
+    remap_pids(X, pid_i=3, error_on_unknown=False)
 else:
     X = X[:,:,:3]
 
