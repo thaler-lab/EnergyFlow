@@ -459,7 +459,7 @@ HASHES = {
 }
 
 GENERATORS = frozenset(URLS.keys())
-SOURCES = ['dropbox', 'zenodo']
+SOURCES = ['zenodo', 'dropbox']
 
 # load(num_data=100000, pad=True, ncol=4, generator='pythia',
 #      with_bc=False, cache_dir='~/.energyflow')

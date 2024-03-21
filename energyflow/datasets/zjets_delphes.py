@@ -111,7 +111,7 @@ KEYS = {
     'zgs': 'Groomed momentum fraction, zcut = 0.1, beta = 0',
 }
 NUM_FILES = 17
-SOURCES = ['dropbox', 'zenodo']
+SOURCES = ['zenodo', 'dropbox']
 ZENODO_RECORD = '3548091'
 
 # load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
