@@ -15,7 +15,6 @@ from abc import abstractmethod, abstractproperty
 import numpy as np
 
 import tensorflow.keras.backend as K
-from keras import __version__ as __keras_version__
 from tensorflow.keras.layers import Concatenate, Dense, Dot, Dropout, Input, Lambda, TimeDistributed
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
@@ -33,20 +32,13 @@ __all__ = [
     # weight mask constructor functions
     #'construct_efn_weight_mask', 'construct_pfn_weight_mask',
 
-    # network consstructor functions
-    #'construct_distributed_dense', 'construct_latent', 'construct_dense', 
+    # network constructor functions
+    #'construct_distributed_dense', 'construct_latent', 'construct_dense',
 
     # full model classes
     'EFN', 'PFN'
 ]
 
-################################################################################
-# Keras 2.2.5 fixes bug in 2.2.4 that affects our usage of the Dot layer
-################################################################################
-
-if __keras_version__.endswith('-tf'):
-    __keras_version__ = __keras_version__[:-3]
-keras_version_tuple = tuple(map(int, __keras_version__.split('.')))
 DOT_AXIS = 1
 
 ################################################################################
@@ -533,20 +525,19 @@ class EFN(SymmetricPerParticleNN):
         XY = np.asarray([X, Y]).reshape((1, 2, nx*ny)).transpose((0, 2, 1))
 
         # handle weirdness of Keras/tensorflow
-        old_keras = (keras_version_tuple <= (2, 2, 5))
         s = self.Phi_sizes[-1] if len(self.Phi_sizes) else self.input_dim
         in_t, out_t = self.inputs[1], self._tensors[self._tensor_inds['latent'][0] - 1]
 
         # construct function
-        kf = K.function([in_t] if old_keras else in_t, [out_t] if old_keras else out_t)
+        kf = K.function(in_t, out_t)
 
         # evaluate function
-        Z = kf([XY] if old_keras else XY)[0].reshape(nx, ny, s).transpose((2, 0, 1))
+        Z = kf(XY)[0].reshape(nx, ny, s).transpose((2, 0, 1))
 
         # prune filters that are off
         if prune:
             return X, Y, Z[[not (z == 0).all() for z in Z]]
-        
+
         return X, Y, Z
 
 
