@@ -377,8 +377,12 @@ def emds(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='f
 if ot:
 
     # POT >= 0.8.0 introduces another argument to emd_c
-    _pot_version = tuple(map(int, ot.__version__.split('.')))
-    _emd_c = lambda a, b, c, d: emd_c(a, b, c, d, 1) if _pot_version >= (0, 8, 0) else emd_c
+    try:
+        # TODO: Simplify when energyflow is Python 3.8+
+        from importlib.metadata import version
+    except ModuleNotFoundError:
+        from importlib_metadata import version
+    _emd_c = lambda a, b, c, d: emd_c(a, b, c, d, 1) if version("pot") >= "0.8.0" else emd_c
 
 # parameter checks
 def _check_params(norm, gdim, phi_col, measure, coords, empty_policy):
