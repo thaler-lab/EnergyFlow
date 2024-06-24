@@ -62,4 +62,3 @@ def load(num_data=-1, cache_dir='~/.energyflow'):
         X, y = X[:num_data], y[:num_data]
 
     return X, y
-

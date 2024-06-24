@@ -97,4 +97,3 @@ def valencies(graph):
     """Gets the valency of each vertex in the graph."""
 
     return Counter((v for edge in graph for v in edge))
-

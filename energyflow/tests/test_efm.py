@@ -98,5 +98,3 @@ def test_efm_vs_efmset_batch_compute(sigs, M, measure, normed):
         results = efm.batch_compute(events)
         for i in range(len(events)):
             assert epsilon_percent(efm_dict[i][sig], results[i], 10**-10)
-
-

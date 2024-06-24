@@ -562,4 +562,3 @@ def load(num_data=100000, pad=True, ncol=4,
         X, y = X[:num_data], y[:num_data]
 
     return X, y
-
