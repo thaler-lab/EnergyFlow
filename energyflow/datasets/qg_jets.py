@@ -12,14 +12,14 @@ submodule of EnergyFlow. The four datasets are:
 
 To avoid downloading unnecessary samples, the datasets are contained in twenty
 files with 100k jets each, and only the required files are downloaded. These
-are based on the samples used in 
-[1810.05165](https://arxiv.org/abs/1810.05165). Splitting the data into 
+are based on the samples used in
+[1810.05165](https://arxiv.org/abs/1810.05165). Splitting the data into
 1.6M/200k/200k train/validation/test sets is recommended for standardized
 comparisons.
 
 Each dataset consists of two components:
 
-- `X` : a three-dimensional numpy array of the jets with shape 
+- `X` : a three-dimensional numpy array of the jets with shape
 `(num_data,max_num_particles,4)`.
 - `y` : a numpy array of quark/gluon jet labels (quark=`1` and gluon=`0`).
 
@@ -36,7 +36,7 @@ underlying event) are turned on and the default tunings and shower parameters
 are used. Final state non-neutrino particles are clustered into $R=0.4$
 anti-$k_T$ jets using FastJet 3.3.0. Jets with transverse momentum
 $p_T\in[500,550]$ GeV and rapidity $|y|<1.7$ are kept. Particles are ensured
-have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity 
+have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity
 issues). No detector simulation is performed.
 
 The samples are also hosted on Zenodo and we ask that you cite them
@@ -463,10 +463,10 @@ SOURCES = ['zenodo', 'dropbox']
 
 # load(num_data=100000, pad=True, ncol=4, generator='pythia',
 #      with_bc=False, cache_dir='~/.energyflow')
-def load(num_data=100000, pad=True, ncol=4, 
+def load(num_data=100000, pad=True, ncol=4,
          generator='pythia', with_bc=False, cache_dir='~/.energyflow'):
-    """Loads samples from the dataset (which in total is contained in twenty 
-    files). Any file that is needed that has not been cached will be 
+    """Loads samples from the dataset (which in total is contained in twenty
+    files). Any file that is needed that has not been cached will be
     automatically downloaded. Downloading a file causes it to be cached for
     later use. Basic checksums are performed.
 
@@ -490,7 +490,7 @@ def load(num_data=100000, pad=True, ncol=4,
         different dataset. The datasets with and without b and c quarks should
         not be combined.
     - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
+        - The directory where to store/look for the files. Note that
         `'datasets'` is automatically appended to the end of this path.
 
     **Returns**
@@ -562,4 +562,4 @@ def load(num_data=100000, pad=True, ncol=4,
         X, y = X[:num_data], y[:num_data]
 
     return X, y
-    
+

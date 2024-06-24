@@ -125,7 +125,7 @@ multiple grooming parameters are to be used.
 Ratio of EFPs (specifically, energy correlation functions) designed to
 tag two prong signals. In graphs, the formula is:
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" 
+<img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png"
 class="obs_center" width="20%"/>
 
 For additional information, see the [original paper](https://arxiv.org/
@@ -159,7 +159,7 @@ keywords are accepted.
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -181,10 +181,10 @@ invoked.
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `thetas` must also be present, and `zs` is used in place 
+    - If present, `thetas` must also be present, and `zs` is used in place
     of the energies of an event.
 - **thetas** : 2-d array_like
-    - If present, `zs` must also be present, and `thetas` is used in place 
+    - If present, `zs` must also be present, and `thetas` is used in place
     of the pairwise angles of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -236,7 +236,7 @@ efpset
 Ratio of Energy Correlation Functions designed to tag two prong signals.
 In graphs, the formula is:
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" 
+<img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png"
 class="obs_center" width="20%"/>
 
 For additional information, see the [original paper](https://arxiv.org/
@@ -270,7 +270,7 @@ keywords are accepted.
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -292,10 +292,10 @@ invoked.
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `thetas` must also be present, and `zs` is used in place 
+    - If present, `thetas` must also be present, and `zs` is used in place
     of the energies of an event.
 - **thetas** : 2-d array_like
-    - If present, `zs` must also be present, and `thetas` is used in place 
+    - If present, `zs` must also be present, and `thetas` is used in place
     of the pairwise angles of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -347,7 +347,7 @@ efpset
 Ratio of Energy Correlation Functions designed to tag three prong
 signals. In graphs, the formula is:
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" 
+<img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png"
 class="obs_center" width="30%"/>
 
 For additional information, see the [original paper](https://arxiv.org/
@@ -378,7 +378,7 @@ keywords are accepted.
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -400,10 +400,10 @@ invoked.
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `thetas` must also be present, and `zs` is used in place 
+    - If present, `thetas` must also be present, and `zs` is used in place
     of the energies of an event.
 - **thetas** : 2-d array_like
-    - If present, `zs` must also be present, and `thetas` is used in place 
+    - If present, `zs` must also be present, and `thetas` is used in place
     of the pairwise angles of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -449,4 +449,3 @@ efpset
 
 
 ----
-

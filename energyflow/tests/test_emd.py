@@ -135,7 +135,7 @@ def test_periodic_phi(backend, gdim, M):
 
         ef_w = emd(ev1, ev2, norm=True, gdim=gdim, periodic_phi=False, phi_col=phi_col)
         ef_r = emd(ev1, ev2, norm=True, gdim=gdim, periodic_phi=True, phi_col=phi_col)
-        
+
         assert epsilon_diff(ot_w, ef_w, 10**-14)
         assert epsilon_diff(ot_r, ef_r, 10**-14)
 
@@ -197,18 +197,18 @@ def emde(ev0, ev1, R=1.0, beta=1.0, return_flow=False):
     pTs0, pTs1 = np.asarray(ev0[:,0], order='c'), np.asarray(ev1[:,0], order='c')
     thetas = ot.dist(np.vstack((ev0[:,1:3], np.zeros(2))),
                      np.vstack((ev1[:,1:3], np.zeros(2))), metric='euclidean')
-    
+
     # add a fictitious particle to the lower-energy event to balance the energy
-    pT0, pT1 = pTs0.sum(), pTs1.sum()       
+    pT0, pT1 = pTs0.sum(), pTs1.sum()
     pTs0 = np.hstack((pTs0, 0 if pT0 > pT1 else pT1-pT0))
     pTs1 = np.hstack((pTs1, 0 if pT1 > pT0 else pT0-pT1))
-    
+
     # make its distance R to all particles in the other event
     thetas[:,-1] = R
     thetas[-1,:] = R
 
     thetas **= beta
-    
+
     if return_flow:
         G, log = ot.emd(pTs0, pTs1, thetas, log=True)
         return log['cost'], G

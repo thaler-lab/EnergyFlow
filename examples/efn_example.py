@@ -74,8 +74,8 @@ for x in X:
 
 print('Finished preprocessing')
 
-# do train/val/test split 
-(z_train, z_val, z_test, 
+# do train/val/test split
+(z_train, z_val, z_test,
  p_train, p_val, p_test,
  Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, val=val, test=test)
 
@@ -104,7 +104,7 @@ print()
 print('EFN AUC:', auc)
 print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 

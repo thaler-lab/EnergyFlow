@@ -93,7 +93,7 @@
 
 **0.13.1**
 
-- When loading MOD HDF5 files, jets are now made from copies of the particle arrays rather than from views, 
+- When loading MOD HDF5 files, jets are now made from copies of the particle arrays rather than from views,
 enabling the large arrays to be freed and only the selected jets to remain in memory (which can have substantial memory savings).
 
 **0.13.0**
@@ -103,7 +103,7 @@ enabling the large arrays to be freed and only the selected jets to remain in me
 - Added particle utility functions to map PDG IDs to electric charges.
 - Added `sum_ptyphims` and `sum_ptyphipids` functions to sum four-vectors given in hadronic coordinates.
 - Added scheme choices for summing four-vectors of particles.
-- Added preprocessing functions to particle utilities, including `center_ptyphims`, 
+- Added preprocessing functions to particle utilities, including `center_ptyphims`,
 `rotate_ptyphims` and `reflect_ptyphims`.
 - A `~` is now expanded to the user's home directory properly in the `filepath` option to architectures.
 - Added `h5py` install dependency for MOD Datasets.
@@ -142,7 +142,7 @@ enabling the large arrays to be freed and only the selected jets to remain in me
 
 **0.12.0**
 
-- Fixed potential [issue](https://github.com/keras-team/keras/issues/12495) involving the Keras `Masking` 
+- Fixed potential [issue](https://github.com/keras-team/keras/issues/12495) involving the Keras `Masking`
 layer not functioning as documented. This is not expected to affect any EFN models that
 were padded with zeros, nor any PFN models for which the padding was consistent across training and testing
 sets. Thanks to Anders Andreassen for pointing this out!
@@ -163,7 +163,7 @@ sets. Thanks to Anders Andreassen for pointing this out!
 
 **0.11.1**
 
-- Fixed issue when using Python 2 caused by not importing division in dataset loading code. Thanks to Matt LeBlanc 
+- Fixed issue when using Python 2 caused by not importing division in dataset loading code. Thanks to Matt LeBlanc
 for pointing this out!
 - Added `n_iter_max` option to EMD functions.
 

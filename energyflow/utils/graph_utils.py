@@ -16,11 +16,11 @@ from collections import Counter
 import itertools
 
 __all__ = [
-    'import_igraph', 
+    'import_igraph',
     'get_components',
     'get_valency_structure',
     'graph_union',
-    'nvert', 
+    'nvert',
     'valencies'
 ]
 
@@ -35,8 +35,8 @@ def import_igraph():
 # standard graph form:
 #   - a graph is a list of tuples
 #   - vertices are always labeled from 0 to |V|-1
-#   - each tuple in the list corresponds to an edge, 
-#     specified by a pair of integers which are the 
+#   - each tuple in the list corresponds to an edge,
+#     specified by a pair of integers which are the
 #     vertices touching that edge
 #   - the same edge may appear more than once, in which
 #     case the graph is a multigraph
@@ -57,13 +57,13 @@ def get_components(graph):
         i = 0
         component = [verts.pop()]
         while i < len(component):
-            
+
             # append all vertices touched by the present one that haven't already been visited
             for v in vds[component[i]]:
                 if v in verts:
                     verts.remove(v)
-                    component.append(v)      
-            i += 1                
+                    component.append(v)
+            i += 1
         components.append(component)
 
     return components
@@ -97,4 +97,4 @@ def valencies(graph):
     """Gets the valency of each vertex in the graph."""
 
     return Counter((v for edge in graph for v in edge))
-    
+

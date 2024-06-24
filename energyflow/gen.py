@@ -104,7 +104,7 @@ class Generator(object):
             self.gen_efms = gen_efms
 
             # get prime generator instance
-            self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax, 
+            self.pr_gen = PrimeGenerator(self.dmax, self.nmax, self.emax, self.cmax, self.vmax,
                                          self.gen_efms, self.np_optimize, verbose, start)
             self.cols = self.pr_gen.cols
             self._set_col_inds()
@@ -129,10 +129,10 @@ class Generator(object):
                 setattr(self, m, min(file[m], none2inf(locals()[m])))
 
             # select connected specs based on maxs
-            mask = ((c_specs[:,self.d_ind] <= self.dmax) & 
-                    (c_specs[:,self.n_ind] <= self.nmax) & 
-                    (c_specs[:,self.e_ind] <= self.emax) & 
-                    (c_specs[:,self.c_ind] <= self.cmax) & 
+            mask = ((c_specs[:,self.d_ind] <= self.dmax) &
+                    (c_specs[:,self.n_ind] <= self.nmax) &
+                    (c_specs[:,self.e_ind] <= self.emax) &
+                    (c_specs[:,self.c_ind] <= self.cmax) &
                     (c_specs[:,self.v_ind] <= self.vmax))
 
             # set ve options
@@ -207,7 +207,7 @@ class Generator(object):
         - **compression** : _bool_
             - Whether to compress the resulting file or not.R
         """
-        
+
         arrs = set(['dmax', 'nmax', 'emax', 'cmax', 'vmax', 'comp_dmaxs',
                     'cols', 'np_optimize', 'gen_efms'])
         arrs |= self._prime_attrs() | self._comp_attrs()
@@ -236,9 +236,9 @@ class Generator(object):
 
     @property
     def specs(self):
-        """An array of EFP specifications. Each row represents an EFP 
+        """An array of EFP specifications. Each row represents an EFP
         and the columns represent the quantities indicated by `cols`."""
-        
+
         if not hasattr(self, '_specs'):
             self._specs = concat_specs(self.c_specs, self.disc_specs)
         return self._specs
@@ -266,7 +266,7 @@ class PrimeGenerator(object):
 
         if not igraph:
             raise NotImplementedError('cannot use PrimeGenerator without igraph')
-        
+
         self.ve = VariableElimination(np_optimize)
 
         # store parameters
@@ -339,7 +339,7 @@ class PrimeGenerator(object):
                 if e-1 in self.esbyn[n]:
 
                     # iterate over all graphs with n, d-1
-                    for seed_graph, seed_edges in zip(self.simple_graphs_d[(n,e-1)], 
+                    for seed_graph, seed_edges in zip(self.simple_graphs_d[(n,e-1)],
                                                       self.edges_d[(n,e-1)]):
 
                         # iterate over edges that don't exist in graph
@@ -353,15 +353,15 @@ class PrimeGenerator(object):
 
         # check for isomorphism with existing graphs
         for graph in self.simple_graphs_d[ne]:
-            if new_graph.isomorphic(graph): 
+            if new_graph.isomorphic(graph):
                 return
 
         # check that ve complexity for this graph is valid
         new_edges = new_graph.get_edgelist()
         einstr, einpath, chi = self.ve.einspecs(new_edges, ne[0])
-        if chi > self.cmax: 
+        if chi > self.cmax:
             return
-        
+
         # append graph and ve complexity to containers
         self.simple_graphs_d[ne].append(new_graph)
         self.edges_d[ne].append(new_edges)
@@ -407,20 +407,20 @@ class PrimeGenerator(object):
                         # iterate over int partitions
                         for part in parts[(d,e)]:
 
-                            # check that maximum valency is not exceeded 
-                            if (self.vmax < self.dmax and 
+                            # check that maximum valency is not exceeded
+                            if (self.vmax < self.dmax and
                                 max(graph.strength(weights=part)) > self.vmax):
                                 continue
 
                             # check if isomorphic to existing
                             iso = False
                             for weighting in weightings:
-                                if graph.isomorphic_vf2(other=graph, 
-                                                        edge_color1=weighting, 
-                                                        edge_color2=part): 
+                                if graph.isomorphic_vf2(other=graph,
+                                                        edge_color1=weighting,
+                                                        edge_color2=part):
                                     iso = True
                                     break
-                            if not iso: 
+                            if not iso:
                                 weightings.append(part)
                     self.weights_d[(n,e)].append(weightings)
 
@@ -461,7 +461,7 @@ class PrimeGenerator(object):
                 einstr, efm_spec = efp2efms(EFP(edgs, weights=ws).graph)
                 self.efm_einstrs.append(einstr)
                 self.efm_specs.append(efm_spec)
-                self.efm_einpaths.append(np.einsum_path(einstr, 
+                self.efm_einpaths.append(np.einsum_path(einstr,
                                                         *[np.empty([4]*sum(s)) for s in efm_spec],
                                                         optimize=self.ve.np_optimize)[0])
 
@@ -479,7 +479,7 @@ class CompositeGenerator(object):
         self.c_specs = c_specs
         self.__dict__.update({col+'_ind': i for i,col in enumerate(cols)})
         self.comp_dmaxs = comp_dmaxs
-        
+
         self.ns = sorted(self.comp_dmaxs.keys())
         self.nmax_avail = np.max(self.c_specs[:,self.n_ind]) if len(self.c_specs) else 0
 
@@ -497,7 +497,7 @@ class CompositeGenerator(object):
     #################
 
     def _generate_disconnected(self):
-        
+
         disc_formulae, disc_specs = [], []
 
         for n in self.ns:
@@ -552,7 +552,7 @@ class CompositeGenerator(object):
 
                             # iterate over factors
                             formula = []
-                            cmax = e = vmax = h = 0 
+                            cmax = e = vmax = h = 0
                             for (nn,dd),kk in zip(spec,kspec):
 
                                 # add (n,d,k) of factor to formula

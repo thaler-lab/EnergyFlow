@@ -1,7 +1,7 @@
 r"""# Energy Mover's Distance
 
 <video width="100%" autoplay loop controls>
-    <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
+    <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4"
             type="video/mp4">
 </video>
 <br>
@@ -27,8 +27,8 @@ particle $i$ in one event to particle $j$ in the other:
 \[\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
 \quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},\]
 
-where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
-$\theta_{ij}$ is an angular distance between particles, and 
+where $E_i,E^\prime_j$ are the energies of the particles in the two events,
+$\theta_{ij}$ is an angular distance between particles, and
 $E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)$ is
 the smaller of the two total energies. In a hadronic context, transverse momenta
 are used instead of energies.
@@ -87,9 +87,9 @@ def emd(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='flo
     **Arguments**
 
     - **ev0** : _numpy.ndarray_
-        - The first event, given as a two-dimensional array. The event is 
-        assumed to be an `(M,1+gdim)` array of particles, where `M` is the 
-        multiplicity and `gdim` is the dimension of the ground space in 
+        - The first event, given as a two-dimensional array. The event is
+        assumed to be an `(M,1+gdim)` array of particles, where `M` is the
+        multiplicity and `gdim` is the dimension of the ground space in
         which to compute euclidean distances between particles (as specified
         by the `gdim` keyword argument). The zeroth column is the weights of
         the particles, typically their energies or transverse momenta. For
@@ -105,9 +105,9 @@ def emd(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='flo
         then the columns of the events after the zeroth are taken to be
         coordinates and the `gdim`-dimensional Euclidean distance is used.
     - **R** : _float_
-        - The R parameter in the EMD definition that controls the relative 
-        importance of the two terms. Must be greater than or equal to half 
-        of the maximum ground distance in the space in order for the EMD 
+        - The R parameter in the EMD definition that controls the relative
+        importance of the two terms. Must be greater than or equal to half
+        of the maximum ground distance in the space in order for the EMD
         to be a valid metric satisfying the triangle inequality.
     - **beta** : _float_
         - The angular weighting exponent. The internal pairwsie distance
@@ -134,13 +134,13 @@ def emd(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='flo
         - If `True`, masks out particles farther than `R` away from the
         origin. Has no effect if `dists` are provided.
     - **return_flow** : _bool_
-        - Whether or not to return the flow matrix describing the optimal 
+        - Whether or not to return the flow matrix describing the optimal
         transport found during the computation of the EMD. Note that since
-        the second term in Eq. 1 is implemented by including an additional 
+        the second term in Eq. 1 is implemented by including an additional
         particle in the event with lesser total weight, this will be
         reflected in the flow matrix.
     - **n_iter_max** : _int_
-        - Maximum number of iterations for solving the optimal transport 
+        - Maximum number of iterations for solving the optimal transport
         problem.
     - **epsilon_large_factor** : _float_
         - Controls some tolerances in the optimal transport solver. This
@@ -155,7 +155,7 @@ def emd(ev0, ev1, dists=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='flo
     - _float_
         - The EMD value.
     - [_numpy.ndarray_], optional
-        - The flow matrix found while solving for the EMD. The `(i,j)`th 
+        - The flow matrix found while solving for the EMD. The `(i,j)`th
         entry is the amount of `pT` that flows between particle i in `ev0`
         and particle j in `ev1`.
     """
@@ -238,7 +238,7 @@ def emds(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='f
     **Arguments**
 
     - **events0** : _list_
-        - Iterable collection of events. Each event is assumed to be an 
+        - Iterable collection of events. Each event is assumed to be an
         `(M,1+gdim)` array of particles, where `M` is the multiplicity and
         `gdim` is the dimension of the ground space in which to compute
         euclidean distances between particles (as specified by the `gdim`
@@ -255,9 +255,9 @@ def emds(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='f
         `events0` will be computed and the returned matrix will be
         symmetric.
    - **R** : _float_
-        - The R parameter in the EMD definition that controls the relative 
-        importance of the two terms. Must be greater than or equal to half 
-        of the maximum ground distance in the space in order for the EMD 
+        - The R parameter in the EMD definition that controls the relative
+        importance of the two terms. Must be greater than or equal to half
+        of the maximum ground distance in the space in order for the EMD
         to be a valid metric satisfying the triangle inequality.
     - **norm** : _bool_
         - Whether or not to normalize the particle weights to sum to one
@@ -305,7 +305,7 @@ def emds(events0, events1=None, R=1.0, beta=1.0, norm=False, gdim=None, dtype='f
         - Whether or not to raise an exception when an issue is encountered.
         Can be useful when debugging.
     - **n_iter_max** : _int_
-        - Maximum number of iterations for solving the optimal transport 
+        - Maximum number of iterations for solving the optimal transport
         problem.
     - **epsilon_large_factor** : _float_
         - Controls some tolerances in the optimal transport solver. This
@@ -412,7 +412,7 @@ def _check_params(norm, gdim, phi_col, measure, coords, empty_policy):
 
 # process events for EMD calculation
 _TWO_PI = 2*np.pi
-def _process_for_emd(event, norm, gdim, periodic_phi, phi_col, 
+def _process_for_emd(event, norm, gdim, periodic_phi, phi_col,
                      mask, R, hadr2cart, euclidean, error_on_empty):
 
     event = np.asarray(event)
@@ -478,7 +478,7 @@ def _process_for_emd(event, norm, gdim, periodic_phi, phi_col,
         coords = np.vstack((coords, np.zeros(coords.shape[1])))
         pts = np.concatenate((pts, np.zeros(1)))
 
-    return (np.ascontiguousarray(pts, dtype=np.double), 
+    return (np.ascontiguousarray(pts, dtype=np.double),
             np.ascontiguousarray(coords, dtype=np.double))
 
 # faster than scipy's cdist function because we can avoid their checks
@@ -572,28 +572,28 @@ def emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='
     **Arguments**
 
     - **ev0** : _numpy.ndarray_
-        - The first event, given as a two-dimensional array. The event is 
-        assumed to be an `(M,1+gdim)` array of particles, where `M` is the 
-        multiplicity and `gdim` is the dimension of the ground space in 
+        - The first event, given as a two-dimensional array. The event is
+        assumed to be an `(M,1+gdim)` array of particles, where `M` is the
+        multiplicity and `gdim` is the dimension of the ground space in
         which to compute euclidean distances between particles (as specified
         by the `gdim` keyword argument. The zeroth column is assumed to be
-        the energies (or equivalently, the transverse momenta) of the 
-        particles. For typical hadron collider jet applications, each 
+        the energies (or equivalently, the transverse momenta) of the
+        particles. For typical hadron collider jet applications, each
         particle will be of the form `(pT,y,phi)` where  `y` is the rapidity
         and `phi` is the azimuthal angle.
     - **ev1** : _numpy.ndarray_
         - The other event, same format as `ev0`.
     - **R** : _float_
-        - The R parameter in the EMD definition that controls the relative 
-        importance of the two terms. Must be greater than or equal to half 
-        of the maximum ground distance in the space in order for the EMD 
+        - The R parameter in the EMD definition that controls the relative
+        importance of the two terms. Must be greater than or equal to half
+        of the maximum ground distance in the space in order for the EMD
         to be a valid metric satisfying the triangle inequality.
     - **beta** : _float_
         - The angular weighting exponent. The internal pairwsie distance
         matrix is raised to this power prior to solving the optimal
         transport problem.
     - **norm** : _bool_
-        - Whether or not to normalize the pT values of the events prior to 
+        - Whether or not to normalize the pT values of the events prior to
         computing the EMD.
     - **measure** : _str_
         - Controls which metric is used to calculate the ground distances
@@ -607,10 +607,10 @@ def emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='
         controls if `'hadronic'` coordinates `(pT,y,phi,[m])` are expected
         versus `'cartesian'` coordinates `(E,px,py,pz)`.
     - **return_flow** : _bool_
-        - Whether or not to return the flow matrix describing the optimal 
+        - Whether or not to return the flow matrix describing the optimal
         transport found during the computation of the EMD. Note that since
-        the second term in Eq. 1 is implemented by including an additional 
-        particle in the event with lesser total pT, this will be reflected 
+        the second term in Eq. 1 is implemented by including an additional
+        particle in the event with lesser total pT, this will be reflected
         in the flow matrix.
     - **gdim** : _int_
         - The dimension of the ground metric space. Useful for restricting
@@ -622,7 +622,7 @@ def emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='
         - If `True`, ignores particles farther than `R` away from the
         origin.
     - **n_iter_max** : _int_
-        - Maximum number of iterations for solving the optimal transport 
+        - Maximum number of iterations for solving the optimal transport
         problem.
     - **periodic_phi** : _bool_
         - Whether to expect (and therefore properly handle) periodicity
@@ -643,7 +643,7 @@ def emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='
     - _float_
         - The EMD value.
     - [_numpy.ndarray_], optional
-        - The flow matrix found while solving for the EMD. The `(i,j)`th 
+        - The flow matrix found while solving for the EMD. The `(i,j)`th
         entry is the amount of `pT` that flows between particle i in `ev0`
         and particle j in `ev1`.
     """
@@ -661,7 +661,7 @@ def emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='
     phi_col_m1 = phi_col - 1
 
     # process events
-    args = (None, gdim, periodic_phi, phi_col_m1, 
+    args = (None, gdim, periodic_phi, phi_col_m1,
             mask, R, hadr2cart, euclidean, error_on_empty)
     pTs0, coords0 = _process_for_emd(ev0, *args)
     pTs1, coords1 = _process_for_emd(ev1, *args)
@@ -718,11 +718,11 @@ def emd_pot(ev0, ev1, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='
         return cost * rescale
 
 # emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
-#              gdim=None, mask=False, n_iter_max=100000, 
+#              gdim=None, mask=False, n_iter_max=100000,
 #              periodic_phi=False, phi_col=2, empty_policy='error',
 #              n_jobs=None, verbose=0, print_every=10**6)
 def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
-                         gdim=None, mask=False, n_iter_max=100000, 
+                         gdim=None, mask=False, n_iter_max=100000,
                          periodic_phi=False, phi_col=2, empty_policy='error',
                          n_jobs=None, verbose=0, print_every=10**6):
     r"""Compute the EMDs between collections of events. This can be used to
@@ -732,8 +732,8 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     **Arguments**
 
     - **X0** : _list_
-        - Iterable collection of events. Each event is assumed to be an 
-        `(M,1+gdim)` array of particles, where `M` is the multiplicity and 
+        - Iterable collection of events. Each event is assumed to be an
+        `(M,1+gdim)` array of particles, where `M` is the multiplicity and
         `gdim` is the dimension of the ground space in which to compute
         euclidean distances between particles (specified by the `gdim`
         keyword argument). The zeroth column is assumed to be the energies
@@ -742,16 +742,16 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
         the form `(pT,y,phi)` where  `y` is the rapidity and `phi` is the
         azimuthal angle.
     - **X1** : _list_ or `None`
-        - Iterable collection of events in the same format as `X0`, 
+        - Iterable collection of events in the same format as `X0`,
         or `None`. If the latter, the pairwise distances between events
         in `X0` will be computed and the returned matrix will be symmetric.
    - **R** : _float_
-        - The R parameter in the EMD definition that controls the relative 
-        importance of the two terms. Must be greater than or equal to half 
-        of the maximum ground distance in the space in order for the EMD 
+        - The R parameter in the EMD definition that controls the relative
+        importance of the two terms. Must be greater than or equal to half
+        of the maximum ground distance in the space in order for the EMD
         to be a valid metric satisfying the triangle inequality.
     - **norm** : _bool_
-        - Whether or not to normalize the pT values of the events prior to 
+        - Whether or not to normalize the pT values of the events prior to
         computing the EMD.
     - **beta** : _float_
         - The angular weighting exponent. The internal pairwsie distance
@@ -778,7 +778,7 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
         - If `True`, ignores particles farther than `R` away from the
         origin.
     - **n_iter_max** : _int_
-        - Maximum number of iterations for solving the optimal transport 
+        - Maximum number of iterations for solving the optimal transport
         problem.
     - **periodic_phi** : _bool_
         - Whether to expect (and therefore properly handle) periodicity
@@ -833,7 +833,7 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     # process events into convenient form for EMD
     global _X0, _X1
     start = time.time()
-    args = (norm, gdim, periodic_phi, phi_col_m1, 
+    args = (norm, gdim, periodic_phi, phi_col_m1,
             mask, R, hadr2cart, euclidean, error_on_empty)
     _X0 = [_process_for_emd(x, *args) for x in X0]
     _X1 = _X0 if sym else [_process_for_emd(x, *args) for x in X1]
@@ -846,7 +846,7 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
         print('Processed {} events for {} EMD computation in {:.3f}s'.format(n, s, t))
 
     # get iterator for indices
-    pairs = (itertools.combinations(range(len(_X0)), r=2) if sym else 
+    pairs = (itertools.combinations(range(len(_X0)), r=2) if sym else
              itertools.product(range(len(_X0)), range(len(_X1))))
     npairs = len(_X0)*(len(_X0)-1)//2 if sym else len(_X0)*len(_X1)
 
@@ -870,8 +870,8 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
 
         # create process pool
         with create_pool(n_jobs) as pool:
-            
-            params = (R, no_norm, beta, euclidean, n_iter_max, 
+
+            params = (R, no_norm, beta, euclidean, n_iter_max,
                       periodic_phi, phi_col_m1, empty_policy)
             map_args = ((pair, params) for pair in pairs)
 
@@ -904,7 +904,7 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     # run EMDs in this process
     elif n_jobs == 1:
         for k,(i,j) in enumerate(pairs):
-            emds[i, j] = _emd(_X0[i], _X1[j], R, no_norm, beta, euclidean, 
+            emds[i, j] = _emd(_X0[i], _X1[j], R, no_norm, beta, euclidean,
                               n_iter_max, periodic_phi, phi_col_m1, empty_policy)
 
             if verbose >= 1 and ((k+1) % print_every) == 0:

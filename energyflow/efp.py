@@ -77,7 +77,7 @@ class EFP(EFPBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -116,7 +116,7 @@ class EFP(EFPBase):
                 self._efmset = EFMSet(self._efm_spec, subslicing=self.subslicing, no_measure=True)
             args = [np.empty([4]*sum(s)) for s in self._efm_spec]
             self._efm_einpath = einsum_path(self._efm_einstr, *args, optimize=np_optimize)[0]
-            
+
             # setup traditional VE computation
             ve = VariableElimination(self.np_optimize)
             (self._einstr, self._einpath, self._c) = ve.einspecs(self.simple_graph, self.n)
@@ -145,7 +145,7 @@ class EFP(EFPBase):
         # deal with arbitrary vertex labels
         vertex_set = frozenset(v for edge in edges for v in edge)
         vertices = {v: i for i,v in enumerate(vertex_set)}
-        
+
         # determine number of vertices, empty edges are interpretted as graph with one vertex
         self._n = len(vertices) if len(vertices) > 0 else 1
 
@@ -193,10 +193,10 @@ class EFP(EFPBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in place 
+            - If present, `thetas` must also be present, and `zs` is used in place
             of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in place 
+            - If present, `zs` must also be present, and `thetas` is used in place
             of the pairwise angles of an event.
         - **nhats** : 2-d array like
             - If present, `zs` must also be present, and `nhats` is used in place
@@ -359,7 +359,7 @@ class EFPSet(EFPBase):
     `EFPSet` instance.
     """
 
-    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
+    # EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None,
     #               coords=None, check_input=True, verbose=0)
     def __init__(self, *args, **kwargs):
         r"""`EFPSet` can be initialized in one of three ways (in order of
@@ -405,7 +405,7 @@ class EFPSet(EFPBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -458,7 +458,7 @@ class EFPSet(EFPBase):
             # handle not having efm generation
             if not gen['gen_efms'] and self.use_efms:
                 raise ValueError('Cannot use efm measure without providing efm generation.')
-            
+
             # verify columns with generator
             assert np.all(self._cols == gen['cols'])
 
@@ -476,7 +476,7 @@ class EFPSet(EFPBase):
             # make EFP list
             z = zip(*([gen[v] for v in elemvs] + [orig_c_specs] +
                       [gen[v] if self.use_efms else itertools.repeat(None) for v in efmvs]))
-            self._efps = [EFP(args[0], weights=args[1], no_measure=True, efpset_args=args[2:]) 
+            self._efps = [EFP(args[0], weights=args[1], no_measure=True, efpset_args=args[2:])
                           for m,args in enumerate(z) if c_mask[m]]
 
             # get col indices for disconnected formulae
@@ -517,7 +517,7 @@ class EFPSet(EFPBase):
     #===============
 
     def calc_disc(self, X):
-        """Computes disconnected EFPs according to the internal 
+        """Computes disconnected EFPs according to the internal
         specifications using the connected EFPs provided as input. Note that
         this function has no effect if the `EFPSet` was initialized with
         specific graphs.
@@ -560,10 +560,10 @@ class EFPSet(EFPBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in place 
+            - If present, `thetas` must also be present, and `zs` is used in place
             of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in place 
+            - If present, `zs` must also be present, and `thetas` is used in place
             of the pairwise angles of an event.
         - **nhats** : 2-d array like
             - If present, `zs` must also be present, and `nhats` is used in place
@@ -611,7 +611,7 @@ class EFPSet(EFPBase):
     # sel(*args)
     def sel(self, *args, **kwargs):
         """Computes a boolean mask of EFPs matching each of the
-        specifications provided by the `args`. 
+        specifications provided by the `args`.
 
         **Arguments**
 
@@ -629,7 +629,7 @@ class EFPSet(EFPBase):
         **Returns**
 
         - _1-d numpy.ndarray_
-            - A boolean array of length the number of EFPs stored by this object. 
+            - A boolean array of length the number of EFPs stored by this object.
         """
 
         # ensure only valid keyword args are passed
@@ -672,7 +672,7 @@ class EFPSet(EFPBase):
 
             # AND the selection with mask
             mask &= explicit_comp(specs[:,getattr(self, var + '_ind')], comp, int(val))
-            
+
         return mask
 
     # csel(*args)
@@ -686,7 +686,7 @@ class EFPSet(EFPBase):
         """Counts the number of EFPs meeting the specifications
         of the arguments using `sel`.
 
-        **Arguments** 
+        **Arguments**
 
         - ***args** : arbitrary positional arguments
             - Valid arguments to be passed to `sel`.
@@ -703,10 +703,10 @@ class EFPSet(EFPBase):
     def graphs(self, *args):
         """Graphs meeting provided specifications.
 
-        **Arguments** 
+        **Arguments**
 
         - ***args** : arbitrary positional arguments
-            - Valid arguments to be passed to `sel`, or, if a single integer, 
+            - Valid arguments to be passed to `sel`, or, if a single integer,
             the index of a particular graph.
 
         **Returns**
@@ -736,10 +736,10 @@ class EFPSet(EFPBase):
     def simple_graphs(self, *args):
         """Simple graphs meeting provided specifications.
 
-        **Arguments** 
+        **Arguments**
 
         - ***args** : arbitrary positional arguments
-            - Valid arguments to be passed to `sel`, or, if a single integer, 
+            - Valid arguments to be passed to `sel`, or, if a single integer,
             the index of particular simple graph.
 
         **Returns**
@@ -805,7 +805,7 @@ class EFPSet(EFPBase):
 
     @property
     def specs(self):
-        """An array of EFP specifications. Each row represents an EFP 
+        """An array of EFP specifications. Each row represents an EFP
         and the columns represent the quantities indicated by `cols`."""
 
         return self._specs
@@ -818,7 +818,7 @@ class EFPSet(EFPBase):
 
     @property
     def weight_set(self):
-        """The union of all weights needed by the EFPs stored by the 
+        """The union of all weights needed by the EFPs stored by the
         `EFPSet`."""
 
         return self._weight_set

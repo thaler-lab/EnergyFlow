@@ -1,7 +1,7 @@
 """## Image Tools
 
-Functions for dealing with image representations of events. These are 
-not importable from the top level `energyflow` module, but must 
+Functions for dealing with image representations of events. These are
+not importable from the top level `energyflow` module, but must
 instead be imported from `energyflow.utils`.
 """
 
@@ -41,8 +41,8 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
     **Arguments**
 
     - **jet** : _numpy.ndarray_
-        - An array of particles where each particle is of the form 
-        `[pt,y,phi,pid]` where the particle id column is only 
+        - An array of particles where each particle is of the form
+        `[pt,y,phi,pid]` where the particle id column is only
         used if `nb_chan=2` and `charged_counts_only=True`.
     - **npix** : _int_
         - The number of pixels on one edge of the jet image, which is
@@ -52,12 +52,12 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
         plane.
     - **nb_chan** : {`1`, `2`}
         - The number of channels in the jet image. If `1`, then only a
-        $p_T$ channel is constructed (grayscale). If `2`, then both a 
+        $p_T$ channel is constructed (grayscale). If `2`, then both a
         $p_T$ channel and a count channel are formed (color).
     - **norm** : _bool_
         - Whether to normalize the $p_T$ pixels to sum to `1`.
     - **charged_counts_only** : _bool_
-        - If making a count channel, whether to only include charged 
+        - If making a count channel, whether to only include charged
         particles. Requires that `pid` information be given.
 
     **Returns**
@@ -97,19 +97,19 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
     phi_indices = phi_indices[mask].astype(int)
 
     # construct grayscale image
-    if nb_chan == 1: 
-        for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices): 
+    if nb_chan == 1:
+        for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices):
             jet_image[phi, y, 0] += pt
 
     # construct two-channel image
     elif nb_chan == 2:
         if charged_counts_only:
-            for pt,y,phi,pid in zip(jet[:,pT_i][mask], rap_indices, 
+            for pt,y,phi,pid in zip(jet[:,pT_i][mask], rap_indices,
                                     phi_indices, jet[:,pid_i][mask].astype(int)):
                 jet_image[phi, y, 0] += pt
                 jet_image[phi, y, 1] += pid2abschg_mapping.get(pid, 0)
         else:
-            for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices): 
+            for pt,y,phi in zip(jet[:,pT_i][mask], rap_indices, phi_indices):
                 jet_image[phi, y, 0] += pt
                 jet_image[phi, y, 1] += 1
     else:
@@ -120,15 +120,15 @@ def pixelate(jet, npix=33, img_width=0.8, nb_chan=1, norm=True, charged_counts_o
         normfactor = np.sum(jet_image[...,0])
         if normfactor == 0:
             raise FloatingPointError('Image had no particles!')
-        else: 
+        else:
             jet_image[...,0] /= normfactor
 
     return jet_image
 
 # standardize(*args, channels=None, copy=False, reg=10**-10)
 def standardize(*args, **kwargs):
-    """Normalizes each argument by the standard deviation of the pixels in 
-    args[0]. The expected use case would be `standardize(X_train, X_val, 
+    """Normalizes each argument by the standard deviation of the pixels in
+    args[0]. The expected use case would be `standardize(X_train, X_val,
     X_test)`.
 
     **Arguments**
@@ -147,7 +147,7 @@ def standardize(*args, **kwargs):
 
     **Returns**
 
-    - _list_ 
+    - _list_
         - A list of the now-standardized arguments.
     """
 
@@ -161,26 +161,26 @@ def standardize(*args, **kwargs):
     assert len(args) > 0
 
     # treat channels properly
-    if channels is None: 
+    if channels is None:
         channels = np.arange(args[0].shape[-1])
 
     # compute stds
     stds = np.std(args[0], axis=0) + reg
 
     # copy arguments if requested
-    if copy: 
+    if copy:
         X = [np.copy(arg) for arg in args]
-    else: 
+    else:
         X = args
 
     # iterate through arguments and channels
-    for x in X: 
-        for chan in channels: 
+    for x in X:
+        for chan in channels:
             x[...,chan] /= stds[...,chan]
     return X
 
 def zero_center(*args, **kwargs):
-    """Subtracts the mean of arg[0] from the arguments. The expected 
+    """Subtracts the mean of arg[0] from the arguments. The expected
     use case would be `standardize(X_train, X_val, X_test)`.
 
     **Arguments**
@@ -196,7 +196,7 @@ def zero_center(*args, **kwargs):
 
     **Returns**
 
-    - _list_ 
+    - _list_
         - A list of the zero-centered arguments.
     """
 
@@ -209,21 +209,21 @@ def zero_center(*args, **kwargs):
     assert len(args) > 0
 
     # treat channels properly
-    if channels is None: 
+    if channels is None:
         channels = np.arange(args[0].shape[-1])
 
     # compute mean of the first argument
     mean = np.mean(args[0], axis=0)
 
     # copy arguments if requested
-    if copy: 
+    if copy:
         X = [np.copy(arg) for arg in args]
-    else: 
+    else:
         X = args
 
     # iterate through arguments and channels
-    for x in X: 
-        for chan in channels: 
+    for x in X:
+        for chan in channels:
             x[...,chan] -= mean[...,chan]
 
     return X
