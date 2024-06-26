@@ -14,11 +14,8 @@ from __future__ import absolute_import, division
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 import multiprocessing
-import sys
-import warnings
 
 import numpy as np
-import six
 
 from energyflow.measure import Measure, MEASURE_KWARGS
 from energyflow.utils import create_pool, kwargs_check
@@ -27,7 +24,7 @@ from energyflow.utils import create_pool, kwargs_check
 # EFBase
 ###############################################################################
 
-class EFBase(six.with_metaclass(ABCMeta, object)):
+class EFBase(object, metaclass=ABCMeta):
 
     """A base class for EnergyFlow objects that holds a `Measure`."""
 

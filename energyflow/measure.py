@@ -91,10 +91,8 @@ implementation.
 from __future__ import absolute_import, division, print_function
 
 from abc import ABCMeta, abstractmethod
-import warnings
 
 import numpy as np
-import six
 
 from energyflow.utils import transfer
 from energyflow.utils.particle_utils import *
@@ -131,7 +129,7 @@ MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords',
 # Measure
 ###############################################################################
 
-class Measure(six.with_metaclass(ABCMeta, object)):
+class Measure(object, metaclass=ABCMeta):
 
     """Class for handling measure options, described above."""
 
