@@ -47,13 +47,10 @@ from __future__ import absolute_import, division, print_function
 from abc import ABCMeta, abstractmethod, abstractproperty
 import gc
 import os
-import sys
 import warnings
 
 from tf_keras.callbacks import ModelCheckpoint, EarlyStopping
 from tf_keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
-
-import six
 
 from energyflow.utils import iter_or_rep
 
@@ -63,7 +60,7 @@ __all__ = ['ArchBase', 'NNBase']
 # ArchBase
 ###############################################################################
 
-class ArchBase(six.with_metaclass(ABCMeta, object)):
+class ArchBase(object, metaclass=ABCMeta):
 
     """Base class for all architectures contained in EnergyFlow. The mechanism of
     specifying hyperparameters for all architectures is described here. Methods
@@ -330,7 +327,7 @@ class NNBase(ArchBase):
             self.model.add(act)
 
         # handle case of act being a string and in ACT_DICT
-        elif isinstance(act, six.string_types) and act in ACT_DICT:
+        elif isinstance(act, str) and act in ACT_DICT:
             self.model.add(ACT_DICT[act]())
 
         # default case of regular activation
@@ -406,7 +403,7 @@ def _get_act_layer(act):
         return act
 
     # handle case of act being a string and in ACT_DICT
-    if isinstance(act, six.string_types) and act in ACT_DICT:
+    if isinstance(act, str) and act in ACT_DICT:
         return ACT_DICT[act]()
 
     # default case of passing act into layer

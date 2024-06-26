@@ -22,7 +22,6 @@ import time
 import warnings
 
 import numpy as np
-import six
 
 __all__ = [
     'ALL_EXAMPLES',
@@ -170,8 +169,8 @@ def load_efp_file(filename):
 
 # check that an argument is well-formed to EFPSet.sel
 def sel_arg_check(arg):
-    return (isinstance(arg, six.string_types) or
-            (len(arg) == 2 and isinstance(arg[0], six.string_types)))
+    return (isinstance(arg, str) or
+            (len(arg) == 2 and isinstance(arg[0], str)))
 
 # timing meta-decorator
 def timing(obj, func):
