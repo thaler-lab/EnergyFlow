@@ -21,7 +21,12 @@ from __future__ import absolute_import, division, print_function
 from abc import abstractmethod
 
 import numpy as np
-from numpy.core.multiarray import c_einsum
+
+try:
+    from numpy._core.multiarray import c_einsum
+except ModuleNotFoundError:
+    # numpy v1.x
+    from numpy.core.multiarray import c_einsum
 
 from energyflow.base import SingleEnergyCorrelatorBase
 from energyflow.utils import import_fastjet, transfer

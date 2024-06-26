@@ -41,7 +41,12 @@ from operator import itemgetter
 import sys
 
 import numpy as np
-from numpy.core.multiarray import c_einsum
+
+try:
+    from numpy._core.multiarray import c_einsum
+except ModuleNotFoundError:
+    # numpy v1.x
+    from numpy.core.multiarray import c_einsum
 
 from energyflow.algorithms import einsum
 from energyflow.base import EFMBase
