@@ -10,7 +10,7 @@ of the predicted and actual mass distributions.
 # |  __| |  __| | . ` |
 # | |____| |    | |\  |
 # |______|_|    |_| \_|
-#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _ 
+#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _
 # |  __ \|  ____/ ____|  __ \|  ____|/ ____/ ____|_   _/ __ \| \ | |
 # | |__) | |__ | |  __| |__) | |__  | (___| (___   | || |  | |  \| |
 # |  _  /|  __|| | |_ |  _  /|  __|  \___ \\___ \  | || |  | | . ` |
@@ -82,15 +82,15 @@ obs /= obs_std
 
 print('Finished computing observables')
 
-# do train/val/test split 
-(z_train, z_val, z_test, 
+# do train/val/test split
+(z_train, z_val, z_test,
  p_train, p_val, p_test,
  y_train, y_val, y_test) = ef.utils.data_split(X[:,:,0], X[:,:,1:], obs, val=val, test=test)
 
 print('Done train/val/test split')
 
 # build architecture
-efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes, 
+efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
           output_act=output_act, output_dim=output_dim, loss=loss, metrics=[])
 
 # train model
@@ -105,7 +105,7 @@ preds = efn.predict([z_test, p_test], batch_size=1000)[:,0]*obs_std + obs_mean
 
 ######################### Observable Distributions Plot #########################
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 plt.rcParams['figure.figsize'] = (4, 4)
@@ -145,14 +145,14 @@ grads = np.linspace(0.45, 0.55, 4)
 X, Y, Z = efn.eval_filters(R, n=n)
 
 # for sorting filters according to position
-def get_filter_size_and_position(filt, zfrac=0.5):   
+def get_filter_size_and_position(filt, zfrac=0.5):
     filt /= np.max(filt)
     maxind = np.argmax(filt)
     j, k = maxind//n, maxind%n
-    
+
     angle = np.sqrt((j-n/2)**2 + (k-n/2)**2)*2/n
     size = np.count_nonzero(filt > zfrac)/n**2
-    
+
     return size, angle
 
 sizes, angles = [], []

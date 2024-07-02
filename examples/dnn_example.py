@@ -74,7 +74,7 @@ for i,num_nsub in enumerate(num_nsubs):
     # build architecture
     dnn = DNN(input_dim=num_nsub, dense_sizes=dense_sizes, summary=(i==0))
 
-    # do train/val/test split 
+    # do train/val/test split
     (X_train, X_val, X_test,
      Y_train, Y_val, Y_test) = data_split(X[:,:num_nsub], Y, val=val_frac, test=test_frac)
 
@@ -100,14 +100,14 @@ for i,num_nsub in enumerate(num_nsubs):
         print('{} nsubs DNN AUC:'.format(num_nsub), auc)
         print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
 # iterate over the ROC curves and plot them
 for i in range(len(rocs)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i],
                                             label='DNN: {} N-subs'.format(num_nsubs[i]))
 
 # axes labels

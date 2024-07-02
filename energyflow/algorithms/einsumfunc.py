@@ -1,11 +1,11 @@
 """This file is a custom replacement for NumPy's einsumfunc.py.
-It has exactly the same functionality but includes a flag for 
+It has exactly the same functionality but includes a flag for
 turning off BLAS usage completely, which is useful for dealing
-with small tensors. The required copyright notice can be found 
+with small tensors. The required copyright notice can be found
 in LICENSE which is distributed with this software package.
 
 ---------------------------------------------------------------------
- 
+
 Implementation of optimized einsum.
 """
 from __future__ import division, absolute_import, print_function

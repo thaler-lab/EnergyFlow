@@ -37,63 +37,63 @@ class CNN(NNBase):
             - The shape of a single jet image. Assuming that `data_format`
             is set to `channels_first`, this is `(nb_chan,npix,npix)`.
         - **filter_sizes** : {_tuple_, _list_} of _int_
-            - The size of the filters, which are taken to be square, in each 
+            - The size of the filters, which are taken to be square, in each
             convolutional layer of the network. The length of the list will be
             the number of convolutional layers in the network.
         - **num_filters** : {_tuple_, _list_} of _int_
-            - The number of filters in each convolutional layer. The length of 
+            - The number of filters in each convolutional layer. The length of
             `num_filters` must match that of `filter_sizes`.
 
         **Default CNN Hyperparameters**
 
         - **dense_sizes**=`None` : {_tuple_, _list_} of _int_
-            - The sizes of the dense layer backend. A value of `None` is 
+            - The sizes of the dense layer backend. A value of `None` is
             equivalent to an empty list.
         - **pool_sizes**=`0` : {_tuple_, _list_} of _int_
-            - Size of maxpooling filter, taken to be a square. A value of 
+            - Size of maxpooling filter, taken to be a square. A value of
             `0` will not use maxpooling.
         - **conv_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
             - Activation function(s) for the conv layers. A single string or
             activation layer will apply the same activation to all conv layers.
             Keras advanced activation layers are also accepted, either as
-            strings (which use the default arguments) or as Keras `Layer` 
+            strings (which use the default arguments) or as Keras `Layer`
             instances. If passing a single `Layer` instance, be aware that this
-            layer will be used for all activations and may introduce weight 
-            sharing (such as with `PReLU`); it is recommended in this case to 
+            layer will be used for all activations and may introduce weight
+            sharing (such as with `PReLU`); it is recommended in this case to
             pass as many activations as there are layers in the model.See the
-            [Keras activations docs](https://keras.io/activations/) for more 
+            [Keras activations docs](https://keras.io/activations/) for more
             detail.
         - **dense_acts**=`'relu'` : {_tuple_, _list_} of _str_  or Keras activation
-            - Activation functions(s) for the dense layers. A single string 
-            or activation layer will apply the same activation to all dense 
+            - Activation functions(s) for the dense layers. A single string
+            or activation layer will apply the same activation to all dense
             layers.
         - **conv_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
             - Kernel initializers for the convolutional layers. A single
             string will apply the same initializer to all layers. See the
-            [Keras initializer docs](https://keras.io/initializers/) for 
+            [Keras initializer docs](https://keras.io/initializers/) for
             more detail.
         - **dense_k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras initializer
-            - Kernel initializers for the dense layers. A single string will 
+            - Kernel initializers for the dense layers. A single string will
             apply the same initializer to all layers.
         - **conv_dropouts**=`0` : {_tuple_, _list_} of _float_
             - Dropout rates for the convolutional layers. A single float will
             apply the same dropout rate to all conv layers. See the [Keras
-            Dropout layer](https://keras.io/layers/core/#dropout) for more 
+            Dropout layer](https://keras.io/layers/core/#dropout) for more
             detail.
         - **num_spatial2d_dropout**=`0` : _int_
             - The number of convolutional layers, starting from the beginning
             of the model, for which to apply [SpatialDropout2D](https://keras
             .io/layers/core/#spatialdropout2d) instead of Dropout.
         - **dense_dropouts**=`0` : {_tuple_, _list_} of _float_
-            - Dropout rates for the dense layers. A single float will apply 
+            - Dropout rates for the dense layers. A single float will apply
             the same dropout rate to all dense layers.
         - **paddings**=`'valid'` : {_tuple_, _list_} of _str_
             - Controls how the filters are convoled with the inputs. See
-            the [Keras Conv2D layer](https://keras.io/layers/convolutional/#conv2d) 
+            the [Keras Conv2D layer](https://keras.io/layers/convolutional/#conv2d)
             for more detail.
         - **data_format**=`'channels_last'` : {`'channels_first'`, `'channels_last'`}
             - Sets which axis is expected to contain the different channels.
-            `'channels_first'` appears to have issues with newer versions of 
+            `'channels_first'` appears to have issues with newer versions of
             tensorflow, so prefer `'channels_last'`.
         """
 
@@ -156,7 +156,7 @@ class CNN(NNBase):
 
             # add pooling layer if we have a non-zero pool size
             if pool_size > 0:
-                self.model.add(MaxPooling2D(pool_size=pool_size, data_format=self.data_format, 
+                self.model.add(MaxPooling2D(pool_size=pool_size, data_format=self.data_format,
                                             name=self._proc_name('max_pool_'+str(i))))
 
             # add dropout layer if we have a non-zero dropout rate

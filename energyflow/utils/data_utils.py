@@ -1,7 +1,7 @@
 """## Data Tools
 
 Functions for dealing with datasets. These are not importable from
-the top level `energyflow` module, but must instead be imported 
+the top level `energyflow` module, but must instead be imported
 from `energyflow.utils`.
 """
 
@@ -27,8 +27,8 @@ from six.moves.urllib.error import HTTPError, URLError
 from energyflow.utils.generic_utils import ALL_EXAMPLES
 
 __all__ = [
-    'get_examples', 
-    'data_split', 
+    'get_examples',
+    'data_split',
     'to_categorical',
     'remap_pids'
 ]
@@ -43,13 +43,13 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
         - The destination for the downloaded files. Note that `examples`
         is automatically appended to the end of this path.
     - **which** : {_list_, `'all'`}
-        - List of examples to download, or the string `'all'` in which 
+        - List of examples to download, or the string `'all'` in which
         case all the available examples are downloaded.
     - **overwrite** : _bool_
         - Whether to overwrite existing files or not.
     """
 
-    # all current examples 
+    # all current examples
     all_examples = set(ALL_EXAMPLES)
 
     # process which examples are selected
@@ -84,7 +84,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
 
 # data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 def data_split(*args, **kwargs):
-    """A function to split a dataset into train, test, and optionally 
+    """A function to split a dataset into train, test, and optionally
     validation datasets.
 
     **Arguments**
@@ -114,9 +114,9 @@ def data_split(*args, **kwargs):
     **Returns**
 
     - _list_
-        - A list of the split datasets in train, [val], test order. If 
+        - A list of the split datasets in train, [val], test order. If
         datasets `X`, `Y`, and `Z` were given as `args` (and assuming a
-        non-zero `val`), then [`X_train`, `X_val`, `X_test`, `Y_train`, 
+        non-zero `val`), then [`X_train`, `X_val`, `X_test`, `Y_train`,
         `Y_val`, `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned.
     """
 
@@ -127,12 +127,12 @@ def data_split(*args, **kwargs):
         raise TypeError('following kwargs are invalid: {}'.format(kwargs))
 
     # validity checks
-    if len(args) == 0: 
+    if len(args) == 0:
         raise RuntimeError('Need to pass at least one argument to data_split')
 
     # check for consistent length
     n_samples = len(args[0])
-    for arg in args[1:]: 
+    for arg in args[1:]:
         assert len(arg) == n_samples, 'args to data_split have different length'
 
     # determine numbers
@@ -141,8 +141,8 @@ def data_split(*args, **kwargs):
     num_train = n_samples - num_val - num_test if train==-1 else (int(n_samples*train) if train<=1 else train)
     assert num_train >= 0, 'bad parameters: negative num_train'
     assert num_train + num_val + num_test <= n_samples, 'too few samples for requested data split'
-    
-    # calculate masks 
+
+    # calculate masks
     perm = np.random.permutation(n_samples) if shuffle else np.arange(n_samples)
     train_mask = perm[:num_train]
     val_mask = perm[-num_val:]
@@ -162,7 +162,7 @@ def to_categorical(labels, num_classes=None):
     - **labels** : _1-d numpy.ndarray_
         - Labels in the range `[0,num_classes)`.
     - **num_classes** : {_int_, `None`}
-        - The total number of classes. If `None`, taken to be the 
+        - The total number of classes. If `None`, taken to be the
         maximum label plus one.
 
     **Returns**

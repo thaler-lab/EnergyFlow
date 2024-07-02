@@ -58,7 +58,7 @@ by the number of lowered indices).
 A class representing and computing a single EFM.
 
 ```python
-energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
+energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None,
                             coords=None, check_input=True)
 ```
 
@@ -91,7 +91,7 @@ require $\beta=2$.
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -112,7 +112,7 @@ callable, in which case this method is invoked.
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `nhats` must also be present, and `zs` is used in place 
+    - If present, `nhats` must also be present, and `zs` is used in place
     of the energies of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -207,7 +207,7 @@ EFMs require $\beta=2$.
 - **efm_specs** : {_list_, _tuple_, _set_} of _tuple_ or `None`
     - A collection of tuples of length two specifying which EFMs this
     object is to hold. Each spec is of the form `(nup, nlow)` where these
-    are the number of upper and lower indices, respectively, that the EFM 
+    are the number of upper and lower indices, respectively, that the EFM
     is to have.
 - **vmax** : _int_
     - Only used if `efm_specs` is None. The maximum EFM valency to
@@ -225,7 +225,7 @@ EFMs require $\beta=2$.
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -247,7 +247,7 @@ callable, in which case this method is invoked.
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `nhats` must also be present, and `zs` is used in place 
+    - If present, `nhats` must also be present, and `zs` is used in place
     of the energies of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -303,4 +303,3 @@ where the order is the same as `sorted_efms`.
 
 
 ----
-

@@ -2,7 +2,7 @@
 
 There are 7 examples provided for the EnergyFlow package. They currently focus on demonstrating the various architectures included as part of EnergyFlow (see [Architectures](../docs/archs)). For examples involving the computation of EFPs or EMDs, see the [Demos](../demos).
 
-To install the examples to the default directory, `~/.energyflow/examples/`, simply run 
+To install the examples to the default directory, `~/.energyflow/examples/`, simply run
 
 ```python
 python3 -c "import energyflow; energyflow.utils.get_examples()"
@@ -88,8 +88,8 @@ for x in X:
 
 print('Finished preprocessing')
 
-# do train/val/test split 
-(z_train, z_val, z_test, 
+# do train/val/test split
+(z_train, z_val, z_test,
  p_train, p_val, p_test,
  Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, val=val, test=test)
 
@@ -118,7 +118,7 @@ print()
 print('EFN AUC:', auc)
 print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
@@ -188,7 +188,7 @@ of the predicted and actual mass distributions.
 # |  __| |  __| | . ` |
 # | |____| |    | |\  |
 # |______|_|    |_| \_|
-#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _ 
+#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _
 # |  __ \|  ____/ ____|  __ \|  ____|/ ____/ ____|_   _/ __ \| \ | |
 # | |__) | |__ | |  __| |__) | |__  | (___| (___   | || |  | |  \| |
 # |  _  /|  __|| | |_ |  _  /|  __|  \___ \\___ \  | || |  | | . ` |
@@ -260,15 +260,15 @@ obs /= obs_std
 
 print('Finished computing observables')
 
-# do train/val/test split 
-(z_train, z_val, z_test, 
+# do train/val/test split
+(z_train, z_val, z_test,
  p_train, p_val, p_test,
  y_train, y_val, y_test) = ef.utils.data_split(X[:,:,0], X[:,:,1:], obs, val=val, test=test)
 
 print('Done train/val/test split')
 
 # build architecture
-efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes, 
+efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
           output_act=output_act, output_dim=output_dim, loss=loss, metrics=[])
 
 # train model
@@ -283,7 +283,7 @@ preds = efn.predict([z_test, p_test], batch_size=1000)[:,0]*obs_std + obs_mean
 
 ######################### Observable Distributions Plot #########################
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 plt.rcParams['figure.figsize'] = (4, 4)
@@ -323,14 +323,14 @@ grads = np.linspace(0.45, 0.55, 4)
 X, Y, Z = efn.eval_filters(R, n=n)
 
 # for sorting filters according to position
-def get_filter_size_and_position(filt, zfrac=0.5):   
+def get_filter_size_and_position(filt, zfrac=0.5):
     filt /= np.max(filt)
     maxind = np.argmax(filt)
     j, k = maxind//n, maxind%n
-    
+
     angle = np.sqrt((j-n/2)**2 + (k-n/2)**2)*2/n
     size = np.count_nonzero(filt > zfrac)/n**2
-    
+
     return size, angle
 
 sizes, angles = [], []
@@ -362,7 +362,7 @@ is a plot of the ROC curves obtained by the PFN as well as the jet mass and
 constituent multiplicity observables.
 
 ```python
-#  _____  ______ _   _ 
+#  _____  ______ _   _
 # |  __ \|  ____| \ | |
 # | |__) | |__  |  \| |
 # |  ___/|  __| | . ` |
@@ -435,7 +435,7 @@ else:
 
 print('Finished preprocessing')
 
-# do train/val/test split 
+# do train/val/test split
 (X_train, X_val, X_test,
  Y_train, Y_val, Y_test) = data_split(X, Y, val=val, test=test)
 
@@ -470,7 +470,7 @@ mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
 mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
 mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
@@ -498,14 +498,14 @@ plt.show()
 
 An example involving jet images and convolutional neural networks (CNNs). The
 [`CNN`](../docs/archs/#cnn) class is used to provide a network architecture
-based on that described in [1612.01551](https://arxiv.org/abs/1612.01551). 
+based on that described in [1612.01551](https://arxiv.org/abs/1612.01551).
 
 Jet images are constructed using the [`pixelate`](../docs/utils/#pixelate)
 function and can be either one-channel (grayscale), meaning that only $p_T$
 information is used, or two-channel (color), meaning that $p_T$ information and
 local charged particle counts are used. The images are preprocessed by
 subtracting the average image in the training set and dividing by the per-pixel
-standard deviations, using the [`zero_center`](../docs/utils/#zero_center) and 
+standard deviations, using the [`zero_center`](../docs/utils/#zero_center) and
 [`standardize`](../docs/utils/#standardize) functions, respectively. The output
 of the example is a plot of the ROC curves of the CNN as well as the jet mass
 and constituent multiplicity observables.
@@ -582,12 +582,12 @@ Y = to_categorical(y, num_classes=2)
 print('Loaded quark and gluon jets')
 
 # make jet images
-images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 
+images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan,
                                  charged_counts_only=True, norm=norm) for x in X])
 
 print('Done making jet images')
 
-# do train/val/test split 
+# do train/val/test split
 (X_train, X_val, X_test,
  Y_train, Y_val, Y_test) = data_split(images, Y, val=val_frac, test=test_frac)
 
@@ -632,7 +632,7 @@ mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
 mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
 mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
@@ -734,7 +734,7 @@ for i,num_nsub in enumerate(num_nsubs):
     # build architecture
     dnn = DNN(input_dim=num_nsub, dense_sizes=dense_sizes, summary=(i==0))
 
-    # do train/val/test split 
+    # do train/val/test split
     (X_train, X_val, X_test,
      Y_train, Y_val, Y_test) = data_split(X[:,:num_nsub], Y, val=val_frac, test=test_frac)
 
@@ -760,14 +760,14 @@ for i,num_nsub in enumerate(num_nsubs):
         print('{} nsubs DNN AUC:'.format(num_nsub), auc)
         print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
 # iterate over the ROC curves and plot them
 for i in range(len(rocs)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i],
                                             label='DNN: {} N-subs'.format(num_nsubs[i]))
 
 # axes labels
@@ -864,7 +864,7 @@ for d in range(1, dmax+1):
     # select EFPs with degree <= d
     X_d = X[:,efpset.sel(('d<=', d))]
 
-    # do train/val/test split 
+    # do train/val/test split
     (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
     print('Done train/val/test split')
 
@@ -884,14 +884,14 @@ for d in range(1, dmax+1):
         print('EFPs d <= {} AUC:'.format(d), auc)
         print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
 # iterate over the ROC curves and plot them
 for i,d in enumerate(range(1, dmax+1)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i],
                                             label='LDA: d <= {} EFPs'.format(d))
 
 # axes labels
@@ -916,7 +916,7 @@ the animation. Strange errors may result if there are issues with required
 software components.
 
 ```python
-#           _   _ _____ __  __       _______ _____ ____  _   _ 
+#           _   _ _____ __  __       _______ _____ ____  _   _
 #     /\   | \ | |_   _|  \/  |   /\|__   __|_   _/ __ \| \ | |
 #    /  \  |  \| | | | | \  / |  /  \  | |    | || |  | |  \| |
 #   / /\ \ | . ` | | | | |\/| | / /\ \ | |    | || |  | | . ` |
@@ -955,14 +955,14 @@ import energyflow as ef
 from matplotlib import animation, rc
 
 # helper function to interpolate between the optimal transport of two events
-def merge(ev0, ev1, R=1, lamb=0.5):    
+def merge(ev0, ev1, R=1, lamb=0.5):
     emd, G = ef.emd.emd(ev0, ev1, R=R, return_flow=True)
-    
+
     merged = []
     for i in range(len(ev0)):
         for j in range(len(ev1)):
             if G[i, j] > 0:
-                merged.append([G[i,j], lamb*ev0[i,1] + (1-lamb)*ev1[j,1], 
+                merged.append([G[i,j], lamb*ev0[i,1] + (1-lamb)*ev1[j,1],
                                        lamb*ev0[i,2] + (1-lamb)*ev1[j,2]])
 
     # detect which event has more pT
@@ -973,8 +973,8 @@ def merge(ev0, ev1, R=1, lamb=0.5):
     else:
         for j in range(len(ev1)):
             if G[-1,j] > 0:
-                merged.append([G[-1,j]*(1-lamb), ev1[j,1], ev1[j,2]])            
-            
+                merged.append([G[-1,j]*(1-lamb), ev1[j,1], ev1[j,2]])
+
     return np.asarray(merged)
 
 
@@ -1023,30 +1023,30 @@ scatter = ax.scatter(ys, phis, color='blue', s=pts, lw=0)
 # animation function. This is called sequentially
 def animate(i):
     ax.clear()
-    
+
     nstages = 4
-    
+
     # first phase is a static image of event0
     if i < nframes / nstages:
         lamb = nstages*i/(nframes-1)
         ev0  = event0
         ev1  = event0
         color = (1,0,0)
-    
+
     # second phase is a transition from event0 to event1
     elif i < 2 * nframes / nstages:
         lamb = nstages*(i - nframes/nstages)/(nframes-1)
         ev0  = event1
         ev1  = event0
         color = (1-lamb)*np.asarray([1,0,0]) + (lamb)*np.asarray([0,0,1])
-    
+
     # third phase is a static image of event1
     elif i < 3 * nframes / nstages:
         lamb = nstages*(i - 2*nframes/nstages)/(nframes-1)
         ev0  = event1
         ev1  = event1
         color = (0,0,1)
-    
+
     # fourth phase is a transition from event1 to event0
     else:
         lamb = nstages*(i - 3*nframes/nstages)/(nframes-1)
@@ -1057,10 +1057,10 @@ def animate(i):
     merged = merge(ev0, ev1, lamb=lamb, R=0.5)
     pts, ys, phis = merged[:,0], merged[:,1], merged[:,2]
     scatter = ax.scatter(ys, phis, color=color, s=zf*pts, lw=0)
-    
+
     ax.set_xlim(-R, R); ax.set_ylim(-R, R);
     ax.set_axis_off()
-    
+
     return scatter,
 
 anim = animation.FuncAnimation(fig, animate, frames=nframes, repeat=True)
@@ -1071,4 +1071,3 @@ anim.save('energyflowanimation.mp4', fps=fps, dpi=200)
 # HTML(anim.to_html5_video())
 
 ```
-

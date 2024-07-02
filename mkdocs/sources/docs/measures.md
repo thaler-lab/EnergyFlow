@@ -46,7 +46,7 @@ $\beta$: `'hadr'` and `'hadrdot'`. These are listed explicitly below.
 
 `'hadr'`:
 
-\[z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + 
+\[z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 +
 \Delta\phi_{ij}^2)^{\beta/2}.\]
 
 `'hadrdot'`:
@@ -131,7 +131,7 @@ if using a non-EFM measure and `zs`, `nhats` otherwise.
 **Arguments**
 
 - **arg** : _2-d numpy.ndarray_
-    - A two-dimensional array of the particles with each row being a 
+    - A two-dimensional array of the particles with each row being a
     particle and the columns specified by the `coords` attribute.
 
 **Returns**
@@ -147,4 +147,3 @@ if using a non-EFM measure and `zs`, `nhats` otherwise.
 
 
 ----
-

@@ -46,7 +46,7 @@ Since a standalone EFP defines and holds a `Measure` instance, all
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -69,10 +69,10 @@ also is callable, in which case this method is invoked.
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `thetas` must also be present, and `zs` is used in place 
+    - If present, `thetas` must also be present, and `zs` is used in place
     of the energies of an event.
 - **thetas** : 2-d array_like
-    - If present, `zs` must also be present, and `thetas` is used in place 
+    - If present, `zs` must also be present, and `thetas` is used in place
     of the pairwise angles of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -289,7 +289,7 @@ events. Note that all keyword arguments are stored as properties of the
 `EFPSet` instance.
 
 ```python
-energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
+energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None,
                          coords=None, check_input=True, verbose=0)
 ```
 
@@ -336,7 +336,7 @@ keywords are accepted.
 - **normed** : _bool_
     - Controls normalization of the energies in the measure.
 - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-    - Controls which coordinates are assumed for the input. See 
+    - Controls which coordinates are assumed for the input. See
     [Measures](../measures) for additional info.
 - **check_input** : _bool_
     - Whether to check the type of the input each time or assume the
@@ -360,10 +360,10 @@ Computes the values of the stored EFPs on a single event. Note that
     - The event as an array of particles in the coordinates specified
     by `coords`.
 - **zs** : 1-d array_like
-    - If present, `thetas` must also be present, and `zs` is used in place 
+    - If present, `thetas` must also be present, and `zs` is used in place
     of the energies of an event.
 - **thetas** : 2-d array_like
-    - If present, `zs` must also be present, and `thetas` is used in place 
+    - If present, `zs` must also be present, and `thetas` is used in place
     of the pairwise angles of an event.
 - **nhats** : 2-d array like
     - If present, `zs` must also be present, and `nhats` is used in place
@@ -403,7 +403,7 @@ Computes the value of the stored EFPs on several events.
 calc_disc(X)
 ```
 
-Computes disconnected EFPs according to the internal 
+Computes disconnected EFPs according to the internal
 specifications using the connected EFPs provided as input. Note that
 this function has no effect if the `EFPSet` was initialized with
 specific graphs.
@@ -430,7 +430,7 @@ sel(*args)
 ```
 
 Computes a boolean mask of EFPs matching each of the
-specifications provided by the `args`. 
+specifications provided by the `args`.
 
 **Arguments**
 
@@ -448,7 +448,7 @@ specifications provided by the `args`.
 **Returns**
 
 - _1-d numpy.ndarray_
-    - A boolean array of length the number of EFPs stored by this object. 
+    - A boolean array of length the number of EFPs stored by this object.
 
 ### csel
 
@@ -467,7 +467,7 @@ count(*args)
 Counts the number of EFPs meeting the specifications
 of the arguments using `sel`.
 
-**Arguments** 
+**Arguments**
 
 - ***args** : arbitrary positional arguments
     - Valid arguments to be passed to `sel`.
@@ -485,10 +485,10 @@ graphs(*args)
 
 Graphs meeting provided specifications.
 
-**Arguments** 
+**Arguments**
 
 - ***args** : arbitrary positional arguments
-    - Valid arguments to be passed to `sel`, or, if a single integer, 
+    - Valid arguments to be passed to `sel`, or, if a single integer,
     the index of a particular graph.
 
 **Returns**
@@ -507,10 +507,10 @@ simple_graphs(*args)
 
 Simple graphs meeting provided specifications.
 
-**Arguments** 
+**Arguments**
 
 - ***args** : arbitrary positional arguments
-    - Valid arguments to be passed to `sel`, or, if a single integer, 
+    - Valid arguments to be passed to `sel`, or, if a single integer,
     the index of particular simple graph.
 
 **Returns**
@@ -545,7 +545,7 @@ The `EFMSet` held by the `EFPSet`, if using EFMs.
 specs
 ```
 
-An array of EFP specifications. Each row represents an EFP 
+An array of EFP specifications. Each row represents an EFP
 and the columns represent the quantities indicated by `cols`.
 
 #### cspecs
@@ -562,7 +562,7 @@ Specification array for connected EFPs.
 weight_set
 ```
 
-The union of all weights needed by the EFPs stored by the 
+The union of all weights needed by the EFPs stored by the
 `EFPSet`.
 
 #### cols
@@ -585,4 +585,3 @@ each column.
 
 
 ----
-

@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/docs/archs/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Architectures";
     var mkdocs_page_input_path = "docs/archs.md";
     var mkdocs_page_url = "/docs/archs/";
   </script>
-  
+
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -172,36 +172,36 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="../..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Documentation &raquo;</li>
-        
-      
-    
+
+
+
     <li>Architectures</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="architectures">Architectures</h1>
 <p>Energy Flow Networks (EFNs) and Particle Flow Networks (PFNs) are model
 architectures designed for learning from collider events as unordered,
@@ -223,7 +223,7 @@ parameterized in this form.</p>
 </div>
 <p>where <span><span class="MathJax_Preview">p_i</span><script type="math/tex">p_i</script></span> is the information of particle <span><span class="MathJax_Preview">i</span><script type="math/tex">i</script></span>, such as its four-momentum,
 charge, or flavor. Any observable can be parameterized in this form. See the
-<a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional 
+<a href="https://arxiv.org/abs/1703.06114">Deep Sets</a> framework for additional
 discussion.</p>
 <p>Since these architectures are not used by the core EnergyFlow code, and require
 the external <a href="https://www.tensorflow.org">TensorFlow</a> and <a href="http:
@@ -241,7 +241,7 @@ be instantiated directly as it is an abstract base class.</p>
 <pre><code class="language-python">energyflow.archs.archbase.ArchBase(*args, **kwargs)
 </code></pre>
 <p>Accepts arbitrary arguments. Positional arguments (if present) are
-dictionaries of hyperparameters, keyword arguments (if present) are 
+dictionaries of hyperparameters, keyword arguments (if present) are
 hyperparameters directly. Keyword hyperparameters take precedence over
 positional hyperparameter dictionaries.</p>
 <p><strong>Arguments</strong></p>
@@ -252,7 +252,7 @@ pairs.</li>
 </ul>
 </li>
 <li><strong>*kwargs</strong> : arbitrary keyword arguments<ul>
-<li>Hyperparameters as keyword arguments. Takes precedence over the 
+<li>Hyperparameters as keyword arguments. Takes precedence over the
 positional arguments.</li>
 </ul>
 </li>
@@ -263,14 +263,14 @@ positional arguments.</li>
 <p><strong>Compilation Options</strong></p>
 <ul>
 <li><strong>loss</strong>=<code>'categorical_crossentropy'</code> : <em>str</em><ul>
-<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras loss 
+<li>The loss function to use for the model. See the <a href="https://keras.io/losses/">Keras loss
 function docs</a> for available loss
 functions.</li>
 </ul>
 </li>
 <li><strong>optimizer</strong>=<code>'adam'</code> : Keras optimizer or <em>str</em><ul>
 <li>A <a href="https://keras.io/optimizers/">Keras optimizer</a> instance or a
-string referring to one (in which case the default arguments are 
+string referring to one (in which case the default arguments are
 used).</li>
 </ul>
 </li>
@@ -306,7 +306,7 @@ model will not be saved.</li>
 </ul>
 </li>
 <li><strong>save_while_training</strong>=<code>True</code> : <em>bool</em><ul>
-<li>Whether the model is saved during training (using the 
+<li>Whether the model is saved during training (using the
 <a href="https://keras.io/callbacks/#modelcheckpoint"><code>ModelCheckpoint</code></a>
 callback) or only once training terminates. Only relevant if
 <code>filepath</code> is set.</li>
@@ -387,7 +387,7 @@ possible arguments.</li>
 <pre><code class="language-python">predict(X_test, **kwargs)
 </code></pre>
 <p>Evaluate the model on a dataset. Note that for the <code>LinearClassifier</code>
-this corresponds to the <code>predict_proba</code> method of the underlying 
+this corresponds to the <code>predict_proba</code> method of the underlying
 scikit-learn model.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -420,7 +420,7 @@ underlying model.</p>
 <p><strong>Examples</strong></p>
 <ul>
 <li>For neural network models:<ul>
-<li><code>model.layers</code> will return a list of the layers, where 
+<li><code>model.layers</code> will return a list of the layers, where
 <code>model</code> is any EnergFlow neural network.</li>
 </ul>
 </li>
@@ -445,7 +445,7 @@ well as defaults common to all EnergyFlow neural network models.</p>
 </li>
 <li><strong>Phi_sizes</strong> (formerly <code>ppm_sizes</code>) : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
 <li>The sizes of the dense layers in the per-particle frontend
-module <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>. The last element will be the number of latent 
+module <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>. The last element will be the number of latent
 observables that the model defines.</li>
 </ul>
 </li>
@@ -458,21 +458,21 @@ observables that the model defines.</li>
 <ul>
 <li><strong>Phi_acts</strong>=<code>'relu'</code> (formerly <code>ppm_acts</code>) : {<em>tuple</em>, <em>list</em>} of
 <em>str</em> or Keras activation<ul>
-<li>Activation functions(s) for the dense layers in the 
+<li>Activation functions(s) for the dense layers in the
 per-particle frontend module <span><span class="MathJax_Preview">\Phi</span><script type="math/tex">\Phi</script></span>. A single string or activation
 layer will apply the same activation to all layers. Keras advanced
 activation layers are also accepted, either as strings (which use
 the default arguments) or as Keras <code>Layer</code> instances. If passing a
 single <code>Layer</code> instance, be aware that this layer will be used for
-all activations and may introduce weight sharing (such as with 
+all activations and may introduce weight sharing (such as with
 <code>PReLU</code>); it is recommended in this case to pass as many activations
-as there are layers in the model. See the <a href="https://keras.io/activations/">Keras activations 
+as there are layers in the model. See the <a href="https://keras.io/activations/">Keras activations
 docs</a> for more detail.</li>
 </ul>
 </li>
 <li><strong>F_acts</strong>=<code>'relu'</code> (formerly <code>dense_acts</code>) : {<em>tuple</em>, <em>list</em>} of
 <em>str</em> or Keras activation<ul>
-<li>Activation functions(s) for the dense layers in the 
+<li>Activation functions(s) for the dense layers in the
 backend module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. A single string or activation layer will apply
 the same activation to all layers.</li>
 </ul>
@@ -487,21 +487,21 @@ initializer to all layers. See the <a href="https:
 </li>
 <li><strong>F_k_inits</strong>=<code>'he_uniform'</code> (formerly <code>dense_k_inits</code>) : {<em>tuple</em>,
 <em>list</em>} of <em>str</em> or Keras initializer<ul>
-<li>Kernel initializers for the dense layers in the backend 
-module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. A single string will apply the same initializer 
+<li>Kernel initializers for the dense layers in the backend
+module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. A single string will apply the same initializer
 to all layers.</li>
 </ul>
 </li>
 <li><strong>latent_dropout</strong>=<code>0</code> : <em>float</em><ul>
 <li>Dropout rates for the summation layer that defines the
 value of the latent observables on the inputs. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
+Dropout layer</a> for more
 detail.</li>
 </ul>
 </li>
 <li><strong>F_dropouts</strong>=<code>0</code> (formerly <code>dense_dropouts</code>) : {<em>tuple</em>, <em>list</em>}
 of <em>float</em><ul>
-<li>Dropout rates for the dense layers in the backend module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>. 
+<li>Dropout rates for the dense layers in the backend module <span><span class="MathJax_Preview">F</span><script type="math/tex">F</script></span>.
 A single float will apply the same dropout rate to all dense layers.</li>
 </ul>
 </li>
@@ -535,7 +535,7 @@ features are to be provided at the end of the list of inputs.</li>
 <h3 id="eval_filters">eval_filters</h3>
 <pre><code class="language-python">eval_filters(patch, n=100, prune=True)
 </code></pre>
-<p>Evaluates the latent space filters of this model on a patch of the 
+<p>Evaluates the latent space filters of this model on a patch of the
 two-dimensional geometric input space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -546,7 +546,7 @@ Passing a single float <code>R</code> is equivalent to <code>[-R,-R,R,R]</code>.
 </ul>
 </li>
 <li><strong>n</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The number of grid points on which to evaluate the filters. A list 
+<li>The number of grid points on which to evaluate the filters. A list
 of length 2 is interpretted as <code>[nx, ny]</code> where <code>nx</code> is the number of
 points along the x (or first) dimension and <code>ny</code> is the number of points
 along the y (or second) dimension.</li>
@@ -561,7 +561,7 @@ due to dying ReLUs).</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li>(<em>numpy.ndarray</em>, <em>numpy.ndarray</em>, <em>numpy.ndarray</em>)<ul>
-<li>Returns three arrays, <code>(X, Y, Z)</code>, where <code>X</code> and <code>Y</code> have shape <code>(nx, ny)</code> 
+<li>Returns three arrays, <code>(X, Y, Z)</code>, where <code>X</code> and <code>Y</code> have shape <code>(nx, ny)</code>
 and are arrays of the values of the geometric inputs in the specified patch.
 <code>Z</code> has shape <code>(num_filters, nx, ny)</code> and is the value of the different
 filters at each point.</li>
@@ -599,7 +599,7 @@ network, including any dropout layer if present.</p>
 <p>Output tensor for the model.</p>
 <hr />
 <h2 id="pfn">PFN</h2>
-<p>Particle Flow Network (PFN) architecture. Accepts the same 
+<p>Particle Flow Network (PFN) architecture. Accepts the same
 hyperparameters as the <a href="#EFN"><code>EFN</code></a>.</p>
 <pre><code class="language-python">energyflow.archs.PFN(*args, **kwargs)
 </code></pre>
@@ -647,13 +647,13 @@ is set to <code>channels_first</code>, this is <code>(nb_chan,npix,npix)</code>.
 </ul>
 </li>
 <li><strong>filter_sizes</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The size of the filters, which are taken to be square, in each 
+<li>The size of the filters, which are taken to be square, in each
 convolutional layer of the network. The length of the list will be
 the number of convolutional layers in the network.</li>
 </ul>
 </li>
 <li><strong>num_filters</strong> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The number of filters in each convolutional layer. The length of 
+<li>The number of filters in each convolutional layer. The length of
 <code>num_filters</code> must match that of <code>filter_sizes</code>.</li>
 </ul>
 </li>
@@ -661,12 +661,12 @@ the number of convolutional layers in the network.</li>
 <p><strong>Default CNN Hyperparameters</strong></p>
 <ul>
 <li><strong>dense_sizes</strong>=<code>None</code> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>The sizes of the dense layer backend. A value of <code>None</code> is 
+<li>The sizes of the dense layer backend. A value of <code>None</code> is
 equivalent to an empty list.</li>
 </ul>
 </li>
 <li><strong>pool_sizes</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>int</em><ul>
-<li>Size of maxpooling filter, taken to be a square. A value of 
+<li>Size of maxpooling filter, taken to be a square. A value of
 <code>0</code> will not use maxpooling.</li>
 </ul>
 </li>
@@ -674,37 +674,37 @@ equivalent to an empty list.</li>
 <li>Activation function(s) for the conv layers. A single string or
 activation layer will apply the same activation to all conv layers.
 Keras advanced activation layers are also accepted, either as
-strings (which use the default arguments) or as Keras <code>Layer</code> 
+strings (which use the default arguments) or as Keras <code>Layer</code>
 instances. If passing a single <code>Layer</code> instance, be aware that this
-layer will be used for all activations and may introduce weight 
-sharing (such as with <code>PReLU</code>); it is recommended in this case to 
+layer will be used for all activations and may introduce weight
+sharing (such as with <code>PReLU</code>); it is recommended in this case to
 pass as many activations as there are layers in the model.See the
-<a href="https://keras.io/activations/">Keras activations docs</a> for more 
+<a href="https://keras.io/activations/">Keras activations docs</a> for more
 detail.</li>
 </ul>
 </li>
 <li><strong>dense_acts</strong>=<code>'relu'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em>  or Keras activation<ul>
-<li>Activation functions(s) for the dense layers. A single string 
-or activation layer will apply the same activation to all dense 
+<li>Activation functions(s) for the dense layers. A single string
+or activation layer will apply the same activation to all dense
 layers.</li>
 </ul>
 </li>
 <li><strong>conv_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
 <li>Kernel initializers for the convolutional layers. A single
 string will apply the same initializer to all layers. See the
-<a href="https://keras.io/initializers/">Keras initializer docs</a> for 
+<a href="https://keras.io/initializers/">Keras initializer docs</a> for
 more detail.</li>
 </ul>
 </li>
 <li><strong>dense_k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras initializer<ul>
-<li>Kernel initializers for the dense layers. A single string will 
+<li>Kernel initializers for the dense layers. A single string will
 apply the same initializer to all layers.</li>
 </ul>
 </li>
 <li><strong>conv_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
 <li>Dropout rates for the convolutional layers. A single float will
 apply the same dropout rate to all conv layers. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
+Dropout layer</a> for more
 detail.</li>
 </ul>
 </li>
@@ -715,19 +715,19 @@ of the model, for which to apply <a href="https://keras
 </ul>
 </li>
 <li><strong>dense_dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
-<li>Dropout rates for the dense layers. A single float will apply 
+<li>Dropout rates for the dense layers. A single float will apply
 the same dropout rate to all dense layers.</li>
 </ul>
 </li>
 <li><strong>paddings</strong>=<code>'valid'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em><ul>
 <li>Controls how the filters are convoled with the inputs. See
-the <a href="https://keras.io/layers/convolutional/#conv2d">Keras Conv2D layer</a> 
+the <a href="https://keras.io/layers/convolutional/#conv2d">Keras Conv2D layer</a>
 for more detail.</li>
 </ul>
 </li>
 <li><strong>data_format</strong>=<code>'channels_last'</code> : {<code>'channels_first'</code>, <code>'channels_last'</code>}<ul>
 <li>Sets which axis is expected to contain the different channels.
-<code>'channels_first'</code> appears to have issues with newer versions of 
+<code>'channels_first'</code> appears to have issues with newer versions of
 tensorflow, so prefer <code>'channels_last'</code>.</li>
 </ul>
 </li>
@@ -756,27 +756,27 @@ well as defaults common to all EnergyFlow neural network models.</p>
 <li>Activation functions(s) for the dense layers. A single string or
 activation layer will apply the same activation to all dense layers.
 Keras advanced activation layers are also accepted, either as
-strings (which use the default arguments) or as Keras <code>Layer</code> 
+strings (which use the default arguments) or as Keras <code>Layer</code>
 instances. If passing a single <code>Layer</code> instance, be aware that this
-layer will be used for all activations and may introduce weight 
-sharing (such as with <code>PReLU</code>); it is recommended in this case to 
+layer will be used for all activations and may introduce weight
+sharing (such as with <code>PReLU</code>); it is recommended in this case to
 pass as many activations as there are layers in the model.See the
-<a href="https://keras.io/activations/">Keras activations docs</a> for more 
+<a href="https://keras.io/activations/">Keras activations docs</a> for more
 detail.</li>
 </ul>
 </li>
-<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras 
+<li><strong>k_inits</strong>=<code>'he_uniform'</code> : {<em>tuple</em>, <em>list</em>} of <em>str</em> or Keras
 initializer<ul>
-<li>Kernel initializers for the dense layers. A single string 
+<li>Kernel initializers for the dense layers. A single string
 will apply the same initializer to all layers. See the
-<a href="https://keras.io/initializers/">Keras initializer docs</a> for 
+<a href="https://keras.io/initializers/">Keras initializer docs</a> for
 more detail.</li>
 </ul>
 </li>
 <li><strong>dropouts</strong>=<code>0</code> : {<em>tuple</em>, <em>list</em>} of <em>float</em><ul>
 <li>Dropout rates for the dense layers. A single float will
 apply the same dropout rate to all layers. See the <a href="https://keras.io/layers/core/#dropout">Keras
-Dropout layer</a> for more 
+Dropout layer</a> for more
 detail.</li>
 </ul>
 </li>
@@ -830,33 +830,33 @@ convergence parameter.</li>
 </li>
 </ul>
 <hr />
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+
         <a href="../datasets/" class="btn btn-neutral float-right" title="Datasets">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
+
+
         <a href="../../news/" class="btn btn-neutral" title="News"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -866,15 +866,15 @@ convergence parameter.</li>
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href="../../news/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
         <span style="margin-left: 15px"><a href="../datasets/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
+
     </span>
 </div>
     <script>var base_url = '../..';</script>

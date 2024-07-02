@@ -4,36 +4,36 @@ r"""# Utilities
 
 Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, `[e,px,py,pz]` (energy, momentum in `x` direction,
-momentum in `y` direction, momentum in `z` direction), or hadronic coordinates, 
+momentum in `y` direction, momentum in `z` direction), or hadronic coordinates,
 `[pt,y,phi,m]` (transverse momentum, rapidity, azimuthal angle, mass), which
 are related via:
 
-\[p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+\[p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad
 \phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}\]
 
 and inversely:
 
-\[E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+\[E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad
 p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.\]
 
 The pseudorapidity `eta` can be obtained from a Cartesian four-momentum as:
 
-\[\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+\[\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad
 |\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},\]
 
 and is related to the rapidity via
 
-\[\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+\[\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad
 y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).\]
 
 Note that the above formulas are numerically stable up to values of rapidity or
-pseudorapidity of a few hundred, above which the formulas have numerical issues. 
+pseudorapidity of a few hundred, above which the formulas have numerical issues.
 In this case, a different but equivalent formulae are used that are numerically
 stable in this region. In all cases, the $p_T\to0$ limit produces infinite
 values.
 
 In the context of this package, an "event" is a two-dimensional numpy array
-with shape `(M,4)` where `M` is the multiplicity. An array of events is a 
+with shape `(M,4)` where `M` is the multiplicity. An array of events is a
 three-dimensional array with shape `(N,M,4)` where `N` is the number of events.
 The valid inputs and outputs of the functions here will be described using
 this terminology.
@@ -136,7 +136,7 @@ def ptyphims_from_p4s(p4s, phi_ref=None, mass=True):
 
 def pt2s_from_p4s(p4s):
     """Calculate the squared transverse momenta of a collection of four-vectors.
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -153,7 +153,7 @@ def pt2s_from_p4s(p4s):
 
 def pts_from_p4s(p4s):
     """Calculate the transverse momenta of a collection of four-vectors.
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -170,7 +170,7 @@ def pts_from_p4s(p4s):
 def ys_from_p4s(p4s):
     """Calculate the rapidities of a collection of four-vectors. Returns zero
     for all-zero particles
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -194,7 +194,7 @@ def ys_from_p4s(p4s):
 def etas_from_p4s(p4s):
     """Calculate the pseudorapidities of a collection of four-vectors. Returns
     zero for all-zero particles
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -218,7 +218,7 @@ def etas_from_p4s(p4s):
 # phis_from_p4s(p4s, phi_ref=None)
 def phis_from_p4s(p4s, phi_ref=None, _pts=None):
     r"""Calculate the azimuthal angles of a collection of four-vectors.
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -307,7 +307,7 @@ def phi_fix(phis, phi_ref, copy=True):
 
 def m2s_from_p4s(p4s):
     """Calculate the squared masses of a collection of four-vectors.
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -324,7 +324,7 @@ def m2s_from_p4s(p4s):
 
 def ms_from_p4s(p4s):
     """Calculate the masses of a collection of four-vectors.
-    
+
     **Arguments**
 
     - **p4s** : _numpy.ndarray_ or _list_
@@ -396,7 +396,7 @@ def etas_from_pts_ys_ms(pts, ys, ms, _cutoff=50.):
 
     # note that the commented term can be ignored since it is numerically 1 for |y| > 20
     out[large_mask] = large_abs_ys + np.log(#(1. - np.exp(-2.*large_abs_ys))*
-                        (sqrt1plusx2s[large_mask] + 
+                        (sqrt1plusx2s[large_mask] +
                          np.sqrt(x2s[large_mask] + 1./np.tanh(large_abs_ys)**2))/2.)
     out[large_mask] *= np.sign(ys[large_mask])
 
@@ -444,7 +444,7 @@ def ys_from_pts_etas_ms(pts, etas, ms, _cutoff=50.):
 
         # note that the commented term can be ignored since it is numerically 1 for |eta| > 20
         out[large_mask] = large_abs_etas + np.log(#(1. - np.exp(-2.*large_abs_etas))*
-                                   (1. + np.sqrt(1./np.tanh(large_abs_etas)**2 + 
+                                   (1. + np.sqrt(1./np.tanh(large_abs_etas)**2 +
                                                  x2s[large_mask]/np.sinh(large_abs_etas)**2))/
                                    (2.*sqrt1plusx2s[large_mask]))
         out[large_mask] *= np.sign(etas[large_mask])
@@ -456,7 +456,7 @@ def ys_from_pts_etas_ms(pts, etas, ms, _cutoff=50.):
 def p4s_from_ptyphims(ptyphims):
     """Calculate Cartesian four-vectors from transverse momenta, rapidities,
     azimuthal angles, and (optionally) masses for each input.
-    
+
     **Arguments**
 
     - **ptyphims** : _numpy.ndarray_ or _list_
@@ -471,15 +471,15 @@ def p4s_from_ptyphims(ptyphims):
 
     # get pts, ys, phis
     ptyphims = np.asarray(ptyphims, dtype=float)
-    pts, ys, phis = (ptyphims[...,0,np.newaxis], 
-                     ptyphims[...,1,np.newaxis], 
+    pts, ys, phis = (ptyphims[...,0,np.newaxis],
+                     ptyphims[...,1,np.newaxis],
                      ptyphims[...,2,np.newaxis])
 
     # get masses
     ms = ptyphims[...,3,np.newaxis] if ptyphims.shape[-1] == 4 else np.zeros(pts.shape)
 
     Ets = np.sqrt(pts**2 + ms**2)
-    p4s = np.concatenate((Ets*np.cosh(ys), pts*np.cos(phis), 
+    p4s = np.concatenate((Ets*np.cosh(ys), pts*np.cos(phis),
                           pts*np.sin(phis), Ets*np.sinh(ys)), axis=-1)
     return p4s
 
@@ -488,7 +488,7 @@ def p4s_from_ptyphipids(ptyphipids, error_on_unknown=False):
     azimuthal angles, and particle IDs for each input. The particle IDs are
     used to lookup the mass of the particle. Transverse momenta should have
     units of GeV when using this function.
-    
+
     **Arguments**
 
     - **ptyphipids** : _numpy.ndarray_ or _list_
@@ -513,7 +513,7 @@ def p4s_from_ptyphipids(ptyphipids, error_on_unknown=False):
     ms = pids2ms(ptyphipids[...,3,np.newaxis], error_on_unknown)
 
     Ets = np.sqrt(pts**2 + ms**2)
-    p4s = np.concatenate((Ets*np.cosh(ys), pts*np.cos(phis), 
+    p4s = np.concatenate((Ets*np.cosh(ys), pts*np.cos(phis),
                           pts*np.sin(phis), Ets*np.sinh(ys)), axis=-1)
     return p4s
 
@@ -598,7 +598,7 @@ def sum_ptyphipids(ptyphipids, scheme='escheme', error_on_unknown=False):
         raise ValueError('Unknown recombination scheme {}'.format(scheme))
 
 def center_ptyphims(ptyphims, axis=None, center='escheme', copy=True):
-    """Center a collection of four-vectors according to a calculated or 
+    """Center a collection of four-vectors according to a calculated or
     provided axis.
 
     **Arguments**
@@ -638,7 +638,7 @@ def rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True):
     """Rotate a collection of four-vectors to vertically align the principal
     component of the energy flow. The principal component is obtained as the
     eigenvector of the energy flow with the largest eigenvalue. It is only
-    defined up to a sign, however it is ensured that there is more total pT in 
+    defined up to a sign, however it is ensured that there is more total pT in
     the top half of the rapidity-azimuth plane.
 
     **Arguments**
@@ -648,7 +648,7 @@ def rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True):
         out will be taken to be zero.
     - **rotate** : _str_
         - The rotation scheme to be used. Currently, only `'ptscheme'` is
-        supported, which causes the rotation to take place in the 
+        supported, which causes the rotation to take place in the
         rapidity-azimuth plane.
     - **center** : _str_ or `None`
         - If not `None`, the event will be centered prior to rotation and this
@@ -723,7 +723,7 @@ def reflect_ptyphims(ptyphims, which='both', center=None, copy=True):
 # charges and masses (in GeV) of particles by pdgid
 # obtained from the Pythia8 Particle Data page
 # http://home.thep.lu.se/~torbjorn/pythia82html/ParticleData.html
-# includes fundamental particles and most ground state uds mesons and baryons 
+# includes fundamental particles and most ground state uds mesons and baryons
 # as well as some things that have shown up at Pythia parton level
 PARTICLE_PROPERTIES = {
 #   PDGID     CHARGE MASS          NAME
@@ -871,7 +871,7 @@ def ischrgd(pids, ignored_pids=None):
     - _numpy.ndarray_
         - A boolean mask corresponding to which particles are charged.
     """
-    
+
     abspids = np.abs(np.asarray(pids, dtype=int))
     orig_shape = abspids.shape
     abspids = abspids.reshape(-1)
@@ -879,7 +879,7 @@ def ischrgd(pids, ignored_pids=None):
     if ignored_pids is None:
         charged = np.asarray([pid in CHARGED_PIDS for pid in abspids], dtype=bool)
     else:
-        charged = np.asarray([(pid in CHARGED_PIDS) and (pid not in ignored_pids) 
+        charged = np.asarray([(pid in CHARGED_PIDS) and (pid not in ignored_pids)
                               for pid in abspids], dtype=bool)
 
     return charged.reshape(orig_shape)
@@ -888,17 +888,17 @@ LONG_METRIC = np.array([1.] + [-1.]*100)
 def flat_metric(dim):
     """The Minkowski metric in `dim` spacetime dimensions in the mostly-minus
     convention.
-    
+
     **Arguments**
 
     - **dim** : _int_
-        - The number of spacetime dimensions (thought to be four in our 
+        - The number of spacetime dimensions (thought to be four in our
         universe).
 
     **Returns**
 
     - _1-d numpy.ndarray_
-        - A `dim`-length, one-dimensional (not matrix) array equal to 
+        - A `dim`-length, one-dimensional (not matrix) array equal to
         `[+1,-1,...,-1]`.
     """
 

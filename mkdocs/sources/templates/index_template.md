@@ -19,7 +19,7 @@ EnergyFlow is a Python package containing a suite of particle physics tools:
 
 The EnergyFlow package also provides easy access to particle phyiscs datasets and useful supplementary features:
 
-- [CMS Open Data in MOD HDF5 Format](docs/datasets/#cms-open-data-and-the-mod-hdf5-format): Reprocessed datasets from the [CMS Open Data](http://opendata.cern.ch/docs/cms-guide-for-research), currently including jets with $p_T>375$ GeV and associated detector-level and generator-level Monte Carlo samples. EnergyFlow provides tools for downloading, reading, and manipulating these datasets. 
+- [CMS Open Data in MOD HDF5 Format](docs/datasets/#cms-open-data-and-the-mod-hdf5-format): Reprocessed datasets from the [CMS Open Data](http://opendata.cern.ch/docs/cms-guide-for-research), currently including jets with $p_T>375$ GeV and associated detector-level and generator-level Monte Carlo samples. EnergyFlow provides tools for downloading, reading, and manipulating these datasets.
 <br><br>
 - [Jet Tagging Datasets](docs/datasets/#quark-and-gluon-jets): Datasets of Pythia 8 and Herwig 7.1 simulated quark and gluon jets are provided, along with tools for downloading and reading them.
 <br><br>

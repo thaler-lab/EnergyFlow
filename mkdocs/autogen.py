@@ -37,7 +37,7 @@ docs = {
             'classes': [
                 {
                     'name': 'Generator',
-                    'methods': ['save'], 
+                    'methods': ['save'],
                     'properties': ['specs']
                 }
             ]
@@ -333,8 +333,8 @@ def main():
     for example_file in example_files:
         with open(os.path.join(example_dir, example_file), 'r') as f:
             docstring, code = doc_code_re.match(f.read()).group(1, 2)
-            examples_str += '### {}\n\n{}\n```python\n{}\n```\n\n'.format(example_file, 
-                                                                          docstring, 
+            examples_str += '### {}\n\n{}\n```python\n{}\n```\n\n'.format(example_file,
+                                                                          docstring,
                                                                           code.lstrip('\n'))
 
     template_dict['example_files'] = examples_str
@@ -346,7 +346,7 @@ def main():
     # handle templates
     for template_file in os.listdir(template_dir):
         new_file = template_file.replace('_template', '')
-        with open(os.path.join(template_dir, template_file), 'r') as fr: 
+        with open(os.path.join(template_dir, template_file), 'r') as fr:
             with open(os.path.join('sources', new_file), 'w') as fw:
                 fw.write(fr.read().format(**template_dict))
 

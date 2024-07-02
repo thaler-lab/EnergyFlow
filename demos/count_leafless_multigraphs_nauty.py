@@ -24,7 +24,7 @@ def count_leafless_multigraphs(maxd, nauty_path):
         # generate non-isomorphic simple graphs with up to dmax edges
         start = start0 = time.time()
         b = bytes()
-        for n in range(2, dmax+2):  
+        for n in range(2, dmax+2):
             command = '{} -cd1 {} 0:{}'.format(os.path.join(nauty_path, 'geng'), n, dmax)
             result = subprocess.run(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             b += result.stdout
@@ -32,7 +32,7 @@ def count_leafless_multigraphs(maxd, nauty_path):
 
         # running multig
         start = time.time()
-        result = subprocess.run('{} -T -e0:{}'.format(os.path.join(nauty_path, 'multig'), dmax).split(), 
+        result = subprocess.run('{} -T -e0:{}'.format(os.path.join(nauty_path, 'multig'), dmax).split(),
                                 input=b, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print('Running multig took {:.3f}s to generate multigraphs'.format(time.time() - start))
 

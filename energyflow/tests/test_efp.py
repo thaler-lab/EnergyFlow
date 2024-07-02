@@ -65,7 +65,7 @@ def test_efp_asymbox(zs, thetas, beta):
                 for i4 in range(len(zs)):
                     asymbox += (zs[i1]*zs[i2]*zs[i3]*zs[i4]*thetas[i1,i2]**2*
                                 thetas[i2,i3]**3*thetas[i3,i4]**4*thetas[i1,i4]**3)
-    
+
     asymbox_graph = [(0,1),(0,1),(1,2),(1,2),(1,2),(2,3),(2,3),(2,3),(2,3),(3,0),(0,3),(3,0)]
     efp_result = ef.EFP(asymbox_graph, beta=beta).compute(zs=zs, thetas=thetas)
     assert epsilon_percent(asymbox, efp_result, epsilon=10**-13)
@@ -104,7 +104,7 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
     if measure == 'hadr' and kappa == 'pf':
         pytest.skip('hadr does not do pf')
     if kappa == 'pf' and normed:
-        pytest.skip('normed not supported with kappa=pf')    
+        pytest.skip('normed not supported with kappa=pf')
     if ('efm' in measure) and (beta != 2):
         pytest.skip('only beta=2 can use efm measure')
     s1 = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
@@ -170,13 +170,13 @@ def test_efp_efm_naive_compute(measure, normed, event):
         zs = np.sqrt(event[:,1]**2 + event[:,2]**2)
     if measure == 'eeefm':
         zs = event[:,0]
-        
+
     ns = (event/zs[:,np.newaxis])
     thetas = np.asarray([[np.sum(2*ni*nj*np.asarray([1,-1,-1,-1])) for ni in ns] for nj in ns])
 
     if normed:
         zs /= zs.sum()
-    
+
     EFP_sums = 0
     for i in range(len(event)):
         for j in range(len(event)):
@@ -186,13 +186,13 @@ def test_efp_efm_naive_compute(measure, normed, event):
     # ensure that the two values agree
     assert epsilon_percent(EFP_correlator, EFP_contraction, 10**-12)
     assert epsilon_percent(EFP_correlator, EFP_sums, 10**-12)
-    
+
 # test that efps, efms, and naive all agree
 @pytest.mark.efp
 @pytest.mark.efm
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
 def test_linear_relations(measure):
-    
+
     graphs ={# d=0
         'dot': [],
 
@@ -236,7 +236,7 @@ def test_linear_relations(measure):
         'pentagon' : [(0,1),(1,2),(2,3),(3,4),(4,0)],
         'triangledumbbell': [(0,1),(0,1),(2,3),(3,4),(4,2)]
         }
-    
+
     # pick a random event with 2 particles
     event = ef.gen_random_events(1, 2, dim=4)
 
@@ -244,14 +244,14 @@ def test_linear_relations(measure):
     d = {name: ef.EFP(graph, measure=measure, coords='epxpypz')(event) for name,graph in graphs.items()}
 
     eps = 10**-8
-    
+
     # check that the identities in the EFM paper are valid (i.e. = 0)
     assert epsilon_diff(2 * d['wedge'] - d['dumbbell'], 0, eps)
     assert epsilon_diff(2 * d['triangle'], 0, eps)
     assert epsilon_diff(d['tribell'] - 2 * d['asymwedge'], 0, eps)
     assert epsilon_diff(2 * d['chain'] - d['linedumbbell'] - d['triangle'], 0, eps)
     assert epsilon_diff(d['birdfoot'] + d['chain'] - d['asymwedge'], 0, eps)
-    
+
     # Four Dimensions
     # pick a random event in 4 dimensions
     event = ef.gen_random_events(1, 25, dim=4)
@@ -261,7 +261,7 @@ def test_linear_relations(measure):
 
     # check that the identity in the paper is valid (i.e. = 0)
     assert epsilon_percent(6*d['pentagon'], 5*d['triangledumbbell'], 10**-11)
-    
+
     # count the number of leafless multigraphs (all or just connected) with degree d
     ds = np.arange(11)
     counts_all, counts_con = [], []
@@ -271,10 +271,10 @@ def test_linear_relations(measure):
         counts_all.append(np.sum([leafless(graph) for graph in ef.EFPSet(('d<=',d)).graphs()]))
         counts_con.append(np.sum([leafless(graph) for graph in ef.EFPSet(('d<=',d), ('p==',1)).graphs()]))
 
-    # note: computed counts are cumulative, must take the difference to get individual d    
+    # note: computed counts are cumulative, must take the difference to get individual d
     counts_all = np.asarray(counts_all[1:]) - np.asarray(counts_all[:-1])
     counts_con = np.asarray(counts_con[1:]) - np.asarray(counts_con[:-1])
-    
+
     # ensure agreement with the table in the paper
     assert epsilon_diff(counts_all, [0,1,2,5,11,34,87,279,897,3129], eps)
     assert epsilon_diff(counts_con, [0,1,2,4,9,26,68,217,718,2553], eps)

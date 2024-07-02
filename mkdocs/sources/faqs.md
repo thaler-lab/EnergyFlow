@@ -127,7 +127,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:Jets,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Open Data $|$ Jet Primary Dataset $|$ pT $>$ 
+  title   = {{CMS 2011A Open Data $|$ Jet Primary Dataset $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,
@@ -137,7 +137,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:MC170,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 170-300 $|$ pT $>$ 
+  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 170-300 $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,
@@ -147,7 +147,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:MC300,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 300-470 $|$ pT $>$ 
+  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 300-470 $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,
@@ -157,7 +157,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:MC470,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 470-600 $|$ pT $>$ 
+  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 470-600 $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,
@@ -167,7 +167,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:MC600,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 600-800 $|$ pT $>$ 
+  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 600-800 $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,
@@ -177,7 +177,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:MC800,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 800-1000 $|$ pT $>$ 
+  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD 800-1000 $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,
@@ -207,7 +207,7 @@ If any of the datasets provided through EnergyFlow are used in your research, we
 @article{Zenodo:MODCMS2011A:MC1800,
   author  = {Komiske, Patrick and Mastandrea, Radha and Metodiev, Eric and
              Naik, Preksha and Thaler, Jesse},
-  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD1800-inf $|$ pT $>$ 
+  title   = {{CMS 2011A Simulation $|$ Pythia 6 QCD1800-inf $|$ pT $>$
               375 GeV $|$ MOD HDF5 Format}},
   journal = "Zenodo",
   year    = 2019,

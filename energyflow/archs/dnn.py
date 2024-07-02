@@ -28,7 +28,7 @@ def construct_dense(input_tensor, sizes,
                     dropouts=0., l2_regs=0.,
                     names=None):
     """"""
-    
+
     # repeat options if singletons
     acts, k_inits, names = iter_or_rep(acts), iter_or_rep(k_inits), iter_or_rep(names)
     dropouts, l2_regs = iter_or_rep(dropouts), iter_or_rep(l2_regs)
@@ -41,7 +41,7 @@ def construct_dense(input_tensor, sizes,
     for s, act, k_init, dropout, l2_reg, name in z:
 
         # get layers and append them to list
-        kwargs = ({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)} 
+        kwargs = ({'kernel_regularizer': l2(l2_reg), 'bias_regularizer': l2(l2_reg)}
                   if l2_reg > 0. else {})
         dense_layer = Dense(s, kernel_initializer=k_init, name=name, **kwargs)
         act_layer = _get_act_layer(act)
@@ -81,23 +81,23 @@ class DNN(NNBase):
             - Activation functions(s) for the dense layers. A single string or
             activation layer will apply the same activation to all dense layers.
             Keras advanced activation layers are also accepted, either as
-            strings (which use the default arguments) or as Keras `Layer` 
+            strings (which use the default arguments) or as Keras `Layer`
             instances. If passing a single `Layer` instance, be aware that this
-            layer will be used for all activations and may introduce weight 
-            sharing (such as with `PReLU`); it is recommended in this case to 
+            layer will be used for all activations and may introduce weight
+            sharing (such as with `PReLU`); it is recommended in this case to
             pass as many activations as there are layers in the model.See the
-            [Keras activations docs](https://keras.io/activations/) for more 
+            [Keras activations docs](https://keras.io/activations/) for more
             detail.
-        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras 
+        - **k_inits**=`'he_uniform'` : {_tuple_, _list_} of _str_ or Keras
         initializer
-            - Kernel initializers for the dense layers. A single string 
+            - Kernel initializers for the dense layers. A single string
             will apply the same initializer to all layers. See the
-            [Keras initializer docs](https://keras.io/initializers/) for 
+            [Keras initializer docs](https://keras.io/initializers/) for
             more detail.
         - **dropouts**=`0` : {_tuple_, _list_} of _float_
             - Dropout rates for the dense layers. A single float will
             apply the same dropout rate to all layers. See the [Keras
-            Dropout layer](https://keras.io/layers/core/#dropout) for more 
+            Dropout layer](https://keras.io/layers/core/#dropout) for more
             detail.
         - **l2_regs**=`0` : {_tuple_, _list_} of _float_
             - $L_2$-regulatization strength for both the weights and biases

@@ -1,13 +1,13 @@
 """An example involving jet images and convolutional neural networks (CNNs). The
 [`CNN`](../docs/archs/#cnn) class is used to provide a network architecture
-based on that described in [1612.01551](https://arxiv.org/abs/1612.01551). 
+based on that described in [1612.01551](https://arxiv.org/abs/1612.01551).
 
 Jet images are constructed using the [`pixelate`](../docs/utils/#pixelate)
 function and can be either one-channel (grayscale), meaning that only $p_T$
 information is used, or two-channel (color), meaning that $p_T$ information and
 local charged particle counts are used. The images are preprocessed by
 subtracting the average image in the training set and dividing by the per-pixel
-standard deviations, using the [`zero_center`](../docs/utils/#zero_center) and 
+standard deviations, using the [`zero_center`](../docs/utils/#zero_center) and
 [`standardize`](../docs/utils/#standardize) functions, respectively. The output
 of the example is a plot of the ROC curves of the CNN as well as the jet mass
 and constituent multiplicity observables.
@@ -84,12 +84,12 @@ Y = to_categorical(y, num_classes=2)
 print('Loaded quark and gluon jets')
 
 # make jet images
-images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 
+images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan,
                                  charged_counts_only=True, norm=norm) for x in X])
 
 print('Done making jet images')
 
-# do train/val/test split 
+# do train/val/test split
 (X_train, X_val, X_test,
  Y_train, Y_val, Y_test) = data_split(images, Y, val=val_frac, test=test_frac)
 
@@ -134,7 +134,7 @@ mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
 mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
 mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True

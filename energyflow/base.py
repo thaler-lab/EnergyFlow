@@ -3,7 +3,7 @@
 #  ____           _____ ______
 # |  _ \   /\    / ____|  ____|
 # | |_) | /  \  | (___ | |__
-# |  _ < / /\ \  \___ \|  __| 
+# |  _ < / /\ \  \___ \|  __|
 # | |_) / ____ \ ____) | |____
 # |____/_/    \_\_____/|______|
 
@@ -242,10 +242,10 @@ class SingleEnergyCorrelatorBase(EFBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `thetas` must also be present, and `zs` is used in place 
+            - If present, `thetas` must also be present, and `zs` is used in place
             of the energies of an event.
         - **thetas** : 2-d array_like
-            - If present, `zs` must also be present, and `thetas` is used in place 
+            - If present, `zs` must also be present, and `thetas` is used in place
             of the pairwise angles of an event.
         - **nhats** : 2-d array like
             - If present, `zs` must also be present, and `nhats` is used in place

@@ -35,7 +35,7 @@ def test_DNN2(sizes, dropouts, l2_regs, output_dim):
     n, input_dim = 50, 10
     X_train = np.random.rand(n, input_dim)
     Y_train = np.random.rand(n, output_dim)
-    dnn = archs.DNN(input_dim=input_dim, dense_sizes=sizes, dropouts=dropouts, 
+    dnn = archs.DNN(input_dim=input_dim, dense_sizes=sizes, dropouts=dropouts,
               l2_regs=l2_regs, summary=False, output_dim=output_dim)
     dnn.fit(X_train, Y_train, epochs=1, batch_size=10)
 
@@ -56,7 +56,7 @@ def test_CNN_required(data_format, nb_chan, npix, filter_sizes, num_filters, den
 
     X_train = np.random.rand(50, *input_shape)
     Y_train = np.random.rand(50, 2)
-    cnn = archs.CNN(input_shape=input_shape, filter_sizes=filter_sizes, num_filters=num_filters, 
+    cnn = archs.CNN(input_shape=input_shape, filter_sizes=filter_sizes, num_filters=num_filters,
                     dense_sizes=dense_sizes, pool_sizes=pool_sizes, summary=False, data_format=data_format)
     cnn.fit(X_train, Y_train, epochs=1, batch_size=10)
 
@@ -98,7 +98,7 @@ def test_EFN_modelcheck(model_path, save_while_training, save_weights_only, mode
     Y_train = np.random.rand(n, 2)
     X_val = [np.random.rand(n//10, m), np.random.rand(n//10, m, 2)]
     Y_val = np.random.rand(n//10, 2)
-    efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], summary=False, filepath=model_path, 
+    efn = archs.EFN(input_dim=2, Phi_sizes=[10], F_sizes=[10], summary=False, filepath=model_path,
                     save_while_training=save_while_training, save_weights_only=save_weights_only,
                     modelcheck_opts=modelcheck_opts)
     hist = efn.fit(X_train, Y_train, epochs=1, batch_size=10, validation_data=(X_val, Y_val))
@@ -177,4 +177,3 @@ def test_PFN_required(nglobal):
     pfn = archs.PFN(input_dim=3, Phi_sizes=[10], F_sizes=[10], num_global_features=nglobal, summary=False)
     hist = pfn.fit(X_train, Y_train, epochs=1, batch_size=5, validation_data=(X_val, Y_val))
     pfn._global_feature_tensor
-

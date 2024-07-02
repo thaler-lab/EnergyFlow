@@ -46,7 +46,7 @@ class D2(SingleEnergyCorrelatorBase):
     """Ratio of EFPs (specifically, energy correlation functions) designed to
     tag two prong signals. In graphs, the formula is:
 
-    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png" 
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png"
     class="obs_center" width="20%"/>
 
     For additional information, see the [original paper](https://arxiv.org/
@@ -55,7 +55,7 @@ class D2(SingleEnergyCorrelatorBase):
 
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
-    
+
     # D2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
     #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
@@ -82,7 +82,7 @@ class D2(SingleEnergyCorrelatorBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -125,7 +125,7 @@ class C2(SingleEnergyCorrelatorBase):
     """Ratio of Energy Correlation Functions designed to tag two prong signals.
     In graphs, the formula is:
 
-    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png" 
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png"
     class="obs_center" width="20%"/>
 
     For additional information, see the [original paper](https://arxiv.org/
@@ -134,7 +134,7 @@ class C2(SingleEnergyCorrelatorBase):
 
     # line and triangle EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)]]
-    
+
     # C2(measure='hadr', beta=2, strassen=False, reg=0., kappa=1, normed=True,
     #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, strassen=False, reg=0., **kwargs):
@@ -161,7 +161,7 @@ class C2(SingleEnergyCorrelatorBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -204,7 +204,7 @@ class C3(SingleEnergyCorrelatorBase):
     """Ratio of Energy Correlation Functions designed to tag three prong
     signals. In graphs, the formula is:
 
-    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png" 
+    <img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png"
     class="obs_center" width="30%"/>
 
     For additional information, see the [original paper](https://arxiv.org/
@@ -213,7 +213,7 @@ class C3(SingleEnergyCorrelatorBase):
 
     # line, triangle, and kite EFPs
     graphs = [[(0,1)], [(0,1),(1,2),(2,0)], [(0,1),(0,2),(0,3),(1,2),(1,3),(2,3)]]
-    
+
     # C3(measure='hadr', beta=2, reg=0., kappa=1, normed=True,
     #    coords=None, check_input=True)
     def __init__(self, measure='hadr', beta=2, reg=0., **kwargs):
@@ -237,7 +237,7 @@ class C3(SingleEnergyCorrelatorBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -352,8 +352,8 @@ if fj:
 
         - _float_
             - The groomed momentum fraction of the given jet."""
-        
-        return zg_from_pj(cluster(pjs_from_ptyphims(ptyphims), algorithm=algorithm)[0], 
+
+        return zg_from_pj(cluster(pjs_from_ptyphims(ptyphims), algorithm=algorithm)[0],
                           zcut=zcut, beta=beta, R=R)
 
     def zg_from_pj(pseudojet, zcut=0.1, beta=0, R=1.0):
@@ -390,7 +390,7 @@ if fj:
         parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
         if not sd_jet.has_parents(parent1, parent2):
             return 0.
-        
+
         pt1, pt2 = parent1.pt(), parent2.pt()
         ptsum = pt1 + pt2
 

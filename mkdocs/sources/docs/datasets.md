@@ -66,7 +66,7 @@ doi.org/10.5281/zenodo.3341772) - SIM/GEN QCD Jets 1800-$\infty$ GeV
 For more details regarding the creation of these samples, as well as for the
 DOIs of the original CMS Open Datasets, see [Exploring the Space of Jets with
 CMS Open Data](https://arxiv.org/abs/1908.08542). To get started using the
-samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the 
+samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the
 [`load`](#load) function.
 
 ----
@@ -74,7 +74,7 @@ samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the
 ### load
 
 ```python
-energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', 
+energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets',
                            dataset='cms', subdatasets=None, validate_files=False,
                            store_pfcs=True, store_gens=True, verbose=0)
 ```
@@ -97,9 +97,9 @@ validated to ensure dataset fidelity.
     number of available files to load, rounded up to the nearest whole
     number. Note that since ints and floats are treated different, a value
     of `1` loads one file whereas `1.0` loads the entire dataset. A value
-    of `-1` also loads the entire dataset. 
+    of `-1` also loads the entire dataset.
 - **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
+    - The directory where to store/look for the files. Note that
     `'datasets'` is automatically appended to the end of this path, as well
     as the collection name. For example, the default is to download/look
     for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`.
@@ -294,7 +294,7 @@ arrays, each of which are stored as properties of the `MODDataset`:
         a pileup vertex, and `-1` is unknown. Neutral particles are
         assigned to the leading vertex.
 - `/gens` - _float64_ (SIM/GEN only)
-    - An array of all generator-level particles, currently with the same 
+    - An array of all generator-level particles, currently with the same
     columns as the `pfcs` array (the vertex column contains all `0`s). For
     the SIM dataset, these are the particles of jets associated to the SIM
     jets which are described in the `jets_i` and `jets_f` arrays. As with
@@ -321,7 +321,7 @@ first column in the `jets_i` array, `modds.jet_phi` has a value of `2`,
 
 Even more helpfully, a view of each column of the jets arrays is stored
 as an attribute as well, so that `modds.jet_pts` is the same as
-`modds.jets_f[:,modds.jet_pt]`, `modds.evns` is the same as 
+`modds.jets_f[:,modds.jet_pt]`, `modds.evns` is the same as
 `modds.jets_i[:,modds.evn]`, etc. Additionally, one special view is stored,
 `corr_jet_pts`, which is equal to the product of the jet pTs and the JECs,
 i.e. `modds.jet_pts*modds.jecs`.
@@ -331,13 +331,13 @@ of jets currently stored in the dataset, as well as the `print()` method,
 which prints a summary of the dataset.
 
 ```python
-energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, 
+energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True,
                                  store_pfcs=True, store_gens=True)
 ```
 
 `MODDataset` can be initialized from a MOD HDF5 file or from a list
 of existing `MODDataset`s. In the first case, the filename should be
-given as the first positional argument. In the second case, the 
+given as the first positional argument. In the second case, the
 `datasets` keyword argument should be set to a list of `MODDataset`
 objects.
 
@@ -584,7 +584,7 @@ corresponding paper:
 [![DOI](/img/zenodo.3548091.svg)](https://
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
-- A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
+- A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler,
 OmniFold: A Method to Simultaneously Unfold All Observables,
 [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 
@@ -656,14 +656,14 @@ submodule of EnergyFlow. The four datasets are:
 
 To avoid downloading unnecessary samples, the datasets are contained in twenty
 files with 100k jets each, and only the required files are downloaded. These
-are based on the samples used in 
-[1810.05165](https://arxiv.org/abs/1810.05165). Splitting the data into 
+are based on the samples used in
+[1810.05165](https://arxiv.org/abs/1810.05165). Splitting the data into
 1.6M/200k/200k train/validation/test sets is recommended for standardized
 comparisons.
 
 Each dataset consists of two components:
 
-- `X` : a three-dimensional numpy array of the jets with shape 
+- `X` : a three-dimensional numpy array of the jets with shape
 `(num_data,max_num_particles,4)`.
 - `y` : a numpy array of quark/gluon jet labels (quark=`1` and gluon=`0`).
 
@@ -680,7 +680,7 @@ underlying event) are turned on and the default tunings and shower parameters
 are used. Final state non-neutrino particles are clustered into $R=0.4$
 anti-$k_T$ jets using FastJet 3.3.0. Jets with transverse momentum
 $p_T\in[500,550]$ GeV and rapidity $|y|<1.7$ are kept. Particles are ensured
-have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity 
+have to $\phi$ values within $\pi$ of the jet (i.e. no $\phi$-periodicity
 issues). No detector simulation is performed.
 
 The samples are also hosted on Zenodo and we ask that you cite them
@@ -700,8 +700,8 @@ energyflow.qg_jets.load(num_data=100000, pad=True, ncol=4, generator='pythia',
                         with_bc=False, cache_dir='~/.energyflow')
 ```
 
-Loads samples from the dataset (which in total is contained in twenty 
-files). Any file that is needed that has not been cached will be 
+Loads samples from the dataset (which in total is contained in twenty
+files). Any file that is needed that has not been cached will be
 automatically downloaded. Downloading a file causes it to be cached for
 later use. Basic checksums are performed.
 
@@ -725,7 +725,7 @@ later use. Basic checksums are performed.
     different dataset. The datasets with and without b and c quarks should
     not be combined.
 - **cache_dir** : _str_
-    - The directory where to store/look for the files. Note that 
+    - The directory where to store/look for the files. Note that
     `'datasets'` is automatically appended to the end of this path.
 
 **Returns**
@@ -740,7 +740,7 @@ later use. Basic checksums are performed.
 
 ## Quark and Gluon Nsubs
 
-A dataset consisting of 45 $N$-subjettiness observables for 100k quark and 
+A dataset consisting of 45 $N$-subjettiness observables for 100k quark and
 gluon jets generated with Pythia 8.230. Following [1704.08249](https:
 //arxiv.org/abs/1704.08249), the observables are in the following order:
 
@@ -750,7 +750,7 @@ gluon jets generated with Pythia 8.230. Following [1704.08249](https:
 \tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.\]
 
 The dataset contains two members: `'X'` which is a numpy array of the nsubs
-that has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon 
+that has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon
 labels (quark=`1` and gluon=`0`).
 
 ----
@@ -762,7 +762,7 @@ energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
 ```
 
 Loads the dataset. The first time this is called, it will automatically
-download the dataset. Future calls will attempt to use the cached dataset 
+download the dataset. Future calls will attempt to use the cached dataset
 prior to redownloading.
 
 **Arguments**
@@ -779,4 +779,3 @@ prior to redownloading.
 
 
 ----
-

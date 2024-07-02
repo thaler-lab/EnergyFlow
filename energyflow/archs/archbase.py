@@ -20,7 +20,7 @@ $$\text{PFN}=F\left(\sum_{i=1}^M \Phi(p_i)\right)$$
 
 where $p_i$ is the information of particle $i$, such as its four-momentum,
 charge, or flavor. Any observable can be parameterized in this form. See the
-[Deep Sets](https://arxiv.org/abs/1703.06114) framework for additional 
+[Deep Sets](https://arxiv.org/abs/1703.06114) framework for additional
 discussion.
 
 Since these architectures are not used by the core EnergyFlow code, and require
@@ -74,7 +74,7 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
     # ArchBase(*args, **kwargs)
     def __init__(self, *args, **kwargs):
         """Accepts arbitrary arguments. Positional arguments (if present) are
-        dictionaries of hyperparameters, keyword arguments (if present) are 
+        dictionaries of hyperparameters, keyword arguments (if present) are
         hyperparameters directly. Keyword hyperparameters take precedence over
         positional hyperparameter dictionaries.
 
@@ -84,10 +84,10 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
             - Each argument is a dictionary containing hyperparameter (name, value)
             pairs.
         - ***kwargs** : arbitrary keyword arguments
-            - Hyperparameters as keyword arguments. Takes precedence over the 
+            - Hyperparameters as keyword arguments. Takes precedence over the
             positional arguments.
         """
-        
+
         # store all options
         self.hps = {}
         for d in args:
@@ -108,7 +108,7 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
             warnings.warn(FutureWarning(m))
             kwargs['default'] = self.hps.pop(old)
 
-        return (self.hps.pop(name, kwargs['default']) if 'default' in kwargs 
+        return (self.hps.pop(name, kwargs['default']) if 'default' in kwargs
                                                       else self.hps.pop(name))
 
     def _verify_empty_hps(self):
@@ -156,7 +156,7 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
     @abstractmethod
     def predict(self):
         """Evaluate the model on a dataset. Note that for the `LinearClassifier`
-        this corresponds to the `predict_proba` method of the underlying 
+        this corresponds to the `predict_proba` method of the underlying
         scikit-learn model.
 
         **Arguments**
@@ -186,7 +186,7 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
         **Examples**
 
         - For neural network models:
-            - `model.layers` will return a list of the layers, where 
+            - `model.layers` will return a list of the layers, where
             `model` is any EnergFlow neural network.
         - For linear models:
             - `model.coef_` will return the coefficients, where `model`
@@ -211,7 +211,7 @@ class ArchBase(six.with_metaclass(ABCMeta, object)):
 # NNBase
 ###############################################################################
 
-class NNBase(ArchBase):        
+class NNBase(ArchBase):
 
     def _process_hps(self):
         """**Default NN Hyperparameters**
@@ -222,12 +222,12 @@ class NNBase(ArchBase):
         **Compilation Options**
 
         - **loss**=`'categorical_crossentropy'` : _str_
-            - The loss function to use for the model. See the [Keras loss 
+            - The loss function to use for the model. See the [Keras loss
             function docs](https://keras.io/losses/) for available loss
             functions.
         - **optimizer**=`'adam'` : Keras optimizer or _str_
             - A [Keras optimizer](https://keras.io/optimizers/) instance or a
-            string referring to one (in which case the default arguments are 
+            string referring to one (in which case the default arguments are
             used).
         - **metrics**=`['accuracy']` : _list_ of _str_
             - The [Keras metrics](https://keras.io/metrics/) to apply to the
@@ -251,7 +251,7 @@ class NNBase(ArchBase):
             - The file path for where to save the model. If `None` then the
             model will not be saved.
         - **save_while_training**=`True` : _bool_
-            - Whether the model is saved during training (using the 
+            - Whether the model is saved during training (using the
             [`ModelCheckpoint`](https://keras.io/callbacks/#modelcheckpoint)
             callback) or only once training terminates. Only relevant if
             `filepath` is set.
@@ -308,12 +308,12 @@ class NNBase(ArchBase):
         if self.filepath is not None:
             self.filepath = os.path.expanduser(self.filepath)
         self.save_while_training = self._proc_arg('save_while_training', default=True)
-        self.modelcheck_opts = {'save_best_only': True, 'verbose': 1, 
+        self.modelcheck_opts = {'save_best_only': True, 'verbose': 1,
                 'save_weights_only': self._proc_arg('save_weights_only', default=False)}
         self.modelcheck_opts.update(self._proc_arg('modelcheck_opts', default={}))
         self.save_weights_only = self.modelcheck_opts['save_weights_only']
 
-        self.earlystop_opts = {'restore_best_weights': True, 'verbose': 1, 
+        self.earlystop_opts = {'restore_best_weights': True, 'verbose': 1,
                                'patience': self._proc_arg('patience', default=None)}
         self.earlystop_opts.update(self._proc_arg('earlystop_opts', default={}))
         self.patience = self.earlystop_opts['patience']
@@ -343,11 +343,11 @@ class NNBase(ArchBase):
     def _compile_model(self):
 
         # compile model if specified
-        if self.compile: 
+        if self.compile:
             self.model.compile(**self.compile_opts)
 
             # print summary
-            if self.summary: 
+            if self.summary:
                 self.model.summary()
 
     def fit(self, *args, **kwargs):
@@ -369,7 +369,7 @@ class NNBase(ArchBase):
         # do the fitting
         hist = self.model.fit(*args, **kwargs)
 
-        # handle saving at the end, if we weren't already saving throughout 
+        # handle saving at the end, if we weren't already saving throughout
         if self.filepath and not self.save_while_training:
             if self.save_weights_only:
                 self.model.save_weights(self.filepath)

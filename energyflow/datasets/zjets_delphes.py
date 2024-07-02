@@ -57,7 +57,7 @@ corresponding paper:
 [![DOI](/img/zenodo.3548091.svg)](https://
 doi.org/10.5281/zenodo.3548091) - Pythia/Herwig + Delphes samples
 
-- A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
+- A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler,
 OmniFold: A Method to Simultaneously Unfold All Observables,
 [arXiv:1911.09107](https://arxiv.org/abs/1911.09107).
 """
@@ -117,7 +117,7 @@ ZENODO_RECORD = '3548091'
 # load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow',
 #               source='zenodo', which='all',
 #               include_keys=None, exclude_keys=None)
-def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo', 
+def load(dataset, num_data=100000, pad=False, cache_dir='~/.energyflow', source='zenodo',
                   which='all', include_keys=None, exclude_keys=None):
     """Loads in the Z+jet Pythia/Herwig + Delphes datasets. Any file that is
     needed that has not been cached will be automatically downloaded.

@@ -46,7 +46,7 @@ $\beta$: `'hadr'` and `'hadrdot'`. These are listed explicitly below.
 
 `'hadr'`:
 
-\[z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 + 
+\[z_i=p_{T,i}^{\kappa},\quad\quad \theta_{ij}=(\Delta y_{ij}^2 +
 \Delta\phi_{ij}^2)^{\beta/2}.\]
 
 `'hadrdot'`:
@@ -124,15 +124,15 @@ def _phat_func(Es, ps):
 def _pf_phat_func(Es, ps):
     return ps
 
-MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords', 
+MEASURE_KWARGS = {'measure', 'beta', 'kappa', 'normed', 'coords',
                   'check_input', 'kappa_normed_behavior'}
 
 ###############################################################################
-# Measure 
+# Measure
 ###############################################################################
 
 class Measure(six.with_metaclass(ABCMeta, object)):
-    
+
     """Class for handling measure options, described above."""
 
     def __new__(cls, *args, **kwargs):
@@ -183,7 +183,7 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         """
 
         # store parameters
-        transfer(self, locals(), ['measure', 'kappa', 'normed', 'coords', 
+        transfer(self, locals(), ['measure', 'kappa', 'normed', 'coords',
                                   'check_input', 'kappa_normed_behavior'])
 
         # check that options are appropriate
@@ -246,7 +246,7 @@ class Measure(six.with_metaclass(ABCMeta, object)):
         **Arguments**
 
         - **arg** : _2-d numpy.ndarray_
-            - A two-dimensional array of the particles with each row being a 
+            - A two-dimensional array of the particles with each row being a
             particle and the columns specified by the `coords` attribute.
 
         **Returns**

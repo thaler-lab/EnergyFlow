@@ -35,11 +35,11 @@ __all__ = [
     'create_pool',
     'explicit_comp',
     'import_fastjet',
-    'iter_or_rep', 
+    'iter_or_rep',
     'kwargs_check',
     'load_efp_file',
     'sel_arg_check',
-    'timing', 
+    'timing',
     'transfer'
 ]
 
@@ -59,11 +59,11 @@ EF_DATA_DIR = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
 DEFAULT_EFP_FILE = os.path.join(EF_DATA_DIR, 'efps_d_le_10.json.gz')
 REVERSE_COMPS = {'>': '<', '<': '>', '<=': '>=', '>=': '<='}
 COMP_MAP = {
-    '>':  '__gt__', 
-    '<':  '__lt__', 
-    '>=': '__ge__', 
+    '>':  '__gt__',
+    '<':  '__lt__',
+    '>=': '__ge__',
     '<=': '__le__',
-    '==': '__eq__', 
+    '==': '__eq__',
     '!=': '__ne__'
 }
 
@@ -144,7 +144,7 @@ def iter_or_rep(arg):
 # raises TypeError if unexpected keyword left in kwargs
 def kwargs_check(name, kwargs, allowed=None):
     allowed = frozenset() if allowed is None else frozenset(allowed)
-        
+
     for k in kwargs:
         if k in allowed:
             continue
@@ -170,7 +170,7 @@ def load_efp_file(filename):
 
 # check that an argument is well-formed to EFPSet.sel
 def sel_arg_check(arg):
-    return (isinstance(arg, six.string_types) or 
+    return (isinstance(arg, six.string_types) or
             (len(arg) == 2 and isinstance(arg[0], six.string_types)))
 
 # timing meta-decorator

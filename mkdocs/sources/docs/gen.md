@@ -76,9 +76,8 @@ Save the current generator to file.
 specs
 ```
 
-An array of EFP specifications. Each row represents an EFP 
+An array of EFP specifications. Each row represents an EFP
 and the columns represent the quantities indicated by `cols`.
 
 
 ----
-
