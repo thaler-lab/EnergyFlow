@@ -14,10 +14,10 @@ from abc import abstractmethod, abstractproperty
 
 import numpy as np
 
-import tensorflow.keras.backend as K
-from tensorflow.keras.layers import Concatenate, Dense, Dot, Dropout, Input, Lambda, TimeDistributed
-from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l2
+import tf_keras.backend as K
+from tf_keras.layers import Concatenate, Dense, Dot, Dropout, Input, Lambda, TimeDistributed
+from tf_keras.models import Model
+from tf_keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.archs.dnn import construct_dense

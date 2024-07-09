@@ -10,9 +10,9 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tensorflow.keras.layers import Dense, Dropout, Input
-from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l2
+from tf_keras.layers import Dense, Dropout, Input
+from tf_keras.models import Model
+from tf_keras.regularizers import l2
 
 from energyflow.archs.archbase import NNBase, _get_act_layer
 from energyflow.utils import iter_or_rep

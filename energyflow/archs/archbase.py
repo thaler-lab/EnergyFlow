@@ -50,8 +50,8 @@ import os
 import sys
 import warnings
 
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from tensorflow.keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
+from tf_keras.callbacks import ModelCheckpoint, EarlyStopping
+from tf_keras.layers import Activation, Layer, LeakyReLU, PReLU, ThresholdedReLU
 
 import six
 
