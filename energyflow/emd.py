@@ -835,7 +835,6 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     phi_col_m1 = phi_col - 1
 
     # process events into convenient form for EMD
-    global _X0, _X1
     start = time.time()
     args = (norm, gdim, periodic_phi, phi_col_m1,
             mask, R, hadr2cart, euclidean, error_on_empty)
@@ -918,9 +917,6 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     # unrecognized n_jobs value
     else:
         raise ValueError('n_jobs must be a positive integer or -1')
-
-    # delete global arrays
-    del _X0, _X1
 
     # if doing an array with itself, symmetrize the distance matrix
     if sym:
