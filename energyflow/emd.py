@@ -45,6 +45,7 @@ are used instead of energies.
 # Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
+from functools import partial
 
 import itertools
 import multiprocessing
@@ -891,7 +892,7 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
                 local_map_args = [next(map_args) for i in range(end - begin)]
 
                 # map function and store results
-                results = pool.map(functools.partial(_emd4map(_X0, _X1)), local_map_args, chunksize=chunksize)
+                results = pool.map(partial(_emd4map,_X0, _X1), local_map_args, chunksize=chunksize)
                 for arg,r in zip(local_map_args, results):
                     i, j = arg[0]
                     emds[i, j] = r
