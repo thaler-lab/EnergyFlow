@@ -519,7 +519,7 @@ def _cdist(X, Y, euclidean, periodic_phi, phi_col):
     return out
 
 # helper function for pool imap
-def _emd4map(x):
+def _emd4map(_X0, _X1, x):
     (i, j), params = x
     return _emd(_X0[i], _X1[j], *params)
 
