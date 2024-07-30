@@ -7,11 +7,11 @@ import PyPDF2
 
 # function for creating axes in the MOD plot style
 def axes(ratio_plot=True, figsize=(4,4), gridspec_update=None,
-         xlabel='', ylabel=r'Probability Density', ylabel_ratio='Ratio to\nSim.', units='', 
+         xlabel='', ylabel=r'Probability Density', ylabel_ratio='Ratio to\nSim.', units='',
          xlim=(0,1), ylim=(0,1), ylim_ratio=(0.5,1.5),
          xticks=None, yticks=None, xtick_step=None, ytick_step=None, ytick_ratio_step=None,
          **kwargs):
-    
+
     # gridspec options
     gridspec_kw = {'height_ratios': (3.5, 1) if ratio_plot else (1,), 'hspace': 0.0}
     if isinstance(gridspec_update, dict):
@@ -22,14 +22,14 @@ def axes(ratio_plot=True, figsize=(4,4), gridspec_update=None,
     fig, axes = plt.subplots(nsubplots,  gridspec_kw=gridspec_kw, figsize=figsize)
     if nsubplots == 1:
         axes = [axes]
-        
+
     # axes limits
     for ax in axes:
         ax.set_xlim(*xlim)
     axes[0].set_ylim(*ylim)
     if ratio_plot:
         axes[1].set_ylim(*ylim_ratio)
-        
+
     # axes labels
     if units:
         xlabel = r'{} [{}]'.format(xlabel, units)
@@ -38,7 +38,7 @@ def axes(ratio_plot=True, figsize=(4,4), gridspec_update=None,
     axes[0].set_ylabel(ylabel)
     if ratio_plot:
         axes[1].set_ylabel(ylabel_ratio, fontsize=8)
-        
+
     # tick settings
     for ax in axes:
         ax.minorticks_on()
@@ -46,7 +46,7 @@ def axes(ratio_plot=True, figsize=(4,4), gridspec_update=None,
     if ratio_plot:
         axes[0].tick_params(labelbottom=False)
         axes[1].tick_params(axis='y', labelsize=8)
-    
+
     # tick locations and labels
     if xtick_step is not None:
         xticks_locs = [round(xlim[0] + i*xtick_step, 4) for i in range(1+math.floor((xlim[1]-xlim[0])/xtick_step))]
@@ -67,7 +67,7 @@ def axes(ratio_plot=True, figsize=(4,4), gridspec_update=None,
                   for i in range(1+round((ylim_ratio[1]-ylim_ratio[0])/ytick_ratio_step))][1:-1]
         axes[1].set_yticks(yticks)
         axes[1].set_yticklabels(list(map(str, yticks)))
-    
+
     return fig, axes
 
 # general function to handle the style
@@ -115,19 +115,19 @@ def legend(ax=None, order=None, **kwargs):
             raise ValueError('length of \'order\' must match number of labels')
         handles = np.asarray(handles)[order]
         labels = np.asarray(labels)[order]
-        
+
     # add legend
     ax.legend(handles, labels, **legend_opts)
 
 # function for getting histograms from observable values
 def calc_hist(vals, bins=10, weights=None, density=True):
-    
+
     if weights is None:
         weights = np.ones(vals.shape)
-    
+
     # compute histogram
     hist, bins = np.histogram(vals, bins=bins, weights=weights)
-    
+
     # compute which bins the values are in
     digits = np.digitize(vals, bins)
 
@@ -141,7 +141,7 @@ def calc_hist(vals, bins=10, weights=None, density=True):
         density_int = weights.sum() * (bins[1] - bins[0])
         hist /= density_int
         errs /= density_int
-        
+
     return hist, errs, bins
 
 # function to add a stamp to figures
@@ -150,11 +150,11 @@ def stamp(left_x, top_y,
           delta_y=0.075,
           textops_update=None,
           **kwargs):
-    
+
      # handle defualt axis
     if ax is None:
         ax = plt.gca()
-    
+
     # text options
     textops = {'horizontalalignment': 'left',
                'verticalalignment': 'center',
@@ -162,7 +162,7 @@ def stamp(left_x, top_y,
                'transform': ax.transAxes}
     if isinstance(textops_update, dict):
         textops.update(textops_update)
-    
+
     # add text line by line
     for i in range(len(kwargs)):
         y = top_y - i*delta_y
@@ -170,36 +170,36 @@ def stamp(left_x, top_y,
         if t is not None:
             ax.text(left_x, y, t, **textops)
 
-# function for saving plots and optionally adding watermark     
+# function for saving plots and optionally adding watermark
 def save(fig, name, add_watermark=True, **kwargs):
     name = name.replace(' ', '').replace('$', '')
     fig.savefig(name + '.pdf', bbox_inches='tight')
     if add_watermark:
         watermark(name, **kwargs)
-        
+
 def watermark(plot_file, scale=0.12, tx=44, ty=251, plots_dir='.', **kwargs):
 
     # ensure plots_dir exists
     os.makedirs(plots_dir, exist_ok=True)
-    
+
     # open files for bare plot and the logo
     bare_plot = open(os.path.join(plots_dir, plot_file + '.pdf'), 'rb')
     logo = open(os.path.join(plots_dir, 'MODLogo.pdf'), 'rb')
-    
+
     # extract pdf pages for bare plot and the logo
     plot_page = PyPDF2.PdfFileReader(bare_plot).getPage(0)
     logo_page = PyPDF2.PdfFileReader(logo).getPage(0)
-    
+
     # add the watermark
     plot_page.mergeScaledTranslatedPage(logo_page, scale, tx, ty, expand=True)
-    
+
     # create a pdf writer for the new plot
     out_plot_pdf = PyPDF2.PdfFileWriter()
     out_plot_pdf.addPage(plot_page)
-    
+
     # write new plot to PDF
     out_plot = open(os.path.join(plots_dir, plot_file + '_logo.pdf'), 'wb')
     out_plot_pdf.write(out_plot)
-    
+
     # close all files
     bare_plot.close(); logo.close(); out_plot.close()

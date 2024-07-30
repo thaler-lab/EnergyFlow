@@ -14,7 +14,7 @@ def epsilon_diff(X, Y, epsilon=10**-14):
 
 def epsilon_percent(X, Y, epsilon=10**-14):
     return np.all(2*np.abs(X - Y)/(np.abs(X) + np.abs(Y)) < epsilon)
-	
+
 # test event utils
 
 @pytest.mark.utils
@@ -66,10 +66,10 @@ def test_gen_random_events_mcom(nevents, nparticles, dim):
 def test_shapes_from_p4s(method, nevents, nparticles):
 	events = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
 	event, particle = events[0], events[0,0]
-	
+
 	func = getattr(ef, method)
 	results = func(events)
-		
+
 	assert epsilon_diff(results[0],  func(event))
 	assert epsilon_diff(results[0,0], func(particle))
 
@@ -83,7 +83,7 @@ def test_shapes_from_ptyphis(method, nevents, nparticles):
     ptyphims = ef.ptyphims_from_p4s(p4s)
 
     func = getattr(ef, method)
-    
+
     if 'ms' in method:
         for end in [3,4]:
             results = func(ptyphims[...,:end])
@@ -91,8 +91,8 @@ def test_shapes_from_ptyphis(method, nevents, nparticles):
             assert epsilon_diff(results[0], func(ptyphims[0,...,:end]))
 
     elif 'pids' in method:
-        ptyphims[...,3] = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
-                           np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+        ptyphims[...,3] = (np.random.choice([-1., 1.], size=(nevents, nparticles)) *
+                           np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()),
                                             size=(nevents, nparticles)))
         results = func(ptyphims)
 
@@ -257,7 +257,7 @@ def test_ys_from_pts_etas_ms(nevents, nparticles):
 
         assert epsilon_diff(ys_c1, ys_c2, 1e-12)
 
-@pytest.mark.utils 
+@pytest.mark.utils
 @pytest.mark.parametrize('nparticles', [1, 500])
 @pytest.mark.parametrize('nevents', [1, 100])
 def test_coordinate_transforms(nevents, nparticles):
@@ -267,7 +267,7 @@ def test_coordinate_transforms(nevents, nparticles):
 
     assert epsilon_diff(p4s, new_p4s, 1e-11)
 
-@pytest.mark.utils 
+@pytest.mark.utils
 @pytest.mark.parametrize('nparticles', [1, 500])
 @pytest.mark.parametrize('nevents', [1, 100])
 @pytest.mark.parametrize('phi_ref', np.linspace(0, 2*np.pi, 5))
@@ -333,14 +333,14 @@ def test_sum_ptyphims(nparticles, scheme):
 
             assert epsilon_diff(tot, np.array([pt,y,phi]), 10**-12)
 
-@pytest.mark.utils 
+@pytest.mark.utils
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_pids2ms(nevents, nparticles):
-    pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
-            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+    pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) *
+            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()),
                              size=(nevents, nparticles)))
-    
+
     # test shapes
     results = ef.pids2ms(pids)
     assert epsilon_diff(results[0],   ef.pids2ms(pids[0]))
@@ -355,14 +355,14 @@ def test_pids2ms(nevents, nparticles):
     # pion
     assert ef.pids2ms(211) == .139570
 
-@pytest.mark.utils 
+@pytest.mark.utils
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_pids2chrgs(nevents, nparticles):
-    pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) * 
-            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()), 
+    pids = (np.random.choice([-1., 1.], size=(nevents, nparticles)) *
+            np.random.choice(list(ef.utils.particle_utils.PARTICLE_MASSES.keys()),
                              size=(nevents, nparticles)))
-    
+
     # test shapes
     results = ef.pids2chrgs(pids)
     assert epsilon_diff(results[0],   ef.pids2chrgs(pids[0]))

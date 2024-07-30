@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/examples/">
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Examples";
     var mkdocs_page_input_path = "examples.md";
     var mkdocs_page_url = "/examples/";
   </script>
-  
+
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -124,36 +124,36 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Getting Started &raquo;</li>
-        
-      
-    
+
+
+
     <li>Examples</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="examples">Examples</h1>
 <p>There are 7 examples provided for the EnergyFlow package. They currently focus on demonstrating the various architectures included as part of EnergyFlow (see <a href="../docs/archs">Architectures</a>). For examples involving the computation of EFPs or EMDs, see the <a href="../demos">Demos</a>.</p>
 <p>To install the examples to the default directory, <code>~/.energyflow/examples/</code>, simply run </p>
@@ -235,8 +235,8 @@ for x in X:
 
 print('Finished preprocessing')
 
-# do train/val/test split 
-(z_train, z_val, z_test, 
+# do train/val/test split
+(z_train, z_val, z_test,
  p_train, p_val, p_test,
  Y_train, Y_val, Y_test) = data_split(X[:,:,0], X[:,:,1:], Y, val=val, test=test)
 
@@ -265,7 +265,7 @@ print()
 print('EFN AUC:', auc)
 print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
@@ -331,7 +331,7 @@ of the predicted and actual mass distributions.</p>
 # |  __| |  __| | . ` |
 # | |____| |    | |\  |
 # |______|_|    |_| \_|
-#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _ 
+#  _____  ______ _____ _____  ______  _____ _____ _____ ____  _   _
 # |  __ \|  ____/ ____|  __ \|  ____|/ ____/ ____|_   _/ __ \| \ | |
 # | |__) | |__ | |  __| |__) | |__  | (___| (___   | || |  | |  \| |
 # |  _  /|  __|| | |_ |  _  /|  __|  \___ \\___ \  | || |  | | . ` |
@@ -403,15 +403,15 @@ obs /= obs_std
 
 print('Finished computing observables')
 
-# do train/val/test split 
-(z_train, z_val, z_test, 
+# do train/val/test split
+(z_train, z_val, z_test,
  p_train, p_val, p_test,
  y_train, y_val, y_test) = ef.utils.data_split(X[:,:,0], X[:,:,1:], obs, val=val, test=test)
 
 print('Done train/val/test split')
 
 # build architecture
-efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes, 
+efn = EFN(input_dim=2, Phi_sizes=Phi_sizes, F_sizes=F_sizes,
           output_act=output_act, output_dim=output_dim, loss=loss, metrics=[])
 
 # train model
@@ -426,7 +426,7 @@ preds = efn.predict([z_test, p_test], batch_size=1000)[:,0]*obs_std + obs_mean
 
 ######################### Observable Distributions Plot #########################
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 plt.rcParams['figure.figsize'] = (4, 4)
@@ -466,7 +466,7 @@ grads = np.linspace(0.45, 0.55, 4)
 X, Y, Z = efn.eval_filters(R, n=n)
 
 # for sorting filters according to position
-def get_filter_size_and_position(filt, zfrac=0.5):   
+def get_filter_size_and_position(filt, zfrac=0.5):
     filt /= np.max(filt)
     maxind = np.argmax(filt)
     j, k = maxind//n, maxind%n
@@ -501,7 +501,7 @@ plt.show()
 class is used to construct the network architecture. The output of the example
 is a plot of the ROC curves obtained by the PFN as well as the jet mass and
 constituent multiplicity observables.</p>
-<pre><code class="language-python">#  _____  ______ _   _ 
+<pre><code class="language-python">#  _____  ______ _   _
 # |  __ \|  ____| \ | |
 # | |__) | |__  |  \| |
 # |  ___/|  __| | . ` |
@@ -574,7 +574,7 @@ else:
 
 print('Finished preprocessing')
 
-# do train/val/test split 
+# do train/val/test split
 (X_train, X_val, X_test,
  Y_train, Y_val, Y_test) = data_split(X, Y, val=val, test=test)
 
@@ -609,7 +609,7 @@ mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
 mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
 mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
@@ -641,7 +641,7 @@ function and can be either one-channel (grayscale), meaning that only <span><spa
 information is used, or two-channel (color), meaning that <span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> information and
 local charged particle counts are used. The images are preprocessed by
 subtracting the average image in the training set and dividing by the per-pixel
-standard deviations, using the <a href="../docs/utils/#zero_center"><code>zero_center</code></a> and 
+standard deviations, using the <a href="../docs/utils/#zero_center"><code>zero_center</code></a> and
 <a href="../docs/utils/#standardize"><code>standardize</code></a> functions, respectively. The output
 of the example is a plot of the ROC curves of the CNN as well as the jet mass
 and constituent multiplicity observables.</p>
@@ -715,12 +715,12 @@ Y = to_categorical(y, num_classes=2)
 print('Loaded quark and gluon jets')
 
 # make jet images
-images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan, 
+images = np.asarray([pixelate(x, npix=npix, img_width=img_width, nb_chan=nb_chan,
                                  charged_counts_only=True, norm=norm) for x in X])
 
 print('Done making jet images')
 
-# do train/val/test split 
+# do train/val/test split
 (X_train, X_val, X_test,
  Y_train, Y_val, Y_test) = data_split(images, Y, val=val_frac, test=test_frac)
 
@@ -765,7 +765,7 @@ mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
 mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
 mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
@@ -862,7 +862,7 @@ for i,num_nsub in enumerate(num_nsubs):
     # build architecture
     dnn = DNN(input_dim=num_nsub, dense_sizes=dense_sizes, summary=(i==0))
 
-    # do train/val/test split 
+    # do train/val/test split
     (X_train, X_val, X_test,
      Y_train, Y_val, Y_test) = data_split(X[:,:num_nsub], Y, val=val_frac, test=test_frac)
 
@@ -888,14 +888,14 @@ for i,num_nsub in enumerate(num_nsubs):
         print('{} nsubs DNN AUC:'.format(num_nsub), auc)
         print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
 # iterate over the ROC curves and plot them
 for i in range(len(rocs)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i],
                                             label='DNN: {} N-subs'.format(num_nsubs[i]))
 
 # axes labels
@@ -988,7 +988,7 @@ for d in range(1, dmax+1):
     # select EFPs with degree &lt;= d
     X_d = X[:,efpset.sel(('d&lt;=', d))]
 
-    # do train/val/test split 
+    # do train/val/test split
     (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
     print('Done train/val/test split')
 
@@ -1008,14 +1008,14 @@ for d in range(1, dmax+1):
         print('EFPs d &lt;= {} AUC:'.format(d), auc)
         print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
 # iterate over the ROC curves and plot them
 for i,d in enumerate(range(1, dmax+1)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i],
                                             label='LDA: d &lt;= {} EFPs'.format(d))
 
 # axes labels
@@ -1036,7 +1036,7 @@ plt.show()
 that <code>ffmpeg</code> must be installed in order for matplotlib to be able to render
 the animation. Strange errors may result if there are issues with required
 software components.</p>
-<pre><code class="language-python">#           _   _ _____ __  __       _______ _____ ____  _   _ 
+<pre><code class="language-python">#           _   _ _____ __  __       _______ _____ ____  _   _
 #     /\   | \ | |_   _|  \/  |   /\|__   __|_   _/ __ \| \ | |
 #    /  \  |  \| | | | | \  / |  /  \  | |    | || |  | |  \| |
 #   / /\ \ | . ` | | | | |\/| | / /\ \ | |    | || |  | | . ` |
@@ -1075,14 +1075,14 @@ import energyflow as ef
 from matplotlib import animation, rc
 
 # helper function to interpolate between the optimal transport of two events
-def merge(ev0, ev1, R=1, lamb=0.5):    
+def merge(ev0, ev1, R=1, lamb=0.5):
     emd, G = ef.emd.emd(ev0, ev1, R=R, return_flow=True)
 
     merged = []
     for i in range(len(ev0)):
         for j in range(len(ev1)):
             if G[i, j] &gt; 0:
-                merged.append([G[i,j], lamb*ev0[i,1] + (1-lamb)*ev1[j,1], 
+                merged.append([G[i,j], lamb*ev0[i,1] + (1-lamb)*ev1[j,1],
                                        lamb*ev0[i,2] + (1-lamb)*ev1[j,2]])
 
     # detect which event has more pT
@@ -1093,7 +1093,7 @@ def merge(ev0, ev1, R=1, lamb=0.5):
     else:
         for j in range(len(ev1)):
             if G[-1,j] &gt; 0:
-                merged.append([G[-1,j]*(1-lamb), ev1[j,1], ev1[j,2]])            
+                merged.append([G[-1,j]*(1-lamb), ev1[j,1], ev1[j,2]])
 
     return np.asarray(merged)
 
@@ -1191,33 +1191,33 @@ anim.save('energyflowanimation.mp4', fps=fps, dpi=200)
 # HTML(anim.to_html5_video())
 
 </code></pre>
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+
         <a href="../faqs/" class="btn btn-neutral float-right" title="FAQs">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
+
+
         <a href="../demos/" class="btn btn-neutral" title="Demos"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -1227,15 +1227,15 @@ anim.save('energyflowanimation.mp4', fps=fps, dpi=200)
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href="../demos/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
         <span style="margin-left: 15px"><a href="../faqs/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
+
     </span>
 </div>
     <script>var base_url = '..';</script>

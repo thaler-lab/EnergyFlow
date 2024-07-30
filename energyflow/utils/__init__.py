@@ -28,6 +28,6 @@ from .graph_utils import *
 from .image_utils import *
 from .particle_utils import *
 
-__all__ = (event_utils.__all__ + 
+__all__ = (event_utils.__all__ +
            fastjet_utils.__all__ +
            particle_utils.__all__)

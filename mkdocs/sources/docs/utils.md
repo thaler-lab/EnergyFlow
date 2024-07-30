@@ -4,36 +4,36 @@
 
 Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, `[e,px,py,pz]` (energy, momentum in `x` direction,
-momentum in `y` direction, momentum in `z` direction), or hadronic coordinates, 
+momentum in `y` direction, momentum in `z` direction), or hadronic coordinates,
 `[pt,y,phi,m]` (transverse momentum, rapidity, azimuthal angle, mass), which
 are related via:
 
-\[p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+\[p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad
 \phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}\]
 
 and inversely:
 
-\[E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+\[E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad
 p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.\]
 
 The pseudorapidity `eta` can be obtained from a Cartesian four-momentum as:
 
-\[\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+\[\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad
 |\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},\]
 
 and is related to the rapidity via
 
-\[\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+\[\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad
 y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).\]
 
 Note that the above formulas are numerically stable up to values of rapidity or
-pseudorapidity of a few hundred, above which the formulas have numerical issues. 
+pseudorapidity of a few hundred, above which the formulas have numerical issues.
 In this case, a different but equivalent formulae are used that are numerically
 stable in this region. In all cases, the $p_T\to0$ limit produces infinite
 values.
 
 In the context of this package, an "event" is a two-dimensional numpy array
-with shape `(M,4)` where `M` is the multiplicity. An array of events is a 
+with shape `(M,4)` where `M` is the multiplicity. An array of events is a
 three-dimensional array with shape `(N,M,4)` where `N` is the number of events.
 The valid inputs and outputs of the functions here will be described using
 this terminology.
@@ -421,7 +421,7 @@ Add a collection of four-vectors that are expressed as
 energyflow.center_ptyphims(ptyphims, axis=None, center='escheme', copy=True)
 ```
 
-Center a collection of four-vectors according to a calculated or 
+Center a collection of four-vectors according to a calculated or
 provided axis.
 
 **Arguments**
@@ -455,7 +455,7 @@ energyflow.rotate_ptyphims(ptyphims, rotate='ptscheme', center=None, copy=True)
 Rotate a collection of four-vectors to vertically align the principal
 component of the energy flow. The principal component is obtained as the
 eigenvector of the energy flow with the largest eigenvalue. It is only
-defined up to a sign, however it is ensured that there is more total pT in 
+defined up to a sign, however it is ensured that there is more total pT in
 the top half of the rapidity-azimuth plane.
 
 **Arguments**
@@ -465,7 +465,7 @@ the top half of the rapidity-azimuth plane.
     out will be taken to be zero.
 - **rotate** : _str_
     - The rotation scheme to be used. Currently, only `'ptscheme'` is
-    supported, which causes the rotation to take place in the 
+    supported, which causes the rotation to take place in the
     rapidity-azimuth plane.
 - **center** : _str_ or `None`
     - If not `None`, the event will be centered prior to rotation and this
@@ -627,13 +627,13 @@ convention.
 **Arguments**
 
 - **dim** : _int_
-    - The number of spacetime dimensions (thought to be four in our 
+    - The number of spacetime dimensions (thought to be four in our
     universe).
 
 **Returns**
 
 - _1-d numpy.ndarray_
-    - A `dim`-length, one-dimensional (not matrix) array equal to 
+    - A `dim`-length, one-dimensional (not matrix) array equal to
     `[+1,-1,...,-1]`.
 
 
@@ -656,7 +656,7 @@ energyflow.gen_random_events(nevents, nparticles, dim=4, mass=0.0)
 
 Generate random events with a given number of particles in a given
 spacetime dimension. The spatial components of the momenta are
-distributed uniformly in $[-1,+1]$. These events are not guaranteed to 
+distributed uniformly in $[-1,+1]$. These events are not guaranteed to
 uniformly sample phase space.
 
 **Arguments**
@@ -674,7 +674,7 @@ uniformly sample phase space.
 **Returns**
 
 - _numpy.ndarray_
-    - An `(nevents,nparticles,dim)` array of events. The particles 
+    - An `(nevents,nparticles,dim)` array of events. The particles
     are specified as `[E,p1,p2,...]`. If `nevents` is 1 then that axis is
     dropped.
 
@@ -703,7 +703,7 @@ to zero. These events are not guaranteed to uniformly sample phase space.
 **Returns**
 
 - _numpy.ndarray_
-    - An `(nevents,nparticles,dim)` array of events. The particles 
+    - An `(nevents,nparticles,dim)` array of events. The particles
     are specified as `[E,p1,p2,...]`.
 
 
@@ -731,7 +731,7 @@ of mass energy.
 **Returns**
 
 - _numpy.ndarray_
-    - An `(nevents,nparticles,4)` array of events. The particles 
+    - An `(nevents,nparticles,4)` array of events. The particles
     are specified as `[E,p_x,p_y,p_z]`. If `nevents` is 1 then that axis is
     dropped.
 
@@ -741,7 +741,7 @@ of mass energy.
 ## Data Tools
 
 Functions for dealing with datasets. These are not importable from
-the top level `energyflow` module, but must instead be imported 
+the top level `energyflow` module, but must instead be imported
 from `energyflow.utils`.
 
 ----
@@ -761,7 +761,7 @@ update EnergyFlow to the latest version.
     - The destination for the downloaded files. Note that `examples`
     is automatically appended to the end of this path.
 - **which** : {_list_, `'all'`}
-    - List of examples to download, or the string `'all'` in which 
+    - List of examples to download, or the string `'all'` in which
     case all the available examples are downloaded.
 - **overwrite** : _bool_
     - Whether to overwrite existing files or not.
@@ -775,7 +775,7 @@ update EnergyFlow to the latest version.
 energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 ```
 
-A function to split a dataset into train, test, and optionally 
+A function to split a dataset into train, test, and optionally
 validation datasets.
 
 **Arguments**
@@ -805,9 +805,9 @@ validation datasets.
 **Returns**
 
 - _list_
-    - A list of the split datasets in train, [val], test order. If 
+    - A list of the split datasets in train, [val], test order. If
     datasets `X`, `Y`, and `Z` were given as `args` (and assuming a
-    non-zero `val`), then [`X_train`, `X_val`, `X_test`, `Y_train`, 
+    non-zero `val`), then [`X_train`, `X_val`, `X_test`, `Y_train`,
     `Y_val`, `Y_test`, `Z_train`, `Z_val`, `Z_test`] will be returned.
 
 
@@ -826,7 +826,7 @@ One-hot encodes class labels.
 - **labels** : _1-d numpy.ndarray_
     - Labels in the range `[0,num_classes)`.
 - **num_classes** : {_int_, `None`}
-    - The total number of classes. If `None`, taken to be the 
+    - The total number of classes. If `None`, taken to be the
     maximum label plus one.
 
 **Returns**
@@ -861,8 +861,8 @@ Remaps PDG id numbers to small floats for use in a neural network.
 
 ## Image Tools
 
-Functions for dealing with image representations of events. These are 
-not importable from the top level `energyflow` module, but must 
+Functions for dealing with image representations of events. These are
+not importable from the top level `energyflow` module, but must
 instead be imported from `energyflow.utils`.
 
 ----
@@ -878,8 +878,8 @@ A function for creating a jet image from an array of particles.
 **Arguments**
 
 - **jet** : _numpy.ndarray_
-    - An array of particles where each particle is of the form 
-    `[pt,y,phi,pid]` where the particle id column is only 
+    - An array of particles where each particle is of the form
+    `[pt,y,phi,pid]` where the particle id column is only
     used if `nb_chan=2` and `charged_counts_only=True`.
 - **npix** : _int_
     - The number of pixels on one edge of the jet image, which is
@@ -889,12 +889,12 @@ A function for creating a jet image from an array of particles.
     plane.
 - **nb_chan** : {`1`, `2`}
     - The number of channels in the jet image. If `1`, then only a
-    $p_T$ channel is constructed (grayscale). If `2`, then both a 
+    $p_T$ channel is constructed (grayscale). If `2`, then both a
     $p_T$ channel and a count channel are formed (color).
 - **norm** : _bool_
     - Whether to normalize the $p_T$ pixels to sum to `1`.
 - **charged_counts_only** : _bool_
-    - If making a count channel, whether to only include charged 
+    - If making a count channel, whether to only include charged
     particles. Requires that `pid` information be given.
 
 **Returns**
@@ -912,8 +912,8 @@ A function for creating a jet image from an array of particles.
 energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
 ```
 
-Normalizes each argument by the standard deviation of the pixels in 
-args[0]. The expected use case would be `standardize(X_train, X_val, 
+Normalizes each argument by the standard deviation of the pixels in
+args[0]. The expected use case would be `standardize(X_train, X_val,
 X_test)`.
 
 **Arguments**
@@ -932,7 +932,7 @@ X_test)`.
 
 **Returns**
 
-- _list_ 
+- _list_
     - A list of the now-standardized arguments.
 
 
@@ -944,7 +944,7 @@ X_test)`.
 energyflow.utils.zero_center(args, kwargs)
 ```
 
-Subtracts the mean of arg[0] from the arguments. The expected 
+Subtracts the mean of arg[0] from the arguments. The expected
 use case would be `standardize(X_train, X_val, X_test)`.
 
 **Arguments**
@@ -960,7 +960,7 @@ use case would be `standardize(X_train, X_val, X_test)`.
 
 **Returns**
 
-- _list_ 
+- _list_
     - A list of the zero-centered arguments.
 
 
@@ -1106,4 +1106,3 @@ JHEP05(2014)146).
 
 
 ----
-

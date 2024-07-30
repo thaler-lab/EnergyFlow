@@ -162,10 +162,10 @@ if fj:
         parent1, parent2 = fj.PseudoJet(), fj.PseudoJet()
         if not jet.has_parents(parent1, parent2):
             return jet
-        
+
         pt1, pt2 = parent1.pt(), parent2.pt()
         z = min(pt1, pt2)/(pt1 + pt2)
- 
+
         if z >= (zcut if beta == 0 else zcut * (parent1.delta_R(parent2)/R)**beta):
             return jet
         else:

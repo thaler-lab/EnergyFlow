@@ -15,36 +15,36 @@ GNU General Public License for more details.
 A copy of the GNU General Public License is provided below.
 
 This program contains code from the NumPy and Keras codebases. The
-required copyright notices are provided below, along with detailing 
+required copyright notices are provided below, along with detailing
 which parts of EnergyFlow make direct use of code from these libraries.
 
 --------------------------------------------------------------------------
 
-energyflow/algorithms/einsumfunc.py is a custom replacement for NumPy's 
-einsumfunc.py. The core file was taken from the master branch of 
-the NumPy repo on GitHub on 07/31/2018. The commit number is 
-1cedbfbcd84f7131e347ca39a8908ce05eaf3fe9. The required copyright notice 
+energyflow/algorithms/einsumfunc.py is a custom replacement for NumPy's
+einsumfunc.py. The core file was taken from the master branch of
+the NumPy repo on GitHub on 07/31/2018. The commit number is
+1cedbfbcd84f7131e347ca39a8908ce05eaf3fe9. The required copyright notice
 is provided below.
 
 Copyright (c) 2005-2017, NumPy Developers.
 All rights reserved.
- 
+
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
- 
+
     * Redistributions of source code must retain the above copyright
        notice, this list of conditions and the following disclaimer.
- 
+
     * Redistributions in binary form must reproduce the above
        copyright notice, this list of conditions and the following
        disclaimer in the documentation and/or other materials provided
        with the distribution.
- 
+
     * Neither the name of the NumPy Developers nor the names of any
        contributors may be used to endorse or promote products derived
        from this software without specific prior written permission.
- 
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -61,9 +61,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 energyflow/utils/data_utils.py contains functions copied from the Keras
 GitHub repository, specifically _hash_file, _validate_file, and a custom
-urlretrieve function designed for python 2 compatibility. The get_file 
-function is also closely based on the corresponding one from Keras. 
-These functions were copied from the Keras GitHub repository on 
+urlretrieve function designed for python 2 compatibility. The get_file
+function is also closely based on the corresponding one from Keras.
+These functions were copied from the Keras GitHub repository on
 08/01/2018 from commit e77a4cf3f85b45ad4275dfd661073ace1cc06e5a. The
 requried copyright notice is provided below.
 

@@ -5,7 +5,7 @@ is a plot of the ROC curves obtained by the PFN as well as the jet mass and
 constituent multiplicity observables.
 """
 
-#  _____  ______ _   _ 
+#  _____  ______ _   _
 # |  __ \|  ____| \ | |
 # | |__) | |__  |  \| |
 # |  ___/|  __| | . ` |
@@ -78,7 +78,7 @@ else:
 
 print('Finished preprocessing')
 
-# do train/val/test split 
+# do train/val/test split
 (X_train, X_val, X_test,
  Y_train, Y_val, Y_test) = data_split(X, Y, val=val, test=test)
 
@@ -113,7 +113,7 @@ mults = np.asarray([np.count_nonzero(x[:,0]) for x in X])
 mass_fp, mass_tp, threshs = roc_curve(Y[:,1], -masses)
 mult_fp, mult_tp, threshs = roc_curve(Y[:,1], -mults)
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True

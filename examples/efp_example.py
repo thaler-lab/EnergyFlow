@@ -76,7 +76,7 @@ for d in range(1, dmax+1):
     # select EFPs with degree <= d
     X_d = X[:,efpset.sel(('d<=', d))]
 
-    # do train/val/test split 
+    # do train/val/test split
     (X_train, X_test, y_train, y_test) = data_split(X_d, y, val=0, test=test_frac)
     print('Done train/val/test split')
 
@@ -96,14 +96,14 @@ for d in range(1, dmax+1):
         print('EFPs d <= {} AUC:'.format(d), auc)
         print()
 
-# some nicer plot settings 
+# some nicer plot settings
 plt.rcParams['figure.figsize'] = (4,4)
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['figure.autolayout'] = True
 
 # iterate over the ROC curves and plot them
 for i,d in enumerate(range(1, dmax+1)):
-    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i], 
+    plt.plot(rocs[i][1], 1-rocs[i][0], '-', color=colors[i],
                                             label='LDA: d <= {} EFPs'.format(d))
 
 # axes labels

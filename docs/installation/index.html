@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/installation/">
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Installation";
     var mkdocs_page_input_path = "installation.md";
     var mkdocs_page_url = "/installation/";
   </script>
-  
+
   <script src="../js/jquery-2.1.1.min.js" defer></script>
   <script src="../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -114,36 +114,36 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Getting Started &raquo;</li>
-        
-      
-    
+
+
+
     <li>Installation</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="installation">Installation</h1>
 <p>The EnergyFlow package is written in pure Python and the core depends only on <code>NumPy</code>, the fundamental package for scientific computing with Python, <code>six</code>, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3, and <code>h5py</code>, which is used to interface with HDF5 files. The extra features require additional packages as specified below:</p>
 <ul>
@@ -156,33 +156,33 @@
 <p>To install from PyPI using <code>pip</code>, make sure you have one of the supported versions of Python installed and that <code>pip</code> is available in the system path. Simply execute <code>pip install energyflow</code> and EnergyFlow will be installed in your default location for Python packages.</p>
 <h2 id="numpy">NumPy</h2>
 <p>As of version <code>0.8.2</code>, EnergyFlow has used a modified version of <code>numpy.einsum</code> to do the heavy lifting for the computation of EFPs. NumPy 1.14.0 changed <code>einsum</code> to use <code>tensordot</code> when possible compared to <code>1.13.3</code>, which only used <code>c_einsum</code>. It was found that the multi-process approach used by <a href="../docs/efp/#batch_compute_1"><code>batch_compute</code></a> is typically much faster when using the inherently single-threaded <code>c_einsum</code> versus <code>tensordot</code>, which can call BLAS. Hence the custom version of <code>einsum</code> shipped with EnergyFlow disables all calls to <code>tensordot</code> and uses only <code>c_einsum</code>.</p>
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+
         <a href="../demos/" class="btn btn-neutral float-right" title="Demos">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
+
+
         <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -192,15 +192,15 @@
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
         <span style="margin-left: 15px"><a href="../demos/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
+
     </span>
 </div>
     <script>var base_url = '..';</script>

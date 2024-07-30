@@ -1,6 +1,6 @@
 r"""## Quark and Gluon Nsubs
 
-A dataset consisting of 45 $N$-subjettiness observables for 100k quark and 
+A dataset consisting of 45 $N$-subjettiness observables for 100k quark and
 gluon jets generated with Pythia 8.230. Following [1704.08249](https:
 //arxiv.org/abs/1704.08249), the observables are in the following order:
 
@@ -10,7 +10,7 @@ gluon jets generated with Pythia 8.230. Following [1704.08249](https:
 \tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.\]
 
 The dataset contains two members: `'X'` which is a numpy array of the nsubs
-that has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon 
+that has shape `(100000,45)` and `'y'` which is a numpy array of quark/gluon
 labels (quark=`1` and gluon=`0`).
 """
 
@@ -34,7 +34,7 @@ __all__ = ['load']
 
 def load(num_data=-1, cache_dir='~/.energyflow'):
     """Loads the dataset. The first time this is called, it will automatically
-    download the dataset. Future calls will attempt to use the cached dataset 
+    download the dataset. Future calls will attempt to use the cached dataset
     prior to redownloading.
 
     **Arguments**
@@ -50,7 +50,7 @@ def load(num_data=-1, cache_dir='~/.energyflow'):
         - The `X` and `y` components of the dataset as specified above.
     """
 
-    fpath = _get_filepath('QG_nsubs.npz', 
+    fpath = _get_filepath('QG_nsubs.npz',
                       url='https://zenodo.org/records/10850472/files/QG_nsubs.npz?download=1',
                       file_hash='a99f771147af9b207356c990430cfeba6b6aa96fe5cff8263450ff3a31ab0997',
                       cache_dir=cache_dir)
@@ -62,4 +62,3 @@ def load(num_data=-1, cache_dir='~/.energyflow'):
         X, y = X[:num_data], y[:num_data]
 
     return X, y
-    

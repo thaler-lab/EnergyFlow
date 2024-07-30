@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/docs/efp/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Energy Flow Polynomials";
     var mkdocs_page_input_path = "docs/efp.md";
     var mkdocs_page_url = "/docs/efp/";
   </script>
-  
+
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -200,36 +200,36 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="../..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Documentation &raquo;</li>
-        
-      
-    
+
+
+
     <li>Energy Flow Polynomials</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="energy-flow-polynomials">Energy Flow Polynomials</h1>
 <p>Energy Flow Polynomials (EFPs) are a set of observables, indexed by
 non-isomorphic multigraphs, which linearly span the space of infrared and
@@ -283,7 +283,7 @@ use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex"
 </ul>
 </li>
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
+<li>Controls which coordinates are assumed for the input. See
 <a href="../measures">Measures</a> for additional info.</li>
 </ul>
 </li>
@@ -310,12 +310,12 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place
 of the energies of an event.</li>
 </ul>
 </li>
 <li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place
 of the pairwise angles of an event.</li>
 </ul>
 </li>
@@ -450,7 +450,7 @@ this EFP within an <code>EFPSet</code>.</p>
 <p>A class that holds a collection of EFPs and computes their values on
 events. Note that all keyword arguments are stored as properties of the
 <code>EFPSet</code> instance.</p>
-<pre><code class="language-python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None, 
+<pre><code class="language-python">energyflow.EFPSet(*args, filename=None, measure='hadr', beta=1, kappa=1, normed=None,
                          coords=None, check_input=True, verbose=0)
 </code></pre>
 <p><code>EFPSet</code> can be initialized in one of three ways (in order of
@@ -506,7 +506,7 @@ use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex"
 </ul>
 </li>
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
+<li>Controls which coordinates are assumed for the input. See
 <a href="../measures">Measures</a> for additional info.</li>
 </ul>
 </li>
@@ -534,12 +534,12 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place 
+<li>If present, <code>thetas</code> must also be present, and <code>zs</code> is used in place
 of the energies of an event.</li>
 </ul>
 </li>
 <li><strong>thetas</strong> : 2-d array_like<ul>
-<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place 
+<li>If present, <code>zs</code> must also be present, and <code>thetas</code> is used in place
 of the pairwise angles of an event.</li>
 </ul>
 </li>
@@ -584,7 +584,7 @@ attempt to use as many processes as there are CPUs on the machine.</li>
 <h3 id="calc_disc">calc_disc</h3>
 <pre><code class="language-python">calc_disc(X)
 </code></pre>
-<p>Computes disconnected EFPs according to the internal 
+<p>Computes disconnected EFPs according to the internal
 specifications using the connected EFPs provided as input. Note that
 this function has no effect if the <code>EFPSet</code> was initialized with
 specific graphs.</p>
@@ -664,7 +664,7 @@ of the arguments using <code>sel</code>.</p>
 <p><strong>Arguments</strong> </p>
 <ul>
 <li><strong>*args</strong> : arbitrary positional arguments<ul>
-<li>Valid arguments to be passed to <code>sel</code>, or, if a single integer, 
+<li>Valid arguments to be passed to <code>sel</code>, or, if a single integer,
 the index of a particular graph.</li>
 </ul>
 </li>
@@ -688,7 +688,7 @@ specifications.</li>
 <p><strong>Arguments</strong> </p>
 <ul>
 <li><strong>*args</strong> : arbitrary positional arguments<ul>
-<li>Valid arguments to be passed to <code>sel</code>, or, if a single integer, 
+<li>Valid arguments to be passed to <code>sel</code>, or, if a single integer,
 the index of particular simple graph.</li>
 </ul>
 </li>
@@ -717,7 +717,7 @@ specifications.</li>
 <h4 id="specs">specs</h4>
 <pre><code class="language-python">specs
 </code></pre>
-<p>An array of EFP specifications. Each row represents an EFP 
+<p>An array of EFP specifications. Each row represents an EFP
 and the columns represent the quantities indicated by <code>cols</code>.</p>
 <h4 id="cspecs">cspecs</h4>
 <pre><code class="language-python">cspecs
@@ -726,7 +726,7 @@ and the columns represent the quantities indicated by <code>cols</code>.</p>
 <h4 id="weight_set_1">weight_set</h4>
 <pre><code class="language-python">weight_set
 </code></pre>
-<p>The union of all weights needed by the EFPs stored by the 
+<p>The union of all weights needed by the EFPs stored by the
 <code>EFPSet</code>.</p>
 <h4 id="cols">cols</h4>
 <pre><code class="language-python">cols
@@ -744,33 +744,33 @@ each column.</p>
 <li><code>h</code> : Number of valency 1 vertices (a.k.a. 'hanging chads').</li>
 </ul>
 <hr />
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+
         <a href="../measures/" class="btn btn-neutral float-right" title="Measures">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
+
+
         <a href="../efm/" class="btn btn-neutral" title="Energy Flow Moments"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -780,15 +780,15 @@ each column.</p>
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href="../efm/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
         <span style="margin-left: 15px"><a href="../measures/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
+
     </span>
 </div>
     <script>var base_url = '../..';</script>

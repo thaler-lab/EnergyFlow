@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/docs/utils/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Utils";
     var mkdocs_page_input_path = "docs/utils.md";
     var mkdocs_page_url = "/docs/utils/";
   </script>
-  
+
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -204,77 +204,77 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="../..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Documentation &raquo;</li>
-        
-      
-    
+
+
+
     <li>Utils</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="utilities">Utilities</h1>
 <h2 id="particle-tools">Particle Tools</h2>
 <p>Tools for dealing with particle momenta four-vectors. A four-vector can either
 be in Cartesian coordinates, <code>[e,px,py,pz]</code> (energy, momentum in <code>x</code> direction,
-momentum in <code>y</code> direction, momentum in <code>z</code> direction), or hadronic coordinates, 
+momentum in <code>y</code> direction, momentum in <code>z</code> direction), or hadronic coordinates,
 <code>[pt,y,phi,m]</code> (transverse momentum, rapidity, azimuthal angle, mass), which
 are related via:</p>
 <div>
-<div class="MathJax_Preview">p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+<div class="MathJax_Preview">p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad
 \phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}</div>
-<script type="math/tex; mode=display">p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad 
+<script type="math/tex; mode=display">p_T=\sqrt{p_x^2+p_y^2},\quad y=\text{arctanh}\,\frac{p_z}{E},\quad
 \phi=\arctan_2\frac{p_y}{p_x},\quad m=\sqrt{E^2-p_x^2-p_y^2-p_z^2}</script>
 </div>
 <p>and inversely:</p>
 <div>
-<div class="MathJax_Preview">E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+<div class="MathJax_Preview">E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad
 p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.</div>
-<script type="math/tex; mode=display">E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad 
+<script type="math/tex; mode=display">E=\cosh y\sqrt{p_T^2+m^2},\quad p_x=p_T\cos\phi,\quad
 p_y=p_T\sin\phi,\quad p_z=\sinh y\sqrt{p_T^2+m^2}.</script>
 </div>
 <p>The pseudorapidity <code>eta</code> can be obtained from a Cartesian four-momentum as:</p>
 <div>
-<div class="MathJax_Preview">\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+<div class="MathJax_Preview">\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad
 |\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},</div>
-<script type="math/tex; mode=display">\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad 
+<script type="math/tex; mode=display">\eta=\text{arctanh}\,\frac{p_z}{|\vec p|},\quad
 |\vec p|\equiv\sqrt{p_x^2+p_y^2+p_z^2},</script>
 </div>
 <p>and is related to the rapidity via</p>
 <div>
-<div class="MathJax_Preview">\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+<div class="MathJax_Preview">\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad
 y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).</div>
-<script type="math/tex; mode=display">\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad 
+<script type="math/tex; mode=display">\eta=\text{arcsinh}\left(\sinh y\,\left(1+m^2/p_T^2\right)^{1/2}\right),\quad
 y=\text{arcsinh}\left(\sinh \eta\,\left(1+m^2/p_T^2\right)^{-1/2}\right).</script>
 </div>
 <p>Note that the above formulas are numerically stable up to values of rapidity or
-pseudorapidity of a few hundred, above which the formulas have numerical issues. 
+pseudorapidity of a few hundred, above which the formulas have numerical issues.
 In this case, a different but equivalent formulae are used that are numerically
 stable in this region. In all cases, the <span><span class="MathJax_Preview">p_T\to0</span><script type="math/tex">p_T\to0</script></span> limit produces infinite
 values.</p>
 <p>In the context of this package, an "event" is a two-dimensional numpy array
-with shape <code>(M,4)</code> where <code>M</code> is the multiplicity. An array of events is a 
+with shape <code>(M,4)</code> where <code>M</code> is the multiplicity. An array of events is a
 three-dimensional array with shape <code>(N,M,4)</code> where <code>N</code> is the number of events.
 The valid inputs and outputs of the functions here will be described using
 this terminology.</p>
@@ -649,7 +649,7 @@ used as the <code>phi_ref</code> when converting back to hadronic coordinates.</
 <h3 id="center_ptyphims">center_ptyphims</h3>
 <pre><code class="language-python">energyflow.center_ptyphims(ptyphims, axis=None, center='escheme', copy=True)
 </code></pre>
-<p>Center a collection of four-vectors according to a calculated or 
+<p>Center a collection of four-vectors according to a calculated or
 provided axis.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -687,7 +687,7 @@ the origin.</li>
 <p>Rotate a collection of four-vectors to vertically align the principal
 component of the energy flow. The principal component is obtained as the
 eigenvector of the energy flow with the largest eigenvalue. It is only
-defined up to a sign, however it is ensured that there is more total pT in 
+defined up to a sign, however it is ensured that there is more total pT in
 the top half of the rapidity-azimuth plane.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -698,7 +698,7 @@ out will be taken to be zero.</li>
 </li>
 <li><strong>rotate</strong> : <em>str</em><ul>
 <li>The rotation scheme to be used. Currently, only <code>'ptscheme'</code> is
-supported, which causes the rotation to take place in the 
+supported, which causes the rotation to take place in the
 rapidity-azimuth plane.</li>
 </ul>
 </li>
@@ -866,7 +866,7 @@ convention.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>dim</strong> : <em>int</em><ul>
-<li>The number of spacetime dimensions (thought to be four in our 
+<li>The number of spacetime dimensions (thought to be four in our
 universe).</li>
 </ul>
 </li>
@@ -874,7 +874,7 @@ universe).</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>1-d numpy.ndarray</em><ul>
-<li>A <code>dim</code>-length, one-dimensional (not matrix) array equal to 
+<li>A <code>dim</code>-length, one-dimensional (not matrix) array equal to
 <code>[+1,-1,...,-1]</code>.</li>
 </ul>
 </li>
@@ -891,7 +891,7 @@ various random, non-center of momentum, and non-uniform sampling.</p>
 </code></pre>
 <p>Generate random events with a given number of particles in a given
 spacetime dimension. The spatial components of the momenta are
-distributed uniformly in <span><span class="MathJax_Preview">[-1,+1]</span><script type="math/tex">[-1,+1]</script></span>. These events are not guaranteed to 
+distributed uniformly in <span><span class="MathJax_Preview">[-1,+1]</span><script type="math/tex">[-1,+1]</script></span>. These events are not guaranteed to
 uniformly sample phase space.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -916,7 +916,7 @@ a different random mass for each particle.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An <code>(nevents,nparticles,dim)</code> array of events. The particles 
+<li>An <code>(nevents,nparticles,dim)</code> array of events. The particles
 are specified as <code>[E,p1,p2,...]</code>. If <code>nevents</code> is 1 then that axis is
 dropped.</li>
 </ul>
@@ -947,7 +947,7 @@ to zero. These events are not guaranteed to uniformly sample phase space.</p>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An <code>(nevents,nparticles,dim)</code> array of events. The particles 
+<li>An <code>(nevents,nparticles,dim)</code> array of events. The particles
 are specified as <code>[E,p1,p2,...]</code>.</li>
 </ul>
 </li>
@@ -977,7 +977,7 @@ of mass energy.</p>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>numpy.ndarray</em><ul>
-<li>An <code>(nevents,nparticles,4)</code> array of events. The particles 
+<li>An <code>(nevents,nparticles,4)</code> array of events. The particles
 are specified as <code>[E,p_x,p_y,p_z]</code>. If <code>nevents</code> is 1 then that axis is
 dropped.</li>
 </ul>
@@ -986,7 +986,7 @@ dropped.</li>
 <hr />
 <h2 id="data-tools">Data Tools</h2>
 <p>Functions for dealing with datasets. These are not importable from
-the top level <code>energyflow</code> module, but must instead be imported 
+the top level <code>energyflow</code> module, but must instead be imported
 from <code>energyflow.utils</code>.</p>
 <hr />
 <h3 id="get_examples">get_examples</h3>
@@ -1002,7 +1002,7 @@ is automatically appended to the end of this path.</li>
 </ul>
 </li>
 <li><strong>which</strong> : {<em>list</em>, <code>'all'</code>}<ul>
-<li>List of examples to download, or the string <code>'all'</code> in which 
+<li>List of examples to download, or the string <code>'all'</code> in which
 case all the available examples are downloaded.</li>
 </ul>
 </li>
@@ -1015,7 +1015,7 @@ case all the available examples are downloaded.</li>
 <h3 id="data_split">data_split</h3>
 <pre><code class="language-python">energyflow.utils.data_split(*args, train=-1, val=0.0, test=0.1, shuffle=True)
 </code></pre>
-<p>A function to split a dataset into train, test, and optionally 
+<p>A function to split a dataset into train, test, and optionally
 validation datasets.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1054,9 +1054,9 @@ being split into parts.</li>
 <p><strong>Returns</strong></p>
 <ul>
 <li><em>list</em><ul>
-<li>A list of the split datasets in train, [val], test order. If 
+<li>A list of the split datasets in train, [val], test order. If
 datasets <code>X</code>, <code>Y</code>, and <code>Z</code> were given as <code>args</code> (and assuming a
-non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <code>X_test</code>, <code>Y_train</code>, 
+non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <code>X_test</code>, <code>Y_train</code>,
 <code>Y_val</code>, <code>Y_test</code>, <code>Z_train</code>, <code>Z_val</code>, <code>Z_test</code>] will be returned.</li>
 </ul>
 </li>
@@ -1073,7 +1073,7 @@ non-zero <code>val</code>), then [<code>X_train</code>, <code>X_val</code>, <cod
 </ul>
 </li>
 <li><strong>num_classes</strong> : {<em>int</em>, <code>None</code>}<ul>
-<li>The total number of classes. If <code>None</code>, taken to be the 
+<li>The total number of classes. If <code>None</code>, taken to be the
 maximum label plus one.</li>
 </ul>
 </li>
@@ -1109,8 +1109,8 @@ encountered. If <code>False</code>, unknown PDG IDs will map to zero.</li>
 </ul>
 <hr />
 <h2 id="image-tools">Image Tools</h2>
-<p>Functions for dealing with image representations of events. These are 
-not importable from the top level <code>energyflow</code> module, but must 
+<p>Functions for dealing with image representations of events. These are
+not importable from the top level <code>energyflow</code> module, but must
 instead be imported from <code>energyflow.utils</code>.</p>
 <hr />
 <h3 id="pixelate">pixelate</h3>
@@ -1120,8 +1120,8 @@ instead be imported from <code>energyflow.utils</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li><strong>jet</strong> : <em>numpy.ndarray</em><ul>
-<li>An array of particles where each particle is of the form 
-<code>[pt,y,phi,pid]</code> where the particle id column is only 
+<li>An array of particles where each particle is of the form
+<code>[pt,y,phi,pid]</code> where the particle id column is only
 used if <code>nb_chan=2</code> and <code>charged_counts_only=True</code>.</li>
 </ul>
 </li>
@@ -1137,7 +1137,7 @@ plane.</li>
 </li>
 <li><strong>nb_chan</strong> : {<code>1</code>, <code>2</code>}<ul>
 <li>The number of channels in the jet image. If <code>1</code>, then only a
-<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel is constructed (grayscale). If <code>2</code>, then both a 
+<span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel is constructed (grayscale). If <code>2</code>, then both a
 <span><span class="MathJax_Preview">p_T</span><script type="math/tex">p_T</script></span> channel and a count channel are formed (color).</li>
 </ul>
 </li>
@@ -1146,7 +1146,7 @@ plane.</li>
 </ul>
 </li>
 <li><strong>charged_counts_only</strong> : <em>bool</em><ul>
-<li>If making a count channel, whether to only include charged 
+<li>If making a count channel, whether to only include charged
 particles. Requires that <code>pid</code> information be given.</li>
 </ul>
 </li>
@@ -1163,8 +1163,8 @@ of the channels changed in version 1.0.3.</li>
 <h3 id="standardize">standardize</h3>
 <pre><code class="language-python">energyflow.utils.standardize(*args, channels=None, copy=False, reg=10**-10)
 </code></pre>
-<p>Normalizes each argument by the standard deviation of the pixels in 
-args[0]. The expected use case would be <code>standardize(X_train, X_val, 
+<p>Normalizes each argument by the standard deviation of the pixels in
+args[0]. The expected use case would be <code>standardize(X_train, X_val,
 X_test)</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1199,7 +1199,7 @@ that this be kept consistent for images used with a given model.</li>
 <h3 id="zero_center">zero_center</h3>
 <pre><code class="language-python">energyflow.utils.zero_center(args, kwargs)
 </code></pre>
-<p>Subtracts the mean of arg[0] from the arguments. The expected 
+<p>Subtracts the mean of arg[0] from the arguments. The expected
 use case would be <code>standardize(X_train, X_val, X_test)</code>.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1373,31 +1373,31 @@ obs/#zg_from_pj"><span><span class="MathJax_Preview">z_g</span><script type="mat
 </li>
 </ul>
 <hr />
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-      
+
+
         <a href="../obs/" class="btn btn-neutral" title="Observables"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -1407,13 +1407,13 @@ obs/#zg_from_pj"><span><span class="MathJax_Preview">z_g</span><script type="mat
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href="../obs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
     </span>
 </div>
     <script>var base_url = '../..';</script>

@@ -144,7 +144,7 @@ class EFM(EFMBase):
 
     """A class representing and computing a single EFM."""
 
-    # EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
+    # EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None,
     #                  coords=None, check_input=True)
     def __init__(self, nup, nlow=0, rl_from=None, subslice_from=None, **kwargs):
         r"""Since EFMs are fully symmetric tensors, they can be specified by
@@ -176,7 +176,7 @@ class EFM(EFMBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -202,10 +202,10 @@ class EFM(EFMBase):
             if self.v != sum(self._rl_from):
                 raise ValueError('cannot raise/lower among different valency EFMs')
 
-            # determine einstr    
+            # determine einstr
             diff = self.nup - self._rl_from[0]
             self._rl_diff = abs(diff)
-            i_start, i_end = ((self._rl_from[0], self.nup) if diff > 0 else 
+            i_start, i_end = ((self._rl_from[0], self.nup) if diff > 0 else
                               (self.nup, self._rl_from[0]))
             self.rl_einstr = ','.join([I[:self.v]] + list(I[i_start:i_end])) + '->' + I[:self.v]
 
@@ -217,7 +217,7 @@ class EFM(EFMBase):
             # get number of subslices
             num_up_subslices = self._subslice_from[0] - self.nup
             num_low_subslices = self._subslice_from[1] - self.nlow
-            
+
             # perform check
             if num_up_subslices < 0 or num_low_subslices < 0:
                 m = 'invalid subslicing from {} to {}'.format(self.subslicing_from, self.spec)
@@ -227,7 +227,7 @@ class EFM(EFMBase):
             if sys.version_info[0] > 2:
                 self.subslice = tuple([0]*num_up_subslices + [Ellipsis] + [0]*num_low_subslices)
             else:
-                self.subslice = tuple([0]*num_up_subslices + self.v*[slice(None)] + 
+                self.subslice = tuple([0]*num_up_subslices + self.v*[slice(None)] +
                                       [0]*num_low_subslices)
 
             self._pow2 = 2**(-(num_up_subslices + num_low_subslices)/2)
@@ -261,17 +261,17 @@ class EFM(EFMBase):
 
         # if no lowering is needed
         if self.nlow == 0:
-            return self._pow2 * einsum(self.raw_einstr, zs, *[nhats]*self.v, 
+            return self._pow2 * einsum(self.raw_einstr, zs, *[nhats]*self.v,
                                        optimize=self.raw_einpath)
 
         # lowering nhats first is better
         elif M*dim < dim**self.v:
             low_nhats = nhats * (flat_metric(dim)[np.newaxis])
             einsum_args = [nhats]*self.nup + [low_nhats]*self.nlow
-            return self._pow2 * einsum(self.raw_einstr, zs, *einsum_args, 
+            return self._pow2 * einsum(self.raw_einstr, zs, *einsum_args,
                                        optimize=self.raw_einpath)
 
-        # lowering EFM is better    
+        # lowering EFM is better
         else:
             tensor = einsum(self.raw_einstr, zs, *[nhats]*self.v, optimize=self.raw_einpath)
             return self._pow2 * self._rl_construct(tensor)
@@ -290,7 +290,7 @@ class EFM(EFMBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `nhats` must also be present, and `zs` is used in place 
+            - If present, `nhats` must also be present, and `zs` is used in place
             of the energies of an event.
         - **nhats** : 2-d array like
             - If present, `zs` must also be present, and `nhats` is used in place
@@ -383,7 +383,7 @@ class EFMSet(EFMBase):
         - **efm_specs** : {_list_, _tuple_, _set_} of _tuple_ or `None`
             - A collection of tuples of length two specifying which EFMs this
             object is to hold. Each spec is of the form `(nup, nlow)` where these
-            are the number of upper and lower indices, respectively, that the EFM 
+            are the number of upper and lower indices, respectively, that the EFM
             is to have.
         - **vmax** : _int_
             - Only used if `efm_specs` is None. The maximum EFM valency to
@@ -401,7 +401,7 @@ class EFMSet(EFMBase):
         - **normed** : _bool_
             - Controls normalization of the energies in the measure.
         - **coords** : {`'ptyphim'`, `'epxpypz'`, `None`}
-            - Controls which coordinates are assumed for the input. See 
+            - Controls which coordinates are assumed for the input. See
             [Measures](../measures) for additional info.
         - **check_input** : _bool_
             - Whether to check the type of the input each time or assume the
@@ -420,7 +420,7 @@ class EFMSet(EFMBase):
             else:
                 raise ValueError('efm_specs and vmax cannot both be None.')
 
-        # get unique EFMs 
+        # get unique EFMs
         self._unique_efms = frozenset(efm_specs)
 
         # setup EFMs based on whether we can subslice or not
@@ -458,7 +458,7 @@ class EFMSet(EFMBase):
         self._unique_efms |= set((n,0) for n in range(1, sum(maxsig)+1))
 
         # sort EFMs to minimize raising/lowering operations
-        # EFMs will be ordered first by decreasing v, then decreasing abs difference 
+        # EFMs will be ordered first by decreasing v, then decreasing abs difference
         # between nlow and nup, and then decreasing nup
         self._sorted_efms = sorted(self._unique_efms, key=itemgetter(0), reverse=True)
         self._sorted_efms.sort(key=lambda x: abs(x[0]-x[1]), reverse=True)
@@ -534,7 +534,7 @@ class EFMSet(EFMBase):
             - The event as an array of particles in the coordinates specified
             by `coords`.
         - **zs** : 1-d array_like
-            - If present, `nhats` must also be present, and `zs` is used in place 
+            - If present, `nhats` must also be present, and `zs` is used in place
             of the energies of an event.
         - **nhats** : 2-d array like
             - If present, `zs` must also be present, and `nhats` is used in place
@@ -592,14 +592,14 @@ class EFMSet(EFMBase):
     def efms(self):
         """A dictionary of the `EFM` objects held by this `EFMSet` where the
         keys are the signatures of the EFM."""
-        
+
         return self._efms
 
     @property
     def rules(self):
         """An ordered dictionary of the construction method used for each `EFM`
         where the order is the same as `sorted_efms`."""
-        
+
         return self._rules
 
     @efms.setter

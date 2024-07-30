@@ -21,17 +21,17 @@ ptyphis = [(10*np.random.rand(25), 6*np.random.rand(25)-3, 2*np.pi*np.random.ran
 @pytest.mark.parametrize('pts,ys,phis', ptyphis)
 def test_measure_hadr_ptyphi(pts, ys, phis, beta, kappa, normed, kappa_normed_behavior):
     M = len(pts)
-    
+
     # compute using the energyflow package
     hmeas = ef.Measure('hadr', beta, kappa, normed, 'ptyphim', True, kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(np.vstack((pts,ys,phis)).T)
-    
+
     # compute naively
     norm = 1 if not normed else (np.sum(pts**kappa) if kappa_normed_behavior == 'orig' else np.sum(pts)**kappa)
     zs = (pts**kappa)/norm
     thetas = np.asarray([[(ys[i]-ys[j])**2 + min(abs(phis[i]-phis[j]), 2*np.pi-abs(phis[i]-phis[j]))**2
                           for i in range(M)] for j in range(M)])**(beta/2)
-    
+
     assert epsilon_diff(hzs, zs, 10**-13)
     assert epsilon_diff(hthetas, thetas, 10**-13)
 
@@ -46,17 +46,17 @@ def test_measure_hadr_p4s(event, beta, kappa, normed, kappa_normed_behavior):
     pTs = np.sqrt(event[:,1]**2 + event[:,2]**2)
     ys = 0.5*np.log((event[:,0] + event[:,3])/(event[:,0] - event[:,3]))
     phis = np.arctan2(event[:,2], event[:,1])
-    
+
     # compute using the energyflow package
     hmeas = ef.Measure('hadr', beta, kappa, normed, 'epxpypz', True, kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(event)
-    
+
     # compute naively
     norm = 1 if not normed else (np.sum(pTs**kappa) if kappa_normed_behavior == 'orig' else np.sum(pTs)**kappa)
     zs = (pTs**kappa)/norm
     thetas = np.asarray([[(ys[i]-ys[j])**2 + min(abs(phis[i]-phis[j]), 2*np.pi-abs(phis[i]-phis[j]))**2
                           for i in range(M)] for j in range(M)])**(beta/2)
-    
+
     assert epsilon_diff(hzs, zs, 10**-12)
     assert epsilon_diff(hthetas, thetas, 10**-12)
 
@@ -69,14 +69,14 @@ def test_measure_hadr_p4s(event, beta, kappa, normed, kappa_normed_behavior):
 def test_measure_hadrdot_ptyphi(event, beta, theta_eps, kappa, normed, kappa_normed_behavior):
     if normed and kappa == 'pf':
         pytest.skip()
-    
+
     pTs = event[:,0]
     ps  = np.asarray([pT*np.asarray([np.cosh(y),np.cos(phi),np.sin(phi),np.sinh(y)]) for (pT,y,phi) in event])
-   
+
     # compute using the energyflow package
     hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'ptyphim', True, kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(event)
-        
+
     # compute naively
     norm = 1 if not normed else (np.sum(pTs**kappa) if kappa_normed_behavior == 'orig' else np.sum(pTs)**kappa)
     zs = (pTs**kappa)/norm if kappa != 'pf' else np.ones(len(pTs))
@@ -95,14 +95,14 @@ def test_measure_hadrdot_ptyphi(event, beta, theta_eps, kappa, normed, kappa_nor
 def test_measure_hadrdot_p4s(event, beta, theta_eps, kappa, normed, kappa_normed_behavior):
     if normed and kappa == 'pf':
         pytest.skip()
-    
+
     pTs = np.sqrt(event[:,1]**2 + event[:,2]**2)
     ps  = event
-   
+
     # compute using the energyflow package
     hmeas = ef.Measure('hadrdot', beta, kappa, normed, 'epxpypz', True, kappa_normed_behavior)
     hzs, hthetas = hmeas.evaluate(event)
-        
+
     # compute naively
     norm = 1 if not normed else (np.sum(pTs**kappa) if kappa_normed_behavior == 'orig' else np.sum(pTs)**kappa)
     zs = (pTs**kappa)/norm if kappa != 'pf' else np.ones(len(pTs))

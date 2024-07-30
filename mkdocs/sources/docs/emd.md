@@ -1,7 +1,7 @@
 # Energy Mover's Distance
 
 <video width="100%" autoplay loop controls>
-    <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4" 
+    <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4"
             type="video/mp4">
 </video>
 <br>
@@ -27,8 +27,8 @@ particle $i$ in one event to particle $j$ in the other:
 \[\sum_{j=1}^{M'}f_{ij}\le E_i, \quad \sum_{i=1}^Mf_{ij}\le E^\prime_j,
 \quad\sum_{i=1}^M\sum_{j=1}^{M'}f_{ij}=E_\text{min},\]
 
-where $E_i,E^\prime_j$ are the energies of the particles in the two events, 
-$\theta_{ij}$ is an angular distance between particles, and 
+where $E_i,E^\prime_j$ are the energies of the particles in the two events,
+$\theta_{ij}$ is an angular distance between particles, and
 $E_\text{min}=\min\left(\sum_{i=1}^ME_i,\,\sum_{j=1}^{M'}E^\prime_j\right)$ is
 the smaller of the two total energies. In a hadronic context, transverse momenta
 are used instead of energies.
@@ -49,9 +49,9 @@ Compute the EMD between two events using the Wasserstein library.
 **Arguments**
 
 - **ev0** : _numpy.ndarray_
-    - The first event, given as a two-dimensional array. The event is 
-    assumed to be an `(M,1+gdim)` array of particles, where `M` is the 
-    multiplicity and `gdim` is the dimension of the ground space in 
+    - The first event, given as a two-dimensional array. The event is
+    assumed to be an `(M,1+gdim)` array of particles, where `M` is the
+    multiplicity and `gdim` is the dimension of the ground space in
     which to compute euclidean distances between particles (as specified
     by the `gdim` keyword argument). The zeroth column is the weights of
     the particles, typically their energies or transverse momenta. For
@@ -67,9 +67,9 @@ Compute the EMD between two events using the Wasserstein library.
     then the columns of the events after the zeroth are taken to be
     coordinates and the `gdim`-dimensional Euclidean distance is used.
 - **R** : _float_
-    - The R parameter in the EMD definition that controls the relative 
-    importance of the two terms. Must be greater than or equal to half 
-    of the maximum ground distance in the space in order for the EMD 
+    - The R parameter in the EMD definition that controls the relative
+    importance of the two terms. Must be greater than or equal to half
+    of the maximum ground distance in the space in order for the EMD
     to be a valid metric satisfying the triangle inequality.
 - **beta** : _float_
     - The angular weighting exponent. The internal pairwsie distance
@@ -96,13 +96,13 @@ Compute the EMD between two events using the Wasserstein library.
     - If `True`, masks out particles farther than `R` away from the
     origin. Has no effect if `dists` are provided.
 - **return_flow** : _bool_
-    - Whether or not to return the flow matrix describing the optimal 
+    - Whether or not to return the flow matrix describing the optimal
     transport found during the computation of the EMD. Note that since
-    the second term in Eq. 1 is implemented by including an additional 
+    the second term in Eq. 1 is implemented by including an additional
     particle in the event with lesser total weight, this will be
     reflected in the flow matrix.
 - **n_iter_max** : _int_
-    - Maximum number of iterations for solving the optimal transport 
+    - Maximum number of iterations for solving the optimal transport
     problem.
 - **epsilon_large_factor** : _float_
     - Controls some tolerances in the optimal transport solver. This
@@ -117,7 +117,7 @@ Compute the EMD between two events using the Wasserstein library.
 - _float_
     - The EMD value.
 - [_numpy.ndarray_], optional
-    - The flow matrix found while solving for the EMD. The `(i,j)`th 
+    - The flow matrix found while solving for the EMD. The `(i,j)`th
     entry is the amount of `pT` that flows between particle i in `ev0`
     and particle j in `ev1`.
 
@@ -144,7 +144,7 @@ Compute the EMDs between collections of events using the Wasserstein
  **Arguments**
 
  - **events0** : _list_
-     - Iterable collection of events. Each event is assumed to be an 
+     - Iterable collection of events. Each event is assumed to be an
      `(M,1+gdim)` array of particles, where `M` is the multiplicity and
      `gdim` is the dimension of the ground space in which to compute
      euclidean distances between particles (as specified by the `gdim`
@@ -161,9 +161,9 @@ Compute the EMDs between collections of events using the Wasserstein
      `events0` will be computed and the returned matrix will be
      symmetric.
 - **R** : _float_
-     - The R parameter in the EMD definition that controls the relative 
-     importance of the two terms. Must be greater than or equal to half 
-     of the maximum ground distance in the space in order for the EMD 
+     - The R parameter in the EMD definition that controls the relative
+     importance of the two terms. Must be greater than or equal to half
+     of the maximum ground distance in the space in order for the EMD
      to be a valid metric satisfying the triangle inequality.
  - **norm** : _bool_
      - Whether or not to normalize the particle weights to sum to one
@@ -211,7 +211,7 @@ Compute the EMDs between collections of events using the Wasserstein
      - Whether or not to raise an exception when an issue is encountered.
      Can be useful when debugging.
  - **n_iter_max** : _int_
-     - Maximum number of iterations for solving the optimal transport 
+     - Maximum number of iterations for solving the optimal transport
      problem.
  - **epsilon_large_factor** : _float_
      - Controls some tolerances in the optimal transport solver. This
@@ -229,7 +229,7 @@ Compute the EMDs between collections of events using the Wasserstein
      `events1` was `None`, then the shape will be `(len(events0),
      len(events0))` and the array will be symmetric, otherwise it will
      have shape `(len(events0), len(events1))`.
- 
+
 
 
 ----
@@ -248,28 +248,28 @@ Transport library.
 **Arguments**
 
 - **ev0** : _numpy.ndarray_
-    - The first event, given as a two-dimensional array. The event is 
-    assumed to be an `(M,1+gdim)` array of particles, where `M` is the 
-    multiplicity and `gdim` is the dimension of the ground space in 
+    - The first event, given as a two-dimensional array. The event is
+    assumed to be an `(M,1+gdim)` array of particles, where `M` is the
+    multiplicity and `gdim` is the dimension of the ground space in
     which to compute euclidean distances between particles (as specified
     by the `gdim` keyword argument. The zeroth column is assumed to be
-    the energies (or equivalently, the transverse momenta) of the 
-    particles. For typical hadron collider jet applications, each 
+    the energies (or equivalently, the transverse momenta) of the
+    particles. For typical hadron collider jet applications, each
     particle will be of the form `(pT,y,phi)` where  `y` is the rapidity
     and `phi` is the azimuthal angle.
 - **ev1** : _numpy.ndarray_
     - The other event, same format as `ev0`.
 - **R** : _float_
-    - The R parameter in the EMD definition that controls the relative 
-    importance of the two terms. Must be greater than or equal to half 
-    of the maximum ground distance in the space in order for the EMD 
+    - The R parameter in the EMD definition that controls the relative
+    importance of the two terms. Must be greater than or equal to half
+    of the maximum ground distance in the space in order for the EMD
     to be a valid metric satisfying the triangle inequality.
 - **beta** : _float_
     - The angular weighting exponent. The internal pairwsie distance
     matrix is raised to this power prior to solving the optimal
     transport problem.
 - **norm** : _bool_
-    - Whether or not to normalize the pT values of the events prior to 
+    - Whether or not to normalize the pT values of the events prior to
     computing the EMD.
 - **measure** : _str_
     - Controls which metric is used to calculate the ground distances
@@ -283,10 +283,10 @@ Transport library.
     controls if `'hadronic'` coordinates `(pT,y,phi,[m])` are expected
     versus `'cartesian'` coordinates `(E,px,py,pz)`.
 - **return_flow** : _bool_
-    - Whether or not to return the flow matrix describing the optimal 
+    - Whether or not to return the flow matrix describing the optimal
     transport found during the computation of the EMD. Note that since
-    the second term in Eq. 1 is implemented by including an additional 
-    particle in the event with lesser total pT, this will be reflected 
+    the second term in Eq. 1 is implemented by including an additional
+    particle in the event with lesser total pT, this will be reflected
     in the flow matrix.
 - **gdim** : _int_
     - The dimension of the ground metric space. Useful for restricting
@@ -298,7 +298,7 @@ Transport library.
     - If `True`, ignores particles farther than `R` away from the
     origin.
 - **n_iter_max** : _int_
-    - Maximum number of iterations for solving the optimal transport 
+    - Maximum number of iterations for solving the optimal transport
     problem.
 - **periodic_phi** : _bool_
     - Whether to expect (and therefore properly handle) periodicity
@@ -319,7 +319,7 @@ Transport library.
 - _float_
     - The EMD value.
 - [_numpy.ndarray_], optional
-    - The flow matrix found while solving for the EMD. The `(i,j)`th 
+    - The flow matrix found while solving for the EMD. The `(i,j)`th
     entry is the amount of `pT` that flows between particle i in `ev0`
     and particle j in `ev1`.
 
@@ -330,7 +330,7 @@ Transport library.
 
 ```python
 energyflow.emd.emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coords='hadronic',
-                            gdim=None, mask=False, n_iter_max=100000, 
+                            gdim=None, mask=False, n_iter_max=100000,
                             periodic_phi=False, phi_col=2, empty_policy='error',
                             n_jobs=None, verbose=0, print_every=10**6)
 ```
@@ -342,8 +342,8 @@ Compute the EMDs between collections of events. This can be used to
  **Arguments**
 
  - **X0** : _list_
-     - Iterable collection of events. Each event is assumed to be an 
-     `(M,1+gdim)` array of particles, where `M` is the multiplicity and 
+     - Iterable collection of events. Each event is assumed to be an
+     `(M,1+gdim)` array of particles, where `M` is the multiplicity and
      `gdim` is the dimension of the ground space in which to compute
      euclidean distances between particles (specified by the `gdim`
      keyword argument). The zeroth column is assumed to be the energies
@@ -352,16 +352,16 @@ Compute the EMDs between collections of events. This can be used to
      the form `(pT,y,phi)` where  `y` is the rapidity and `phi` is the
      azimuthal angle.
  - **X1** : _list_ or `None`
-     - Iterable collection of events in the same format as `X0`, 
+     - Iterable collection of events in the same format as `X0`,
      or `None`. If the latter, the pairwise distances between events
      in `X0` will be computed and the returned matrix will be symmetric.
 - **R** : _float_
-     - The R parameter in the EMD definition that controls the relative 
-     importance of the two terms. Must be greater than or equal to half 
-     of the maximum ground distance in the space in order for the EMD 
+     - The R parameter in the EMD definition that controls the relative
+     importance of the two terms. Must be greater than or equal to half
+     of the maximum ground distance in the space in order for the EMD
      to be a valid metric satisfying the triangle inequality.
  - **norm** : _bool_
-     - Whether or not to normalize the pT values of the events prior to 
+     - Whether or not to normalize the pT values of the events prior to
      computing the EMD.
  - **beta** : _float_
      - The angular weighting exponent. The internal pairwsie distance
@@ -388,7 +388,7 @@ Compute the EMDs between collections of events. This can be used to
      - If `True`, ignores particles farther than `R` away from the
      origin.
  - **n_iter_max** : _int_
-     - Maximum number of iterations for solving the optimal transport 
+     - Maximum number of iterations for solving the optimal transport
      problem.
  - **periodic_phi** : _bool_
      - Whether to expect (and therefore properly handle) periodicity
@@ -424,8 +424,7 @@ Compute the EMDs between collections of events. This can be used to
      - The EMD values as a two-dimensional array. If `X1` was `None`,
      then the shape will be `(len(X0), len(X0))` and the array will be
      symmetric, otherwise it will have shape `(len(X0), len(X1))`.
- 
+
 
 
 ----
-

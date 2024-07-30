@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/docs/datasets/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Datasets";
     var mkdocs_page_input_path = "docs/datasets.md";
     var mkdocs_page_url = "/docs/datasets/";
   </script>
-  
+
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -168,36 +168,36 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="../..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Documentation &raquo;</li>
-        
-      
-    
+
+
+
     <li>Datasets</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="datasets">Datasets</h1>
 <h2 id="cms-open-data-and-the-mod-hdf5-format">CMS Open Data and the MOD HDF5 Format</h2>
 <p>Starting in 2014, the CMS Collaboration began to release research-grade
@@ -259,11 +259,11 @@ doi.org/10.5281/zenodo.3341772"><img alt="DOI" src="/img/zenodo.3341772.svg" /><
 <p>For more details regarding the creation of these samples, as well as for the
 DOIs of the original CMS Open Datasets, see <a href="https://arxiv.org/abs/1908.08542">Exploring the Space of Jets with
 CMS Open Data</a>. To get started using the
-samples, see the <a href="/demos/#mod-jet-demo">MOD Jet Demo</a> which makes use of the 
+samples, see the <a href="/demos/#mod-jet-demo">MOD Jet Demo</a> which makes use of the
 <a href="#load"><code>load</code></a> function.</p>
 <hr />
 <h3 id="load">load</h3>
-<pre><code class="language-python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', 
+<pre><code class="language-python">energyflow.mod.load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets',
                            dataset='cms', subdatasets=None, validate_files=False,
                            store_pfcs=True, store_gens=True, verbose=0)
 </code></pre>
@@ -290,7 +290,7 @@ of <code>-1</code> also loads the entire dataset. </li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
+<li>The directory where to store/look for the files. Note that
 <code>'datasets'</code> is automatically appended to the end of this path, as well
 as the collection name. For example, the default is to download/look
 for files in the directory <code>'~/.energyflow/datasets/CMS2011AJets'</code>.</li>
@@ -527,7 +527,7 @@ assigned to the leading vertex.</li>
 </ul>
 </li>
 <li><code>/gens</code> - <em>float64</em> (SIM/GEN only)<ul>
-<li>An array of all generator-level particles, currently with the same 
+<li>An array of all generator-level particles, currently with the same
 columns as the <code>pfcs</code> array (the vertex column contains all <code>0</code>s). For
 the SIM dataset, these are the particles of jets associated to the SIM
 jets which are described in the <code>jets_i</code> and <code>jets_f</code> arrays. As with
@@ -556,19 +556,19 @@ first column in the <code>jets_i</code> array, <code>modds.jet_phi</code> has a 
 <code>modds.m</code> has a value of <code>3</code>, etc.</p>
 <p>Even more helpfully, a view of each column of the jets arrays is stored
 as an attribute as well, so that <code>modds.jet_pts</code> is the same as
-<code>modds.jets_f[:,modds.jet_pt]</code>, <code>modds.evns</code> is the same as 
+<code>modds.jets_f[:,modds.jet_pt]</code>, <code>modds.evns</code> is the same as
 <code>modds.jets_i[:,modds.evn]</code>, etc. Additionally, one special view is stored,
 <code>corr_jet_pts</code>, which is equal to the product of the jet pTs and the JECs,
 i.e. <code>modds.jet_pts*modds.jecs</code>.</p>
 <p><code>MODDataset</code> supports the builtin <code>len()</code> method, which returns the number
 of jets currently stored in the dataset, as well as the <code>print()</code> method,
 which prints a summary of the dataset.</p>
-<pre><code class="language-python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, 
+<pre><code class="language-python">energyflow.mod.MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True,
                                  store_pfcs=True, store_gens=True)
 </code></pre>
 <p><code>MODDataset</code> can be initialized from a MOD HDF5 file or from a list
 of existing <code>MODDataset</code>s. In the first case, the filename should be
-given as the first positional argument. In the second case, the 
+given as the first positional argument. In the second case, the
 <code>datasets</code> keyword argument should be set to a list of <code>MODDataset</code>
 objects.</p>
 <p><strong>Arguments</strong></p>
@@ -799,7 +799,7 @@ corresponding paper:</p>
 <p><a href="https://
 doi.org/10.5281/zenodo.3548091"><img alt="DOI" src="/img/zenodo.3548091.svg" /></a> - Pythia/Herwig + Delphes samples</p>
 <ul>
-<li>A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler, 
+<li>A. Andreassen, P. T. Komiske, E. M. Metodiev, B. Nachman, J. Thaler,
 OmniFold: A Method to Simultaneously Unfold All Observables,
 <a href="https://arxiv.org/abs/1911.09107">arXiv:1911.09107</a>.</li>
 </ul>
@@ -881,13 +881,13 @@ submodule of EnergyFlow. The four datasets are:</p>
 </ul>
 <p>To avoid downloading unnecessary samples, the datasets are contained in twenty
 files with 100k jets each, and only the required files are downloaded. These
-are based on the samples used in 
-<a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. Splitting the data into 
+are based on the samples used in
+<a href="https://arxiv.org/abs/1810.05165">1810.05165</a>. Splitting the data into
 1.6M/200k/200k train/validation/test sets is recommended for standardized
 comparisons.</p>
 <p>Each dataset consists of two components:</p>
 <ul>
-<li><code>X</code> : a three-dimensional numpy array of the jets with shape 
+<li><code>X</code> : a three-dimensional numpy array of the jets with shape
 <code>(num_data,max_num_particles,4)</code>.</li>
 <li><code>y</code> : a numpy array of quark/gluon jet labels (quark=<code>1</code> and gluon=<code>0</code>).</li>
 </ul>
@@ -903,7 +903,7 @@ underlying event) are turned on and the default tunings and shower parameters
 are used. Final state non-neutrino particles are clustered into <span><span class="MathJax_Preview">R=0.4</span><script type="math/tex">R=0.4</script></span>
 anti-<span><span class="MathJax_Preview">k_T</span><script type="math/tex">k_T</script></span> jets using FastJet 3.3.0. Jets with transverse momentum
 <span><span class="MathJax_Preview">p_T\in[500,550]</span><script type="math/tex">p_T\in[500,550]</script></span> GeV and rapidity <span><span class="MathJax_Preview">|y|&lt;1.7</span><script type="math/tex">|y|<1.7</script></span> are kept. Particles are ensured
-have to <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> values within <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> of the jet (i.e. no <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span>-periodicity 
+have to <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span> values within <span><span class="MathJax_Preview">\pi</span><script type="math/tex">\pi</script></span> of the jet (i.e. no <span><span class="MathJax_Preview">\phi</span><script type="math/tex">\phi</script></span>-periodicity
 issues). No detector simulation is performed.</p>
 <p>The samples are also hosted on Zenodo and we ask that you cite them
 appropriately if they are useful to your research. For BibTex entries,
@@ -916,8 +916,8 @@ see the <a href="/faqs/#how-do-i-cite-the-energyflow-package">FAQs</a>.</p>
 <pre><code class="language-python">energyflow.qg_jets.load(num_data=100000, pad=True, ncol=4, generator='pythia',
                         with_bc=False, cache_dir='~/.energyflow')
 </code></pre>
-<p>Loads samples from the dataset (which in total is contained in twenty 
-files). Any file that is needed that has not been cached will be 
+<p>Loads samples from the dataset (which in total is contained in twenty
+files). Any file that is needed that has not been cached will be
 automatically downloaded. Downloading a file causes it to be cached for
 later use. Basic checksums are performed.</p>
 <p><strong>Arguments</strong></p>
@@ -950,7 +950,7 @@ not be combined.</li>
 </ul>
 </li>
 <li><strong>cache_dir</strong> : <em>str</em><ul>
-<li>The directory where to store/look for the files. Note that 
+<li>The directory where to store/look for the files. Note that
 <code>'datasets'</code> is automatically appended to the end of this path.</li>
 </ul>
 </li>
@@ -966,7 +966,7 @@ each of which is a 2-d ndarray.</li>
 </ul>
 <hr />
 <h2 id="quark-and-gluon-nsubs">Quark and Gluon Nsubs</h2>
-<p>A dataset consisting of 45 <span><span class="MathJax_Preview">N</span><script type="math/tex">N</script></span>-subjettiness observables for 100k quark and 
+<p>A dataset consisting of 45 <span><span class="MathJax_Preview">N</span><script type="math/tex">N</script></span>-subjettiness observables for 100k quark and
 gluon jets generated with Pythia 8.230. Following <a href="https:
 //arxiv.org/abs/1704.08249">1704.08249</a>, the observables are in the following order:</p>
 <div>
@@ -980,14 +980,14 @@ gluon jets generated with Pythia 8.230. Following <a href="https:
 \tau_{15}^{(\beta=0.5)},\tau_{15}^{(\beta=1.0)},\tau_{15}^{(\beta=2.0)}\}.</script>
 </div>
 <p>The dataset contains two members: <code>'X'</code> which is a numpy array of the nsubs
-that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon 
+that has shape <code>(100000,45)</code> and <code>'y'</code> which is a numpy array of quark/gluon
 labels (quark=<code>1</code> and gluon=<code>0</code>).</p>
 <hr />
 <h4 id="load_3">load</h4>
 <pre><code class="language-python">energyflow.qg_nsubs.load(num_data=-1, cache_dir='~/.energyflow')
 </code></pre>
 <p>Loads the dataset. The first time this is called, it will automatically
-download the dataset. Future calls will attempt to use the cached dataset 
+download the dataset. Future calls will attempt to use the cached dataset
 prior to redownloading.</p>
 <p><strong>Arguments</strong></p>
 <ul>
@@ -1008,33 +1008,33 @@ prior to redownloading.</p>
 </li>
 </ul>
 <hr />
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+
         <a href="../emd/" class="btn btn-neutral float-right" title="EMD">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
+
+
         <a href="../archs/" class="btn btn-neutral" title="Architectures"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -1044,15 +1044,15 @@ prior to redownloading.</p>
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href="../archs/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
         <span style="margin-left: 15px"><a href="../emd/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
+
     </span>
 </div>
     <script>var base_url = '../..';</script>

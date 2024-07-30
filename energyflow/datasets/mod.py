@@ -66,7 +66,7 @@ doi.org/10.5281/zenodo.3341772) - SIM/GEN QCD Jets 1800-$\infty$ GeV
 For more details regarding the creation of these samples, as well as for the
 DOIs of the original CMS Open Datasets, see [Exploring the Space of Jets with
 CMS Open Data](https://arxiv.org/abs/1908.08542). To get started using the
-samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the 
+samples, see the [MOD Jet Demo](/demos/#mod-jet-demo) which makes use of the
 [`load`](#load) function.
 """
 
@@ -139,7 +139,7 @@ COLLECTIONS = {
 # PUBLIC FUNCTIONS
 ###############################################################################
 
-# load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets', 
+# load(*args, amount=1, cache_dir='~/.energyflow', collection='CMS2011AJets',
 #             dataset='cms', subdatasets=None, validate_files=False,
 #             store_pfcs=True, store_gens=True, verbose=0)
 def load(*args, **kwargs):
@@ -161,9 +161,9 @@ def load(*args, **kwargs):
         number of available files to load, rounded up to the nearest whole
         number. Note that since ints and floats are treated different, a value
         of `1` loads one file whereas `1.0` loads the entire dataset. A value
-        of `-1` also loads the entire dataset. 
+        of `-1` also loads the entire dataset.
     - **cache_dir** : _str_
-        - The directory where to store/look for the files. Note that 
+        - The directory where to store/look for the files. Note that
         `'datasets'` is automatically appended to the end of this path, as well
         as the collection name. For example, the default is to download/look
         for files in the directory `'~/.energyflow/datasets/CMS2011AJets'`.
@@ -285,7 +285,7 @@ def load(*args, **kwargs):
             filename = '{}_{}_compressed.h5'.format(name, i)
             file_hash = hashes[filename] if validate_files else None
             url = ZENODO_URL_PATTERN.format(record, filename)
-            filepath = _get_filepath(filename, url, cache_dir, cache_subdir=subdir, 
+            filepath = _get_filepath(filename, url, cache_dir, cache_subdir=subdir,
                                                                file_hash=file_hash)
 
             moddset_args = (filepath,) + args
@@ -343,28 +343,28 @@ def filter_particles(particles, which='all', pt_cut=None, chs=False,
         `particles[filter_particles(particles, ...)]` will be an array of only
         those particles passing the specified cuts.
     """
-    
+
     mask = np.ones(len(particles), dtype=bool)
-    
+
     # pt cut
     if pt_cut is not None:
         mask &= (particles[:,pt_i] >= pt_cut)
-        
+
     # select specified particles
     if which != 'all':
         chrg_mask = ischrgd(particles[:,pid_i])
-        
+
         if which == 'charged':
             mask &= chrg_mask
         elif which == 'neutral':
             mask &= ~chrg_mask
         else:
             raise ValueError("'which' must be one of {'all', 'charged', 'neutral}")
-            
+
     # apply chs
     if chs:
         mask &= (particles[:,vertex_i] <= 0)
-        
+
     return mask
 
 # kfactors(dataset, pts, npvs=None, collection='CMS2011AJets',
@@ -478,17 +478,17 @@ def _cols_str(cols, nspaces=4):
     return str(cols).replace('\n', '\n' + nspaces*' ')
 
 def _separate_particle_arrays(particles, particles_index, mask, copy=True):
-    
+
     # array to hold particles
     particles_array = np.zeros(np.count_nonzero(mask), dtype='O')
-    
+
     # iterate over indices
     n = 0
     for start, end, m in zip(particles_index[:-1], particles_index[1:], mask):
         if m:
             particles_array[n] = np.array(particles[start:end], copy=copy)
             n += 1
-        
+
     return particles_array
 
 def _process_selections(sel_list):
@@ -506,7 +506,7 @@ def _moddset_save(arg):
     moddsets[i].save(filepath, compression=compression, verbose=0)
 
 def _make_particles_index(particle_arrays):
-    
+
     # list of indices
     index = [0]
 
@@ -517,7 +517,7 @@ def _make_particles_index(particle_arrays):
     # convert to numpy array with proper dtype
     return np.asarray(index, dtype=np.uint32)
 
-def _write_large_object_array_to_h5(hf, name, arr, dtype=None, ncols=None, 
+def _write_large_object_array_to_h5(hf, name, arr, dtype=None, ncols=None,
                                                    chunksize=10**5, **compression):
 
     nrows = sum([len(x) for x in arr])
@@ -610,7 +610,7 @@ class MODDataset(object):
             a pileup vertex, and `-1` is unknown. Neutral particles are
             assigned to the leading vertex.
     - `/gens` - _float64_ (SIM/GEN only)
-        - An array of all generator-level particles, currently with the same 
+        - An array of all generator-level particles, currently with the same
         columns as the `pfcs` array (the vertex column contains all `0`s). For
         the SIM dataset, these are the particles of jets associated to the SIM
         jets which are described in the `jets_i` and `jets_f` arrays. As with
@@ -637,7 +637,7 @@ class MODDataset(object):
 
     Even more helpfully, a view of each column of the jets arrays is stored
     as an attribute as well, so that `modds.jet_pts` is the same as
-    `modds.jets_f[:,modds.jet_pt]`, `modds.evns` is the same as 
+    `modds.jets_f[:,modds.jet_pt]`, `modds.evns` is the same as
     `modds.jets_i[:,modds.evn]`, etc. Additionally, one special view is stored,
     `corr_jet_pts`, which is equal to the product of the jet pTs and the JECs,
     i.e. `modds.jet_pts*modds.jecs`.
@@ -647,12 +647,12 @@ class MODDataset(object):
     which prints a summary of the dataset.
     """
 
-    # MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True, 
+    # MODDataset(*args, datasets=None, path=None, num=-1, shuffle=True,
     #                   store_pfcs=True, store_gens=True)
     def __init__(self, *args, **kwargs):
         """`MODDataset` can be initialized from a MOD HDF5 file or from a list
         of existing `MODDataset`s. In the first case, the filename should be
-        given as the first positional argument. In the second case, the 
+        given as the first positional argument. In the second case, the
         `datasets` keyword argument should be set to a list of `MODDataset`
         objects.
 
@@ -716,7 +716,7 @@ class MODDataset(object):
         for k,v in default_kwargs.items():
             if k not in kwargs:
                 kwargs[k] = v
-        
+
         # store options
         self.copy_particles = kwargs.pop('copy_particles')
         self.num = kwargs.pop('num')
@@ -755,7 +755,7 @@ class MODDataset(object):
     # close any HDF5 files and try to garbage collect arrays to free memory
     def __del__(self):
 
-        # close file 
+        # close file
         self.close()
 
         # delete arrays
@@ -787,8 +787,8 @@ class MODDataset(object):
 
     # makes MODDataset printable
     def __repr__(self):
-        s = ('{} MODDataset\n'.format(self.dataset.upper()) + 
-             '  Jet Integers - {}\n    {}\n'.format(self.jets_i.shape, _cols_str(self.jets_i_cols)) + 
+        s = ('{} MODDataset\n'.format(self.dataset.upper()) +
+             '  Jet Integers - {}\n    {}\n'.format(self.jets_i.shape, _cols_str(self.jets_i_cols)) +
              '  Jet Floats - {}\n    {}\n'.format(self.jets_f.shape, _cols_str(self.jets_f_cols)))
 
         if self.store_pfcs:
@@ -873,7 +873,7 @@ class MODDataset(object):
 
         # determine type of dataset
         filename_lower = os.path.basename(self.filepath).lower()
-        dataset = ('cms' if 'cms' in filename_lower else 
+        dataset = ('cms' if 'cms' in filename_lower else
                   ('sim' if 'sim' in filename_lower else
                   ('gen' if 'gen' in filename_lower else None)))
 
@@ -1166,7 +1166,7 @@ class MODDataset(object):
         if not hasattr(self, 'selection_cols'):
             self.selection_cols = self.jets_f_cols.tolist() + self.jets_i_cols.tolist()
             self.selection_cols += ['corr_jet_pt', 'abs_jet_eta', 'abs_jet_y']
-            
+
             # handle special cases for sim
             if 'gen_jet_eta' in self.selection_cols:
                 self.selection_cols += ['abs_gen_jet_eta', 'abs_gen_jet_y']
@@ -1264,7 +1264,7 @@ class MODDataset(object):
 
         start = time.time()
         if npf != -1:
-            
+
             global moddsets
 
             i = begin = end = 0
@@ -1293,7 +1293,7 @@ class MODDataset(object):
 
                 else:
                     moddsets.append(moddset)
-                    args.append((i, filepath, compression)) 
+                    args.append((i, filepath, compression))
 
                 begin = end
                 i += 1
@@ -1317,11 +1317,11 @@ class MODDataset(object):
                             print('  Saved {} files, {:.2f}% done in {:.3f}s'.format(*pf))
 
                     del moddsets
-                    
+
             return
 
         # compression opts
-        compression = ({'compression': 'gzip', 'compression_opts': compression} 
+        compression = ({'compression': 'gzip', 'compression_opts': compression}
                        if compression is not None else {})
         comp_str = '_compressed' if len(compression) else ''
 
@@ -1347,14 +1347,14 @@ class MODDataset(object):
 
         # pfcs
         if self.store_pfcs:
-            pfcs = _write_large_object_array_to_h5(hf, 'pfcs', self.pfcs, 
+            pfcs = _write_large_object_array_to_h5(hf, 'pfcs', self.pfcs,
                                                    ncols=len(self.pfcs_cols), **compression)
             pfcs.attrs.create('cols', np.asarray(self.pfcs_cols, dtype='S'))
             hf.create_dataset('pfcs_index', data=_make_particles_index(self.pfcs), **compression)
 
         # gens
         if self.store_gens:
-            gens = _write_large_object_array_to_h5(hf, 'gens', self.gens, 
+            gens = _write_large_object_array_to_h5(hf, 'gens', self.gens,
                                                    ncols=len(self.gens_cols), **compression)
             gens.attrs.create('cols', np.asarray(self.gens_cols, dtype='S'))
             hf.create_dataset('gens_index', data=_make_particles_index(self.gens), **compression)
@@ -1423,7 +1423,7 @@ class MODDataset(object):
     @property
     def hf(self):
         """The underlying HDF5 file, if one is associated to the `MODDataset`."""
-        
+
         return self._hf if hasattr(self, '_hf') else None
 
     @property

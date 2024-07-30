@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <meta name="author" content="Patrick T. Komiske III, Eric M. Metodiev">
   <link rel="canonical" href="https://energyflow.network/docs/efm/">
   <link rel="shortcut icon" href="../../img/favicon.ico">
@@ -16,19 +16,19 @@
   <link rel="stylesheet" href="../../css/theme_extra.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
   <link href="../../css/eftheme.css" rel="stylesheet" />
-  
+
   <script>
     // Current page data
     var mkdocs_page_name = "Energy Flow Moments";
     var mkdocs_page_input_path = "docs/efm.md";
     var mkdocs_page_url = "/docs/efm/";
   </script>
-  
+
   <script src="../../js/jquery-2.1.1.min.js" defer></script>
   <script src="../../js/modernizr-2.8.3.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script> 
-  
+  <script>hljs.initHighlightingOnLoad();</script>
+
   <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,14 +38,14 @@
       ga('create', 'UA-122962541-1', 'energyflow.network');
       ga('send', 'pageview');
   </script>
-  
+
 </head>
 
 <body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
-    
+
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
@@ -148,36 +148,36 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
-      
+
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="../..">EnergyFlow</a>
       </nav>
 
-      
+
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../..">Docs</a> &raquo;</li>
-    
-      
-        
+
+
+
           <li>Documentation &raquo;</li>
-        
-      
-    
+
+
+
     <li>Energy Flow Moments</li>
     <li class="wy-breadcrumbs-aside">
-      
+
     </li>
   </ul>
-  
+
   <hr/>
 </div>
           <div role="main">
             <div class="section">
-              
+
                 <h1 id="energy-flow-moments">Energy Flow Moments</h1>
 <p>Energy Flow Moments (EFMs) are tensors that can be computed in
 <span><span class="MathJax_Preview">\mathcal O(M)</span><script type="math/tex">\mathcal O(M)</script></span> where <span><span class="MathJax_Preview">M</span><script type="math/tex">M</script></span> is the number of particles. They are useful for many
@@ -229,7 +229,7 @@ indexed by their signatures, then the value of the EFP is given as
 <hr />
 <h3 id="efm">EFM</h3>
 <p>A class representing and computing a single EFM.</p>
-<pre><code class="language-python">energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None, 
+<pre><code class="language-python">energyflow.EFM(nup, nlow=0, measure='hadrefm', beta=2, kappa=1, normed=None,
                             coords=None, check_input=True)
 </code></pre>
 <p>Since EFMs are fully symmetric tensors, they can be specified by
@@ -271,7 +271,7 @@ use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex"
 </ul>
 </li>
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
+<li>Controls which coordinates are assumed for the input. See
 <a href="../measures">Measures</a> for additional info.</li>
 </ul>
 </li>
@@ -294,7 +294,7 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>nhats</code> must also be present, and <code>zs</code> is used in place 
+<li>If present, <code>nhats</code> must also be present, and <code>zs</code> is used in place
 of the energies of an event.</li>
 </ul>
 </li>
@@ -373,7 +373,7 @@ EFMs require <span><span class="MathJax_Preview">\beta=2</span><script type="mat
 <li><strong>efm_specs</strong> : {<em>list</em>, <em>tuple</em>, <em>set</em>} of <em>tuple</em> or <code>None</code><ul>
 <li>A collection of tuples of length two specifying which EFMs this
 object is to hold. Each spec is of the form <code>(nup, nlow)</code> where these
-are the number of upper and lower indices, respectively, that the EFM 
+are the number of upper and lower indices, respectively, that the EFM
 is to have.</li>
 </ul>
 </li>
@@ -403,7 +403,7 @@ use <span><span class="MathJax_Preview">\kappa=v-1</span><script type="math/tex"
 </ul>
 </li>
 <li><strong>coords</strong> : {<code>'ptyphim'</code>, <code>'epxpypz'</code>, <code>None</code>}<ul>
-<li>Controls which coordinates are assumed for the input. See 
+<li>Controls which coordinates are assumed for the input. See
 <a href="../measures">Measures</a> for additional info.</li>
 </ul>
 </li>
@@ -427,7 +427,7 @@ by <code>coords</code>.</li>
 </ul>
 </li>
 <li><strong>zs</strong> : 1-d array_like<ul>
-<li>If present, <code>nhats</code> must also be present, and <code>zs</code> is used in place 
+<li>If present, <code>nhats</code> must also be present, and <code>zs</code> is used in place
 of the energies of an event.</li>
 </ul>
 </li>
@@ -481,33 +481,33 @@ keys are the signatures of the EFM.</p>
 <p>An ordered dictionary of the construction method used for each <code>EFM</code>
 where the order is the same as <code>sorted_efms</code>.</p>
 <hr />
-              
+
             </div>
           </div>
           <footer>
-  
+
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
+
         <a href="../efp/" class="btn btn-neutral float-right" title="Energy Flow Polynomials">Next <span class="icon icon-circle-arrow-right"></span></a>
-      
-      
+
+
         <a href="../emd/" class="btn btn-neutral" title="EMD"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-      
+
     </div>
-  
+
 
   <hr/>
 
   <div role="contentinfo">
     <!-- Copyright etc -->
-    
+
       <p>Copyright (C) 2017-2024 EnergyFlow Authors</p>
-    
+
   </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-      
+
         </div>
       </div>
 
@@ -517,15 +517,15 @@ where the order is the same as <code>sorted_efms</code>.</p>
 
   <div class="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
-      
+
           <a href="https://github.com/pkomiske/EnergyFlow" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
-      
-      
+
+
         <span><a href="../emd/" style="color: #fcfcfc;">&laquo; Previous</a></span>
-      
-      
+
+
         <span style="margin-left: 15px"><a href="../efp/" style="color: #fcfcfc">Next &raquo;</a></span>
-      
+
     </span>
 </div>
     <script>var base_url = '../..';</script>
