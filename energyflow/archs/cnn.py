@@ -10,8 +10,8 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tensorflow.keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialDropout2D
-from tensorflow.keras.models import Sequential
+from tf_keras.layers import Conv2D, Dense, Flatten, Dropout, MaxPooling2D, SpatialDropout2D
+from tf_keras.models import Sequential
 
 from energyflow.archs.archbase import NNBase
 from energyflow.utils import iter_or_rep

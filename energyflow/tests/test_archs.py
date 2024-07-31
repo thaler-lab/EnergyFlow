@@ -6,9 +6,9 @@ from __future__ import absolute_import, division
 import numpy as np
 import pytest
 
-from tensorflow.keras import backend as K
-from tensorflow.keras.layers import PReLU
-from tensorflow.keras.initializers import Constant
+from tf_keras import backend as K
+from tf_keras.layers import PReLU
+from tf_keras.initializers import Constant
 
 from energyflow import archs
 from test_utils import epsilon_percent, epsilon_diff

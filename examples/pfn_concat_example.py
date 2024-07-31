@@ -1,9 +1,9 @@
 from itertools import repeat
 
-from tensorflow.keras import backend as K
-from tensorflow.keras.layers import concatenate, Dense, Dropout, Input, Lambda, Masking, TimeDistributed
-from tensorflow.keras.models import Model
-from tensorflow.keras.regularizers import l2
+from tf_keras import backend as K
+from tf_keras.layers import concatenate, Dense, Dropout, Input, Lambda, Masking, TimeDistributed
+from tf_keras.models import Model
+from tf_keras.regularizers import l2
 
 from energyflow.archs import PFN
 from energyflow.archs.archbase import _apply_act
