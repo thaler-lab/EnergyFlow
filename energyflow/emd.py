@@ -45,6 +45,7 @@ are used instead of energies.
 # Copyright (C) 2017-2022 Patrick T. Komiske III and Eric Metodiev
 
 from __future__ import absolute_import, division, print_function
+from functools import partial
 
 import itertools
 import multiprocessing
@@ -519,7 +520,7 @@ def _cdist(X, Y, euclidean, periodic_phi, phi_col):
     return out
 
 # helper function for pool imap
-def _emd4map(x):
+def _emd4map(_X0, _X1, x):
     (i, j), params = x
     return _emd(_X0[i], _X1[j], *params)
 
@@ -835,7 +836,6 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     phi_col_m1 = phi_col - 1
 
     # process events into convenient form for EMD
-    global _X0, _X1
     start = time.time()
     args = (norm, gdim, periodic_phi, phi_col_m1,
             mask, R, hadr2cart, euclidean, error_on_empty)
@@ -892,7 +892,7 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
                 local_map_args = [next(map_args) for i in range(end - begin)]
 
                 # map function and store results
-                results = pool.map(_emd4map, local_map_args, chunksize=chunksize)
+                results = pool.map(partial(_emd4map,_X0, _X1), local_map_args, chunksize=chunksize)
                 for arg,r in zip(local_map_args, results):
                     i, j = arg[0]
                     emds[i, j] = r
@@ -918,9 +918,6 @@ def emds_pot(X0, X1=None, R=1.0, norm=False, beta=1.0, measure='euclidean', coor
     # unrecognized n_jobs value
     else:
         raise ValueError('n_jobs must be a positive integer or -1')
-
-    # delete global arrays
-    del _X0, _X1
 
     # if doing an array with itself, symmetrize the distance matrix
     if sym:
