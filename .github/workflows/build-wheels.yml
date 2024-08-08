@@ -34,12 +34,6 @@ jobs:
       - name: Build SDist and wheel
         run: pipx run build
 
-      - name: Upload to GitHub
-        uses: actions/upload-artifact@v4
-        with:
-          name: Packages
-          path: dist/*
-
       - name: Check metadata
         run: pipx run twine check --strict dist/*
 
@@ -48,3 +42,9 @@ jobs:
 
       - name: List contents of wheel
         run: python -m zipfile --list dist/*.whl
+
+      - name: Upload to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: Packages
+          path: dist/*
