@@ -101,8 +101,8 @@ tests = [
 
 [project.urls]
 Homepage = "https://energyflow.network"
-Issues = "https://github.com/pkomiske/EnergyFlow/issues"
-"Source Code" = "https://github.com/pkomiske/EnergyFlow"
+Issues = "https://github.com/thaler-lab/EnergyFlow/issues"
+"Source Code" = "https://github.com/thaler-lab/EnergyFlow"
 
 [tool.hatch.version]
 path = "energyflow/__init__.py"
