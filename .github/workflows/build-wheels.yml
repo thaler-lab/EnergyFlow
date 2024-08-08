@@ -41,4 +41,4 @@ jobs:
           path: dist/*
 
       - name: Check metadata
-        run: pipx run twine check dist/*
+        run: pipx run twine check --strict dist/*
