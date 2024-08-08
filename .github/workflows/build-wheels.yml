@@ -42,3 +42,9 @@ jobs:
 
       - name: Check metadata
         run: pipx run twine check --strict dist/*
+
+      - name: List contents of sdist
+        run: python -m tarfile --list dist/*.tar.gz
+
+      - name: List contents of wheel
+        run: python -m zipfile --list dist/*.whl
