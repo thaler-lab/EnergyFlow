@@ -84,7 +84,9 @@ def test_batch_compute_vs_compute(measure, beta, kappa, normed):
         pytest.skip('normed not supported with kappa=pf')
     if ('efm' in measure) and (beta != 2):
         pytest.skip('only beta=2 can use efm measure')
-    events = ef.gen_random_events(10, 15)
+
+    rng = np.random.default_rng(seed=1234567890)
+    events = ef.gen_random_events(10, 15, rng=rng)
     s = ef.EFPSet('d<=6', measure=measure, beta=beta, kappa=kappa, normed=normed)
     r_batch = s.batch_compute(events, n_jobs=1)
     r = np.asarray([s.compute(event) for event in events])
@@ -94,7 +96,7 @@ def test_batch_compute_vs_compute(measure, beta, kappa, normed):
 @pytest.mark.slow
 @pytest.mark.efp
 @pytest.mark.efm
-@pytest.mark.parametrize('event', ef.gen_random_events(3, 15))
+@pytest.mark.parametrize('event', ef.gen_random_events(3, 15, rng=np.random.default_rng(seed=1234567890)))
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1, 'pf'])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
@@ -119,7 +121,7 @@ def test_efpset_vs_efps(measure, beta, kappa, normed, event):
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, 0.5, 1])
 @pytest.mark.parametrize('beta', [.5, 1, 2])
-@pytest.mark.parametrize('event', ef.gen_random_events(3, 15))
+@pytest.mark.parametrize('event', ef.gen_random_events(3, 15, rng=np.random.default_rng(seed=1234567890)))
 def test_efp_kappa_hadr(event, beta, kappa, normed, kappa_normed_behavior):
 
     asymbox_graph = [(0,1),(0,1),(1,2),(1,2),(1,2),(2,3),(2,3),(2,3),(2,3),(3,0),(0,3),(3,0)]
@@ -150,7 +152,7 @@ def test_efp_kappa_hadr(event, beta, kappa, normed, kappa_normed_behavior):
 # test that efps, efms, and naive all agree
 @pytest.mark.efp
 @pytest.mark.efm
-@pytest.mark.parametrize('event', ef.gen_random_events(4, 15))
+@pytest.mark.parametrize('event', ef.gen_random_events(4, 15, rng=np.random.default_rng(seed=1234567890)))
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('measure', ['hadrefm', 'eeefm'])
 def test_efp_efm_naive_compute(measure, normed, event):
@@ -237,8 +239,9 @@ def test_linear_relations(measure):
         'triangledumbbell': [(0,1),(0,1),(2,3),(3,4),(4,2)]
         }
 
+    rng = np.random.default_rng(seed=1234567890)
     # pick a random event with 2 particles
-    event = ef.gen_random_events(1, 2, dim=4)
+    event = ef.gen_random_events(1, 2, dim=4, rng=rng)
 
     # compute the value of all of the EFPs on this event
     d = {name: ef.EFP(graph, measure=measure, coords='epxpypz')(event) for name,graph in graphs.items()}
@@ -254,7 +257,7 @@ def test_linear_relations(measure):
 
     # Four Dimensions
     # pick a random event in 4 dimensions
-    event = ef.gen_random_events(1, 25, dim=4)
+    event = ef.gen_random_events(1, 25, dim=4, rng=rng)
 
     # compute the value of all of the EFPs on this event
     d = {name: ef.EFP(graph, measure=measure, coords='epxpypz')(event) for name,graph in graphs.items()}
