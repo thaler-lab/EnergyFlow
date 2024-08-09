@@ -29,7 +29,8 @@ def slow_efm(zs, nhats, v):
 @pytest.mark.parametrize('v', list(range(0,2)))
 def test_efms(v, measure, normed, M):
 
-    events = ef.gen_random_events(2, M)
+    rng = np.random.default_rng(seed=1234567890)
+    events = ef.gen_random_events(2, M, rng=rng)
     e = ef.EFM(v, measure=measure, normed=normed, coords='epxpypz')
 
     for event in events:
@@ -55,7 +56,8 @@ def test_efms(v, measure, normed, M):
 @pytest.mark.parametrize('M', [1, 10, 50, 100, 500])
 @pytest.mark.parametrize('v', list(range(0,2)))
 def test_efm_batch_compute(v, M, measure, normed):
-    events = ef.gen_random_events(2, M)
+    rng = np.random.default_rng(seed=1234567890)
+    events = ef.gen_random_events(2, M, rng=rng)
     e = ef.EFM(v, measure=measure, normed=normed, coords='epxpypz')
 
     r1 = [e.compute(event) for event in events]
@@ -74,7 +76,8 @@ def test_efm_vs_efmset_compute(sigs, M, measure, normed):
     efmset = ef.EFMSet(sigs, measure=measure, normed=normed, coords='epxpypz')
     efms = [ef.EFM(*sig, measure=measure, normed=normed, coords='epxpypz') for sig in sigs]
 
-    for event in ef.gen_random_events(2, M):
+    rng = np.random.default_rng(seed=1234567890)
+    for event in ef.gen_random_events(2, M, rng=rng):
         efm_dict = efmset.compute(event)
         for sig,efm in zip(sigs,efms):
             print(sig, np.max(np.abs(efm_dict[sig] - efm.compute(event))))
@@ -91,7 +94,8 @@ def test_efm_vs_efmset_batch_compute(sigs, M, measure, normed):
     efmset = ef.EFMSet(sigs, measure=measure, normed=normed, coords='epxpypz')
     efms = [ef.EFM(*sig, measure=measure, normed=normed, coords='epxpypz') for sig in sigs]
 
-    events = ef.gen_random_events(2, M)
+    rng = np.random.default_rng(seed=1234567890)
+    events = ef.gen_random_events(2, M, rng=rng)
     efm_dict = efmset.batch_compute(events)
 
     for sig,efm in zip(sigs,efms):

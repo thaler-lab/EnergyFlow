@@ -222,8 +222,9 @@ def emde(ev0, ev1, R=1.0, beta=1.0, return_flow=False):
 @pytest.mark.parametrize('backend', ['wasserstein', 'pot'])
 def test_emde(backend, M, R, beta):
     emd = ef.emd.emd if backend == 'wasserstein' else ef.emd.emd_pot
-    events1 = np.random.rand(nev, M, 3)
-    events2 = np.random.rand(nev, M, 3)
+    rng = np.random.default_rng(seed=1234567890)
+    events1 = rng.random((nev, M, 3))
+    events2 = rng.random((nev, M, 3))
 
     for ev1 in events1:
         for ev2 in events2:

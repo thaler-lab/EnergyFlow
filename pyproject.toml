@@ -68,7 +68,7 @@ classifiers = [
 dependencies = [
     "h5py >= 2.9.0",
     "importlib-metadata>=1.4.0; python_version<\"3.8\"",
-    "numpy >= 1.12.0",
+    "numpy >= 1.17.0",
     "six",
     "wasserstein >= 1.0.1",
 ]
