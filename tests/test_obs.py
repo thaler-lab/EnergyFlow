@@ -24,7 +24,8 @@ def test_C2D2C3(measure, beta, normed):
         pytest.skip('only beta=2 can use efm measure')
 
     # generate a random event with 10 particles
-    event = ef.gen_random_events(1, 10, dim=4)
+    rng = np.random.default_rng(seed=1234567890)
+    event = ef.gen_random_events(1, 10, dim=4, rng=rng)
 
     # specify the relevant graphs and EFPs to compute C1, D2, C3
     line = ef.EFP([(0,1)], measure=measure, coords='epxpypz', beta=beta, normed=True)(event)

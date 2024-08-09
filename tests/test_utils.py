@@ -33,10 +33,11 @@ def test_gen_massless_phase_space(nevents, nparticles):
 @pytest.mark.parametrize('dim', [3, 4, 8])
 @pytest.mark.parametrize('mass', [0, 1.5, 'random', 'array'])
 def test_gen_random_events(nevents, nparticles, dim, mass):
+    rng = np.random.default_rng(seed=1234567890)
     if mass == 'array':
-        mass = np.random.rand(nevents, nparticles)
+        mass = rng.random((nevents, nparticles))
 
-    events = ef.gen_random_events(nevents, nparticles, dim=dim, mass=mass)
+    events = ef.gen_random_events(nevents, nparticles, dim=dim, mass=mass, rng=rng)
 
     assert events.shape == (nevents, nparticles, dim)
 
@@ -49,7 +50,8 @@ def test_gen_random_events(nevents, nparticles, dim, mass):
 @pytest.mark.parametrize('nevents', [20, 200])
 @pytest.mark.parametrize('dim', [3, 4, 8])
 def test_gen_random_events_mcom(nevents, nparticles, dim):
-    events = ef.gen_random_events_mcom(nevents, nparticles, dim=dim)
+    rng = np.random.default_rng(seed=1234567890)
+    events = ef.gen_random_events_mcom(nevents, nparticles, dim=dim, rng=rng)
 
     assert events.shape == (nevents, nparticles, dim)
     assert epsilon_diff(ef.ms_from_ps(events)**2/dim, 0, 10**-12)
@@ -64,14 +66,15 @@ def test_gen_random_events_mcom(nevents, nparticles, dim):
 					                'pt2s_from_p4s', 'ys_from_p4s', 'etas_from_p4s',
 					                'phis_from_p4s', 'm2s_from_p4s', 'ms_from_p4s'])
 def test_shapes_from_p4s(method, nevents, nparticles):
-	events = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
-	event, particle = events[0], events[0,0]
+    rng = np.random.default_rng(seed=1234567890)
+    events = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
+    event, particle = events[0], events[0,0]
 
-	func = getattr(ef, method)
-	results = func(events)
+    func = getattr(ef, method)
+    results = func(events)
 
-	assert epsilon_diff(results[0],  func(event))
-	assert epsilon_diff(results[0,0], func(particle))
+    assert epsilon_diff(results[0], func(event))
+    assert epsilon_diff(results[0,0], func(particle))
 
 @pytest.mark.utils
 @pytest.mark.parametrize('nparticles', [1, 20])
@@ -79,7 +82,8 @@ def test_shapes_from_p4s(method, nevents, nparticles):
 @pytest.mark.parametrize('method', ['p4s_from_ptyphims', 'p4s_from_ptyphipids',])
                                     #'sum_ptyphims', 'sum_ptyphipids'])
 def test_shapes_from_ptyphis(method, nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
     ptyphims = ef.ptyphims_from_p4s(p4s)
 
     func = getattr(ef, method)
@@ -102,7 +106,8 @@ def test_shapes_from_ptyphis(method, nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_pts_from_p4s(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
 
     pts = ef.pts_from_p4s(p4s)
     slow_pts = []
@@ -119,7 +124,8 @@ def test_pts_from_p4s(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_pt2s_from_p4s(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
 
     pt2s = ef.pt2s_from_p4s(p4s)
     slow_pt2s = []
@@ -136,7 +142,8 @@ def test_pt2s_from_p4s(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_ys_from_p4s(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
     ys = 0.5*np.log((p4s[...,0] + p4s[...,3])/(p4s[...,0] - p4s[...,3]))
 
     assert epsilon_diff(ys, ef.ys_from_p4s(p4s))
@@ -145,7 +152,8 @@ def test_ys_from_p4s(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_etas_from_p4s(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
 
     p3tots = np.linalg.norm(p4s[...,1:], axis=-1)
     etas = 0.5*np.log((p3tots + p4s[...,3])/(p3tots - p4s[...,3]))
@@ -182,7 +190,8 @@ def test_phis_from_p4s(nevents, nparticles, phi_ref):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_ms_from_p4s(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
 
     ms = ef.ms_from_p4s(p4s)
     slow_ms = []
@@ -199,7 +208,8 @@ def test_ms_from_p4s(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_m2s_from_p4s(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
 
     m2s = ef.m2s_from_p4s(p4s)
     slow_m2s = []
@@ -217,7 +227,8 @@ def test_m2s_from_p4s(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_etas_from_pts_ys_ms(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
     ptyphims = ef.ptyphims_from_p4s(p4s)
 
     etas = ef.etas_from_p4s(p4s)
@@ -240,7 +251,8 @@ def test_etas_from_pts_ys_ms(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 20])
 @pytest.mark.parametrize('nevents', [1, 10])
 def test_ys_from_pts_etas_ms(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
 
     ys = ef.ys_from_p4s(p4s)
     y_primes = ef.ys_from_pts_etas_ms(ef.pts_from_p4s(p4s), ef.etas_from_p4s(p4s), ef.ms_from_p4s(p4s))
@@ -261,7 +273,8 @@ def test_ys_from_pts_etas_ms(nevents, nparticles):
 @pytest.mark.parametrize('nparticles', [1, 500])
 @pytest.mark.parametrize('nevents', [1, 100])
 def test_coordinate_transforms(nevents, nparticles):
-    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random').reshape(nevents, nparticles, 4)
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(nevents, nparticles, dim=4, mass='random', rng=rng).reshape(nevents, nparticles, 4)
     ptyphims = ef.ptyphims_from_p4s(p4s)
     new_p4s = ef.p4s_from_ptyphims(ptyphims)
 
@@ -297,8 +310,9 @@ def test_phifix(phi_ref, nevents, nparticles):
 @pytest.mark.parametrize('nevents', [1, 10])
 @pytest.mark.parametrize('dim', [2, 4, 8])
 def test_ms_from_ps(dim, nevents, nparticles):
-    masses = np.random.rand(nevents, nparticles)
-    events = ef.gen_random_events(nevents, nparticles, mass=masses, dim=dim)
+    rng = np.random.default_rng(seed=1234567890)
+    masses = rng.random((nevents, nparticles))
+    events = ef.gen_random_events(nevents, nparticles, mass=masses, dim=dim, rng=rng)
     masses = masses.reshape(events.shape[:-1])
 
     results = ef.ms_from_ps(events)
@@ -311,7 +325,8 @@ def test_ms_from_ps(dim, nevents, nparticles):
 @pytest.mark.parametrize('scheme', ['escheme', 'ptscheme'])
 @pytest.mark.parametrize('nparticles', [1, 20])
 def test_sum_ptyphims(nparticles, scheme):
-    p4s = ef.gen_random_events(10, nparticles, dim=4, mass='random')
+    rng = np.random.default_rng(seed=1234567890)
+    p4s = ef.gen_random_events(10, nparticles, dim=4, mass='random', rng=rng)
     ptyphims = ef.ptyphims_from_p4s(p4s)
 
     if scheme == 'escheme':

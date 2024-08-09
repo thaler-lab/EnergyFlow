@@ -28,7 +28,7 @@ __all__ = [
     'gen_massless_phase_space'
 ]
 
-def gen_random_events(nevents, nparticles, dim=4, mass=0.):
+def gen_random_events(nevents, nparticles, dim=4, mass=0., rng=None, seed=None):
     r"""Generate random events with a given number of particles in a given
     spacetime dimension. The spatial components of the momenta are
     distributed uniformly in $[-1,+1]$. These events are not guaranteed to
@@ -45,6 +45,11 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
     - **mass** : _float_ or `'random'`
         - Mass of the particles to generate. Can be set to `'random'` to obtain
         a different random mass for each particle.
+    - **rng** : {None, Generator}, optional
+        - A numpy.random.Generator to use.
+    - **seed** : {None, int, array_like[ints], SeedSequence, BitGenerator, Generator}, optional
+        - A seed to initialize the numpy.random.BitGenerator used for the
+        internal numpy.random.Generator if `rng=None`.
 
     **Returns**
 
@@ -54,17 +59,20 @@ def gen_random_events(nevents, nparticles, dim=4, mass=0.):
         dropped.
     """
 
-    spatial_ps = 2*np.random.rand(nevents, nparticles, dim-1) - 1
+    if rng is None:
+        rng = np.random.default_rng(seed=seed)
+
+    spatial_ps = 2*rng.random((nevents, nparticles, dim-1)) - 1
 
     if isinstance(mass, str) and mass == 'random':
-        mass = np.random.rand(nevents, nparticles)
+        mass = rng.random((nevents, nparticles))
 
     energies = np.sqrt(mass**2 + np.sum(spatial_ps**2, axis=-1))
     events = np.concatenate((energies[:,:,np.newaxis], spatial_ps), axis=-1)
 
     return events if nevents > 1 else events[0]
 
-def gen_random_events_mcom(nevents, nparticles, dim=4):
+def gen_random_events_mcom(nevents, nparticles, dim=4, rng=None, seed=None):
     r"""Generate random events with a given number of massless particles in a
     given spacetime dimension. The total momentum are made to sum
     to zero. These events are not guaranteed to uniformly sample phase space.
@@ -77,6 +85,11 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
         - Number of particles in each event.
     - **dim** : _int_
         - Number of spacetime dimensions.
+    - **rng** : {None, Generator}, optional
+        - A numpy.random.Generator to use.
+    - **seed** : {None, int, array_like[ints], SeedSequence, BitGenerator, Generator}, optional
+        - A seed to initialize the numpy.random.BitGenerator used for the
+        internal numpy.random.Generator if `rng=None`.
 
     **Returns**
 
@@ -84,9 +97,11 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
         - An `(nevents,nparticles,dim)` array of events. The particles
         are specified as `[E,p1,p2,...]`.
     """
+    if rng is None:
+        rng = np.random.default_rng(seed=seed)
 
-    events_1_sp = 2*np.random.rand(nevents, int(np.ceil(nparticles/2)-1), dim-1) - 1
-    events_2_sp = 2*np.random.rand(nevents, int(np.floor(nparticles/2)-1), dim-1) - 1
+    events_1_sp = 2*rng.random((nevents, int(np.ceil(nparticles/2)-1), dim-1)) - 1
+    events_2_sp = 2*rng.random((nevents, int(np.floor(nparticles/2)-1), dim-1)) - 1
 
     events_1_sp_com = np.concatenate((events_1_sp, -np.sum(events_1_sp, axis=1)[:,np.newaxis]), axis=1)
     events_2_sp_com = np.concatenate((events_2_sp, -np.sum(events_2_sp, axis=1)[:,np.newaxis]), axis=1)
@@ -104,7 +119,7 @@ def gen_random_events_mcom(nevents, nparticles, dim=4):
 
     return events
 
-def gen_massless_phase_space(nevents, nparticles, energy=1.):
+def gen_massless_phase_space(nevents, nparticles, energy=1., rng=None, seed=None):
     r"""Implementation of the [RAMBO](https://doi.org/10.1016/0010-4655(86)90119-0)
     algorithm for uniformly sampling massless M-body phase space for any center
     of mass energy.
@@ -117,6 +132,11 @@ def gen_massless_phase_space(nevents, nparticles, energy=1.):
         - Number of particles in each event.
     - **energy** : _float_
         - Total center of mass energy of each event.
+    - **rng** : {None, Generator}, optional
+        - A numpy.random.Generator to use.
+    - **seed** : {None, int, array_like[ints], SeedSequence, BitGenerator, Generator}, optional
+        - A seed to initialize the numpy.random.BitGenerator used for the
+        internal numpy.random.Generator if `rng=None`.
 
     **Returns**
 
@@ -133,7 +153,9 @@ def gen_massless_phase_space(nevents, nparticles, energy=1.):
     ps = np.empty((nevents, nparticles, 4))
 
     # randomly sample from the qs as stated in the RAMBO paper
-    r = np.random.random((4, nevents, nparticles))
+    if rng is None:
+        rng = np.random.default_rng(seed=seed)
+    r = rng.random((4, nevents, nparticles))
 
     c = 2*r[0] - 1
     phi = 2*np.pi*r[1]
