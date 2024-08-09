@@ -40,7 +40,7 @@ def test_measure_hadr_ptyphi(pts, ys, phis, beta, kappa, normed, kappa_normed_be
 @pytest.mark.parametrize('normed', [True, False])
 @pytest.mark.parametrize('kappa', [0, .5, 1])
 @pytest.mark.parametrize('beta', [.2, 1, 2])
-@pytest.mark.parametrize('event', ef.gen_random_events(3, 15))
+@pytest.mark.parametrize('event', ef.gen_random_events(3, 15, rng=np.random.default_rng(seed=1234567890)))
 def test_measure_hadr_p4s(event, beta, kappa, normed, kappa_normed_behavior):
     M = len(event)
     pTs = np.sqrt(event[:,1]**2 + event[:,2]**2)
@@ -138,7 +138,7 @@ def test_measure_ee(event, beta, theta_eps, kappa, normed, kappa_normed_behavior
 
 @pytest.mark.measure
 @pytest.mark.parametrize('check_input', [True, False])
-@pytest.mark.parametrize('event', ef.gen_random_events(2,15))
+@pytest.mark.parametrize('event', ef.gen_random_events(2, 15, rng=np.random.default_rng(seed=1234567890)))
 @pytest.mark.parametrize('measure', ['hadr', 'hadrdot', 'hadrefm', 'ee', 'eeefm'])
 def test_measure_list_input(measure, event, check_input):
     meas = ef.Measure(measure, check_input=check_input)
