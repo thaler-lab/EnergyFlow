@@ -22,7 +22,7 @@ import os
 import sys
 
 import numpy as np
-from six.moves.urllib.error import HTTPError, URLError
+from urllib.error import HTTPError, URLError
 
 from energyflow.utils.generic_utils import ALL_EXAMPLES
 
@@ -245,7 +245,7 @@ def _pad_events_axis1(events, axis1_shape):
 # the following code is closely based on analogous parts of Keras
 if sys.version_info[0] == 2:
     from contextlib import closing
-    from six.moves.urllib.request import urlopen
+    from urllib.request import urlopen
     def urlretrieve(url, filename, reporthook=None, data=None):
         """Replacement for `urlretrive` for Python 2.
         Under Python 2, `urlretrieve` relies on `FancyURLopener` from legacy
@@ -282,7 +282,7 @@ if sys.version_info[0] == 2:
             for chunk in chunk_read(response, reporthook=reporthook):
                 fd.write(chunk)
 else:
-    from six.moves.urllib.request import urlretrieve
+    from urllib.request import urlretrieve
 
 def _hash_file(fpath, algorithm='sha256', chunk_size=131071):
     """Calculates a file sha256 or md5 hash.

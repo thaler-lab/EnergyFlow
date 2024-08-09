@@ -1,6 +1,6 @@
 # Installation
 
-The EnergyFlow package is written in pure Python and the core depends only on `NumPy`, the fundamental package for scientific computing with Python, `six`, which is a lightweight module to patch some inconvenient differences between Python 2 and Python 3, and `h5py`, which is used to interface with HDF5 files. The extra features require additional packages as specified below:
+The EnergyFlow package is written in pure Python and the core depends only on `NumPy`, the fundamental package for scientific computing with Python, and `h5py`, which is used to interface with HDF5 files. The extra features require additional packages as specified below:
 
 - Architectures: [Tensorflow](https://www.tensorflow.org), [scikit-learn](https://scikit-learn.org).
 - EMD: [Wasserstein](https://thaler-lab.github.io/Wasserstein) or [POT](https://pythonot.github.io/)

@@ -87,13 +87,11 @@ import json
 import math
 import os
 import re
-import sys
 import time
 import warnings
 
 import h5py
 import numpy as np
-import six
 
 from energyflow.utils.data_utils import _get_filepath
 from energyflow.utils import (COMP_MAP, EF_DATA_DIR, REVERSE_COMPS, ZENODO_URL_PATTERN,
@@ -494,7 +492,7 @@ def _separate_particle_arrays(particles, particles_index, mask, copy=True):
 def _process_selections(sel_list):
     sels = []
     for sel in sel_list:
-        if isinstance(sel, six.string_types):
+        if isinstance(sel, str):
             sels.append(sel)
         else:
             sels.append(''.join([str(s) for s in sel]))
@@ -741,7 +739,7 @@ class MODDataset(object):
             self._init_from_datasets(datasets)
 
         # initialize from file
-        elif len(args) and isinstance(args[0], six.string_types):
+        elif len(args) and isinstance(args[0], str):
             self.selection = _process_selections(args[1:])
             self._init_from_filename(args[0], kwargs['path'])
 
