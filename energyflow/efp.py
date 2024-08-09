@@ -33,7 +33,6 @@ import re
 import warnings
 
 import numpy as np
-import six
 
 from energyflow.algorithms import VariableElimination, einsum_path, einsum
 from energyflow.base import EFPBase
@@ -645,7 +644,7 @@ class EFPSet(EFPBase):
         for arg in args:
 
             # parse arg
-            if isinstance(arg, six.string_types):
+            if isinstance(arg, str):
                 s = arg
             elif hasattr(arg, '__getitem__'):
                 if len(arg) == 2:
