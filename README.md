@@ -7,8 +7,9 @@ EnergyFlow is a Python package that computes Energy Flow Polynomials (EFPs) as d
 #### Installation
 
 To install EnergyFlow with pip, simply execute:
-```sh
-pip3 install energyflow
+
+```console
+python -m pip install energyflow
 ```
 
 #### Documentation
