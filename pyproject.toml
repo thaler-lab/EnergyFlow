@@ -11,6 +11,10 @@ requires-python = ">= 3.7"
 authors = [
     { name = "Patrick T. Komiske III", email = "pkomiske@mit.edu" },
 ]
+maintainers = [
+    { name = "Rikab Gambhir", email = "rikab@mit.edu" },
+    { name = "Jordan Ashley", email = "jordan.ashley@cern.ch" },
+]
 keywords = [
     "CMS",
     "Deep Sets",
