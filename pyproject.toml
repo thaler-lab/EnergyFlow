@@ -13,7 +13,7 @@ authors = [
 ]
 maintainers = [
     { name = "Rikab Gambhir", email = "rikab@mit.edu" },
-    { name = "Jordan Ashley", email = "jashley6@vols.utk.edu" },
+    { name = "Jordan Ashley", email = "jordan.ashley@cern.ch" },
 ]
 keywords = [
     "CMS",
