@@ -125,7 +125,7 @@ multiple grooming parameters are to be used.
 Ratio of EFPs (specifically, energy correlation functions) designed to
 tag two prong signals. In graphs, the formula is:
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/D2.png"
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/D2.png"
 class="obs_center" width="20%"/>
 
 For additional information, see the [original paper](https://arxiv.org/
@@ -236,7 +236,7 @@ efpset
 Ratio of Energy Correlation Functions designed to tag two prong signals.
 In graphs, the formula is:
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/C2.png"
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/C2.png"
 class="obs_center" width="20%"/>
 
 For additional information, see the [original paper](https://arxiv.org/
@@ -347,7 +347,7 @@ efpset
 Ratio of Energy Correlation Functions designed to tag three prong
 signals. In graphs, the formula is:
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/C3.png"
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/C3.png"
 class="obs_center" width="30%"/>
 
 For additional information, see the [original paper](https://arxiv.org/

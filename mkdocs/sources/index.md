@@ -1,7 +1,7 @@
 # Welcome to EnergyFlow
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/QG_256_plain.jpg" width="47.5%"/>
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/JetCustom_29522924_24981665_EMD.jpg" width="47.5%"/>
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/QG_256_plain.jpg" width="47.5%"/>
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/JetCustom_29522924_24981665_EMD.jpg" width="47.5%"/>
 
 ## Features
 
@@ -30,7 +30,7 @@ The EnergyFlow package also provides easy access to particle phyiscs datasets an
 - [Detailed Examples](examples): Examples showcasing EFPs, EFNs, PFNs, EMDs, and more.
 
 
-The current version is `1.3.3a0`. Changes are summarized in the [Release Notes](releases). Using the most up-to-date version is recommended. As of version `0.7.0`, tests have been written covering the majority of the EFP and EMD code. The architectures code is currently tested by running the examples. The source code can be found on [GitHub](https://github.com/pkomiske/EnergyFlow).
+The current version is `1.3.3a0`. Changes are summarized in the [Release Notes](releases). Using the most up-to-date version is recommended. As of version `0.7.0`, tests have been written covering the majority of the EFP and EMD code. The architectures code is currently tested by running the examples. The source code can be found on [GitHub](https://github.com/thaler-lab/EnergyFlow).
 
 Get started by [installing EnergyFlow](installation), [exploring the demos](demos), and [running the examples](examples)!
 
@@ -63,4 +63,4 @@ EnergyFlow is developed and maintained by:
 
 ## Copyright
 
-EnergyFlow is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html). See the [LICENSE](https://github.com/pkomiske/EnergyFlow/blob/master/LICENSE) for detailed copyright information. EnergyFlow uses a customized `einsumfunc.py` from the [NumPy GitHub](https://github.com/numpy/numpy) repository as well as a few functions relating to downloading files copied from the [Keras GitHub](https://github.com/keras-team/keras) repository. The copyrights for these parts of the code are attributed to their respective owners in the [LICENSE](https://github.com/pkomiske/EnergyFlow/blob/master/LICENSE) file.
+EnergyFlow is licensed under [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html). See the [LICENSE](https://github.com/thaler-lab/EnergyFlow/blob/master/LICENSE) for detailed copyright information. EnergyFlow uses a customized `einsumfunc.py` from the [NumPy GitHub](https://github.com/numpy/numpy) repository as well as a few functions relating to downloading files copied from the [Keras GitHub](https://github.com/keras-team/keras) repository. The copyrights for these parts of the code are attributed to their respective owners in the [LICENSE](https://github.com/thaler-lab/EnergyFlow/blob/master/LICENSE) file.
