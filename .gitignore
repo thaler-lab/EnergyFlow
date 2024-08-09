@@ -24,7 +24,7 @@ Moments
 Networks
 Polynomials
 datasets/
-!energyflow/datasets
+!src/energyflow/datasets
 !docs/docs/datasets
 !EnergyFlow Demo.ipynb
 !EMD Demo.ipynb
@@ -38,4 +38,4 @@ fastjet-3.3.4
 **/.svn
 
 # dynamic versioning
-energyflow/_version.py
+src/energyflow/_version.py

@@ -119,9 +119,13 @@ source = "vcs"
 local_scheme = "no-local-version"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "energyflow/_version.py"
+version-file = "src/energyflow/_version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/energyflow",
+    "/src",
+    "/tests",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/energyflow"]
