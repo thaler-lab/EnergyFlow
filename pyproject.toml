@@ -1,5 +1,8 @@
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling>=1.13.0",
+    "hatch-vcs>=0.3.0",
+]
 build-backend = "hatchling.build"
 
 [project]
@@ -110,7 +113,13 @@ Issues = "https://github.com/thaler-lab/EnergyFlow/issues"
 "Source Code" = "https://github.com/thaler-lab/EnergyFlow"
 
 [tool.hatch.version]
-path = "energyflow/__init__.py"
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "energyflow/_version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
