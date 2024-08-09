@@ -60,7 +60,7 @@ def get_examples(path='~/.energyflow', which='all', overwrite=False):
             which = [which]
         examples = all_examples.intersection(which)
 
-    base_url = 'https://github.com/pkomiske/EnergyFlow/raw/master/examples/'
+    base_url = 'https://github.com/thaler-lab/EnergyFlow/raw/master/examples/'
     cache_dir = os.path.expanduser(path)
 
     # get each example

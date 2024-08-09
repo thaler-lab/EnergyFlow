@@ -2,7 +2,7 @@ site_name: EnergyFlow
 site_url: https://energyflow.network
 site_description: Documentation for EnergyFlow
 site_author: Patrick T. Komiske III, Eric M. Metodiev
-repo_url: https://github.com/pkomiske/EnergyFlow
+repo_url: https://github.com/thaler-lab/EnergyFlow
 copyright: Copyright (C) 2017-2024 EnergyFlow Authors
 edit_uri: ""
 

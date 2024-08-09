@@ -1,7 +1,7 @@
 r"""# Energy Mover's Distance
 
 <video width="100%" autoplay loop controls>
-    <source src="https://github.com/pkomiske/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4"
+    <source src="https://github.com/thaler-lab/EnergyFlow/raw/images/CMS2011AJets_EventSpaceTriangulation.mp4"
             type="video/mp4">
 </video>
 <br>
@@ -11,7 +11,7 @@ a metric between particle collider events introduced in [1902.02346](https://
 arxiv.org/abs/1902.02346). This submodule contains convenient functions for
 computing EMDs between individual events and collections of events. The core of
 the computation is handled by either the [Wasserstein](https://github.com/
-pkomiske/Wasserstein) library or the [Python Optimal Transport (POT)](https://
+thaler-lab/Wasserstein) library or the [Python Optimal Transport (POT)](https://
 pot.readthedocs.io) library, one of which must be installed in order to use this
 submodule.
 

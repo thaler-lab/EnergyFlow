@@ -2,7 +2,7 @@
 
 ## NYT on the Theory of Everything
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/24SCI-AIPHYSICS-superJumbo.jpg" width="75%"/>
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/24SCI-AIPHYSICS-superJumbo.jpg" width="75%"/>
 <br/>
 Image: Alex Eben Meyer
 
@@ -15,7 +15,7 @@ Image: Alex Eben Meyer
 
 ## IAIFI Announcement
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/iaifi-pressimage-smaller.jpg" width="85%"/>
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/iaifi-pressimage-smaller.jpg" width="85%"/>
 <br/>
 Image: IAIFI
 
@@ -36,7 +36,7 @@ The [NSF has announced](https://www.nsf.gov/news/special_reports/announcements/0
 
 ## EMD Media Coverage
 
-<img src="https://github.com/pkomiske/EnergyFlow/raw/images/MIT-Particle-Networking.jpg" width="80%"/>
+<img src="https://github.com/thaler-lab/EnergyFlow/raw/images/MIT-Particle-Networking.jpg" width="80%"/>
 <br/>
 Image: Chelsea Turner, MIT
 

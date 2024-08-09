@@ -292,12 +292,12 @@ Beyond just computing EFPs, EnergyFlow makes use of other libraries written in p
 
 ## Can I contribute to the code?
 
-All of our code is open source and hosted on [GitHub](https://www.github.com/pkomiske/EnergyFlow/). We welcome additional contributors, and if you are interested in getting involved please contact us directly. Contact information is included in the relevant Energy Flow papers and our GitHub repository.
+All of our code is open source and hosted on [GitHub](https://www.github.com/thaler-lab/EnergyFlow/). We welcome additional contributors, and if you are interested in getting involved please contact us directly. Contact information is included in the relevant Energy Flow papers and our GitHub repository.
 
 ## How do I report an issue?
 
-Please let us know of any issues you encounter as soon as possible by creating a GitHub [Issue](https://github.com/pkomiske/EnergyFlow).
+Please let us know of any issues you encounter as soon as possible by creating a GitHub [Issue](https://github.com/thaler-lab/EnergyFlow).
 
 ## Where can I get graph image files?
 
-Image files for all connected multigraphs with up to 7 edges in the EFP style are available as PDF files [here](https://github.com/pkomiske/EnergyFlow/tree/images/graphs). You are free to use them with the proper attribution.
+Image files for all connected multigraphs with up to 7 edges in the EFP style are available as PDF files [here](https://github.com/thaler-lab/EnergyFlow/tree/images/graphs). You are free to use them with the proper attribution.
