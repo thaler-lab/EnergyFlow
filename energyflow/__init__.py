@@ -28,6 +28,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 from __future__ import absolute_import
 
 # import top-level submodules
@@ -41,6 +42,7 @@ from . import gen
 from . import measure
 from . import obs
 from . import utils
+from energyflow._version import version as __version__
 
 # import top-level attributes
 from .datasets import *
@@ -51,12 +53,16 @@ from .measure import *
 from .obs import *
 from .utils import *
 
-__all__ = (datasets.__all__ +
-           efm.__all__ +
-           efp.__all__ +
-           gen.__all__ +
-           measure.__all__ +
-           obs.__all__ +
-           utils.__all__)
+__all__ = (
+    datasets.__all__
+    + efm.__all__
+    + efp.__all__
+    + gen.__all__
+    + measure.__all__
+    + obs.__all__
+    + utils.__all__
+) + ["__version__"]
 
-__version__ = '1.3.3a0'
+
+def __dir__():
+    return __all__

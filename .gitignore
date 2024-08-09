@@ -36,3 +36,6 @@ fastjet-3.3.4
 *.so
 *.a
 **/.svn
+
+# dynamic versioning
+energyflow/_version.py
