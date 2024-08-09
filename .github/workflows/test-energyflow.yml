@@ -46,4 +46,4 @@ jobs:
           python -m pip install '.[tests]'
 
       - name: Run tests
-        run: pytest --verbose energyflow/tests/
+        run: pytest --verbose tests/
