@@ -1,0 +1,57 @@
+name: publish distributions
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  # Run weekly at 1:23 UTC
+  schedule:
+    - cron: '23 1 * * 0'
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: hynek/build-and-inspect-python-package@v2
+
+  publish:
+    needs: [dist]
+    environment: pypi
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'thaler-lab' && github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: dist
+
+      - name: Generate artifact attestation for sdist and wheel
+        uses: actions/attest-build-provenance@1c608d11d69870c2092266b3f9a6f3abbf17002c # v1.4.3
+        with:
+          subject-path: "dist/*"
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+          attestations: true
