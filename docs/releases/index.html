@@ -160,6 +160,18 @@
 
                 <h1 id="release-notes">Release Notes</h1>
 <h2 id="13x">1.3.x</h2>
+<a href="https://github.com/thaler-lab/EnergyFlow/compare/v1.3.3...v1.3.4">
+  <p><strong>1.3.4</strong></p>
+</a>
+<ul>
+  <li>Removed dependency on <code>six</code>.</li>
+  <li>Used modern TensorFlow and Keras to support Python <code>3.7+</code>.</li>
+  <li>Require NumPy <code>v1.17.0+</code> to support recommended use of <code>numpy.random.default_rng</code> over <code>numpy.random.random</code>.</li>
+  <li>Added optional <code>rng</code> and <code>seed</code> arguments to <code>energyflow.gen_random_events</code> and <code>energyflow.gen_random_events_mcom</code> to allow passing of a <code>numpy.random.Generator</code>.</li>
+  <li>Adopted <code>hatchling</code> as the build backend.</li>
+  <li>Added support for <a href="https://numpy.org/doc/2.0/release/2.0.0-notes.html">NumPy <code>2.0</code></a>.</li>
+  <li>Added <a href="https://github.com/conda-forge/energyflow-feedstock">distribution on conda-forge</a>.</li>
+</ul>
 <p><strong>1.3.3</strong></p>
 <ul>
 <li>Fixed dependence on deprecated <code>tf_keras.__version__</code> that caused EFNs and PFNs to be unimportable.</li>
