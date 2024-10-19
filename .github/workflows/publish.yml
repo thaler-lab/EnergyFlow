@@ -9,6 +9,11 @@ on:
   schedule:
     - cron: '23 1 * * 0'
   workflow_dispatch:
+    inputs:
+      publish_testpypi:
+        type: boolean
+        description: 'Publish to TestPyPI'
+        default: false
   release:
     types:
       - published
@@ -30,9 +35,32 @@ jobs:
 
       - uses: hynek/build-and-inspect-python-package@v2
 
+  publish-testpypi:
+    needs: [dist]
+    environment:
+      name: testpypi
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'thaler-lab' && github.event_name == 'workflow_dispatch' && github.event.inputs.publish_testpypi == 'true'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Packages
+          path: dist
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          print-hash: true
+
   publish:
     needs: [dist]
-    environment: pypi
+    environment:
+      name: pypi
     permissions:
       id-token: write
       attestations: write
@@ -51,7 +79,8 @@ jobs:
         with:
           subject-path: "dist/*"
 
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           print-hash: true
           attestations: true
