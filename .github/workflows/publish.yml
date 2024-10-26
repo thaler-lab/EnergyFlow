@@ -37,6 +37,7 @@ jobs:
 
   publish-testpypi:
     needs: [dist]
+    # Restrict to the environment set for the trusted publisher
     environment:
       name: testpypi
     permissions:
@@ -59,8 +60,9 @@ jobs:
 
   publish:
     needs: [dist]
+    # Restrict to the environment set for the trusted publisher
     environment:
-      name: pypi
+      name: publish-package
     permissions:
       id-token: write
       attestations: write
